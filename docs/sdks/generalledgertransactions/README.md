@@ -1,5 +1,4 @@
-# GeneralLedgerTransactions
-(*accounting.general_ledger_transactions*)
+# Accounting.GeneralLedgerTransactions
 
 ## Overview
 
@@ -25,7 +24,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.general_ledger_transactions.list(raw=False, service_id="salesforce", company_id="12345", limit=20, filter_={
@@ -93,7 +92,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.general_ledger_transactions.get(id="<id>", service_id="salesforce", company_id="12345", raw=False, fields="id,updated_at")

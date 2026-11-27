@@ -2,6 +2,16 @@
 
 Type of entity this payment should be attributed to.
 
+## Example Usage
+
+```python
+from apideck_unify.models import BillPaymentCreateInputAllocationType
+
+value = BillPaymentCreateInputAllocationType.BILL
+
+# Open enum: unrecognized values are captured as UnrecognizedStr
+```
+
 
 ## Values
 

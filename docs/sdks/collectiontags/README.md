@@ -1,5 +1,4 @@
-# CollectionTags
-(*issue_tracking.collection_tags*)
+# IssueTracking.CollectionTags
 
 ## Overview
 
@@ -22,7 +21,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.issue_tracking.collection_tags.list(collection_id="apideck-io", raw=False, service_id="salesforce", limit=20, pass_through={

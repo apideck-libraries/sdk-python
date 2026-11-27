@@ -8,7 +8,7 @@ from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from datetime import date
 from jsonpath import JSONPath
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
 
 
 class PurchaseOrders(BaseSDK):
@@ -21,7 +21,7 @@ class PurchaseOrders(BaseSDK):
         service_id: Optional[str] = None,
         company_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         limit: Optional[int] = 20,
         filter_: Optional[
             Union[models.PurchaseOrdersFilter, models.PurchaseOrdersFilterTypedDict]
@@ -70,7 +70,7 @@ class PurchaseOrders(BaseSDK):
             service_id=service_id,
             company_id=company_id,
             cursor=cursor,
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             limit=limit,
             filter_=utils.get_pydantic_model(
                 filter_, Optional[models.PurchaseOrdersFilter]
@@ -95,6 +95,7 @@ class PurchaseOrders(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -119,9 +120,75 @@ class PurchaseOrders(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "restaurant365",
+                            "description": "`line_items` is always empty. R365's own documentation shows the purchase order `details`\nfield as an empty placeholder and never documents its populated shape, so there is currently\nnothing to map — the order total, quantity, vendor and location are populated, but not the\nindividual line items.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "The minimun page size accepted for Netsuite is 5. The cursor for Netsuite expires if they have not been used within 15 minutes after its creation.\n`filter[subsidiary_id]` scopes results to a single subsidiary and is only supported on NetSuite OneWorld accounts; on standard (single-entity) accounts it is ignored.\n",
+                        },
+                        {
+                            "connector": "workday",
+                            "description": "When using the `supplier_id` filter, the `updated_since` filter should also be included.\n",
+                        },
+                        {
+                            "connector": "alegra",
+                            "description": "`delivery_date` is required on create. Each line is costed against either a catalog item (`line_items[].type: expense_item`, which sets `line.item`) or an expense ledger account (`expense_account`, which sets `line.ledger_account`); a PO may mix both. See the Alegra usage guide for details.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks Online does not expose a reliable cross-page total record count. The `QueryResponse.totalCount` field in list responses reflects the count for that page only, not the full dataset. `meta.total_count` will not appear in list responses. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite uses the same underlying QuickBooks API. The `QueryResponse.totalCount` field in list responses reflects the per-page count only. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Zoho Books does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "pennylane",
+                            "description": "Pennylane does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "procountor-fi",
+                            "description": "Procountor does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "dualentry",
+                            "description": "DualEntry scopes purchase orders by company. Pass the `x-apideck-company-id` header (or set a Default\nCompany on the connection) to return only records belonging to that company within the tenant.\nWithout it, records across all companies in the tenant are returned.\n",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "AFAS does not expose a total record count in list responses. `meta.total_count` will not appear.\n\nMost AFAS tenants have no purchase-order GetConnector configured out of the box — this\nresource returns an error rather than an empty list until the tenant deploys one. If its\nname differs from the Apideck default (`Profit_PurchaseOrders`), pass it per call via\n`pass_through[purchase_orders_connector]=YourConnectorName`.\n",
+                        },
+                        {
+                            "connector": "myob-acumatica",
+                            "description": "The Apideck service type is used for MYOB Acumatica non-stock items, and inventory is used for stock items.\n",
+                        },
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "QuickBooks Desktop does not expose a reliable cross-page total record count. Getting `total_count` requires a separate COUNT query — an extra API call that is not currently implemented. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "acumatica",
+                            "description": "The Apideck service type is used for Acumatica non-stock items, and inventory is used for stock items.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -148,17 +215,19 @@ class PurchaseOrders(BaseSDK):
                 filter_=filter_,
                 sort=sort,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingPurchaseOrdersAllResponse(
                 get_purchase_orders_response=unmarshal_json_response(
-                    Optional[models.GetPurchaseOrdersResponse], http_res
+                    Optional[models.GetPurchaseOrdersResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -199,11 +268,10 @@ class PurchaseOrders(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingPurchaseOrdersAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -217,7 +285,7 @@ class PurchaseOrders(BaseSDK):
         service_id: Optional[str] = None,
         company_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         limit: Optional[int] = 20,
         filter_: Optional[
             Union[models.PurchaseOrdersFilter, models.PurchaseOrdersFilterTypedDict]
@@ -266,7 +334,7 @@ class PurchaseOrders(BaseSDK):
             service_id=service_id,
             company_id=company_id,
             cursor=cursor,
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             limit=limit,
             filter_=utils.get_pydantic_model(
                 filter_, Optional[models.PurchaseOrdersFilter]
@@ -291,6 +359,7 @@ class PurchaseOrders(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -315,9 +384,75 @@ class PurchaseOrders(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "restaurant365",
+                            "description": "`line_items` is always empty. R365's own documentation shows the purchase order `details`\nfield as an empty placeholder and never documents its populated shape, so there is currently\nnothing to map — the order total, quantity, vendor and location are populated, but not the\nindividual line items.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "The minimun page size accepted for Netsuite is 5. The cursor for Netsuite expires if they have not been used within 15 minutes after its creation.\n`filter[subsidiary_id]` scopes results to a single subsidiary and is only supported on NetSuite OneWorld accounts; on standard (single-entity) accounts it is ignored.\n",
+                        },
+                        {
+                            "connector": "workday",
+                            "description": "When using the `supplier_id` filter, the `updated_since` filter should also be included.\n",
+                        },
+                        {
+                            "connector": "alegra",
+                            "description": "`delivery_date` is required on create. Each line is costed against either a catalog item (`line_items[].type: expense_item`, which sets `line.item`) or an expense ledger account (`expense_account`, which sets `line.ledger_account`); a PO may mix both. See the Alegra usage guide for details.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks Online does not expose a reliable cross-page total record count. The `QueryResponse.totalCount` field in list responses reflects the count for that page only, not the full dataset. `meta.total_count` will not appear in list responses. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite uses the same underlying QuickBooks API. The `QueryResponse.totalCount` field in list responses reflects the per-page count only. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Zoho Books does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "pennylane",
+                            "description": "Pennylane does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "procountor-fi",
+                            "description": "Procountor does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "dualentry",
+                            "description": "DualEntry scopes purchase orders by company. Pass the `x-apideck-company-id` header (or set a Default\nCompany on the connection) to return only records belonging to that company within the tenant.\nWithout it, records across all companies in the tenant are returned.\n",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "AFAS does not expose a total record count in list responses. `meta.total_count` will not appear.\n\nMost AFAS tenants have no purchase-order GetConnector configured out of the box — this\nresource returns an error rather than an empty list until the tenant deploys one. If its\nname differs from the Apideck default (`Profit_PurchaseOrders`), pass it per call via\n`pass_through[purchase_orders_connector]=YourConnectorName`.\n",
+                        },
+                        {
+                            "connector": "myob-acumatica",
+                            "description": "The Apideck service type is used for MYOB Acumatica non-stock items, and inventory is used for stock items.\n",
+                        },
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "QuickBooks Desktop does not expose a reliable cross-page total record count. Getting `total_count` requires a separate COUNT query — an extra API call that is not currently implemented. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "acumatica",
+                            "description": "The Apideck service type is used for Acumatica non-stock items, and inventory is used for stock items.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -344,17 +479,19 @@ class PurchaseOrders(BaseSDK):
                 filter_=filter_,
                 sort=sort,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingPurchaseOrdersAllResponse(
                 get_purchase_orders_response=unmarshal_json_response(
-                    Optional[models.GetPurchaseOrdersResponse], http_res
+                    Optional[models.GetPurchaseOrdersResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -395,11 +532,10 @@ class PurchaseOrders(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingPurchaseOrdersAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -434,8 +570,8 @@ class PurchaseOrders(BaseSDK):
         tax_inclusive: OptionalNullable[bool] = UNSET,
         line_items: Optional[
             Union[
-                List[models.InvoiceLineItemInput],
-                List[models.InvoiceLineItemInputTypedDict],
+                Iterable[models.InvoiceLineItemInput],
+                Iterable[models.InvoiceLineItemInputTypedDict],
             ]
         ] = None,
         billing_address: Optional[
@@ -469,16 +605,19 @@ class PurchaseOrders(BaseSDK):
         notes: OptionalNullable[str] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -642,6 +781,7 @@ class PurchaseOrders(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.purchase_order, False, False, "json", models.PurchaseOrderInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -666,9 +806,55 @@ class PurchaseOrders(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sap-business-one",
+                            "description": "`reference` is stored as the vendor reference number (*Vendor Ref. No.*, `NumAtCard`). `po_number` is the document number SAP Business One assigns, so it cannot be chosen.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Date-only fields need no configuration: NetSuite converts the datetime it receives into the\nSOAP/integration user's time zone before storing the date part, and these fields are anchored so\nthey store on the intended calendar day for any integration user between UTC-10 and UTC+13.\n\nFour zones fall outside that range and need the optional `timezone` connection setting:\n`Pacific/Pago_Pago`, `Pacific/Niue` and `Pacific/Midway` (UTC-11) store one day early without it,\nand `Pacific/Kiritimati` (UTC+14) stores one day late. Set it to the IANA zone of the NetSuite user\nthis connection authenticates as, read from that user's Home > Set Preferences > Time Zone — Setup >\nCompany > Company Information only supplies the default, so a user who overrode it needs their own\nzone.\n\nWhen the setting is used its value must be within 12 hours of that user's real zone in either\ndirection: more than ~12h east stores dates one day early, more than ~12h west stores them one day\nlate.\n\nThis applies to every NetSuite date-only write field across the accounting resources.\n",
+                        },
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": 'Purchase-order lines cannot be changed after creation; see the update operation. Per-line `customer` is not supported on QuickBooks Desktop purchase-order lines.\n\n`po_number` is limited to 11 characters; a longer value is rejected ("RefNumber is too long", error 3070). Writes are applied on the Web Connector\'s next run, so a create can return a `504` timeout after 28 seconds while QuickBooks still creates the purchase order; list purchase orders by `po_number` before retrying.\n',
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Xero accepts a shipping address as a string instead of separate fields. Ie: `23 Main Street\r\nCentral City\r\nMarineville\r\n1234\r\n`",
+                        },
+                        {
+                            "connector": "procountor-fi",
+                            "description": "Procountor only accepts the following values for the payment_method field: BANK_TRANSFER, DIRECT_PAYMENT, CLEARING, CREDIT_CARD_CHARGE, FOREIGN_PAYMENT, OTHER, CASH, DOMESTIC_PAYMENT_PLUSGIRO, DOMESTIC_PAYMENT_BANKGIRO, DOMESTIC_PAYMENT_CREDITOR, DKLMPKRE, NETS. \nProcountor only accepts the following values for the channel field: EMAIL, MAIL, ELECTRONIC_INVOICE, EDIFACT, PAPER_INVOICE, NO_SENDING.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "Line items are created together with the purchase order. The type of each line depends on what it references.\nA line with `item.id` becomes an item line and a line with `ledger_account.id` becomes a general ledger account\nline. Any other line becomes a comment line, including a line that references the item or account only by\n`code`. Comment lines keep their `quantity` and `unit_price` but are not included in the order totals. A line\ncannot reference both `item.id` and `ledger_account.id`.\n\n`unit_price` is the direct unit cost of the line. `unit_of_measure` is not written, so the item's base unit of\nmeasure is used. A line with a `location_id` is taxed according to that location's tax setup, which can differ\nfrom the other lines on the order.\n\n`status` cannot be set on create. Business Central creates every purchase order as Draft. `sub_total`,\n`total_tax` and `total` are calculated from the line items and cannot be set. `po_number` is only accepted when\nthe company's purchase order number series allows manual numbers. Otherwise Business Central assigns the\nnumber, and a request that sends `po_number` is rejected with \"You may not enter numbers manually\".\n\nThe supplier's default dimensions are added to every line automatically. Sending one of those dimensions again\nin a line's `tracking_categories` is rejected with \"The dimension set line already exists\", so only send\ndimensions that are not supplier defaults.\n\nIn companies that use Sales Tax, the response returns `tax_inclusive` as `false` even when `true` was sent. The\nline amounts are still calculated as tax inclusive, so the totals match what was sent. In these companies\n`tax_inclusive` can only be set when the order is created.\n\nA 400 Bad Request error with \"Control 'fieldName' is read-only\" means the field is set as not editable in\nMicrosoft Dynamics 365 Business Central. To write to the field, set its 'editable' property to true in\nBusiness Central.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": 'By default, the status of the purchase order will be set to "draft".\n',
+                        },
+                        {
+                            "connector": "workday",
+                            "description": "It is required to provide supplier.id, issued_date, company_id. Required fields for line items: tracking_categories.id (maps to Workday worktag/cost_center_id), description, category_id, budget, total_amount and type (must be either `sales_item` or `service`). For `sales_item` type, it is required to provide quantity, unit_price and unit_of_measure.\nTo create a purchase order with a status `draft`, you need to provide the `status` field with a value `draft`. Default status is `open` (approved).\n\nBy default, when the `approval_process` connection setting is empty or `skip`, Workday approves a new purchase order automatically, without the approval process configured in Workday. To send new purchase orders through that process, set the `approval_process` connection setting of the purchase orders resource to `follow`. Reads then return the purchase order with status `open`, and it cannot be updated until it is approved and issued. Workday decides who approves. A purchase order with the `EXTERNAL` issue option is always issued by Workday without approval.\n",
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": 'A purchase order needs `supplier.id` (the SAP supplier number), `company_id` (the SAP company code), `currency` and at least one entry in `line_items`. Every line needs `item.id` (the material number), `quantity`, `unit_price` (the net price per unit, without tax) and a plant: send it as `line_items[].location_id`, or set the `default_plant` connection setting. A line without a material (a text line) is rejected. `unit_of_measure` is required on a line that has a `department_id`, and on every line when `delivery_date` is set. The order is created with one request (after a CSRF token request) and the response returns only its `id`. A create that times out may still have created the order, so look for it (for example by the `reference` you sent) before sending the create again.\n\nSAP also requires a purchase order type, a purchasing organization and a purchasing group on every order, and they have no unified field. Set the connection settings `default_purchase_order_type` (empty means `NB`), `default_purchasing_organization` and `default_purchasing_group`, or send them for one request in a `pass_through` entry: `{ "service_id": "sap-s4hana-cloud", "extend_object": { "PurchasingOrganization": "1710", "PurchasingGroup": "001" } }`. A request that names no organization or group in either place is rejected with `400` before anything is sent to SAP.\n\nThese fields are written: `supplier.id`, `company_id`, `currency`, `issued_date`, `delivery_date` (the delivery date of every line), `terms` (the SAP payment terms key, at most 4 characters, not free text), `reference` (at most 12 characters) and, on each line, `item.id`, `location_id`, `description` (at most 40 characters), `quantity` (at most 3 decimals), `unit_of_measure`, `unit_price` (with no more decimals than the currency has, such as 2 for USD: SAP would round it, so it is rejected), `tax_rate.code`, and `department_id` (the cost center) with an optional `ledger_account.id` (the G/L account). A `ledger_account` without a `department_id` is rejected.\n\nA request that sets a field SAP cannot take is rejected with `400` and the field is named: `subsidiary_id` (send `company_id`), `location_id` and `department_id` on the order (send them on the lines), `billing_address`, `shipping_address`, `ledger_account`, `memo`, `notes`, `terms_id`, `tax_code`, `tracking_categories`, `currency_rate`, `custom_fields`, `display_id` and the other fields the reading side does not return. `po_number` cannot be set because SAP assigns the number. `status` can only be `open` on a create, and `tax_inclusive` can only be `false`, because SAP purchase order prices exclude tax. `sub_total`, `total_tax`, `total` and `expected_arrival_date` are accepted and ignored: SAP calculates them. The API\'s request validation rejects the read-only fields `id`, `downstream_id`, `created_at`, `updated_at` and `created_by` with `400` before SAP is involved, so remove them from a body copied from a read. On a line, `discount_percentage`, `discount_amount`, `service_date`, `category_id`, `memo`, `tracking_categories`, `row_id`, `subsidiary_id`, `shipping_id`, `prepaid`, `tax_applicable_on`, `tax_recoverability`, `tax_method`, `worktags` and `custom_fields` are rejected, and `id` (SAP numbers the new lines itself), `total_amount`, `tax_amount`, `taxable`, `line_number`, `type`, `code`, `row_version` and the audit fields are ignored. A record copied from a read cannot be sent as a create as it is: `shipping_address`, `currency_rate` and `po_number` are rejected.\n\n`delivery_date` is written as the delivery date of every line, but SAP may ignore it for some lines without failing the request: it answers with a message that it could not process the date and keeps its own (a service material got today\'s date). The order\'s `delivery_date` on a read is the earliest schedule-line date of the lowest-numbered line that has one, so it can differ from the one you sent. SAP can ignore other fields in the same way, so read the order back when a value matters.\n\nSAP properties you send in `pass_through` are sent as given and are not validated here. A blank value for `PurchaseOrderType`, `PurchasingOrganization` or `PurchasingGroup` is rejected with `400`, because it would replace the connection setting with an empty value. On an update, `pass_through` cannot set `Supplier`, `CompanyCode` or `DocumentCurrency` (see Update Purchase Order).\n',
+                        },
+                        {
+                            "connector": "visma-netvisor",
+                            "description": "`supplier.id` must be the supplier's numeric `id` from `GET /suppliers`; the supplier code is rejected with no vendor found (bills accept either).\nSend `status` `open`; other values are rejected. Also required: `supplier.address` with `country`, `shipping_address` with `name` and `country`, and `delivery_date`.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -676,10 +862,11 @@ class PurchaseOrders(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingPurchaseOrdersAddResponse(
                 create_purchase_order_response=unmarshal_json_response(
-                    Optional[models.CreatePurchaseOrderResponse], http_res
+                    Optional[models.CreatePurchaseOrderResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -720,10 +907,9 @@ class PurchaseOrders(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingPurchaseOrdersAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -758,8 +944,8 @@ class PurchaseOrders(BaseSDK):
         tax_inclusive: OptionalNullable[bool] = UNSET,
         line_items: Optional[
             Union[
-                List[models.InvoiceLineItemInput],
-                List[models.InvoiceLineItemInputTypedDict],
+                Iterable[models.InvoiceLineItemInput],
+                Iterable[models.InvoiceLineItemInputTypedDict],
             ]
         ] = None,
         billing_address: Optional[
@@ -793,16 +979,19 @@ class PurchaseOrders(BaseSDK):
         notes: OptionalNullable[str] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -966,6 +1155,7 @@ class PurchaseOrders(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.purchase_order, False, False, "json", models.PurchaseOrderInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -990,9 +1180,55 @@ class PurchaseOrders(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sap-business-one",
+                            "description": "`reference` is stored as the vendor reference number (*Vendor Ref. No.*, `NumAtCard`). `po_number` is the document number SAP Business One assigns, so it cannot be chosen.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Date-only fields need no configuration: NetSuite converts the datetime it receives into the\nSOAP/integration user's time zone before storing the date part, and these fields are anchored so\nthey store on the intended calendar day for any integration user between UTC-10 and UTC+13.\n\nFour zones fall outside that range and need the optional `timezone` connection setting:\n`Pacific/Pago_Pago`, `Pacific/Niue` and `Pacific/Midway` (UTC-11) store one day early without it,\nand `Pacific/Kiritimati` (UTC+14) stores one day late. Set it to the IANA zone of the NetSuite user\nthis connection authenticates as, read from that user's Home > Set Preferences > Time Zone — Setup >\nCompany > Company Information only supplies the default, so a user who overrode it needs their own\nzone.\n\nWhen the setting is used its value must be within 12 hours of that user's real zone in either\ndirection: more than ~12h east stores dates one day early, more than ~12h west stores them one day\nlate.\n\nThis applies to every NetSuite date-only write field across the accounting resources.\n",
+                        },
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": 'Purchase-order lines cannot be changed after creation; see the update operation. Per-line `customer` is not supported on QuickBooks Desktop purchase-order lines.\n\n`po_number` is limited to 11 characters; a longer value is rejected ("RefNumber is too long", error 3070). Writes are applied on the Web Connector\'s next run, so a create can return a `504` timeout after 28 seconds while QuickBooks still creates the purchase order; list purchase orders by `po_number` before retrying.\n',
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Xero accepts a shipping address as a string instead of separate fields. Ie: `23 Main Street\r\nCentral City\r\nMarineville\r\n1234\r\n`",
+                        },
+                        {
+                            "connector": "procountor-fi",
+                            "description": "Procountor only accepts the following values for the payment_method field: BANK_TRANSFER, DIRECT_PAYMENT, CLEARING, CREDIT_CARD_CHARGE, FOREIGN_PAYMENT, OTHER, CASH, DOMESTIC_PAYMENT_PLUSGIRO, DOMESTIC_PAYMENT_BANKGIRO, DOMESTIC_PAYMENT_CREDITOR, DKLMPKRE, NETS. \nProcountor only accepts the following values for the channel field: EMAIL, MAIL, ELECTRONIC_INVOICE, EDIFACT, PAPER_INVOICE, NO_SENDING.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "Line items are created together with the purchase order. The type of each line depends on what it references.\nA line with `item.id` becomes an item line and a line with `ledger_account.id` becomes a general ledger account\nline. Any other line becomes a comment line, including a line that references the item or account only by\n`code`. Comment lines keep their `quantity` and `unit_price` but are not included in the order totals. A line\ncannot reference both `item.id` and `ledger_account.id`.\n\n`unit_price` is the direct unit cost of the line. `unit_of_measure` is not written, so the item's base unit of\nmeasure is used. A line with a `location_id` is taxed according to that location's tax setup, which can differ\nfrom the other lines on the order.\n\n`status` cannot be set on create. Business Central creates every purchase order as Draft. `sub_total`,\n`total_tax` and `total` are calculated from the line items and cannot be set. `po_number` is only accepted when\nthe company's purchase order number series allows manual numbers. Otherwise Business Central assigns the\nnumber, and a request that sends `po_number` is rejected with \"You may not enter numbers manually\".\n\nThe supplier's default dimensions are added to every line automatically. Sending one of those dimensions again\nin a line's `tracking_categories` is rejected with \"The dimension set line already exists\", so only send\ndimensions that are not supplier defaults.\n\nIn companies that use Sales Tax, the response returns `tax_inclusive` as `false` even when `true` was sent. The\nline amounts are still calculated as tax inclusive, so the totals match what was sent. In these companies\n`tax_inclusive` can only be set when the order is created.\n\nA 400 Bad Request error with \"Control 'fieldName' is read-only\" means the field is set as not editable in\nMicrosoft Dynamics 365 Business Central. To write to the field, set its 'editable' property to true in\nBusiness Central.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": 'By default, the status of the purchase order will be set to "draft".\n',
+                        },
+                        {
+                            "connector": "workday",
+                            "description": "It is required to provide supplier.id, issued_date, company_id. Required fields for line items: tracking_categories.id (maps to Workday worktag/cost_center_id), description, category_id, budget, total_amount and type (must be either `sales_item` or `service`). For `sales_item` type, it is required to provide quantity, unit_price and unit_of_measure.\nTo create a purchase order with a status `draft`, you need to provide the `status` field with a value `draft`. Default status is `open` (approved).\n\nBy default, when the `approval_process` connection setting is empty or `skip`, Workday approves a new purchase order automatically, without the approval process configured in Workday. To send new purchase orders through that process, set the `approval_process` connection setting of the purchase orders resource to `follow`. Reads then return the purchase order with status `open`, and it cannot be updated until it is approved and issued. Workday decides who approves. A purchase order with the `EXTERNAL` issue option is always issued by Workday without approval.\n",
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": 'A purchase order needs `supplier.id` (the SAP supplier number), `company_id` (the SAP company code), `currency` and at least one entry in `line_items`. Every line needs `item.id` (the material number), `quantity`, `unit_price` (the net price per unit, without tax) and a plant: send it as `line_items[].location_id`, or set the `default_plant` connection setting. A line without a material (a text line) is rejected. `unit_of_measure` is required on a line that has a `department_id`, and on every line when `delivery_date` is set. The order is created with one request (after a CSRF token request) and the response returns only its `id`. A create that times out may still have created the order, so look for it (for example by the `reference` you sent) before sending the create again.\n\nSAP also requires a purchase order type, a purchasing organization and a purchasing group on every order, and they have no unified field. Set the connection settings `default_purchase_order_type` (empty means `NB`), `default_purchasing_organization` and `default_purchasing_group`, or send them for one request in a `pass_through` entry: `{ "service_id": "sap-s4hana-cloud", "extend_object": { "PurchasingOrganization": "1710", "PurchasingGroup": "001" } }`. A request that names no organization or group in either place is rejected with `400` before anything is sent to SAP.\n\nThese fields are written: `supplier.id`, `company_id`, `currency`, `issued_date`, `delivery_date` (the delivery date of every line), `terms` (the SAP payment terms key, at most 4 characters, not free text), `reference` (at most 12 characters) and, on each line, `item.id`, `location_id`, `description` (at most 40 characters), `quantity` (at most 3 decimals), `unit_of_measure`, `unit_price` (with no more decimals than the currency has, such as 2 for USD: SAP would round it, so it is rejected), `tax_rate.code`, and `department_id` (the cost center) with an optional `ledger_account.id` (the G/L account). A `ledger_account` without a `department_id` is rejected.\n\nA request that sets a field SAP cannot take is rejected with `400` and the field is named: `subsidiary_id` (send `company_id`), `location_id` and `department_id` on the order (send them on the lines), `billing_address`, `shipping_address`, `ledger_account`, `memo`, `notes`, `terms_id`, `tax_code`, `tracking_categories`, `currency_rate`, `custom_fields`, `display_id` and the other fields the reading side does not return. `po_number` cannot be set because SAP assigns the number. `status` can only be `open` on a create, and `tax_inclusive` can only be `false`, because SAP purchase order prices exclude tax. `sub_total`, `total_tax`, `total` and `expected_arrival_date` are accepted and ignored: SAP calculates them. The API\'s request validation rejects the read-only fields `id`, `downstream_id`, `created_at`, `updated_at` and `created_by` with `400` before SAP is involved, so remove them from a body copied from a read. On a line, `discount_percentage`, `discount_amount`, `service_date`, `category_id`, `memo`, `tracking_categories`, `row_id`, `subsidiary_id`, `shipping_id`, `prepaid`, `tax_applicable_on`, `tax_recoverability`, `tax_method`, `worktags` and `custom_fields` are rejected, and `id` (SAP numbers the new lines itself), `total_amount`, `tax_amount`, `taxable`, `line_number`, `type`, `code`, `row_version` and the audit fields are ignored. A record copied from a read cannot be sent as a create as it is: `shipping_address`, `currency_rate` and `po_number` are rejected.\n\n`delivery_date` is written as the delivery date of every line, but SAP may ignore it for some lines without failing the request: it answers with a message that it could not process the date and keeps its own (a service material got today\'s date). The order\'s `delivery_date` on a read is the earliest schedule-line date of the lowest-numbered line that has one, so it can differ from the one you sent. SAP can ignore other fields in the same way, so read the order back when a value matters.\n\nSAP properties you send in `pass_through` are sent as given and are not validated here. A blank value for `PurchaseOrderType`, `PurchasingOrganization` or `PurchasingGroup` is rejected with `400`, because it would replace the connection setting with an empty value. On an update, `pass_through` cannot set `Supplier`, `CompanyCode` or `DocumentCurrency` (see Update Purchase Order).\n',
+                        },
+                        {
+                            "connector": "visma-netvisor",
+                            "description": "`supplier.id` must be the supplier's numeric `id` from `GET /suppliers`; the supplier code is rejected with no vendor found (bills accept either).\nSend `status` `open`; other values are rejected. Also required: `supplier.address` with `country`, `shipping_address` with `name` and `country`, and `delivery_date`.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1000,10 +1236,11 @@ class PurchaseOrders(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingPurchaseOrdersAddResponse(
                 create_purchase_order_response=unmarshal_json_response(
-                    Optional[models.CreatePurchaseOrderResponse], http_res
+                    Optional[models.CreatePurchaseOrderResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1044,10 +1281,9 @@ class PurchaseOrders(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingPurchaseOrdersAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1117,6 +1353,7 @@ class PurchaseOrders(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1141,9 +1378,11 @@ class PurchaseOrders(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={"x-apideck-api": "accounting"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1151,10 +1390,9 @@ class PurchaseOrders(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingPurchaseOrdersOneResponse(
                 get_purchase_order_response=unmarshal_json_response(
-                    Optional[models.GetPurchaseOrderResponse], http_res
+                    Optional[models.GetPurchaseOrderResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1195,10 +1433,9 @@ class PurchaseOrders(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingPurchaseOrdersOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1268,6 +1505,7 @@ class PurchaseOrders(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1292,9 +1530,11 @@ class PurchaseOrders(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={"x-apideck-api": "accounting"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1302,10 +1542,9 @@ class PurchaseOrders(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingPurchaseOrdersOneResponse(
                 get_purchase_order_response=unmarshal_json_response(
-                    Optional[models.GetPurchaseOrderResponse], http_res
+                    Optional[models.GetPurchaseOrderResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1346,10 +1585,9 @@ class PurchaseOrders(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingPurchaseOrdersOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1385,8 +1623,8 @@ class PurchaseOrders(BaseSDK):
         tax_inclusive: OptionalNullable[bool] = UNSET,
         line_items: Optional[
             Union[
-                List[models.InvoiceLineItemInput],
-                List[models.InvoiceLineItemInputTypedDict],
+                Iterable[models.InvoiceLineItemInput],
+                Iterable[models.InvoiceLineItemInputTypedDict],
             ]
         ] = None,
         billing_address: Optional[
@@ -1420,16 +1658,19 @@ class PurchaseOrders(BaseSDK):
         notes: OptionalNullable[str] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1595,6 +1836,7 @@ class PurchaseOrders(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.purchase_order, False, False, "json", models.PurchaseOrderInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1619,9 +1861,65 @@ class PurchaseOrders(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "QuickBooks Desktop cannot modify purchase-order line items: `line_items` sent on update are ignored and the response still returns the purchase order `id`. Only header fields change — `supplier`, `issued_date`, `po_number`, `memo`, `expected_arrival_date`, tracking category. Delete and recreate the purchase order to change its lines.\n\nUpdates need `row_version` from a prior read of the record: without it the update is rejected with `Missing required field: data.editSequence`. Writes are applied on the Web Connector's next run, so an update can return a `504` timeout after 28 seconds while QuickBooks still applies it; read the record back before retrying.\n",
+                        },
+                        {
+                            "connector": "sap-business-one",
+                            "description": "To change a line, send it with the `id` from a read: SAP Business One updates the line with that number. A line without an `id` is matched by its position in `line_items`, so it is added only when it comes after all of the document's existing lines; otherwise it replaces the line at that position. To add lines safely, send every existing line with its `id` followed by the new ones. Lines left out of the request are kept.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Date-only fields need no configuration: NetSuite converts the datetime it receives into the\nSOAP/integration user's time zone before storing the date part, and these fields are anchored so\nthey store on the intended calendar day for any integration user between UTC-10 and UTC+13.\n\nFour zones fall outside that range and need the optional `timezone` connection setting:\n`Pacific/Pago_Pago`, `Pacific/Niue` and `Pacific/Midway` (UTC-11) store one day early without it,\nand `Pacific/Kiritimati` (UTC+14) stores one day late. Set it to the IANA zone of the NetSuite user\nthis connection authenticates as, read from that user's Home > Set Preferences > Time Zone — Setup >\nCompany > Company Information only supplies the default, so a user who overrode it needs their own\nzone.\n\nWhen the setting is used its value must be within 12 hours of that user's real zone in either\ndirection: more than ~12h east stores dates one day early, more than ~12h west stores them one day\nlate.\n\nThis applies to every NetSuite date-only write field across the accounting resources.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Xero accepts a shipping address as a string instead of separate fields. Ie: `23 Main Street\r\nCentral City\r\nMarineville\r\n1234\r\n`",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Purchase orders in xero can be tax inclusive, tax exclusive or no tax. The tax_inclusive field should be set to true, false or null if the purchase order is tax inclusive, tax exclusive or no tax.",
+                        },
+                        {
+                            "Procountor only accepts the following values for the channel field": "EMAIL, MAIL, ELECTRONIC_INVOICE, EDIFACT, PAPER_INVOICE, NO_SENDING.",
+                            "Procountor only accepts the following values for the payment_method field": "BANK_TRANSFER, DIRECT_PAYMENT, CLEARING, CREDIT_CARD_CHARGE, FOREIGN_PAYMENT, OTHER, CASH, DOMESTIC_PAYMENT_PLUSGIRO, DOMESTIC_PAYMENT_BANKGIRO, DOMESTIC_PAYMENT_CREDITOR, DKLMPKRE, NETS.",
+                            "connector": "procountor-fi",
+                            "description": "",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": 'Allowed values for the status are "draft", "open", "billed" and "deleted" when using the update method.\nPlease send status updates separately from other updates for the supplier.\n',
+                        },
+                        {
+                            "connector": "workday",
+                            "description": "It is required to provide supplier.id, issued_date, company_id. Required fields for line items: tracking_categories.id (maps to Workday worktag/cost_center_id), description, category_id, budget, total_amount and type (must be either `sales_item` or `service`). For `sales_item` type, it is required to provide quantity, unit_price and unit_of_measure.\nPurchase orders with status `draft` are updated directly. On reads, a purchase order that is issued in Workday has status `billed`, one that is approved or in progress `open`, one with a change order in progress `other`, and one that an approver denied `deleted`.\n\nPurchase orders that are issued in Workday are changed through a Workday change order. None of the fields listed above are required for these purchase orders. When Workday has an approval process for purchase orders, the changed purchase order goes through it again, also when its issue option is `EXTERNAL`: reads return it with status `open` until it is approved, and further updates are refused meanwhile. This approval cannot be skipped through the API. Approval steps on Workday's change order process itself are skipped by default; when the `approval_process` connection setting of the purchase orders resource is `follow`, the change waits for those approvers as well. If the approver denies the change, Workday sets the whole purchase order to denied, and it has to be handled in Workday. For these purchase orders, send only the line items you want to change and include each line's `id`. A line with `quantity` 0 is cancelled. A line without `id` is added as a new line and needs the same fields as a line on create. `supplier.id`, `company_id`, `po_number` and `currency` cannot be changed. A purchase order with retention terms, down-payment terms or an order-from supplier connection can only be changed in Workday. The Workday integration user needs permission to submit purchase order change orders.\n\nWorkday only accepts a change order for an issued purchase order. A purchase order that is in progress (for example awaiting approval), approved but not issued, or that has a change order still in progress is refused with a `400` that names the reason, and nothing is sent to Workday. After a change order is applied, Workday can set the purchase order back to approved until it is issued again, so issue it in Workday before sending the next change. Purchase orders with the `EXTERNAL` issue option need no separate issue step.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Delete operation cancels the purchase order (sets status to 'cancel') instead of hard-deleting it. Odoo does not allow hard deletion of purchase orders — they must be cancelled first. This follows standard accounting practice where financial documents are voided rather than deleted.\nRequires the Purchase module (purchase) to be installed on the Odoo instance.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "`line_items` replaces the order's full set of lines. A line item with an `id` updates that stored line, a line\nitem without an `id` adds a new line, and any stored line that is left out of `line_items` is removed. Sending\nan empty `line_items` array removes every line from the order. To leave the lines as they are, leave out\n`line_items` completely. Fields left out of a line item keep their stored values.\n\nNew lines follow the same rules as on create. Reference the item by `item.id` or the account by\n`ledger_account.id`, but not both. A `code` on its own is not resolved. `unit_of_measure` is not written.\n\nThe header is saved first and the line changes are applied after it. If Business Central rejects a line, the\nheader change and any lines already added or updated stay in place, and the response returns the error for the\nrejected line. Lines are only removed after all additions and updates succeed. On an order with\n`tax_inclusive: true`, the line prices are saved once more after lines are removed, so an error at that step\ncan be returned after omitted lines are already gone. Read the order back before retrying.\n\nWhen an update removes lines, the order's `sub_total`, `total_tax` and `total` can still include the removed\nlines until the order is changed again. The returned `line_items` and their amounts are always up to date.\n\n`status` cannot be changed. In companies that use Sales Tax, changing `tax_inclusive` on an existing order is\nrejected.\n",
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "`line_items` replaces the order's full set of lines. A line with an `id` (the item number a read returns) updates that line, a line without an `id` is added, and a stored line that is left out of `line_items` is removed. To leave the lines as they are, leave out `line_items` completely. Unlike Business Central, an empty `line_items` array is rejected with `400`: an order without lines cannot be changed again (SAP refuses every later change to it) and deleting an order is not supported. To replace every line, send the new lines in one request: additions run before removals. A field left out of a line keeps its stored value, and only the lines whose values changed are sent to SAP.\n\nOn an existing line you can change `description`, `quantity`, `unit_price` and `tax_rate.code`. SAP does not allow the unit of measure, material, plant, cost center or G/L account of a stored line to change: sending the stored value again is accepted (a unit in any letter case), a different one is rejected with `400` and nothing is sent. A different unit is not converted by SAP: it keeps the unit and multiplies the quantity. To change them, leave the line out and add a new line without an `id`. A `ledger_account` without `department_id` is accepted on a stored line when it equals the stored G/L account, as a read returns it for a line with a G/L-only account assignment. A line that is deleted or blocked in SAP is not a line of the order: naming its `id` is rejected with `400`, and leaving it out does not remove it again.\n\n`unit_price` can have no more decimals than the amount SAP stores allows: a line priced per 100 stores the price per 100, so `0.1299` (12.99 per 100) is valid for USD while `13.125` on an ordinary line is rejected, because SAP would round it. A `unit_price` equal to what a read returns for the line, such as `3.333333` for 10.00 per 3, is unchanged.\n\n`supplier.id`, `company_id` and `currency` cannot be changed on an existing order. A different value is rejected with `400` before anything is sent, naming the field: SAP refuses a new company code, and it accepts a new supplier or currency but then rewrites every line (texts become the material text, prices become the supplier's last price or are converted), which is not what a header change should do. Numbers compare without leading zeros (`0017300001` is `17300001`). The stored order is read when one of them is sent, and an equal value is not sent to SAP. A `pass_through` entry cannot set `Supplier`, `CompanyCode` or `DocumentCurrency` on an update either: it is rejected with `400`, because it would reach SAP past this check. `delivery_date` cannot be changed either: send the stored value, or leave it out. A new line gets a schedule line only when you send a `delivery_date` or the order already has one (the sent date takes precedence); then `unit_of_measure` is required. It is also required for a line with a department assignment. SAP may ignore the delivery date of some lines without failing the request, and the order's `delivery_date` on a read is the earliest schedule-line date of the lowest-numbered line that has one.\n\nNew lines follow the rules of a create (see Create Purchase Order): `item.id`, `quantity`, `unit_price` and a plant are needed, and the fields SAP cannot take are rejected.\n\nA record returned by `GET /accounting/purchase-orders/{id}` can be sent back as an update once the fields the API's request validation rejects (`id`, `downstream_id`, `created_at`, `updated_at`, `created_by`) are removed. The fields a read derives are accepted and not changed: `status` (a value that differs from the order's status is rejected with `400`: the status of an order cannot be changed through this API), `currency_rate`, `shipping_address`, `sub_total`, `total_tax`, `total`, `expected_arrival_date` and `po_number` (only when it equals the order's `id`). An update that changes nothing (an empty body, an unchanged record, a `status` equal to the current one) succeeds and changes nothing. The other fields listed for Create Purchase Order follow the same rules here, except `line_items[].id`, which names the line.\n\nAn update sends one CSRF token request and one request for the header, one read of the stored order when `line_items`, `delivery_date`, `status`, `supplier.id`, `company_id` or `currency` is sent (or when there is nothing to change), and one request for each line that is updated, added or removed (sent again when SAP's lock or an expired token answers it, see below). A header-only update that sends none of those makes two requests: the token and the header. When the request runs out of time before the header is sent, the response is `408` and nothing was written. A single update can change at most 5 lines; a larger change is rejected with `400` before anything is sent, so split it over several updates and send every line you keep in each. Unchanged lines cost nothing. SAP answers a line request in one to two seconds and often locks the order for a few seconds after one, so a slow SAP can still end an update in a `409` that lists what was applied, even within the limit of 5.\n\nThe header is saved first and the lines after it, one request at a time: updated lines, then added lines, then removed lines. SAP may briefly lock an order after a line request (it answers that its workflow runtime is processing the order); the connector waits a few seconds and sends the line again, up to three times and while the request has time left. SAP can also answer the header or a line update with success and a message that it did not process a field; the connector reads that message and treats the request as failed (for the header, the response is `409` and no line is changed). SAP offers no way to undo a line change, so nothing is rolled back. If SAP rejects a line, the lines before it stay changed and the lines after it are not tried. The response is then `409` and says what was applied, which line failed with SAP's reason, and how many requests were not tried. Because removals come last, a failed update leaves the order with too many lines, never with a line you wanted to keep already removed. Read the order back before you retry, and send only what is missing: when lines were already added, sending the same update again adds them a second time. When a field was not processed, the line may not hold the values sent, so read the order. When the first line request fails and the header sent no change, the response says nothing was changed, with SAP's own status when SAP rejected it (a `4xx`), `408` when no time was left, and `502` otherwise. A request that times out or gets a `5xx` may or may not have been applied: the response is then `409` and says so.\n",
+                        },
+                        {
+                            "connector": "visma-netvisor",
+                            "description": "Send the full purchase order header, including `status`, the addresses and `delivery_date`: a body with only the changed fields is rejected with `400` and nothing is changed.\nIn `line_items`, a line with an `id` (as returned by `GET /purchase-orders/{id}`) updates that line, and a line without an `id` is added. Lines you leave out are kept as they are; an update cannot remove a line.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1629,10 +1927,11 @@ class PurchaseOrders(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingPurchaseOrdersUpdateResponse(
                 update_purchase_order_response=unmarshal_json_response(
-                    Optional[models.UpdatePurchaseOrderResponse], http_res
+                    Optional[models.UpdatePurchaseOrderResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1673,10 +1972,9 @@ class PurchaseOrders(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingPurchaseOrdersUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1712,8 +2010,8 @@ class PurchaseOrders(BaseSDK):
         tax_inclusive: OptionalNullable[bool] = UNSET,
         line_items: Optional[
             Union[
-                List[models.InvoiceLineItemInput],
-                List[models.InvoiceLineItemInputTypedDict],
+                Iterable[models.InvoiceLineItemInput],
+                Iterable[models.InvoiceLineItemInputTypedDict],
             ]
         ] = None,
         billing_address: Optional[
@@ -1747,16 +2045,19 @@ class PurchaseOrders(BaseSDK):
         notes: OptionalNullable[str] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1922,6 +2223,7 @@ class PurchaseOrders(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.purchase_order, False, False, "json", models.PurchaseOrderInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1946,9 +2248,65 @@ class PurchaseOrders(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "QuickBooks Desktop cannot modify purchase-order line items: `line_items` sent on update are ignored and the response still returns the purchase order `id`. Only header fields change — `supplier`, `issued_date`, `po_number`, `memo`, `expected_arrival_date`, tracking category. Delete and recreate the purchase order to change its lines.\n\nUpdates need `row_version` from a prior read of the record: without it the update is rejected with `Missing required field: data.editSequence`. Writes are applied on the Web Connector's next run, so an update can return a `504` timeout after 28 seconds while QuickBooks still applies it; read the record back before retrying.\n",
+                        },
+                        {
+                            "connector": "sap-business-one",
+                            "description": "To change a line, send it with the `id` from a read: SAP Business One updates the line with that number. A line without an `id` is matched by its position in `line_items`, so it is added only when it comes after all of the document's existing lines; otherwise it replaces the line at that position. To add lines safely, send every existing line with its `id` followed by the new ones. Lines left out of the request are kept.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Date-only fields need no configuration: NetSuite converts the datetime it receives into the\nSOAP/integration user's time zone before storing the date part, and these fields are anchored so\nthey store on the intended calendar day for any integration user between UTC-10 and UTC+13.\n\nFour zones fall outside that range and need the optional `timezone` connection setting:\n`Pacific/Pago_Pago`, `Pacific/Niue` and `Pacific/Midway` (UTC-11) store one day early without it,\nand `Pacific/Kiritimati` (UTC+14) stores one day late. Set it to the IANA zone of the NetSuite user\nthis connection authenticates as, read from that user's Home > Set Preferences > Time Zone — Setup >\nCompany > Company Information only supplies the default, so a user who overrode it needs their own\nzone.\n\nWhen the setting is used its value must be within 12 hours of that user's real zone in either\ndirection: more than ~12h east stores dates one day early, more than ~12h west stores them one day\nlate.\n\nThis applies to every NetSuite date-only write field across the accounting resources.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Xero accepts a shipping address as a string instead of separate fields. Ie: `23 Main Street\r\nCentral City\r\nMarineville\r\n1234\r\n`",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Purchase orders in xero can be tax inclusive, tax exclusive or no tax. The tax_inclusive field should be set to true, false or null if the purchase order is tax inclusive, tax exclusive or no tax.",
+                        },
+                        {
+                            "Procountor only accepts the following values for the channel field": "EMAIL, MAIL, ELECTRONIC_INVOICE, EDIFACT, PAPER_INVOICE, NO_SENDING.",
+                            "Procountor only accepts the following values for the payment_method field": "BANK_TRANSFER, DIRECT_PAYMENT, CLEARING, CREDIT_CARD_CHARGE, FOREIGN_PAYMENT, OTHER, CASH, DOMESTIC_PAYMENT_PLUSGIRO, DOMESTIC_PAYMENT_BANKGIRO, DOMESTIC_PAYMENT_CREDITOR, DKLMPKRE, NETS.",
+                            "connector": "procountor-fi",
+                            "description": "",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": 'Allowed values for the status are "draft", "open", "billed" and "deleted" when using the update method.\nPlease send status updates separately from other updates for the supplier.\n',
+                        },
+                        {
+                            "connector": "workday",
+                            "description": "It is required to provide supplier.id, issued_date, company_id. Required fields for line items: tracking_categories.id (maps to Workday worktag/cost_center_id), description, category_id, budget, total_amount and type (must be either `sales_item` or `service`). For `sales_item` type, it is required to provide quantity, unit_price and unit_of_measure.\nPurchase orders with status `draft` are updated directly. On reads, a purchase order that is issued in Workday has status `billed`, one that is approved or in progress `open`, one with a change order in progress `other`, and one that an approver denied `deleted`.\n\nPurchase orders that are issued in Workday are changed through a Workday change order. None of the fields listed above are required for these purchase orders. When Workday has an approval process for purchase orders, the changed purchase order goes through it again, also when its issue option is `EXTERNAL`: reads return it with status `open` until it is approved, and further updates are refused meanwhile. This approval cannot be skipped through the API. Approval steps on Workday's change order process itself are skipped by default; when the `approval_process` connection setting of the purchase orders resource is `follow`, the change waits for those approvers as well. If the approver denies the change, Workday sets the whole purchase order to denied, and it has to be handled in Workday. For these purchase orders, send only the line items you want to change and include each line's `id`. A line with `quantity` 0 is cancelled. A line without `id` is added as a new line and needs the same fields as a line on create. `supplier.id`, `company_id`, `po_number` and `currency` cannot be changed. A purchase order with retention terms, down-payment terms or an order-from supplier connection can only be changed in Workday. The Workday integration user needs permission to submit purchase order change orders.\n\nWorkday only accepts a change order for an issued purchase order. A purchase order that is in progress (for example awaiting approval), approved but not issued, or that has a change order still in progress is refused with a `400` that names the reason, and nothing is sent to Workday. After a change order is applied, Workday can set the purchase order back to approved until it is issued again, so issue it in Workday before sending the next change. Purchase orders with the `EXTERNAL` issue option need no separate issue step.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Delete operation cancels the purchase order (sets status to 'cancel') instead of hard-deleting it. Odoo does not allow hard deletion of purchase orders — they must be cancelled first. This follows standard accounting practice where financial documents are voided rather than deleted.\nRequires the Purchase module (purchase) to be installed on the Odoo instance.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "`line_items` replaces the order's full set of lines. A line item with an `id` updates that stored line, a line\nitem without an `id` adds a new line, and any stored line that is left out of `line_items` is removed. Sending\nan empty `line_items` array removes every line from the order. To leave the lines as they are, leave out\n`line_items` completely. Fields left out of a line item keep their stored values.\n\nNew lines follow the same rules as on create. Reference the item by `item.id` or the account by\n`ledger_account.id`, but not both. A `code` on its own is not resolved. `unit_of_measure` is not written.\n\nThe header is saved first and the line changes are applied after it. If Business Central rejects a line, the\nheader change and any lines already added or updated stay in place, and the response returns the error for the\nrejected line. Lines are only removed after all additions and updates succeed. On an order with\n`tax_inclusive: true`, the line prices are saved once more after lines are removed, so an error at that step\ncan be returned after omitted lines are already gone. Read the order back before retrying.\n\nWhen an update removes lines, the order's `sub_total`, `total_tax` and `total` can still include the removed\nlines until the order is changed again. The returned `line_items` and their amounts are always up to date.\n\n`status` cannot be changed. In companies that use Sales Tax, changing `tax_inclusive` on an existing order is\nrejected.\n",
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "`line_items` replaces the order's full set of lines. A line with an `id` (the item number a read returns) updates that line, a line without an `id` is added, and a stored line that is left out of `line_items` is removed. To leave the lines as they are, leave out `line_items` completely. Unlike Business Central, an empty `line_items` array is rejected with `400`: an order without lines cannot be changed again (SAP refuses every later change to it) and deleting an order is not supported. To replace every line, send the new lines in one request: additions run before removals. A field left out of a line keeps its stored value, and only the lines whose values changed are sent to SAP.\n\nOn an existing line you can change `description`, `quantity`, `unit_price` and `tax_rate.code`. SAP does not allow the unit of measure, material, plant, cost center or G/L account of a stored line to change: sending the stored value again is accepted (a unit in any letter case), a different one is rejected with `400` and nothing is sent. A different unit is not converted by SAP: it keeps the unit and multiplies the quantity. To change them, leave the line out and add a new line without an `id`. A `ledger_account` without `department_id` is accepted on a stored line when it equals the stored G/L account, as a read returns it for a line with a G/L-only account assignment. A line that is deleted or blocked in SAP is not a line of the order: naming its `id` is rejected with `400`, and leaving it out does not remove it again.\n\n`unit_price` can have no more decimals than the amount SAP stores allows: a line priced per 100 stores the price per 100, so `0.1299` (12.99 per 100) is valid for USD while `13.125` on an ordinary line is rejected, because SAP would round it. A `unit_price` equal to what a read returns for the line, such as `3.333333` for 10.00 per 3, is unchanged.\n\n`supplier.id`, `company_id` and `currency` cannot be changed on an existing order. A different value is rejected with `400` before anything is sent, naming the field: SAP refuses a new company code, and it accepts a new supplier or currency but then rewrites every line (texts become the material text, prices become the supplier's last price or are converted), which is not what a header change should do. Numbers compare without leading zeros (`0017300001` is `17300001`). The stored order is read when one of them is sent, and an equal value is not sent to SAP. A `pass_through` entry cannot set `Supplier`, `CompanyCode` or `DocumentCurrency` on an update either: it is rejected with `400`, because it would reach SAP past this check. `delivery_date` cannot be changed either: send the stored value, or leave it out. A new line gets a schedule line only when you send a `delivery_date` or the order already has one (the sent date takes precedence); then `unit_of_measure` is required. It is also required for a line with a department assignment. SAP may ignore the delivery date of some lines without failing the request, and the order's `delivery_date` on a read is the earliest schedule-line date of the lowest-numbered line that has one.\n\nNew lines follow the rules of a create (see Create Purchase Order): `item.id`, `quantity`, `unit_price` and a plant are needed, and the fields SAP cannot take are rejected.\n\nA record returned by `GET /accounting/purchase-orders/{id}` can be sent back as an update once the fields the API's request validation rejects (`id`, `downstream_id`, `created_at`, `updated_at`, `created_by`) are removed. The fields a read derives are accepted and not changed: `status` (a value that differs from the order's status is rejected with `400`: the status of an order cannot be changed through this API), `currency_rate`, `shipping_address`, `sub_total`, `total_tax`, `total`, `expected_arrival_date` and `po_number` (only when it equals the order's `id`). An update that changes nothing (an empty body, an unchanged record, a `status` equal to the current one) succeeds and changes nothing. The other fields listed for Create Purchase Order follow the same rules here, except `line_items[].id`, which names the line.\n\nAn update sends one CSRF token request and one request for the header, one read of the stored order when `line_items`, `delivery_date`, `status`, `supplier.id`, `company_id` or `currency` is sent (or when there is nothing to change), and one request for each line that is updated, added or removed (sent again when SAP's lock or an expired token answers it, see below). A header-only update that sends none of those makes two requests: the token and the header. When the request runs out of time before the header is sent, the response is `408` and nothing was written. A single update can change at most 5 lines; a larger change is rejected with `400` before anything is sent, so split it over several updates and send every line you keep in each. Unchanged lines cost nothing. SAP answers a line request in one to two seconds and often locks the order for a few seconds after one, so a slow SAP can still end an update in a `409` that lists what was applied, even within the limit of 5.\n\nThe header is saved first and the lines after it, one request at a time: updated lines, then added lines, then removed lines. SAP may briefly lock an order after a line request (it answers that its workflow runtime is processing the order); the connector waits a few seconds and sends the line again, up to three times and while the request has time left. SAP can also answer the header or a line update with success and a message that it did not process a field; the connector reads that message and treats the request as failed (for the header, the response is `409` and no line is changed). SAP offers no way to undo a line change, so nothing is rolled back. If SAP rejects a line, the lines before it stay changed and the lines after it are not tried. The response is then `409` and says what was applied, which line failed with SAP's reason, and how many requests were not tried. Because removals come last, a failed update leaves the order with too many lines, never with a line you wanted to keep already removed. Read the order back before you retry, and send only what is missing: when lines were already added, sending the same update again adds them a second time. When a field was not processed, the line may not hold the values sent, so read the order. When the first line request fails and the header sent no change, the response says nothing was changed, with SAP's own status when SAP rejected it (a `4xx`), `408` when no time was left, and `502` otherwise. A request that times out or gets a `5xx` may or may not have been applied: the response is then `409` and says so.\n",
+                        },
+                        {
+                            "connector": "visma-netvisor",
+                            "description": "Send the full purchase order header, including `status`, the addresses and `delivery_date`: a body with only the changed fields is rejected with `400` and nothing is changed.\nIn `line_items`, a line with an `id` (as returned by `GET /purchase-orders/{id}`) updates that line, and a line without an `id` is added. Lines you leave out are kept as they are; an update cannot remove a line.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1956,10 +2314,11 @@ class PurchaseOrders(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingPurchaseOrdersUpdateResponse(
                 update_purchase_order_response=unmarshal_json_response(
-                    Optional[models.UpdatePurchaseOrderResponse], http_res
+                    Optional[models.UpdatePurchaseOrderResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2000,10 +2359,9 @@ class PurchaseOrders(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingPurchaseOrdersUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2073,6 +2431,7 @@ class PurchaseOrders(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2097,9 +2456,19 @@ class PurchaseOrders(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "Not supported. Deleting a purchase order through SAP's API removes its lines but leaves the empty order listed, and SAP ignores a request to flag it as deleted. Delete or close the order in SAP.\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2107,10 +2476,11 @@ class PurchaseOrders(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingPurchaseOrdersDeleteResponse(
                 delete_purchase_order_response=unmarshal_json_response(
-                    Optional[models.DeletePurchaseOrderResponse], http_res
+                    Optional[models.DeletePurchaseOrderResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2151,10 +2521,9 @@ class PurchaseOrders(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingPurchaseOrdersDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2224,6 +2593,7 @@ class PurchaseOrders(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2248,9 +2618,19 @@ class PurchaseOrders(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "Not supported. Deleting a purchase order through SAP's API removes its lines but leaves the empty order listed, and SAP ignores a request to flag it as deleted. Delete or close the order in SAP.\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2258,10 +2638,11 @@ class PurchaseOrders(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingPurchaseOrdersDeleteResponse(
                 delete_purchase_order_response=unmarshal_json_response(
-                    Optional[models.DeletePurchaseOrderResponse], http_res
+                    Optional[models.DeletePurchaseOrderResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2302,10 +2683,9 @@ class PurchaseOrders(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingPurchaseOrdersDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

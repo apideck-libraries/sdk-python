@@ -2,11 +2,16 @@
 
 from __future__ import annotations
 from apideck_unify import models, utils
-from apideck_unify.types import BaseModel
-from apideck_unify.utils import FieldMetadata, validate_open_enum
+from apideck_unify.types import (
+    BaseModel,
+    UNSET_SENTINEL,
+    current_exclude_none,
+    serialize_with_info,
+)
+from apideck_unify.types.basemodel import current_filtered_dump
+from apideck_unify.utils import FieldMetadata
 from enum import Enum
-from pydantic import field_serializer
-from pydantic.functional_validators import PlainValidator
+from pydantic import field_serializer, model_serializer
 from typing import Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
@@ -45,21 +50,13 @@ class BankAccountsFilter(BaseModel):
     r"""Filter by bank account name"""
 
     account_type: Annotated[
-        Annotated[
-            Optional[BankAccountsFilterAccountType],
-            PlainValidator(validate_open_enum(False)),
-        ],
-        FieldMetadata(query=True),
+        Optional[BankAccountsFilterAccountType], FieldMetadata(query=True)
     ] = None
     r"""Filter by account type"""
 
-    status: Annotated[
-        Annotated[
-            Optional[BankAccountsFilterStatus],
-            PlainValidator(validate_open_enum(False)),
-        ],
-        FieldMetadata(query=True),
-    ] = None
+    status: Annotated[Optional[BankAccountsFilterStatus], FieldMetadata(query=True)] = (
+        None
+    )
     r"""Filter by account status"""
 
     @field_serializer("account_type")
@@ -79,3 +76,26 @@ class BankAccountsFilter(BaseModel):
             except ValueError:
                 return value
         return value
+
+    @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
+    def serialize_model(self, handler):
+        optional_fields = set(["name", "account_type", "status"])
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
+        serialized = handler(self)
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+
+            if val != UNSET_SENTINEL:
+                if val is not None or k not in optional_fields:
+                    m[k] = val
+
+        return m

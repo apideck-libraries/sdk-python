@@ -2,6 +2,16 @@
 
 Item type
 
+## Example Usage
+
+```python
+from apideck_unify.models import QuoteLineItemType
+
+value = QuoteLineItemType.SALES_ITEM
+
+# Open enum: unrecognized values are captured as UnrecognizedStr
+```
+
 
 ## Values
 

@@ -7,7 +7,7 @@ from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from jsonpath import JSONPath
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
 
 
 class Leads(BaseSDK):
@@ -24,7 +24,7 @@ class Leads(BaseSDK):
             Union[models.LeadsFilter, models.LeadsFilterTypedDict]
         ] = None,
         sort: Optional[Union[models.LeadsSort, models.LeadsSortTypedDict]] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -69,7 +69,7 @@ class Leads(BaseSDK):
             limit=limit,
             filter_=utils.get_pydantic_model(filter_, Optional[models.LeadsFilter]),
             sort=utils.get_pydantic_model(sort, Optional[models.LeadsSort]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -90,6 +90,7 @@ class Leads(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -114,9 +115,51 @@ class Leads(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "hubspot",
+                            "description": "When using a filter or sorting for leads, Hubspot will only return a maximum of 10.000 leads.",
+                        },
+                        {
+                            "connector": "salesforce",
+                            "description": "Salesforce imposes a maximum offset limit of 2000. Exceeding this offset will result in an error from Salesforce. For result sets larger than 2000 items, it is necessary to set the pagination limit to 200, as this will enforce the use of batchSize for pagination. Note that setting a limit lower than 200 will not reduce the batchSize due to Salesforce's minimum batch size policy of 200, as detailed in their documentation [here](https://developer.salesforce.com/docs/atlas.en-us.250.0.api_rest.meta/api_rest/headers_queryoptions.htm) and will have no effect.",
+                        },
+                        {
+                            "connector": "zoho-crm",
+                            "description": "When using the phone_number filter for leads in Zoho CRM, the filter does not work with numbers containing dashes or plus (e.g., +989-989-989) or their URL-encoded equivalents (e.g., %2B989%2D989%2D989). It only works with continuous digits (e.g., 9898989898).",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Leads must be enabled in the CRM configuration. More info on the [Odoo developer docs](https://www.odoo.com/documentation/18.0/applications/sales/crm/acquire_leads/convert.html#configuration).",
+                        },
+                        {
+                            "connector": "pipedrive",
+                            "description": "Pipedrive does not expose a cross-page total record count in standard list responses. `meta.total_count` will not appear. Surfacing the total requires additional request parameters or a separate API call — not currently implemented.\n",
+                        },
+                        {
+                            "connector": "zendesk-sell",
+                            "description": "Zendesk Sell does not expose a native cross-page total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate request to the Zendesk Sell `GET /v2/{resource}/count` endpoint — an extra API call not currently implemented.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics",
+                            "description": "Microsoft Dynamics 365 does not include a total record count in default list responses. `meta.total_count` will not appear. Surfacing the total requires adding `$count=true` to the OData query or calling a separate `$count` endpoint — not currently implemented.\n",
+                        },
+                        {
+                            "connector": "zoho-crm",
+                            "description": "Zoho CRM's `info.count` in list responses is a per-page count only, not a cross-page total. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "salesflare",
+                            "description": "Salesflare does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -143,17 +186,19 @@ class Leads(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmLeadsAllResponse(
                 get_leads_response=unmarshal_json_response(
-                    Optional[models.GetLeadsResponse], http_res
+                    Optional[models.GetLeadsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -194,11 +239,10 @@ class Leads(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmLeadsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -216,7 +260,7 @@ class Leads(BaseSDK):
             Union[models.LeadsFilter, models.LeadsFilterTypedDict]
         ] = None,
         sort: Optional[Union[models.LeadsSort, models.LeadsSortTypedDict]] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -261,7 +305,7 @@ class Leads(BaseSDK):
             limit=limit,
             filter_=utils.get_pydantic_model(filter_, Optional[models.LeadsFilter]),
             sort=utils.get_pydantic_model(sort, Optional[models.LeadsSort]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -282,6 +326,7 @@ class Leads(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -306,9 +351,51 @@ class Leads(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "hubspot",
+                            "description": "When using a filter or sorting for leads, Hubspot will only return a maximum of 10.000 leads.",
+                        },
+                        {
+                            "connector": "salesforce",
+                            "description": "Salesforce imposes a maximum offset limit of 2000. Exceeding this offset will result in an error from Salesforce. For result sets larger than 2000 items, it is necessary to set the pagination limit to 200, as this will enforce the use of batchSize for pagination. Note that setting a limit lower than 200 will not reduce the batchSize due to Salesforce's minimum batch size policy of 200, as detailed in their documentation [here](https://developer.salesforce.com/docs/atlas.en-us.250.0.api_rest.meta/api_rest/headers_queryoptions.htm) and will have no effect.",
+                        },
+                        {
+                            "connector": "zoho-crm",
+                            "description": "When using the phone_number filter for leads in Zoho CRM, the filter does not work with numbers containing dashes or plus (e.g., +989-989-989) or their URL-encoded equivalents (e.g., %2B989%2D989%2D989). It only works with continuous digits (e.g., 9898989898).",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Leads must be enabled in the CRM configuration. More info on the [Odoo developer docs](https://www.odoo.com/documentation/18.0/applications/sales/crm/acquire_leads/convert.html#configuration).",
+                        },
+                        {
+                            "connector": "pipedrive",
+                            "description": "Pipedrive does not expose a cross-page total record count in standard list responses. `meta.total_count` will not appear. Surfacing the total requires additional request parameters or a separate API call — not currently implemented.\n",
+                        },
+                        {
+                            "connector": "zendesk-sell",
+                            "description": "Zendesk Sell does not expose a native cross-page total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate request to the Zendesk Sell `GET /v2/{resource}/count` endpoint — an extra API call not currently implemented.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics",
+                            "description": "Microsoft Dynamics 365 does not include a total record count in default list responses. `meta.total_count` will not appear. Surfacing the total requires adding `$count=true` to the OData query or calling a separate `$count` endpoint — not currently implemented.\n",
+                        },
+                        {
+                            "connector": "zoho-crm",
+                            "description": "Zoho CRM's `info.count` in list responses is a per-page count only, not a cross-page total. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "salesflare",
+                            "description": "Salesflare does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -335,17 +422,19 @@ class Leads(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmLeadsAllResponse(
                 get_leads_response=unmarshal_json_response(
-                    Optional[models.GetLeadsResponse], http_res
+                    Optional[models.GetLeadsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -386,11 +475,10 @@ class Leads(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmLeadsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -421,24 +509,29 @@ class Leads(BaseSDK):
         currency: OptionalNullable[models.Currency] = UNSET,
         fax: OptionalNullable[str] = UNSET,
         websites: Optional[
-            Union[List[models.Website], List[models.WebsiteTypedDict]]
+            Union[Iterable[models.Website], Iterable[models.WebsiteTypedDict]]
         ] = None,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         social_links: Optional[
-            Union[List[models.SocialLink], List[models.SocialLinkTypedDict]]
+            Union[Iterable[models.SocialLink], Iterable[models.SocialLinkTypedDict]]
         ] = None,
         phone_numbers: Optional[
-            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+            Union[Iterable[models.PhoneNumber], Iterable[models.PhoneNumberTypedDict]]
         ] = None,
-        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        emails: Optional[
+            Union[Iterable[models.Email], Iterable[models.EmailTypedDict]]
+        ] = None,
         custom_fields: OptionalNullable[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = UNSET,
-        tags: OptionalNullable[List[str]] = UNSET,
+        tags: OptionalNullable[Iterable[str]] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -534,7 +627,7 @@ class Leads(BaseSDK):
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, OptionalNullable[List[models.CustomField]]
                 ),
-                tags=tags,
+                tags=utils.unmarshal(tags, OptionalNullable[List[str]]),
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
@@ -561,6 +654,7 @@ class Leads(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.lead, False, False, "json", models.LeadInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -585,9 +679,31 @@ class Leads(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "hubspot",
+                            "description": "HubSpot stores a lead as a Contact. The returned `id` is the HubSpot contact id, and the lifecycle stage comes from the connection's Leads **Lifecycle stage** setting when it is set; otherwise HubSpot's default applies. When creating an activity or note for this lead, pass the id as `lead_id` or `contact_id`; both associate it with the contact.\nWhen creating a lead, it is advised to always include an unique email address since Hubspot uses it to prevent duplicate contacts in HubSpot. More info on the [Hubspot developer docs](https://developers.hubspot.com/docs/api/crm/contacts).",
+                        },
+                        {
+                            "connector": "pipedrive",
+                            "description": "When creating a lead, it is required to include an existing `company_id`. More info on the [Pipedrive developer docs](https://pipedrive.readme.io/docs/adding-a-lead).",
+                        },
+                        {
+                            "connector": "freshsales",
+                            "description": 'When creating a lead, it is required to include a `"company_name": "placeholder"` in the request body.',
+                        },
+                        {
+                            "connector": "microsoft-dynamics",
+                            "description": "Entity Reference (lookup) custom fields are written using Dataverse navigation-property\nsyntax automatically: supply the custom field id as either the read-side `_<attribute>_value`\nform or the bare attribute logical name, with the target row GUID as the value, and the\nconnector emits `<navigationProperty>@odata.bind` for you.\n\nTwo limitations: polymorphic multi-target lookup columns (e.g. Customer-type columns\ntargeting both accounts and contacts) cannot be auto-resolved from a bare GUID — the request\nfails with an actionable error; write those via pass_through with an explicit\n`<navigationProperty>@odata.bind` key. Clearing a lookup custom field by sending a null\nvalue is not supported.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -595,10 +711,9 @@ class Leads(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.CrmLeadsAddResponse(
                 create_lead_response=unmarshal_json_response(
-                    Optional[models.CreateLeadResponse], http_res
+                    Optional[models.CreateLeadResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -639,10 +754,9 @@ class Leads(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmLeadsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -673,24 +787,29 @@ class Leads(BaseSDK):
         currency: OptionalNullable[models.Currency] = UNSET,
         fax: OptionalNullable[str] = UNSET,
         websites: Optional[
-            Union[List[models.Website], List[models.WebsiteTypedDict]]
+            Union[Iterable[models.Website], Iterable[models.WebsiteTypedDict]]
         ] = None,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         social_links: Optional[
-            Union[List[models.SocialLink], List[models.SocialLinkTypedDict]]
+            Union[Iterable[models.SocialLink], Iterable[models.SocialLinkTypedDict]]
         ] = None,
         phone_numbers: Optional[
-            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+            Union[Iterable[models.PhoneNumber], Iterable[models.PhoneNumberTypedDict]]
         ] = None,
-        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        emails: Optional[
+            Union[Iterable[models.Email], Iterable[models.EmailTypedDict]]
+        ] = None,
         custom_fields: OptionalNullable[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = UNSET,
-        tags: OptionalNullable[List[str]] = UNSET,
+        tags: OptionalNullable[Iterable[str]] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -786,7 +905,7 @@ class Leads(BaseSDK):
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, OptionalNullable[List[models.CustomField]]
                 ),
-                tags=tags,
+                tags=utils.unmarshal(tags, OptionalNullable[List[str]]),
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
@@ -813,6 +932,7 @@ class Leads(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.lead, False, False, "json", models.LeadInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -837,9 +957,31 @@ class Leads(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "hubspot",
+                            "description": "HubSpot stores a lead as a Contact. The returned `id` is the HubSpot contact id, and the lifecycle stage comes from the connection's Leads **Lifecycle stage** setting when it is set; otherwise HubSpot's default applies. When creating an activity or note for this lead, pass the id as `lead_id` or `contact_id`; both associate it with the contact.\nWhen creating a lead, it is advised to always include an unique email address since Hubspot uses it to prevent duplicate contacts in HubSpot. More info on the [Hubspot developer docs](https://developers.hubspot.com/docs/api/crm/contacts).",
+                        },
+                        {
+                            "connector": "pipedrive",
+                            "description": "When creating a lead, it is required to include an existing `company_id`. More info on the [Pipedrive developer docs](https://pipedrive.readme.io/docs/adding-a-lead).",
+                        },
+                        {
+                            "connector": "freshsales",
+                            "description": 'When creating a lead, it is required to include a `"company_name": "placeholder"` in the request body.',
+                        },
+                        {
+                            "connector": "microsoft-dynamics",
+                            "description": "Entity Reference (lookup) custom fields are written using Dataverse navigation-property\nsyntax automatically: supply the custom field id as either the read-side `_<attribute>_value`\nform or the bare attribute logical name, with the target row GUID as the value, and the\nconnector emits `<navigationProperty>@odata.bind` for you.\n\nTwo limitations: polymorphic multi-target lookup columns (e.g. Customer-type columns\ntargeting both accounts and contacts) cannot be auto-resolved from a bare GUID — the request\nfails with an actionable error; write those via pass_through with an explicit\n`<navigationProperty>@odata.bind` key. Clearing a lookup custom field by sending a null\nvalue is not supported.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -847,10 +989,9 @@ class Leads(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.CrmLeadsAddResponse(
                 create_lead_response=unmarshal_json_response(
-                    Optional[models.CreateLeadResponse], http_res
+                    Optional[models.CreateLeadResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -891,10 +1032,9 @@ class Leads(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmLeadsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -964,6 +1104,7 @@ class Leads(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -988,9 +1129,11 @@ class Leads(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={"x-apideck-api": "crm"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -998,10 +1141,9 @@ class Leads(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmLeadsOneResponse(
                 get_lead_response=unmarshal_json_response(
-                    Optional[models.GetLeadResponse], http_res
+                    Optional[models.GetLeadResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1042,10 +1184,9 @@ class Leads(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmLeadsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1115,6 +1256,7 @@ class Leads(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1139,9 +1281,11 @@ class Leads(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={"x-apideck-api": "crm"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1149,10 +1293,9 @@ class Leads(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmLeadsOneResponse(
                 get_lead_response=unmarshal_json_response(
-                    Optional[models.GetLeadResponse], http_res
+                    Optional[models.GetLeadResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1193,10 +1336,9 @@ class Leads(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmLeadsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1228,24 +1370,29 @@ class Leads(BaseSDK):
         currency: OptionalNullable[models.Currency] = UNSET,
         fax: OptionalNullable[str] = UNSET,
         websites: Optional[
-            Union[List[models.Website], List[models.WebsiteTypedDict]]
+            Union[Iterable[models.Website], Iterable[models.WebsiteTypedDict]]
         ] = None,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         social_links: Optional[
-            Union[List[models.SocialLink], List[models.SocialLinkTypedDict]]
+            Union[Iterable[models.SocialLink], Iterable[models.SocialLinkTypedDict]]
         ] = None,
         phone_numbers: Optional[
-            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+            Union[Iterable[models.PhoneNumber], Iterable[models.PhoneNumberTypedDict]]
         ] = None,
-        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        emails: Optional[
+            Union[Iterable[models.Email], Iterable[models.EmailTypedDict]]
+        ] = None,
         custom_fields: OptionalNullable[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = UNSET,
-        tags: OptionalNullable[List[str]] = UNSET,
+        tags: OptionalNullable[Iterable[str]] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1343,7 +1490,7 @@ class Leads(BaseSDK):
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, OptionalNullable[List[models.CustomField]]
                 ),
-                tags=tags,
+                tags=utils.unmarshal(tags, OptionalNullable[List[str]]),
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
@@ -1370,6 +1517,7 @@ class Leads(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.lead, False, False, "json", models.LeadInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1394,9 +1542,19 @@ class Leads(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "microsoft-dynamics",
+                            "description": "Entity Reference (lookup) custom fields are written using Dataverse navigation-property\nsyntax automatically: supply the custom field id as either the read-side `_<attribute>_value`\nform or the bare attribute logical name, with the target row GUID as the value, and the\nconnector emits `<navigationProperty>@odata.bind` for you.\n\nTwo limitations: polymorphic multi-target lookup columns (e.g. Customer-type columns\ntargeting both accounts and contacts) cannot be auto-resolved from a bare GUID — the request\nfails with an actionable error; write those via pass_through with an explicit\n`<navigationProperty>@odata.bind` key. Clearing a lookup custom field by sending a null\nvalue is not supported.\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1404,10 +1562,9 @@ class Leads(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmLeadsUpdateResponse(
                 update_lead_response=unmarshal_json_response(
-                    Optional[models.UpdateLeadResponse], http_res
+                    Optional[models.UpdateLeadResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1448,10 +1605,9 @@ class Leads(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmLeadsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1483,24 +1639,29 @@ class Leads(BaseSDK):
         currency: OptionalNullable[models.Currency] = UNSET,
         fax: OptionalNullable[str] = UNSET,
         websites: Optional[
-            Union[List[models.Website], List[models.WebsiteTypedDict]]
+            Union[Iterable[models.Website], Iterable[models.WebsiteTypedDict]]
         ] = None,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         social_links: Optional[
-            Union[List[models.SocialLink], List[models.SocialLinkTypedDict]]
+            Union[Iterable[models.SocialLink], Iterable[models.SocialLinkTypedDict]]
         ] = None,
         phone_numbers: Optional[
-            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+            Union[Iterable[models.PhoneNumber], Iterable[models.PhoneNumberTypedDict]]
         ] = None,
-        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        emails: Optional[
+            Union[Iterable[models.Email], Iterable[models.EmailTypedDict]]
+        ] = None,
         custom_fields: OptionalNullable[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = UNSET,
-        tags: OptionalNullable[List[str]] = UNSET,
+        tags: OptionalNullable[Iterable[str]] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1598,7 +1759,7 @@ class Leads(BaseSDK):
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, OptionalNullable[List[models.CustomField]]
                 ),
-                tags=tags,
+                tags=utils.unmarshal(tags, OptionalNullable[List[str]]),
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
@@ -1625,6 +1786,7 @@ class Leads(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.lead, False, False, "json", models.LeadInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1649,9 +1811,19 @@ class Leads(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "microsoft-dynamics",
+                            "description": "Entity Reference (lookup) custom fields are written using Dataverse navigation-property\nsyntax automatically: supply the custom field id as either the read-side `_<attribute>_value`\nform or the bare attribute logical name, with the target row GUID as the value, and the\nconnector emits `<navigationProperty>@odata.bind` for you.\n\nTwo limitations: polymorphic multi-target lookup columns (e.g. Customer-type columns\ntargeting both accounts and contacts) cannot be auto-resolved from a bare GUID — the request\nfails with an actionable error; write those via pass_through with an explicit\n`<navigationProperty>@odata.bind` key. Clearing a lookup custom field by sending a null\nvalue is not supported.\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1659,10 +1831,9 @@ class Leads(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmLeadsUpdateResponse(
                 update_lead_response=unmarshal_json_response(
-                    Optional[models.UpdateLeadResponse], http_res
+                    Optional[models.UpdateLeadResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1703,10 +1874,9 @@ class Leads(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmLeadsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1773,6 +1943,7 @@ class Leads(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1797,9 +1968,11 @@ class Leads(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={"x-apideck-api": "crm"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1807,10 +1980,9 @@ class Leads(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmLeadsDeleteResponse(
                 delete_lead_response=unmarshal_json_response(
-                    Optional[models.DeleteLeadResponse], http_res
+                    Optional[models.DeleteLeadResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1851,10 +2023,9 @@ class Leads(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmLeadsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1921,6 +2092,7 @@ class Leads(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1945,9 +2117,11 @@ class Leads(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={"x-apideck-api": "crm"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1955,10 +2129,9 @@ class Leads(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmLeadsDeleteResponse(
                 delete_lead_response=unmarshal_json_response(
-                    Optional[models.DeleteLeadResponse], http_res
+                    Optional[models.DeleteLeadResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1999,10 +2172,9 @@ class Leads(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmLeadsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

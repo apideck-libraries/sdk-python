@@ -1,5 +1,4 @@
-# Connections
-(*vault.connections*)
+# Vault.Connections
 
 ## Overview
 
@@ -32,7 +31,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.vault.connections.list(api="crm", configured=True)
@@ -84,7 +83,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.vault.connections.get(service_id="pipedrive", unified_api="crm")
@@ -137,7 +136,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.vault.connections.update(service_id="pipedrive", unified_api="crm", enabled=True, settings={
@@ -407,7 +406,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.vault.connections.delete(service_id="pipedrive", unified_api="crm")
@@ -460,7 +459,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.vault.connections.imports(service_id="pipedrive", unified_api="crm", credentials={
@@ -537,7 +536,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.vault.connections.migrate(service_id="pipedrive", unified_api="crm", target_service_id="intuit-enterprise-suite")
@@ -597,7 +596,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.vault.connections.token(service_id="pipedrive", unified_api="crm")
@@ -672,7 +671,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.vault.connections.confirm(service_id="pipedrive", unified_api="crm", confirm_token="550e8400-e29b-41d4-a716-446655440000")

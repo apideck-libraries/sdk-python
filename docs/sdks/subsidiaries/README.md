@@ -1,5 +1,4 @@
-# Subsidiaries
-(*accounting.subsidiaries*)
+# Accounting.Subsidiaries
 
 ## Overview
 
@@ -26,7 +25,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.subsidiaries.list(raw=False, service_id="salesforce", company_id="12345", limit=20, fields="id,updated_at", pass_through={
@@ -87,7 +86,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.subsidiaries.create(raw=False, service_id="salesforce", company_id="12345", parent_id="12345", name="SpaceX", display_id="12345", status=apideck_unify.SubsidiaryStatus.ACTIVE, address={
@@ -217,7 +216,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.subsidiaries.get(id="<id>", service_id="salesforce", company_id="12345", raw=False, fields="id,updated_at")
@@ -274,7 +273,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.subsidiaries.update(id="<id>", service_id="salesforce", company_id="12345", raw=False, parent_id="12345", name="SpaceX", display_id="12345", status=apideck_unify.SubsidiaryStatus.ACTIVE, address={
@@ -387,7 +386,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.subsidiaries.delete(id="<id>", service_id="salesforce", company_id="12345", raw=False)

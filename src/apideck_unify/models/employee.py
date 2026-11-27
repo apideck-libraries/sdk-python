@@ -32,13 +32,14 @@ from apideck_unify.types import (
     OptionalNullable,
     UNSET,
     UNSET_SENTINEL,
+    current_exclude_none,
+    serialize_with_info,
 )
-from apideck_unify.utils import validate_open_enum
+from apideck_unify.types.basemodel import current_filtered_dump
 from datetime import date, datetime
 from enum import Enum
 import pydantic
 from pydantic import field_serializer, model_serializer
-from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
@@ -82,14 +83,10 @@ class EmploymentRoleTypedDict(TypedDict):
 
 
 class EmploymentRole(BaseModel):
-    type: Annotated[
-        OptionalNullable[EmploymentType], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    type: OptionalNullable[EmploymentType] = UNSET
     r"""The type of employment relationship the employee has with the organization."""
 
-    sub_type: Annotated[
-        OptionalNullable[EmploymentSubType], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    sub_type: OptionalNullable[EmploymentSubType] = UNSET
     r"""The work schedule of the employee."""
 
     @field_serializer("type")
@@ -111,32 +108,34 @@ class EmploymentRole(BaseModel):
         return value
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = ["type", "sub_type"]
-        nullable_fields = ["type", "sub_type"]
-        null_default_fields = []
-
+        optional_fields = set(["type", "sub_type"])
+        nullable_fields = set(["type", "sub_type"])
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m
 
@@ -172,9 +171,7 @@ class Manager(BaseModel):
     email: OptionalNullable[str] = UNSET
     r"""The email address of the manager."""
 
-    employment_status: Annotated[
-        OptionalNullable[EmploymentStatus], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    employment_status: OptionalNullable[EmploymentStatus] = UNSET
     r"""The employment status of the employee, indicating whether they are currently employed, inactive, terminated, or in another status."""
 
     @field_serializer("employment_status")
@@ -187,46 +184,38 @@ class Manager(BaseModel):
         return value
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = [
-            "id",
-            "name",
-            "first_name",
-            "last_name",
-            "email",
-            "employment_status",
-        ]
-        nullable_fields = [
-            "id",
-            "name",
-            "first_name",
-            "last_name",
-            "email",
-            "employment_status",
-        ]
-        null_default_fields = []
-
+        optional_fields = set(
+            ["id", "name", "first_name", "last_name", "email", "employment_status"]
+        )
+        nullable_fields = set(
+            ["id", "name", "first_name", "last_name", "email", "employment_status"]
+        )
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m
 
@@ -246,32 +235,34 @@ class ProbationPeriod(BaseModel):
     r"""The date that the employee ended their probation period at the company."""
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = ["start_date", "end_date"]
-        nullable_fields = ["start_date", "end_date"]
-        null_default_fields = []
-
+        optional_fields = set(["start_date", "end_date"])
+        nullable_fields = set(["start_date", "end_date"])
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m
 
@@ -466,17 +457,13 @@ class Employee(BaseModel):
     employment_end_date: OptionalNullable[str] = UNSET
     r"""An End Date is the date that the employee ended working at the company"""
 
-    leaving_reason: Annotated[
-        OptionalNullable[LeavingReason], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    leaving_reason: OptionalNullable[LeavingReason] = UNSET
     r"""The reason because the employment ended."""
 
     employee_number: OptionalNullable[str] = UNSET
     r"""An Employee Number, Employee ID or Employee Code, is a unique number that has been assigned to each individual staff member within a company."""
 
-    employment_status: Annotated[
-        OptionalNullable[EmploymentStatus], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    employment_status: OptionalNullable[EmploymentStatus] = UNSET
     r"""The employment status of the employee, indicating whether they are currently employed, inactive, terminated, or in another status."""
 
     employment_role: Optional[EmploymentRole] = None
@@ -504,9 +491,7 @@ class Employee(BaseModel):
     description: OptionalNullable[str] = UNSET
     r"""A description of the object."""
 
-    gender: Annotated[
-        OptionalNullable[Gender], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    gender: OptionalNullable[Gender] = UNSET
     r"""The gender represents the gender identity of a person."""
 
     pronouns: OptionalNullable[str] = UNSET
@@ -618,155 +603,161 @@ class Employee(BaseModel):
         return value
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = [
-            "id",
-            "downstream_id",
-            "first_name",
-            "last_name",
-            "middle_name",
-            "display_name",
-            "preferred_name",
-            "initials",
-            "salutation",
-            "title",
-            "marital_status",
-            "partner",
-            "division",
-            "division_id",
-            "department",
-            "department_id",
-            "department_name",
-            "team",
-            "company_id",
-            "company_name",
-            "employment_start_date",
-            "employment_end_date",
-            "leaving_reason",
-            "employee_number",
-            "employment_status",
-            "employment_role",
-            "ethnicity",
-            "manager",
-            "direct_reports",
-            "social_security_number",
-            "birthday",
-            "deceased_on",
-            "country_of_birth",
-            "description",
-            "gender",
-            "pronouns",
-            "preferred_language",
-            "languages",
-            "nationalities",
-            "photo_url",
-            "timezone",
-            "source",
-            "source_id",
-            "record_url",
-            "jobs",
-            "compensations",
-            "works_remote",
-            "addresses",
-            "phone_numbers",
-            "emails",
-            "custom_fields",
-            "social_links",
-            "bank_accounts",
-            "tax_code",
-            "tax_id",
-            "dietary_preference",
-            "food_allergies",
-            "probation_period",
-            "tags",
-            "custom_mappings",
-            "row_version",
-            "deleted",
-            "updated_by",
-            "created_by",
-            "updated_at",
-            "created_at",
-            "pass_through",
-        ]
-        nullable_fields = [
-            "id",
-            "downstream_id",
-            "first_name",
-            "last_name",
-            "middle_name",
-            "display_name",
-            "preferred_name",
-            "initials",
-            "salutation",
-            "title",
-            "marital_status",
-            "division",
-            "division_id",
-            "department",
-            "department_id",
-            "department_name",
-            "team",
-            "company_id",
-            "company_name",
-            "employment_start_date",
-            "employment_end_date",
-            "leaving_reason",
-            "employee_number",
-            "employment_status",
-            "ethnicity",
-            "direct_reports",
-            "social_security_number",
-            "birthday",
-            "deceased_on",
-            "country_of_birth",
-            "description",
-            "gender",
-            "pronouns",
-            "preferred_language",
-            "photo_url",
-            "timezone",
-            "source",
-            "source_id",
-            "record_url",
-            "jobs",
-            "compensations",
-            "works_remote",
-            "tax_code",
-            "tax_id",
-            "dietary_preference",
-            "food_allergies",
-            "tags",
-            "custom_mappings",
-            "row_version",
-            "deleted",
-            "updated_by",
-            "created_by",
-            "updated_at",
-            "created_at",
-        ]
-        null_default_fields = []
-
+        optional_fields = set(
+            [
+                "id",
+                "downstream_id",
+                "first_name",
+                "last_name",
+                "middle_name",
+                "display_name",
+                "preferred_name",
+                "initials",
+                "salutation",
+                "title",
+                "marital_status",
+                "partner",
+                "division",
+                "division_id",
+                "department",
+                "department_id",
+                "department_name",
+                "team",
+                "company_id",
+                "company_name",
+                "employment_start_date",
+                "employment_end_date",
+                "leaving_reason",
+                "employee_number",
+                "employment_status",
+                "employment_role",
+                "ethnicity",
+                "manager",
+                "direct_reports",
+                "social_security_number",
+                "birthday",
+                "deceased_on",
+                "country_of_birth",
+                "description",
+                "gender",
+                "pronouns",
+                "preferred_language",
+                "languages",
+                "nationalities",
+                "photo_url",
+                "timezone",
+                "source",
+                "source_id",
+                "record_url",
+                "jobs",
+                "compensations",
+                "works_remote",
+                "addresses",
+                "phone_numbers",
+                "emails",
+                "custom_fields",
+                "social_links",
+                "bank_accounts",
+                "tax_code",
+                "tax_id",
+                "dietary_preference",
+                "food_allergies",
+                "probation_period",
+                "tags",
+                "custom_mappings",
+                "row_version",
+                "deleted",
+                "updated_by",
+                "created_by",
+                "updated_at",
+                "created_at",
+                "pass_through",
+            ]
+        )
+        nullable_fields = set(
+            [
+                "id",
+                "downstream_id",
+                "first_name",
+                "last_name",
+                "middle_name",
+                "display_name",
+                "preferred_name",
+                "initials",
+                "salutation",
+                "title",
+                "marital_status",
+                "division",
+                "division_id",
+                "department",
+                "department_id",
+                "department_name",
+                "team",
+                "company_id",
+                "company_name",
+                "employment_start_date",
+                "employment_end_date",
+                "leaving_reason",
+                "employee_number",
+                "employment_status",
+                "ethnicity",
+                "direct_reports",
+                "social_security_number",
+                "birthday",
+                "deceased_on",
+                "country_of_birth",
+                "description",
+                "gender",
+                "pronouns",
+                "preferred_language",
+                "photo_url",
+                "timezone",
+                "source",
+                "source_id",
+                "record_url",
+                "jobs",
+                "compensations",
+                "works_remote",
+                "tax_code",
+                "tax_id",
+                "dietary_preference",
+                "food_allergies",
+                "tags",
+                "custom_mappings",
+                "row_version",
+                "deleted",
+                "updated_by",
+                "created_by",
+                "updated_at",
+                "created_at",
+            ]
+        )
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m
 
@@ -946,17 +937,13 @@ class EmployeeInput(BaseModel):
     employment_end_date: OptionalNullable[str] = UNSET
     r"""An End Date is the date that the employee ended working at the company"""
 
-    leaving_reason: Annotated[
-        OptionalNullable[LeavingReason], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    leaving_reason: OptionalNullable[LeavingReason] = UNSET
     r"""The reason because the employment ended."""
 
     employee_number: OptionalNullable[str] = UNSET
     r"""An Employee Number, Employee ID or Employee Code, is a unique number that has been assigned to each individual staff member within a company."""
 
-    employment_status: Annotated[
-        OptionalNullable[EmploymentStatus], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    employment_status: OptionalNullable[EmploymentStatus] = UNSET
     r"""The employment status of the employee, indicating whether they are currently employed, inactive, terminated, or in another status."""
 
     employment_role: Optional[EmploymentRole] = None
@@ -984,9 +971,7 @@ class EmployeeInput(BaseModel):
     description: OptionalNullable[str] = UNSET
     r"""A description of the object."""
 
-    gender: Annotated[
-        OptionalNullable[Gender], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    gender: OptionalNullable[Gender] = UNSET
     r"""The gender represents the gender identity of a person."""
 
     pronouns: OptionalNullable[str] = UNSET
@@ -1083,142 +1068,148 @@ class EmployeeInput(BaseModel):
         return value
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = [
-            "id",
-            "first_name",
-            "last_name",
-            "middle_name",
-            "display_name",
-            "preferred_name",
-            "initials",
-            "salutation",
-            "title",
-            "marital_status",
-            "partner",
-            "division",
-            "division_id",
-            "department",
-            "department_id",
-            "department_name",
-            "team",
-            "company_id",
-            "company_name",
-            "employment_start_date",
-            "employment_end_date",
-            "leaving_reason",
-            "employee_number",
-            "employment_status",
-            "employment_role",
-            "ethnicity",
-            "manager",
-            "direct_reports",
-            "social_security_number",
-            "birthday",
-            "deceased_on",
-            "country_of_birth",
-            "description",
-            "gender",
-            "pronouns",
-            "preferred_language",
-            "languages",
-            "nationalities",
-            "photo_url",
-            "timezone",
-            "source",
-            "source_id",
-            "record_url",
-            "jobs",
-            "compensations",
-            "works_remote",
-            "addresses",
-            "phone_numbers",
-            "emails",
-            "custom_fields",
-            "social_links",
-            "bank_accounts",
-            "tax_code",
-            "tax_id",
-            "dietary_preference",
-            "food_allergies",
-            "probation_period",
-            "tags",
-            "row_version",
-            "deleted",
-            "pass_through",
-        ]
-        nullable_fields = [
-            "id",
-            "first_name",
-            "last_name",
-            "middle_name",
-            "display_name",
-            "preferred_name",
-            "initials",
-            "salutation",
-            "title",
-            "marital_status",
-            "division",
-            "division_id",
-            "department",
-            "department_id",
-            "department_name",
-            "team",
-            "company_id",
-            "company_name",
-            "employment_start_date",
-            "employment_end_date",
-            "leaving_reason",
-            "employee_number",
-            "employment_status",
-            "ethnicity",
-            "direct_reports",
-            "social_security_number",
-            "birthday",
-            "deceased_on",
-            "country_of_birth",
-            "description",
-            "gender",
-            "pronouns",
-            "preferred_language",
-            "photo_url",
-            "timezone",
-            "source",
-            "source_id",
-            "record_url",
-            "jobs",
-            "compensations",
-            "works_remote",
-            "tax_code",
-            "tax_id",
-            "dietary_preference",
-            "food_allergies",
-            "tags",
-            "row_version",
-            "deleted",
-        ]
-        null_default_fields = []
-
+        optional_fields = set(
+            [
+                "id",
+                "first_name",
+                "last_name",
+                "middle_name",
+                "display_name",
+                "preferred_name",
+                "initials",
+                "salutation",
+                "title",
+                "marital_status",
+                "partner",
+                "division",
+                "division_id",
+                "department",
+                "department_id",
+                "department_name",
+                "team",
+                "company_id",
+                "company_name",
+                "employment_start_date",
+                "employment_end_date",
+                "leaving_reason",
+                "employee_number",
+                "employment_status",
+                "employment_role",
+                "ethnicity",
+                "manager",
+                "direct_reports",
+                "social_security_number",
+                "birthday",
+                "deceased_on",
+                "country_of_birth",
+                "description",
+                "gender",
+                "pronouns",
+                "preferred_language",
+                "languages",
+                "nationalities",
+                "photo_url",
+                "timezone",
+                "source",
+                "source_id",
+                "record_url",
+                "jobs",
+                "compensations",
+                "works_remote",
+                "addresses",
+                "phone_numbers",
+                "emails",
+                "custom_fields",
+                "social_links",
+                "bank_accounts",
+                "tax_code",
+                "tax_id",
+                "dietary_preference",
+                "food_allergies",
+                "probation_period",
+                "tags",
+                "row_version",
+                "deleted",
+                "pass_through",
+            ]
+        )
+        nullable_fields = set(
+            [
+                "id",
+                "first_name",
+                "last_name",
+                "middle_name",
+                "display_name",
+                "preferred_name",
+                "initials",
+                "salutation",
+                "title",
+                "marital_status",
+                "division",
+                "division_id",
+                "department",
+                "department_id",
+                "department_name",
+                "team",
+                "company_id",
+                "company_name",
+                "employment_start_date",
+                "employment_end_date",
+                "leaving_reason",
+                "employee_number",
+                "employment_status",
+                "ethnicity",
+                "direct_reports",
+                "social_security_number",
+                "birthday",
+                "deceased_on",
+                "country_of_birth",
+                "description",
+                "gender",
+                "pronouns",
+                "preferred_language",
+                "photo_url",
+                "timezone",
+                "source",
+                "source_id",
+                "record_url",
+                "jobs",
+                "compensations",
+                "works_remote",
+                "tax_code",
+                "tax_id",
+                "dietary_preference",
+                "food_allergies",
+                "tags",
+                "row_version",
+                "deleted",
+            ]
+        )
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m

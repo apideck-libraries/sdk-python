@@ -1,5 +1,4 @@
-# APIResourceCoverageSDK
-(*connector.api_resource_coverage*)
+# Connector.ApiResourceCoverage
 
 ## Overview
 
@@ -21,7 +20,7 @@ import os
 
 with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.connector.api_resource_coverage.get(id="<id>", resource_id="<id>")

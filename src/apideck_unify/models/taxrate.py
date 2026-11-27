@@ -10,14 +10,15 @@ from apideck_unify.types import (
     OptionalNullable,
     UNSET,
     UNSET_SENTINEL,
+    current_exclude_none,
+    serialize_with_info,
 )
-from apideck_unify.utils import validate_open_enum
+from apideck_unify.types.basemodel import current_filtered_dump
 from datetime import datetime
 from enum import Enum
 from pydantic import field_serializer, model_serializer
-from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
-from typing_extensions import Annotated, NotRequired, TypedDict
+from typing_extensions import NotRequired, TypedDict
 
 
 class ComponentsTypedDict(TypedDict):
@@ -37,32 +38,34 @@ class Components(BaseModel):
     compound: OptionalNullable[bool] = UNSET
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = ["id", "name", "rate", "compound"]
-        nullable_fields = ["id", "rate", "compound"]
-        null_default_fields = []
-
+        optional_fields = set(["id", "name", "rate", "compound"])
+        nullable_fields = set(["id", "rate", "compound"])
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m
 
@@ -83,6 +86,29 @@ class SubsidiariesModelTypedDict(TypedDict):
 class SubsidiariesModel(BaseModel):
     id: Optional[str] = None
     r"""The ID of the subsidiary."""
+
+    @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
+    def serialize_model(self, handler):
+        optional_fields = set(["id"])
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
+        serialized = handler(self)
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+
+            if val != UNSET_SENTINEL:
+                if val is not None or k not in optional_fields:
+                    m[k] = val
+
+        return m
 
 
 class TaxRateTypedDict(TypedDict):
@@ -176,9 +202,7 @@ class TaxRate(BaseModel):
     original_tax_rate_id: OptionalNullable[str] = UNSET
     r"""ID of the original tax rate from which the new tax rate is derived. Helps to understand the relationship between corresponding tax rate entities."""
 
-    status: Annotated[
-        OptionalNullable[TaxRateStatus], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    status: OptionalNullable[TaxRateStatus] = UNSET
     r"""Tax rate status"""
 
     custom_mappings: OptionalNullable[Dict[str, Any]] = UNSET
@@ -217,78 +241,84 @@ class TaxRate(BaseModel):
         return value
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = [
-            "id",
-            "display_id",
-            "name",
-            "code",
-            "description",
-            "effective_tax_rate",
-            "country",
-            "total_tax_rate",
-            "tax_payable_account_id",
-            "tax_remitted_account_id",
-            "components",
-            "type",
-            "report_tax_type",
-            "original_tax_rate_id",
-            "status",
-            "custom_mappings",
-            "row_version",
-            "updated_by",
-            "created_by",
-            "updated_at",
-            "created_at",
-            "pass_through",
-            "subsidiaries",
-            "custom_fields",
-        ]
-        nullable_fields = [
-            "id",
-            "display_id",
-            "code",
-            "description",
-            "effective_tax_rate",
-            "country",
-            "total_tax_rate",
-            "tax_payable_account_id",
-            "tax_remitted_account_id",
-            "components",
-            "type",
-            "report_tax_type",
-            "original_tax_rate_id",
-            "status",
-            "custom_mappings",
-            "row_version",
-            "updated_by",
-            "created_by",
-            "updated_at",
-            "created_at",
-        ]
-        null_default_fields = []
-
+        optional_fields = set(
+            [
+                "id",
+                "display_id",
+                "name",
+                "code",
+                "description",
+                "effective_tax_rate",
+                "country",
+                "total_tax_rate",
+                "tax_payable_account_id",
+                "tax_remitted_account_id",
+                "components",
+                "type",
+                "report_tax_type",
+                "original_tax_rate_id",
+                "status",
+                "custom_mappings",
+                "row_version",
+                "updated_by",
+                "created_by",
+                "updated_at",
+                "created_at",
+                "pass_through",
+                "subsidiaries",
+                "custom_fields",
+            ]
+        )
+        nullable_fields = set(
+            [
+                "id",
+                "display_id",
+                "code",
+                "description",
+                "effective_tax_rate",
+                "country",
+                "total_tax_rate",
+                "tax_payable_account_id",
+                "tax_remitted_account_id",
+                "components",
+                "type",
+                "report_tax_type",
+                "original_tax_rate_id",
+                "status",
+                "custom_mappings",
+                "row_version",
+                "updated_by",
+                "created_by",
+                "updated_at",
+                "created_at",
+            ]
+        )
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m
 
@@ -374,9 +404,7 @@ class TaxRateInput(BaseModel):
     original_tax_rate_id: OptionalNullable[str] = UNSET
     r"""ID of the original tax rate from which the new tax rate is derived. Helps to understand the relationship between corresponding tax rate entities."""
 
-    status: Annotated[
-        OptionalNullable[TaxRateStatus], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    status: OptionalNullable[TaxRateStatus] = UNSET
     r"""Tax rate status"""
 
     row_version: OptionalNullable[str] = UNSET
@@ -400,67 +428,73 @@ class TaxRateInput(BaseModel):
         return value
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = [
-            "id",
-            "display_id",
-            "name",
-            "code",
-            "description",
-            "effective_tax_rate",
-            "country",
-            "total_tax_rate",
-            "tax_payable_account_id",
-            "tax_remitted_account_id",
-            "components",
-            "type",
-            "report_tax_type",
-            "original_tax_rate_id",
-            "status",
-            "row_version",
-            "pass_through",
-            "subsidiaries",
-            "custom_fields",
-        ]
-        nullable_fields = [
-            "id",
-            "display_id",
-            "code",
-            "description",
-            "effective_tax_rate",
-            "country",
-            "total_tax_rate",
-            "tax_payable_account_id",
-            "tax_remitted_account_id",
-            "components",
-            "type",
-            "report_tax_type",
-            "original_tax_rate_id",
-            "status",
-            "row_version",
-        ]
-        null_default_fields = []
-
+        optional_fields = set(
+            [
+                "id",
+                "display_id",
+                "name",
+                "code",
+                "description",
+                "effective_tax_rate",
+                "country",
+                "total_tax_rate",
+                "tax_payable_account_id",
+                "tax_remitted_account_id",
+                "components",
+                "type",
+                "report_tax_type",
+                "original_tax_rate_id",
+                "status",
+                "row_version",
+                "pass_through",
+                "subsidiaries",
+                "custom_fields",
+            ]
+        )
+        nullable_fields = set(
+            [
+                "id",
+                "display_id",
+                "code",
+                "description",
+                "effective_tax_rate",
+                "country",
+                "total_tax_rate",
+                "tax_payable_account_id",
+                "tax_remitted_account_id",
+                "components",
+                "type",
+                "report_tax_type",
+                "original_tax_rate_id",
+                "status",
+                "row_version",
+            ]
+        )
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m

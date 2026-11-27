@@ -2,13 +2,17 @@
 
 from __future__ import annotations
 from apideck_unify import models, utils
-from apideck_unify.types import BaseModel
-from apideck_unify.utils import validate_open_enum
+from apideck_unify.types import (
+    BaseModel,
+    UNSET_SENTINEL,
+    current_exclude_none,
+    serialize_with_info,
+)
+from apideck_unify.types.basemodel import current_filtered_dump
 from enum import Enum
-from pydantic import field_serializer
-from pydantic.functional_validators import PlainValidator
+from pydantic import field_serializer, model_serializer
 from typing import Optional
-from typing_extensions import Annotated, NotRequired, TypedDict
+from typing_extensions import NotRequired, TypedDict
 
 
 class PaginationCoverageMode(str, Enum, metaclass=utils.OpenEnumMeta):
@@ -28,9 +32,7 @@ class PaginationCoverageTypedDict(TypedDict):
 
 
 class PaginationCoverage(BaseModel):
-    mode: Annotated[
-        Optional[PaginationCoverageMode], PlainValidator(validate_open_enum(False))
-    ] = None
+    mode: Optional[PaginationCoverageMode] = None
     r"""How pagination is implemented on this connector. Native mode means Apideck is using the pagination parameters of the connector. With virtual pagination, the connector does not support pagination, but Apideck emulates it."""
 
     paging_support: Optional[bool] = None
@@ -47,3 +49,26 @@ class PaginationCoverage(BaseModel):
             except ValueError:
                 return value
         return value
+
+    @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
+    def serialize_model(self, handler):
+        optional_fields = set(["mode", "paging_support", "limit_support"])
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
+        serialized = handler(self)
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+
+            if val != UNSET_SENTINEL:
+                if val is not None or k not in optional_fields:
+                    m[k] = val
+
+        return m

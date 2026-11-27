@@ -2,6 +2,16 @@
 
 The type of address.
 
+## Example Usage
+
+```python
+from apideck_unify.models import Type
+
+value = Type.PRIMARY
+
+# Open enum: unrecognized values are captured as UnrecognizedStr
+```
+
 
 ## Values
 

@@ -8,7 +8,7 @@ from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from datetime import date
 from jsonpath import JSONPath
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
 
 
 class LedgerAccounts(BaseSDK):
@@ -28,7 +28,7 @@ class LedgerAccounts(BaseSDK):
         sort: Optional[
             Union[models.LedgerAccountsSort, models.LedgerAccountsSortTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -77,7 +77,7 @@ class LedgerAccounts(BaseSDK):
                 filter_, Optional[models.LedgerAccountsFilter]
             ),
             sort=utils.get_pydantic_model(sort, Optional[models.LedgerAccountsSort]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -98,6 +98,7 @@ class LedgerAccounts(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -122,9 +123,139 @@ class LedgerAccounts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "`classification` and `type` are derived: SAP has no asset, liability, equity, revenue or expense attribute on a G/L account. Cash accounts return `asset` / `bank` and secondary cost accounts return `expense` on every chart of accounts.\n\nFor all other accounts on SAP's standard chart of accounts (YCOA), the class comes from the first digit of the 8-digit account number: 1 `asset`, 2 `liability` and 3 `equity` for balance sheet accounts, and 4 `revenue`, 5 `costs_of_sales` and 6 `expense` for profit and loss accounts. An account whose SAP account type does not fit its range (for example a balance sheet account numbered in range 4), accounts in range 7 (other income and expenses), accounts with a non-standard number and accounts on any other chart of accounts return `other` (with `type` `balancesheet` for a balance sheet account).\n\n`type` does not separate current, fixed and non-current items: assets return `other_asset` and liabilities `other_liability`.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "`current_balance` is the account's closing balance as of today (Oslo time), in the company currency, with debit balances positive and credit balances negative (a revenue account with sales shows a negative balance). It is an extra read of Fiken's account balances, so a balance is only returned when that read succeeds; otherwise the accounts are returned without `current_balance` and the response carries a warning. An account without any postings has a `current_balance` of `0`.\n\nSub-ledger accounts (for example customer accounts such as `1500:10001`) are listed as separate accounts with `sub_account` set to `true`. `type` is derived from the account number range of the usual Norwegian chart of accounts ranges rather than read from Fiken, so it is only as accurate as the company's use of those ranges.\n",
+                        },
+                        {
+                            "connector": "e-conomic",
+                            "description": "`classification` and `type` are derived from the account type and the account's normal balance side: profit and loss accounts are `revenue` (credit) or `expense` (debit), and balance sheet accounts are `asset` (debit) or `liability` (credit). e-conomic does not mark equity or contra accounts separately, so the normal balance side decides: equity accounts are returned as `liability`, accumulated depreciation (a credit-side asset account) as `liability`, and owner's drawings (a debit-side equity account) as `asset`. Headings and total accounts, which cannot be posted to, have `header` set to `true` and `type` `other`. Supported filter: `name`. Ledger accounts are read-only.\nAn account barred in e-conomic has `status` `inactive` and `active` `false`.\n",
+                        },
+                        {
+                            "connector": "e-boekhouden",
+                            "description": "e-Boekhouden's own account category has no separate value for revenue vs. expense — both\nshare a single \"Profit and loss\" category, so `type` and `classification` return `other`\nfor every profit & loss account rather than `revenue`/`expense`. Balance-sheet, bank,\ndebtor and creditor accounts are still typed normally. VAT-related accounts (input tax,\noutput tax, VAT settlement) are typed `other_asset`/`other_liability` where the category\nunambiguously indicates one or the other, and `other` where it doesn't.\n\n`current_balance` is not returned — e-Boekhouden's ledger list has no balance field, and\nfetching it would require an extra per-account request that is not currently implemented.\n\ne-Boekhouden's chart of accounts is a flat list — there is no parent/child hierarchy and\nno multi-subsidiary concept, so `parent_account`, `sub_accounts`, `categories` and\n`subsidiaries` are always empty. `bank_account` is also empty — e-Boekhouden's ledger\naccount object carries only a code, a name and a category, none of the bank details\n(account number, IBAN, etc.) that field requires.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "`classification` and `type` come from the account's RGS code (the Dutch reference chart of\naccounts). Total accounts (`header: true`) and accounts Minox has not mapped to an RGS code\nhave neither. The balance sheet and profit and loss reports classify by RGS too, but they\nfollow the side the balance is on: an account that can swing either way, such as a current\naccount with the owner, is classified here as an asset and appears under liabilities in the\nbalance sheet while its balance is a credit.\n`type` is `accounts_receivable`, `accounts_payable` or `bank` only where the RGS code names\nthat role; other accounts get the general type of their group, such as `current_asset`.\n\nThe chart is flat: there are no parent accounts, sub-accounts or subsidiaries, and balances\nare not returned (use the balance sheet and profit and loss reports).\n\nSupported filters: `name` (matches anywhere in the name, ignoring case), `status` and\n`classification`. They apply to the whole chart, not page by page. Sorting is not supported.\n",
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": "`active` and `status` are not returned by this list call — fetch the ledger account by id\nto read these fields.\n\nThis list includes both balance-sheet and profit & loss accounts, distinguished by `type`.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "`current_balance` is sourced from Xero's Trial Balance report (as at the current date, UTC),\nadding one extra downstream request per call — Xero's Accounts API itself returns no balance.\nBalances are signed debit-positive: asset and expense balances are positive; liability, equity\nand revenue balances are negative. Accounts with a zero balance return 0.\n\nPopulating the field requires the connection's granted scopes to include\n`accounting.reports.trialbalance.read` (or the legacy `accounting.reports.read`). Connections\nauthorized before this scope entered the default request list (2026-08-18) must be\nre-authorized to grant it; until then — or when the authorizing Xero user lacks the \"reports\"\nrole — accounts are returned without `current_balance` instead of the request failing.\n\nFixed assets: the `fixed_asset` object comes from Xero's fixed-asset register, for an account\nthat holds asset cost: the registered assets whose asset type uses it as the fixed-asset\naccount (disposed and draft assets are not counted). `fixed_asset.cost` and\n`fixed_asset.accumulated_depreciation` are totals over those assets; they come from the\nregister, not the ledger, so they can differ from `current_balance`. An account usually holds\nseveral assets, so `acquisition_date`, `depreciation_method`, `downstream_depreciation_method`\nand `useful_life_months` are set only when every one of its assets has the same value.\nMethods are compared as Xero names them, so `DiminishingValue150` and `DiminishingValue200`\ndiffer; a rate-based asset has no useful life. The object needs the `assets.read` scope:\nconnections authorized before it entered the default request list must be re-authorized, and\nuntil then it is not set. It is computed only when `fields` names `fixed_asset` or one of its\nsub-fields (for example `fields=id,name,current_balance,fixed_asset`), because it costs one\nrequest for the asset types plus one per 200 registered assets; otherwise no extra request is\nmade. With Data Scopes, name the consented sub-fields (`fixed_asset.cost`, and so on). With\nmore than 2,000 registered assets, or when reading the register takes past 20 seconds of the\nrequest, it is not set. Accumulated-depreciation accounts and other accounts have no\n`fixed_asset`.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "The minimun page size accepted for Netsuite is 5. The cursor for Netsuite expires if they have not been used within 15 minutes after its creation.\n`filter[subsidiary_id]` returns only accounts assigned to (or shared with) the given subsidiary, and is only supported on NetSuite OneWorld accounts; on standard (single-entity) accounts it is ignored.\n`filter[name]` matches the account's display name by case-insensitive substring (contains); the value is matched literally, so `%` and `_` are not treated as wildcards. NetSuite does not enforce unique account names the way QuickBooks does, so a name filter can legitimately return more than one account — check `id` before assuming a single match.\n",
+                        },
+                        {
+                            "connector": "clearbooks-uk",
+                            "description": "Clearbooks does not support setting the pagination size.",
+                        },
+                        {
+                            "connector": "alegra",
+                            "description": "Only **postable** accounts (`header: false`) can be used on transactions; posting against a `header: true` grouping node is rejected. Two codes are exposed — `code` (the company's own account code) and `nominal_code` (the SAT *código agrupador*); the SAT code is shared across related accounts, not unique per account. Creating an account requires a `parent_account.id`, and accounts cannot be deleted (Alegra has no delete-account endpoint).\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks Online does not expose a reliable cross-page total record count. The `QueryResponse.totalCount` field in list responses reflects the count for that page only, not the full dataset. `meta.total_count` will not appear in list responses. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\nFixed assets: `fixed_asset.cost` and `fixed_asset.accumulated_depreciation` are set on top-level accounts of type Fixed Asset. QuickBooks keeps a tracked asset as such an account with sub-accounts for its cost and its accumulated depreciation. `fixed_asset.cost` is the account's own balance plus its sub-accounts other than accumulated depreciation, amortization or depletion. `fixed_asset.accumulated_depreciation` is the total of those contra sub-accounts as a positive amount, or `null` when the account has none. Sub-accounts and other accounts have no `fixed_asset`: their balances roll up into the top-level account, whose own `current_balance` excludes them and is often `0`. The net book value is `fixed_asset.cost` minus `fixed_asset.accumulated_depreciation`. One extra QuickBooks request per page reads the fixed-asset sub-accounts, and only when the page holds a top-level fixed-asset account; with 1,000 or more fixed-asset sub-accounts the figures are not set. QuickBooks has no acquisition date, depreciation method or useful life, so the other `fixed_asset` sub-fields are not returned.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite uses the same underlying QuickBooks API. The `QueryResponse.totalCount` field in list responses reflects the per-page count only. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics",
+                            "description": "Microsoft Dynamics 365 does not include a total record count in default list responses. `meta.total_count` will not appear. Surfacing the total requires adding `$count=true` to the OData query or calling a separate `$count` endpoint — not currently implemented.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Zoho Books does not expose a total record count in list responses. `meta.total_count` will not appear.\nFixed assets: the `fixed_asset` object comes from Zoho Books' fixed-asset register, for an account that holds asset cost: the active and fully depreciated assets whose asset account it is, matched by account name (unique in Zoho Books). `fixed_asset.cost` and `fixed_asset.accumulated_depreciation` are totals over those assets, accumulated depreciation being each asset's cost minus its current value; they come from the register, not the ledger, so they can differ from `current_balance`. An account usually holds several assets, so `acquisition_date`, `depreciation_method`, `downstream_depreciation_method` and `useful_life_months` are set only when every one of its assets has the same value; methods are compared as Zoho Books names them, so `150_declining_method` and `200_declining_method` differ. The object needs a Premium plan with the Fixed Asset module enabled; otherwise it is not set. It is computed only when `fields` names `fixed_asset` or one of its sub-fields (for example `fields=id,name,current_balance,fixed_asset`) and the connection was authorized with a fixed-asset scope (`ZohoBooks.fullaccess.all`, the default, or `ZohoBooks.fixedasset.*`); it then costs one extra request per 200 assets in the register. With Data Scopes, name the consented sub-fields (`fixed_asset.cost`, and so on). With more than 2,000 assets, or when reading the register takes past 20 seconds of the request, it is not set. Accumulated-depreciation accounts and other accounts have no `fixed_asset`.\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": "Moneybird does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "rillet",
+                            "description": "Rillet does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "pennylane",
+                            "description": "Pennylane does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "procountor-fi",
+                            "description": "Procountor does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "access-financials",
+                            "description": "Access Financials does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "dualentry",
+                            "description": "Ledger accounts (the chart of accounts) are tenant-wide in DualEntry and cannot be scoped by company.\nThe `x-apideck-company-id` header is accepted but has no effect — all accounts across the tenant are\nreturned regardless of the company ID.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "If you encounter a '400 Bad Request' error indicating \"Control 'fieldName' is read-only\" it means the 'editable' property for this field in Microsoft Dynamics 365 Business Central is currently set to false. To resolve this issue and make the field writable, simply update the 'editable' property to true in Microsoft Dynamics 365 Business Central. Additionally, line item tax rates must be specified by tax rate *code* (e.g., \"G3\"), not by ID. In U.S.-regionalized Business Central tenants, the `tax_inclusive` field cannot be set to `true`.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Xero limits to 10 attachments per resource (invoices/bills) of 3.5MB each.",
+                        },
+                        {
+                            "connector": "stripe",
+                            "description": "Stripe removed `total_count` from list responses in March 2025 (API version 2025-03-31.basil). `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "AFAS does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "freshbooks",
+                            "description": "The Freshbooks Bills api is currently in beta.",
+                        },
+                        {
+                            "connector": "myob-acumatica",
+                            "description": "The Apideck service type is used for MYOB Acumatica non-stock items, and inventory is used for stock items.\n",
+                        },
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "QuickBooks Desktop does not expose a reliable cross-page total record count. Getting `total_count` requires a separate COUNT query — an extra API call that is not currently implemented. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "acumatica",
+                            "description": "The Apideck service type is used for Acumatica non-stock items, and inventory is used for stock items.\n",
+                        },
+                        {
+                            "connector": "lexware-office",
+                            "description": "Ledger accounts map to Lexware Office's posting categories, a small, fixed,\nvendor-managed reference list rather than a full chart of accounts. The list is\nread-only: individual accounts cannot be fetched by id, and none can be created,\nupdated or deleted through this connector.\n",
+                        },
+                        {
+                            "connector": "oracle-fusion",
+                            "description": "This list is scoped to the connection's own chart of accounts: only account combinations\nbelonging to the same chart of accounts as the connection's configured ledger are\nreturned. A tenant with more than one ledger — and therefore more than one chart of\naccounts — on the same Oracle instance will not see combinations from a different chart\nof accounts, even though Oracle itself does not scope this list that way; without this,\na code combination from a chart of accounts with fewer segments than the connection's own\n(e.g. a 2-segment code fed into a journal line expecting 3 segments) is silently\nmisinterpreted rather than rejected. A `pass_through` naming `q` or `finder` is refused\nwith a `400`, because it would replace that scope.\n\nOracle Fusion ledger accounts are sourced from the chart-of-accounts code-combination lookup, not from an account master with balances. `opening_balance`, `current_balance` and `last_reconciliation_date` are always `null`; `bank_account` and `subsidiaries` are not returned at all. Both `ledgerAccountsAll` and `ledgerAccountsOne` (by code-combination id) are supported; create/update/delete are not. Reading account combinations requires granting the integration user the Oracle privilege \"Get Enterprise Structures Using REST Service\" (`FUN_GET_ENTERPRISE_STRUCTURES_REST_SERVICE_PRIV`) via a custom role — it is not part of any seeded role.\n\n`name`, `code` and `display_id` all carry the account combination — for example\n`01.000.1200` — assembled from the chart-of-accounts segment values and matching what\nOracle shows for the same account elsewhere. Oracle publishes no description for a code\ncombination, so there is no separate natural-language account name to return.\n\n**Use `code`, not `id`, when referencing a ledger account on a journal entry line.** A\njournal entry line's `ledger_account.code` is the account combination, and it is split back\ninto chart-of-accounts segments on the way in; `id` is Oracle's internal code-combination\nid, which is not a segmented account code. `id` cannot be the combination either — it is\nthe only value that fetches a single account, and Oracle's lookup does not resolve the\ncombination string.\n\n`filter[classification]` and `filter[status]` are supported. Oracle models five account\nclassifications — asset, liability, equity, revenue and expense — so the wider unified\nvalues (`income`, `other_income`, `other_expense`, `costs_of_sales`, `other`) match no\naccount and come back as an empty list rather than an unfiltered one.\n\n`filter[name]` is not supported. There is no account name to match on for the reason above,\nso the filter is rejected rather than ignored. `filter[updated_since]` and\n`filter[subsidiary_id]` are not supported either — the lookup carries no timestamps and no\nlegal-entity reference. Sorting is not supported.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -152,17 +283,19 @@ class LedgerAccounts(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingLedgerAccountsAllResponse(
                 get_ledger_accounts_response=unmarshal_json_response(
-                    Optional[models.GetLedgerAccountsResponse], http_res
+                    Optional[models.GetLedgerAccountsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -203,11 +336,10 @@ class LedgerAccounts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingLedgerAccountsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -228,7 +360,7 @@ class LedgerAccounts(BaseSDK):
         sort: Optional[
             Union[models.LedgerAccountsSort, models.LedgerAccountsSortTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -277,7 +409,7 @@ class LedgerAccounts(BaseSDK):
                 filter_, Optional[models.LedgerAccountsFilter]
             ),
             sort=utils.get_pydantic_model(sort, Optional[models.LedgerAccountsSort]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -298,6 +430,7 @@ class LedgerAccounts(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -322,9 +455,139 @@ class LedgerAccounts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "`classification` and `type` are derived: SAP has no asset, liability, equity, revenue or expense attribute on a G/L account. Cash accounts return `asset` / `bank` and secondary cost accounts return `expense` on every chart of accounts.\n\nFor all other accounts on SAP's standard chart of accounts (YCOA), the class comes from the first digit of the 8-digit account number: 1 `asset`, 2 `liability` and 3 `equity` for balance sheet accounts, and 4 `revenue`, 5 `costs_of_sales` and 6 `expense` for profit and loss accounts. An account whose SAP account type does not fit its range (for example a balance sheet account numbered in range 4), accounts in range 7 (other income and expenses), accounts with a non-standard number and accounts on any other chart of accounts return `other` (with `type` `balancesheet` for a balance sheet account).\n\n`type` does not separate current, fixed and non-current items: assets return `other_asset` and liabilities `other_liability`.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "`current_balance` is the account's closing balance as of today (Oslo time), in the company currency, with debit balances positive and credit balances negative (a revenue account with sales shows a negative balance). It is an extra read of Fiken's account balances, so a balance is only returned when that read succeeds; otherwise the accounts are returned without `current_balance` and the response carries a warning. An account without any postings has a `current_balance` of `0`.\n\nSub-ledger accounts (for example customer accounts such as `1500:10001`) are listed as separate accounts with `sub_account` set to `true`. `type` is derived from the account number range of the usual Norwegian chart of accounts ranges rather than read from Fiken, so it is only as accurate as the company's use of those ranges.\n",
+                        },
+                        {
+                            "connector": "e-conomic",
+                            "description": "`classification` and `type` are derived from the account type and the account's normal balance side: profit and loss accounts are `revenue` (credit) or `expense` (debit), and balance sheet accounts are `asset` (debit) or `liability` (credit). e-conomic does not mark equity or contra accounts separately, so the normal balance side decides: equity accounts are returned as `liability`, accumulated depreciation (a credit-side asset account) as `liability`, and owner's drawings (a debit-side equity account) as `asset`. Headings and total accounts, which cannot be posted to, have `header` set to `true` and `type` `other`. Supported filter: `name`. Ledger accounts are read-only.\nAn account barred in e-conomic has `status` `inactive` and `active` `false`.\n",
+                        },
+                        {
+                            "connector": "e-boekhouden",
+                            "description": "e-Boekhouden's own account category has no separate value for revenue vs. expense — both\nshare a single \"Profit and loss\" category, so `type` and `classification` return `other`\nfor every profit & loss account rather than `revenue`/`expense`. Balance-sheet, bank,\ndebtor and creditor accounts are still typed normally. VAT-related accounts (input tax,\noutput tax, VAT settlement) are typed `other_asset`/`other_liability` where the category\nunambiguously indicates one or the other, and `other` where it doesn't.\n\n`current_balance` is not returned — e-Boekhouden's ledger list has no balance field, and\nfetching it would require an extra per-account request that is not currently implemented.\n\ne-Boekhouden's chart of accounts is a flat list — there is no parent/child hierarchy and\nno multi-subsidiary concept, so `parent_account`, `sub_accounts`, `categories` and\n`subsidiaries` are always empty. `bank_account` is also empty — e-Boekhouden's ledger\naccount object carries only a code, a name and a category, none of the bank details\n(account number, IBAN, etc.) that field requires.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "`classification` and `type` come from the account's RGS code (the Dutch reference chart of\naccounts). Total accounts (`header: true`) and accounts Minox has not mapped to an RGS code\nhave neither. The balance sheet and profit and loss reports classify by RGS too, but they\nfollow the side the balance is on: an account that can swing either way, such as a current\naccount with the owner, is classified here as an asset and appears under liabilities in the\nbalance sheet while its balance is a credit.\n`type` is `accounts_receivable`, `accounts_payable` or `bank` only where the RGS code names\nthat role; other accounts get the general type of their group, such as `current_asset`.\n\nThe chart is flat: there are no parent accounts, sub-accounts or subsidiaries, and balances\nare not returned (use the balance sheet and profit and loss reports).\n\nSupported filters: `name` (matches anywhere in the name, ignoring case), `status` and\n`classification`. They apply to the whole chart, not page by page. Sorting is not supported.\n",
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": "`active` and `status` are not returned by this list call — fetch the ledger account by id\nto read these fields.\n\nThis list includes both balance-sheet and profit & loss accounts, distinguished by `type`.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "`current_balance` is sourced from Xero's Trial Balance report (as at the current date, UTC),\nadding one extra downstream request per call — Xero's Accounts API itself returns no balance.\nBalances are signed debit-positive: asset and expense balances are positive; liability, equity\nand revenue balances are negative. Accounts with a zero balance return 0.\n\nPopulating the field requires the connection's granted scopes to include\n`accounting.reports.trialbalance.read` (or the legacy `accounting.reports.read`). Connections\nauthorized before this scope entered the default request list (2026-08-18) must be\nre-authorized to grant it; until then — or when the authorizing Xero user lacks the \"reports\"\nrole — accounts are returned without `current_balance` instead of the request failing.\n\nFixed assets: the `fixed_asset` object comes from Xero's fixed-asset register, for an account\nthat holds asset cost: the registered assets whose asset type uses it as the fixed-asset\naccount (disposed and draft assets are not counted). `fixed_asset.cost` and\n`fixed_asset.accumulated_depreciation` are totals over those assets; they come from the\nregister, not the ledger, so they can differ from `current_balance`. An account usually holds\nseveral assets, so `acquisition_date`, `depreciation_method`, `downstream_depreciation_method`\nand `useful_life_months` are set only when every one of its assets has the same value.\nMethods are compared as Xero names them, so `DiminishingValue150` and `DiminishingValue200`\ndiffer; a rate-based asset has no useful life. The object needs the `assets.read` scope:\nconnections authorized before it entered the default request list must be re-authorized, and\nuntil then it is not set. It is computed only when `fields` names `fixed_asset` or one of its\nsub-fields (for example `fields=id,name,current_balance,fixed_asset`), because it costs one\nrequest for the asset types plus one per 200 registered assets; otherwise no extra request is\nmade. With Data Scopes, name the consented sub-fields (`fixed_asset.cost`, and so on). With\nmore than 2,000 registered assets, or when reading the register takes past 20 seconds of the\nrequest, it is not set. Accumulated-depreciation accounts and other accounts have no\n`fixed_asset`.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "The minimun page size accepted for Netsuite is 5. The cursor for Netsuite expires if they have not been used within 15 minutes after its creation.\n`filter[subsidiary_id]` returns only accounts assigned to (or shared with) the given subsidiary, and is only supported on NetSuite OneWorld accounts; on standard (single-entity) accounts it is ignored.\n`filter[name]` matches the account's display name by case-insensitive substring (contains); the value is matched literally, so `%` and `_` are not treated as wildcards. NetSuite does not enforce unique account names the way QuickBooks does, so a name filter can legitimately return more than one account — check `id` before assuming a single match.\n",
+                        },
+                        {
+                            "connector": "clearbooks-uk",
+                            "description": "Clearbooks does not support setting the pagination size.",
+                        },
+                        {
+                            "connector": "alegra",
+                            "description": "Only **postable** accounts (`header: false`) can be used on transactions; posting against a `header: true` grouping node is rejected. Two codes are exposed — `code` (the company's own account code) and `nominal_code` (the SAT *código agrupador*); the SAT code is shared across related accounts, not unique per account. Creating an account requires a `parent_account.id`, and accounts cannot be deleted (Alegra has no delete-account endpoint).\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks Online does not expose a reliable cross-page total record count. The `QueryResponse.totalCount` field in list responses reflects the count for that page only, not the full dataset. `meta.total_count` will not appear in list responses. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\nFixed assets: `fixed_asset.cost` and `fixed_asset.accumulated_depreciation` are set on top-level accounts of type Fixed Asset. QuickBooks keeps a tracked asset as such an account with sub-accounts for its cost and its accumulated depreciation. `fixed_asset.cost` is the account's own balance plus its sub-accounts other than accumulated depreciation, amortization or depletion. `fixed_asset.accumulated_depreciation` is the total of those contra sub-accounts as a positive amount, or `null` when the account has none. Sub-accounts and other accounts have no `fixed_asset`: their balances roll up into the top-level account, whose own `current_balance` excludes them and is often `0`. The net book value is `fixed_asset.cost` minus `fixed_asset.accumulated_depreciation`. One extra QuickBooks request per page reads the fixed-asset sub-accounts, and only when the page holds a top-level fixed-asset account; with 1,000 or more fixed-asset sub-accounts the figures are not set. QuickBooks has no acquisition date, depreciation method or useful life, so the other `fixed_asset` sub-fields are not returned.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite uses the same underlying QuickBooks API. The `QueryResponse.totalCount` field in list responses reflects the per-page count only. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics",
+                            "description": "Microsoft Dynamics 365 does not include a total record count in default list responses. `meta.total_count` will not appear. Surfacing the total requires adding `$count=true` to the OData query or calling a separate `$count` endpoint — not currently implemented.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Zoho Books does not expose a total record count in list responses. `meta.total_count` will not appear.\nFixed assets: the `fixed_asset` object comes from Zoho Books' fixed-asset register, for an account that holds asset cost: the active and fully depreciated assets whose asset account it is, matched by account name (unique in Zoho Books). `fixed_asset.cost` and `fixed_asset.accumulated_depreciation` are totals over those assets, accumulated depreciation being each asset's cost minus its current value; they come from the register, not the ledger, so they can differ from `current_balance`. An account usually holds several assets, so `acquisition_date`, `depreciation_method`, `downstream_depreciation_method` and `useful_life_months` are set only when every one of its assets has the same value; methods are compared as Zoho Books names them, so `150_declining_method` and `200_declining_method` differ. The object needs a Premium plan with the Fixed Asset module enabled; otherwise it is not set. It is computed only when `fields` names `fixed_asset` or one of its sub-fields (for example `fields=id,name,current_balance,fixed_asset`) and the connection was authorized with a fixed-asset scope (`ZohoBooks.fullaccess.all`, the default, or `ZohoBooks.fixedasset.*`); it then costs one extra request per 200 assets in the register. With Data Scopes, name the consented sub-fields (`fixed_asset.cost`, and so on). With more than 2,000 assets, or when reading the register takes past 20 seconds of the request, it is not set. Accumulated-depreciation accounts and other accounts have no `fixed_asset`.\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": "Moneybird does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "rillet",
+                            "description": "Rillet does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "pennylane",
+                            "description": "Pennylane does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "procountor-fi",
+                            "description": "Procountor does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "access-financials",
+                            "description": "Access Financials does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "dualentry",
+                            "description": "Ledger accounts (the chart of accounts) are tenant-wide in DualEntry and cannot be scoped by company.\nThe `x-apideck-company-id` header is accepted but has no effect — all accounts across the tenant are\nreturned regardless of the company ID.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "If you encounter a '400 Bad Request' error indicating \"Control 'fieldName' is read-only\" it means the 'editable' property for this field in Microsoft Dynamics 365 Business Central is currently set to false. To resolve this issue and make the field writable, simply update the 'editable' property to true in Microsoft Dynamics 365 Business Central. Additionally, line item tax rates must be specified by tax rate *code* (e.g., \"G3\"), not by ID. In U.S.-regionalized Business Central tenants, the `tax_inclusive` field cannot be set to `true`.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Xero limits to 10 attachments per resource (invoices/bills) of 3.5MB each.",
+                        },
+                        {
+                            "connector": "stripe",
+                            "description": "Stripe removed `total_count` from list responses in March 2025 (API version 2025-03-31.basil). `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "AFAS does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "freshbooks",
+                            "description": "The Freshbooks Bills api is currently in beta.",
+                        },
+                        {
+                            "connector": "myob-acumatica",
+                            "description": "The Apideck service type is used for MYOB Acumatica non-stock items, and inventory is used for stock items.\n",
+                        },
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "QuickBooks Desktop does not expose a reliable cross-page total record count. Getting `total_count` requires a separate COUNT query — an extra API call that is not currently implemented. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "acumatica",
+                            "description": "The Apideck service type is used for Acumatica non-stock items, and inventory is used for stock items.\n",
+                        },
+                        {
+                            "connector": "lexware-office",
+                            "description": "Ledger accounts map to Lexware Office's posting categories, a small, fixed,\nvendor-managed reference list rather than a full chart of accounts. The list is\nread-only: individual accounts cannot be fetched by id, and none can be created,\nupdated or deleted through this connector.\n",
+                        },
+                        {
+                            "connector": "oracle-fusion",
+                            "description": "This list is scoped to the connection's own chart of accounts: only account combinations\nbelonging to the same chart of accounts as the connection's configured ledger are\nreturned. A tenant with more than one ledger — and therefore more than one chart of\naccounts — on the same Oracle instance will not see combinations from a different chart\nof accounts, even though Oracle itself does not scope this list that way; without this,\na code combination from a chart of accounts with fewer segments than the connection's own\n(e.g. a 2-segment code fed into a journal line expecting 3 segments) is silently\nmisinterpreted rather than rejected. A `pass_through` naming `q` or `finder` is refused\nwith a `400`, because it would replace that scope.\n\nOracle Fusion ledger accounts are sourced from the chart-of-accounts code-combination lookup, not from an account master with balances. `opening_balance`, `current_balance` and `last_reconciliation_date` are always `null`; `bank_account` and `subsidiaries` are not returned at all. Both `ledgerAccountsAll` and `ledgerAccountsOne` (by code-combination id) are supported; create/update/delete are not. Reading account combinations requires granting the integration user the Oracle privilege \"Get Enterprise Structures Using REST Service\" (`FUN_GET_ENTERPRISE_STRUCTURES_REST_SERVICE_PRIV`) via a custom role — it is not part of any seeded role.\n\n`name`, `code` and `display_id` all carry the account combination — for example\n`01.000.1200` — assembled from the chart-of-accounts segment values and matching what\nOracle shows for the same account elsewhere. Oracle publishes no description for a code\ncombination, so there is no separate natural-language account name to return.\n\n**Use `code`, not `id`, when referencing a ledger account on a journal entry line.** A\njournal entry line's `ledger_account.code` is the account combination, and it is split back\ninto chart-of-accounts segments on the way in; `id` is Oracle's internal code-combination\nid, which is not a segmented account code. `id` cannot be the combination either — it is\nthe only value that fetches a single account, and Oracle's lookup does not resolve the\ncombination string.\n\n`filter[classification]` and `filter[status]` are supported. Oracle models five account\nclassifications — asset, liability, equity, revenue and expense — so the wider unified\nvalues (`income`, `other_income`, `other_expense`, `costs_of_sales`, `other`) match no\naccount and come back as an empty list rather than an unfiltered one.\n\n`filter[name]` is not supported. There is no account name to match on for the reason above,\nso the filter is rejected rather than ignored. `filter[updated_since]` and\n`filter[subsidiary_id]` are not supported either — the lookup carries no timestamps and no\nlegal-entity reference. Sorting is not supported.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -352,17 +615,19 @@ class LedgerAccounts(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingLedgerAccountsAllResponse(
                 get_ledger_accounts_response=unmarshal_json_response(
-                    Optional[models.GetLedgerAccountsResponse], http_res
+                    Optional[models.GetLedgerAccountsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -403,11 +668,10 @@ class LedgerAccounts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingLedgerAccountsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -451,16 +715,19 @@ class LedgerAccounts(BaseSDK):
         last_reconciliation_date: OptionalNullable[date] = UNSET,
         subsidiaries: Optional[
             Union[
-                List[models.LedgerAccountSubsidiaries],
-                List[models.LedgerAccountSubsidiariesTypedDict],
+                Iterable[models.LedgerAccountSubsidiaries],
+                Iterable[models.LedgerAccountSubsidiariesTypedDict],
             ]
         ] = None,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -481,7 +748,7 @@ class LedgerAccounts(BaseSDK):
         :param nominal_code: The nominal code of the ledger account.
         :param code: The code assigned to the account.
         :param classification: The classification of account.
-        :param type: The type of account.
+        :param type_: The type of account.
         :param sub_type: The sub type of account.
         :param name: The name of the account.
         :param fully_qualified_name: The fully qualified name of the account.
@@ -587,6 +854,7 @@ class LedgerAccounts(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.ledger_account, False, False, "json", models.LedgerAccountInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -611,9 +879,43 @@ class LedgerAccounts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "minox",
+                            "description": "`code` is required: a number from 0 to 999999, and it becomes the ledger account id. A code that is already in use is rejected with a `409` instead of overwriting that account. Use a code with the same number of digits as the administration's existing accounts: Minox rejects longer codes with a `400` (for example a 6-digit code in an administration with 4-digit account numbers).\n\n`tax_rate.id` sets the account's default VAT code. `classification` and `type` cannot be set: Minox derives them from the account's RGS code, which is assigned in Minox only, so sending either on create is rejected with a `400`. On update they are accepted when they equal what the account reads (as in a record sent back) and rejected otherwise. A new account reads without `classification` or `type` until Minox maps it to an RGS code (the account read has none), but the balance sheet and profit and loss already classify it by the RGS code Minox assigns in its RGS trial balance.\n",
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": 'Twinfield requires the account\'s dimension type (`BAS` for `type: "balancesheet"`, `PNL` for\n`type: "other"`) up front, and its own validation enforces the code format per type: balance\nsheet codes must match `[0-3][0-9][0-9][0-9]`; anything else is rejected as Profit & Loss.\nSend `code` in the matching range for the `type` you request — a `type: "other"` code inside\nthe `0`–`3` range is rejected by Twinfield\'s own format check before this connector\'s mapping\nis even reached.\n\nFetching, updating and deleting an existing account by id derives its type from the same\nleading-digit rule rather than a caller-supplied value, since Twinfield\'s read/update/delete\ncalls need the dimension type up front and the unified request has no `type` field to read it\nfrom at that point. This is Twinfield\'s own enforced convention, not a per-tenant setting.\n',
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "Only `active` and `inactive` are applied. Sage's status field has no other members, so any\nother value from the unified enum is ignored and the record keeps its current status rather\nthan the write being rejected.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "The `currency` field is supported only when Multi-Currency is enabled in NetSuite. It applies mainly to Bank and Credit Card accounts and becomes read-only after creation.\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": 'Moneybird requires an `rgs_code` when creating a ledger account and returns\n`Rgs Code is required` otherwise. This applies to administrations outside the Netherlands too.\nThe code must be an RGS 3.5 code that suits the account `type` (an unknown code is rejected with\n`Given RGS code does not belong to a taxonomy item of version 3.5`). Provide it via pass_through:\n`"pass_through": [{"service_id": "moneybird", "extend_object": {"rgs_code": "WOmzNopOlv"}}]`\n',
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "Send an `Idempotency-Key` to make retrying a create safe: it reaches QuickBooks as its `requestid`. QuickBooks keeps a `requestid` for at least 24 hours and can keep it longer, so after the 24-hour window a key reused for a different ledger account may get the original ledger account back, with the new body ignored. Use a new key for every ledger account. Your key can be 1-255 characters: Unify sends QuickBooks a 32-character `requestid` derived from it, so QuickBooks' 50-character `requestid` limit never applies.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Send an `Idempotency-Key` to make retrying a create safe: it reaches Intuit Enterprise Suite as its `requestid`. Intuit Enterprise Suite keeps a `requestid` for at least 24 hours and can keep it longer, so after the 24-hour window a key reused for a different ledger account may get the original ledger account back, with the new body ignored. Use a new key for every ledger account. Your key can be 1-255 characters: Unify sends Intuit Enterprise Suite a 32-character `requestid` derived from it, so Intuit Enterprise Suite's 50-character `requestid` limit never applies.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -621,10 +923,11 @@ class LedgerAccounts(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingLedgerAccountsAddResponse(
                 create_ledger_account_response=unmarshal_json_response(
-                    Optional[models.CreateLedgerAccountResponse], http_res
+                    Optional[models.CreateLedgerAccountResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -665,10 +968,9 @@ class LedgerAccounts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingLedgerAccountsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -712,16 +1014,19 @@ class LedgerAccounts(BaseSDK):
         last_reconciliation_date: OptionalNullable[date] = UNSET,
         subsidiaries: Optional[
             Union[
-                List[models.LedgerAccountSubsidiaries],
-                List[models.LedgerAccountSubsidiariesTypedDict],
+                Iterable[models.LedgerAccountSubsidiaries],
+                Iterable[models.LedgerAccountSubsidiariesTypedDict],
             ]
         ] = None,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -742,7 +1047,7 @@ class LedgerAccounts(BaseSDK):
         :param nominal_code: The nominal code of the ledger account.
         :param code: The code assigned to the account.
         :param classification: The classification of account.
-        :param type: The type of account.
+        :param type_: The type of account.
         :param sub_type: The sub type of account.
         :param name: The name of the account.
         :param fully_qualified_name: The fully qualified name of the account.
@@ -848,6 +1153,7 @@ class LedgerAccounts(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.ledger_account, False, False, "json", models.LedgerAccountInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -872,9 +1178,43 @@ class LedgerAccounts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "minox",
+                            "description": "`code` is required: a number from 0 to 999999, and it becomes the ledger account id. A code that is already in use is rejected with a `409` instead of overwriting that account. Use a code with the same number of digits as the administration's existing accounts: Minox rejects longer codes with a `400` (for example a 6-digit code in an administration with 4-digit account numbers).\n\n`tax_rate.id` sets the account's default VAT code. `classification` and `type` cannot be set: Minox derives them from the account's RGS code, which is assigned in Minox only, so sending either on create is rejected with a `400`. On update they are accepted when they equal what the account reads (as in a record sent back) and rejected otherwise. A new account reads without `classification` or `type` until Minox maps it to an RGS code (the account read has none), but the balance sheet and profit and loss already classify it by the RGS code Minox assigns in its RGS trial balance.\n",
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": 'Twinfield requires the account\'s dimension type (`BAS` for `type: "balancesheet"`, `PNL` for\n`type: "other"`) up front, and its own validation enforces the code format per type: balance\nsheet codes must match `[0-3][0-9][0-9][0-9]`; anything else is rejected as Profit & Loss.\nSend `code` in the matching range for the `type` you request — a `type: "other"` code inside\nthe `0`–`3` range is rejected by Twinfield\'s own format check before this connector\'s mapping\nis even reached.\n\nFetching, updating and deleting an existing account by id derives its type from the same\nleading-digit rule rather than a caller-supplied value, since Twinfield\'s read/update/delete\ncalls need the dimension type up front and the unified request has no `type` field to read it\nfrom at that point. This is Twinfield\'s own enforced convention, not a per-tenant setting.\n',
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "Only `active` and `inactive` are applied. Sage's status field has no other members, so any\nother value from the unified enum is ignored and the record keeps its current status rather\nthan the write being rejected.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "The `currency` field is supported only when Multi-Currency is enabled in NetSuite. It applies mainly to Bank and Credit Card accounts and becomes read-only after creation.\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": 'Moneybird requires an `rgs_code` when creating a ledger account and returns\n`Rgs Code is required` otherwise. This applies to administrations outside the Netherlands too.\nThe code must be an RGS 3.5 code that suits the account `type` (an unknown code is rejected with\n`Given RGS code does not belong to a taxonomy item of version 3.5`). Provide it via pass_through:\n`"pass_through": [{"service_id": "moneybird", "extend_object": {"rgs_code": "WOmzNopOlv"}}]`\n',
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "Send an `Idempotency-Key` to make retrying a create safe: it reaches QuickBooks as its `requestid`. QuickBooks keeps a `requestid` for at least 24 hours and can keep it longer, so after the 24-hour window a key reused for a different ledger account may get the original ledger account back, with the new body ignored. Use a new key for every ledger account. Your key can be 1-255 characters: Unify sends QuickBooks a 32-character `requestid` derived from it, so QuickBooks' 50-character `requestid` limit never applies.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Send an `Idempotency-Key` to make retrying a create safe: it reaches Intuit Enterprise Suite as its `requestid`. Intuit Enterprise Suite keeps a `requestid` for at least 24 hours and can keep it longer, so after the 24-hour window a key reused for a different ledger account may get the original ledger account back, with the new body ignored. Use a new key for every ledger account. Your key can be 1-255 characters: Unify sends Intuit Enterprise Suite a 32-character `requestid` derived from it, so Intuit Enterprise Suite's 50-character `requestid` limit never applies.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -882,10 +1222,11 @@ class LedgerAccounts(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingLedgerAccountsAddResponse(
                 create_ledger_account_response=unmarshal_json_response(
-                    Optional[models.CreateLedgerAccountResponse], http_res
+                    Optional[models.CreateLedgerAccountResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -926,10 +1267,9 @@ class LedgerAccounts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingLedgerAccountsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1002,6 +1342,7 @@ class LedgerAccounts(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1026,9 +1367,39 @@ class LedgerAccounts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "`classification` and `type` are derived: SAP has no asset, liability, equity, revenue or expense attribute on a G/L account. Cash accounts return `asset` / `bank` and secondary cost accounts return `expense` on every chart of accounts.\n\nFor all other accounts on SAP's standard chart of accounts (YCOA), the class comes from the first digit of the 8-digit account number: 1 `asset`, 2 `liability` and 3 `equity` for balance sheet accounts, and 4 `revenue`, 5 `costs_of_sales` and 6 `expense` for profit and loss accounts. An account whose SAP account type does not fit its range (for example a balance sheet account numbered in range 4), accounts in range 7 (other income and expenses), accounts with a non-standard number and accounts on any other chart of accounts return `other` (with `type` `balancesheet` for a balance sheet account).\n\n`type` does not separate current, fixed and non-current items: assets return `other_asset` and liabilities `other_liability`.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "`current_balance` is the account's closing balance as of today (Oslo time), in the company currency, with debit balances positive and credit balances negative (a revenue account with sales shows a negative balance). It is an extra read of Fiken's account balances, so a balance is only returned when that read succeeds; otherwise the accounts are returned without `current_balance` and the response carries a warning. An account without any postings has a `current_balance` of `0`.\n\nSub-ledger accounts (for example customer accounts such as `1500:10001`) are listed as separate accounts with `sub_account` set to `true`. `type` is derived from the account number range of the usual Norwegian chart of accounts ranges rather than read from Fiken, so it is only as accurate as the company's use of those ranges.\n",
+                        },
+                        {
+                            "connector": "e-boekhouden",
+                            "description": "e-Boekhouden's own account category has no separate value for revenue vs. expense — both\nshare a single \"Profit and loss\" category, so `type` and `classification` return `other`\nfor every profit & loss account rather than `revenue`/`expense`. Balance-sheet, bank,\ndebtor and creditor accounts are still typed normally. VAT-related accounts (input tax,\noutput tax, VAT settlement) are typed `other_asset`/`other_liability` where the category\nunambiguously indicates one or the other, and `other` where it doesn't.\n\n`current_balance` is not returned — fetching it would require an extra per-account request\nthat is not currently implemented.\n\ne-Boekhouden's chart of accounts is a flat list — there is no parent/child hierarchy and\nno multi-subsidiary concept, so `parent_account`, `sub_accounts`, `categories` and\n`subsidiaries` are always empty. `bank_account` is also empty — e-Boekhouden's ledger\naccount object carries only a code, a name and a category, none of the bank details\n(account number, IBAN, etc.) that field requires.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "`current_balance` on a single ledger account is sourced from Zoho's `closing_balance`, which\ndiffers from the list endpoint's balance in three ways: it is an absolute value (the list\nreturns a signed balance, negative when the balance sits on the account's non-normal side),\nit includes future-dated transactions, and system-computed accounts (e.g. Retained Earnings)\nreturn 0. For signed, as-of-today balances across accounts, use the list endpoint\n(`GET /accounting/ledger-accounts`).\n\nThe `fixed_asset` object comes from the fixed-asset register, as described on the list:\ncomputed only when `fields` names `fixed_asset` or one of its sub-fields.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "`current_balance` is sourced from Xero's Trial Balance report (as at the current date, UTC),\nadding one extra downstream request per call — Xero's Accounts API itself returns no balance.\nBalances are signed debit-positive. Accounts with a zero balance return 0.\n\nPopulating the field requires the connection's granted scopes to include\n`accounting.reports.trialbalance.read` (or the legacy `accounting.reports.read`). Connections\nauthorized before this scope entered the default request list (2026-08-18) must be\nre-authorized to grant it; until then — or when the authorizing Xero user lacks the \"reports\"\nrole — the account is returned without `current_balance` instead of the request failing.\n\nThe `fixed_asset` object comes from the fixed-asset register, as described on the list:\ncomputed only when `fields` names `fixed_asset` or one of its sub-fields, with the\n`assets.read` scope, at the cost of extra requests.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "`fixed_asset.cost` and `fixed_asset.accumulated_depreciation` are set on a top-level account\nof type Fixed Asset, from the account and its sub-accounts, as described on the list. Other\naccounts have no `fixed_asset`. QuickBooks has no acquisition date, depreciation method or\nuseful life.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1036,10 +1407,9 @@ class LedgerAccounts(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingLedgerAccountsOneResponse(
                 get_ledger_account_response=unmarshal_json_response(
-                    Optional[models.GetLedgerAccountResponse], http_res
+                    Optional[models.GetLedgerAccountResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1080,10 +1450,9 @@ class LedgerAccounts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingLedgerAccountsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1156,6 +1525,7 @@ class LedgerAccounts(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1180,9 +1550,39 @@ class LedgerAccounts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "`classification` and `type` are derived: SAP has no asset, liability, equity, revenue or expense attribute on a G/L account. Cash accounts return `asset` / `bank` and secondary cost accounts return `expense` on every chart of accounts.\n\nFor all other accounts on SAP's standard chart of accounts (YCOA), the class comes from the first digit of the 8-digit account number: 1 `asset`, 2 `liability` and 3 `equity` for balance sheet accounts, and 4 `revenue`, 5 `costs_of_sales` and 6 `expense` for profit and loss accounts. An account whose SAP account type does not fit its range (for example a balance sheet account numbered in range 4), accounts in range 7 (other income and expenses), accounts with a non-standard number and accounts on any other chart of accounts return `other` (with `type` `balancesheet` for a balance sheet account).\n\n`type` does not separate current, fixed and non-current items: assets return `other_asset` and liabilities `other_liability`.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "`current_balance` is the account's closing balance as of today (Oslo time), in the company currency, with debit balances positive and credit balances negative (a revenue account with sales shows a negative balance). It is an extra read of Fiken's account balances, so a balance is only returned when that read succeeds; otherwise the accounts are returned without `current_balance` and the response carries a warning. An account without any postings has a `current_balance` of `0`.\n\nSub-ledger accounts (for example customer accounts such as `1500:10001`) are listed as separate accounts with `sub_account` set to `true`. `type` is derived from the account number range of the usual Norwegian chart of accounts ranges rather than read from Fiken, so it is only as accurate as the company's use of those ranges.\n",
+                        },
+                        {
+                            "connector": "e-boekhouden",
+                            "description": "e-Boekhouden's own account category has no separate value for revenue vs. expense — both\nshare a single \"Profit and loss\" category, so `type` and `classification` return `other`\nfor every profit & loss account rather than `revenue`/`expense`. Balance-sheet, bank,\ndebtor and creditor accounts are still typed normally. VAT-related accounts (input tax,\noutput tax, VAT settlement) are typed `other_asset`/`other_liability` where the category\nunambiguously indicates one or the other, and `other` where it doesn't.\n\n`current_balance` is not returned — fetching it would require an extra per-account request\nthat is not currently implemented.\n\ne-Boekhouden's chart of accounts is a flat list — there is no parent/child hierarchy and\nno multi-subsidiary concept, so `parent_account`, `sub_accounts`, `categories` and\n`subsidiaries` are always empty. `bank_account` is also empty — e-Boekhouden's ledger\naccount object carries only a code, a name and a category, none of the bank details\n(account number, IBAN, etc.) that field requires.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "`current_balance` on a single ledger account is sourced from Zoho's `closing_balance`, which\ndiffers from the list endpoint's balance in three ways: it is an absolute value (the list\nreturns a signed balance, negative when the balance sits on the account's non-normal side),\nit includes future-dated transactions, and system-computed accounts (e.g. Retained Earnings)\nreturn 0. For signed, as-of-today balances across accounts, use the list endpoint\n(`GET /accounting/ledger-accounts`).\n\nThe `fixed_asset` object comes from the fixed-asset register, as described on the list:\ncomputed only when `fields` names `fixed_asset` or one of its sub-fields.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "`current_balance` is sourced from Xero's Trial Balance report (as at the current date, UTC),\nadding one extra downstream request per call — Xero's Accounts API itself returns no balance.\nBalances are signed debit-positive. Accounts with a zero balance return 0.\n\nPopulating the field requires the connection's granted scopes to include\n`accounting.reports.trialbalance.read` (or the legacy `accounting.reports.read`). Connections\nauthorized before this scope entered the default request list (2026-08-18) must be\nre-authorized to grant it; until then — or when the authorizing Xero user lacks the \"reports\"\nrole — the account is returned without `current_balance` instead of the request failing.\n\nThe `fixed_asset` object comes from the fixed-asset register, as described on the list:\ncomputed only when `fields` names `fixed_asset` or one of its sub-fields, with the\n`assets.read` scope, at the cost of extra requests.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "`fixed_asset.cost` and `fixed_asset.accumulated_depreciation` are set on a top-level account\nof type Fixed Asset, from the account and its sub-accounts, as described on the list. Other\naccounts have no `fixed_asset`. QuickBooks has no acquisition date, depreciation method or\nuseful life.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1190,10 +1590,9 @@ class LedgerAccounts(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingLedgerAccountsOneResponse(
                 get_ledger_account_response=unmarshal_json_response(
-                    Optional[models.GetLedgerAccountResponse], http_res
+                    Optional[models.GetLedgerAccountResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1234,10 +1633,9 @@ class LedgerAccounts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingLedgerAccountsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1281,16 +1679,19 @@ class LedgerAccounts(BaseSDK):
         last_reconciliation_date: OptionalNullable[date] = UNSET,
         subsidiaries: Optional[
             Union[
-                List[models.LedgerAccountSubsidiaries],
-                List[models.LedgerAccountSubsidiariesTypedDict],
+                Iterable[models.LedgerAccountSubsidiaries],
+                Iterable[models.LedgerAccountSubsidiariesTypedDict],
             ]
         ] = None,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1311,7 +1712,7 @@ class LedgerAccounts(BaseSDK):
         :param nominal_code: The nominal code of the ledger account.
         :param code: The code assigned to the account.
         :param classification: The classification of account.
-        :param type: The type of account.
+        :param type_: The type of account.
         :param sub_type: The sub type of account.
         :param name: The name of the account.
         :param fully_qualified_name: The fully qualified name of the account.
@@ -1417,6 +1818,7 @@ class LedgerAccounts(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.ledger_account, False, False, "json", models.LedgerAccountInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1441,9 +1843,31 @@ class LedgerAccounts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Updates need `row_version` from a prior read of the record: without it the update is rejected with `Missing required field: data.editSequence`.\n\nWrites are applied on the Web Connector's next run, so an update can return a `504` timeout after 28 seconds while QuickBooks still applies it. Read the record back before retrying.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "`classification` and `type` are derived from the account's RGS code, which is assigned in\nMinox only: they are accepted when they equal what the account reads (as in a record read\nand sent back) and rejected with a `400` otherwise. `code` cannot be changed (it is the\naccount's id); sending a different one is rejected with a `400`. Fields that are not sent\nkeep their current value.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": 'For ledger accounts, please update the "active" status separately from other updates.\n',
+                        },
+                        {
+                            "connector": "wave",
+                            "description": 'Updates need `row_version` from a prior read of the account: Wave requires it (its `sequence`) and rejects an update without it with a `400` (`Field "sequence" of required type "Int!" was not provided`).\n',
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1451,10 +1875,11 @@ class LedgerAccounts(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingLedgerAccountsUpdateResponse(
                 update_ledger_account_response=unmarshal_json_response(
-                    Optional[models.UpdateLedgerAccountResponse], http_res
+                    Optional[models.UpdateLedgerAccountResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1495,10 +1920,9 @@ class LedgerAccounts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingLedgerAccountsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1542,16 +1966,19 @@ class LedgerAccounts(BaseSDK):
         last_reconciliation_date: OptionalNullable[date] = UNSET,
         subsidiaries: Optional[
             Union[
-                List[models.LedgerAccountSubsidiaries],
-                List[models.LedgerAccountSubsidiariesTypedDict],
+                Iterable[models.LedgerAccountSubsidiaries],
+                Iterable[models.LedgerAccountSubsidiariesTypedDict],
             ]
         ] = None,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1572,7 +1999,7 @@ class LedgerAccounts(BaseSDK):
         :param nominal_code: The nominal code of the ledger account.
         :param code: The code assigned to the account.
         :param classification: The classification of account.
-        :param type: The type of account.
+        :param type_: The type of account.
         :param sub_type: The sub type of account.
         :param name: The name of the account.
         :param fully_qualified_name: The fully qualified name of the account.
@@ -1678,6 +2105,7 @@ class LedgerAccounts(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.ledger_account, False, False, "json", models.LedgerAccountInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1702,9 +2130,31 @@ class LedgerAccounts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Updates need `row_version` from a prior read of the record: without it the update is rejected with `Missing required field: data.editSequence`.\n\nWrites are applied on the Web Connector's next run, so an update can return a `504` timeout after 28 seconds while QuickBooks still applies it. Read the record back before retrying.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "`classification` and `type` are derived from the account's RGS code, which is assigned in\nMinox only: they are accepted when they equal what the account reads (as in a record read\nand sent back) and rejected with a `400` otherwise. `code` cannot be changed (it is the\naccount's id); sending a different one is rejected with a `400`. Fields that are not sent\nkeep their current value.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": 'For ledger accounts, please update the "active" status separately from other updates.\n',
+                        },
+                        {
+                            "connector": "wave",
+                            "description": 'Updates need `row_version` from a prior read of the account: Wave requires it (its `sequence`) and rejects an update without it with a `400` (`Field "sequence" of required type "Int!" was not provided`).\n',
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1712,10 +2162,11 @@ class LedgerAccounts(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingLedgerAccountsUpdateResponse(
                 update_ledger_account_response=unmarshal_json_response(
-                    Optional[models.UpdateLedgerAccountResponse], http_res
+                    Optional[models.UpdateLedgerAccountResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1756,10 +2207,9 @@ class LedgerAccounts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingLedgerAccountsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1829,6 +2279,7 @@ class LedgerAccounts(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1853,9 +2304,23 @@ class LedgerAccounts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks",
+                            "description": "This connector does not support deleting ledger accounts. Instead, it will update the ledger account to inactive.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "This connector does not support deleting ledger accounts. Instead, it will update the ledger account to inactive.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1863,10 +2328,11 @@ class LedgerAccounts(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingLedgerAccountsDeleteResponse(
                 delete_ledger_account_response=unmarshal_json_response(
-                    Optional[models.DeleteLedgerAccountResponse], http_res
+                    Optional[models.DeleteLedgerAccountResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1907,10 +2373,9 @@ class LedgerAccounts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingLedgerAccountsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1980,6 +2445,7 @@ class LedgerAccounts(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2004,9 +2470,23 @@ class LedgerAccounts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks",
+                            "description": "This connector does not support deleting ledger accounts. Instead, it will update the ledger account to inactive.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "This connector does not support deleting ledger accounts. Instead, it will update the ledger account to inactive.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2014,10 +2494,11 @@ class LedgerAccounts(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingLedgerAccountsDeleteResponse(
                 delete_ledger_account_response=unmarshal_json_response(
-                    Optional[models.DeleteLedgerAccountResponse], http_res
+                    Optional[models.DeleteLedgerAccountResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2058,10 +2539,9 @@ class LedgerAccounts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingLedgerAccountsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2070,8 +2550,8 @@ class LedgerAccounts(BaseSDK):
         self,
         *,
         items: Union[
-            List[models.BatchLedgerAccountsRequestItems],
-            List[models.BatchLedgerAccountsRequestItemsTypedDict],
+            Iterable[models.BatchLedgerAccountsRequestItems],
+            Iterable[models.BatchLedgerAccountsRequestItemsTypedDict],
         ],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
@@ -2145,6 +2625,7 @@ class LedgerAccounts(BaseSDK):
                 "json",
                 models.BatchLedgerAccountsRequest,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2169,9 +2650,31 @@ class LedgerAccounts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "xero",
+                            "description": "Records are written one at a time, so the request counts as **one request per\nrecord** against your plan — batching saves you round trips, not quota.\n\nXero creates ledger accounts one at a time, with bank accounts created differently\nfrom other account types, so each record in the request is written separately. A\nrequest of N records therefore takes about N times as long as a single write and\ncounts as N calls against your Xero rate limit.\n\nAt most 20 records per request. That ceiling has not been measured for records\nwritten one at a time on this resource, so treat it as an upper\nbound rather than a safe size: prefer smaller requests and set client timeouts from\nyour own observed per-record latency.\n\nEach record succeeds or fails on its own; read the per-item `status` to see which\nwere written. If the request times out, the items it could not confirm come back\nwith `status: uncertain` rather than `failed` — some of them may well have been\nwritten, and no ids are returned for those. Verify before retrying an `uncertain`\nitem: list the resource to find what exists, or a retry will duplicate it.\n\nResults come back in the order the items were sent. Supply `_ref` on every item if\nyou need to tie an outcome back to your own record — it is echoed on every result,\nincluding failures, and is never sent to the connector.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Records are written one at a time, so the request counts as **one request per\nrecord** against your plan — batching saves you round trips, not quota.\n\nAt most 10 records per request.\n\nRecords are written one at a time, so a request of N ledger accounts takes about N times as\nlong as a single write and counts as N requests against your plan. Each record\nsucceeds or fails on its own; read the per-item `status` to see which were written.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "Records are written one at a time, so the request counts as **one request per\nrecord** against your plan — batching saves you round trips, not quota.\n\nRecords are written one at a time rather than in a single batched call, so that a\nQuickBooks plan usage-limit error is reported on the account it applies to. A request\nof N records therefore takes about N times as long as a single write: a full request\nof 10 takes about 16 seconds.\n\nAt most 10 records per request.\n\nEach record succeeds or fails on its own; read the per-item `status` to see which\nwere written. If the request times out, the items it could not confirm come back\nwith `status: uncertain` rather than `failed` — some of them may well have been\nwritten, and no ids are returned for those. Verify before retrying an `uncertain`\nitem: list the resource to find what exists, or a retry will duplicate it.\n\nResults come back in the order the items were sent. Supply `_ref` on every item if\nyou need to tie an outcome back to your own record — it is echoed on every result,\nincluding failures, and is never sent to the connector.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Records are written one at a time, so the request counts as **one request per\nrecord** against your plan — batching saves you round trips, not quota.\n\nRecords are written one at a time rather than in a single batched call, so that a\nIntuit Enterprise Suite plan usage-limit error is reported on the account it applies to. A request\nof N records therefore takes about N times as long as a single write: a full request\nof 10 takes about 16 seconds.\n\nAt most 10 records per request.\n\nEach record succeeds or fails on its own; read the per-item `status` to see which\nwere written. If the request times out, the items it could not confirm come back\nwith `status: uncertain` rather than `failed` — some of them may well have been\nwritten, and no ids are returned for those. Verify before retrying an `uncertain`\nitem: list the resource to find what exists, or a retry will duplicate it.\n\nResults come back in the order the items were sent. Supply `_ref` on every item if\nyou need to tie an outcome back to your own record — it is echoed on every result,\nincluding failures, and is never sent to the connector.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2179,10 +2682,11 @@ class LedgerAccounts(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingLedgerAccountsBatchAddResponse(
                 batch_ledger_accounts_response=unmarshal_json_response(
-                    Optional[models.BatchLedgerAccountsResponse], http_res
+                    Optional[models.BatchLedgerAccountsResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2223,10 +2727,9 @@ class LedgerAccounts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingLedgerAccountsBatchAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2235,8 +2738,8 @@ class LedgerAccounts(BaseSDK):
         self,
         *,
         items: Union[
-            List[models.BatchLedgerAccountsRequestItems],
-            List[models.BatchLedgerAccountsRequestItemsTypedDict],
+            Iterable[models.BatchLedgerAccountsRequestItems],
+            Iterable[models.BatchLedgerAccountsRequestItemsTypedDict],
         ],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
@@ -2310,6 +2813,7 @@ class LedgerAccounts(BaseSDK):
                 "json",
                 models.BatchLedgerAccountsRequest,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2334,9 +2838,31 @@ class LedgerAccounts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "xero",
+                            "description": "Records are written one at a time, so the request counts as **one request per\nrecord** against your plan — batching saves you round trips, not quota.\n\nXero creates ledger accounts one at a time, with bank accounts created differently\nfrom other account types, so each record in the request is written separately. A\nrequest of N records therefore takes about N times as long as a single write and\ncounts as N calls against your Xero rate limit.\n\nAt most 20 records per request. That ceiling has not been measured for records\nwritten one at a time on this resource, so treat it as an upper\nbound rather than a safe size: prefer smaller requests and set client timeouts from\nyour own observed per-record latency.\n\nEach record succeeds or fails on its own; read the per-item `status` to see which\nwere written. If the request times out, the items it could not confirm come back\nwith `status: uncertain` rather than `failed` — some of them may well have been\nwritten, and no ids are returned for those. Verify before retrying an `uncertain`\nitem: list the resource to find what exists, or a retry will duplicate it.\n\nResults come back in the order the items were sent. Supply `_ref` on every item if\nyou need to tie an outcome back to your own record — it is echoed on every result,\nincluding failures, and is never sent to the connector.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Records are written one at a time, so the request counts as **one request per\nrecord** against your plan — batching saves you round trips, not quota.\n\nAt most 10 records per request.\n\nRecords are written one at a time, so a request of N ledger accounts takes about N times as\nlong as a single write and counts as N requests against your plan. Each record\nsucceeds or fails on its own; read the per-item `status` to see which were written.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "Records are written one at a time, so the request counts as **one request per\nrecord** against your plan — batching saves you round trips, not quota.\n\nRecords are written one at a time rather than in a single batched call, so that a\nQuickBooks plan usage-limit error is reported on the account it applies to. A request\nof N records therefore takes about N times as long as a single write: a full request\nof 10 takes about 16 seconds.\n\nAt most 10 records per request.\n\nEach record succeeds or fails on its own; read the per-item `status` to see which\nwere written. If the request times out, the items it could not confirm come back\nwith `status: uncertain` rather than `failed` — some of them may well have been\nwritten, and no ids are returned for those. Verify before retrying an `uncertain`\nitem: list the resource to find what exists, or a retry will duplicate it.\n\nResults come back in the order the items were sent. Supply `_ref` on every item if\nyou need to tie an outcome back to your own record — it is echoed on every result,\nincluding failures, and is never sent to the connector.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Records are written one at a time, so the request counts as **one request per\nrecord** against your plan — batching saves you round trips, not quota.\n\nRecords are written one at a time rather than in a single batched call, so that a\nIntuit Enterprise Suite plan usage-limit error is reported on the account it applies to. A request\nof N records therefore takes about N times as long as a single write: a full request\nof 10 takes about 16 seconds.\n\nAt most 10 records per request.\n\nEach record succeeds or fails on its own; read the per-item `status` to see which\nwere written. If the request times out, the items it could not confirm come back\nwith `status: uncertain` rather than `failed` — some of them may well have been\nwritten, and no ids are returned for those. Verify before retrying an `uncertain`\nitem: list the resource to find what exists, or a retry will duplicate it.\n\nResults come back in the order the items were sent. Supply `_ref` on every item if\nyou need to tie an outcome back to your own record — it is echoed on every result,\nincluding failures, and is never sent to the connector.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2344,10 +2870,11 @@ class LedgerAccounts(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingLedgerAccountsBatchAddResponse(
                 batch_ledger_accounts_response=unmarshal_json_response(
-                    Optional[models.BatchLedgerAccountsResponse], http_res
+                    Optional[models.BatchLedgerAccountsResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2388,10 +2915,9 @@ class LedgerAccounts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingLedgerAccountsBatchAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

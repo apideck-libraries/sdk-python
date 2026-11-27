@@ -2,13 +2,17 @@
 
 from __future__ import annotations
 from apideck_unify import models, utils
-from apideck_unify.types import BaseModel
-from apideck_unify.utils import validate_open_enum
+from apideck_unify.types import (
+    BaseModel,
+    UNSET_SENTINEL,
+    current_exclude_none,
+    serialize_with_info,
+)
+from apideck_unify.types.basemodel import current_filtered_dump
 from enum import Enum
-from pydantic import field_serializer
-from pydantic.functional_validators import PlainValidator
+from pydantic import field_serializer, model_serializer
 from typing import Dict, Optional
-from typing_extensions import Annotated, NotRequired, TypedDict
+from typing_extensions import NotRequired, TypedDict
 
 
 class BatchSupportMode(str, Enum, metaclass=utils.OpenEnumMeta):
@@ -35,9 +39,7 @@ class ResourcesTypedDict(TypedDict):
 
 
 class Resources(BaseModel):
-    mode: Annotated[
-        BatchSupportResourcesMode, PlainValidator(validate_open_enum(False))
-    ]
+    mode: BatchSupportResourcesMode
     r"""`none` means this resource refuses batch writes. `native` satisfies a batch in a single downstream call against the provider's own batch endpoint, so the request counts as one request against your plan. `loop` satisfies it as a bounded sequential fan-out, one downstream call per item — so a request of N records takes roughly N times as long and counts as N requests."""
 
     max_items: Optional[int] = None
@@ -52,6 +54,29 @@ class Resources(BaseModel):
                 return value
         return value
 
+    @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
+    def serialize_model(self, handler):
+        optional_fields = set(["max_items"])
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
+        serialized = handler(self)
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+
+            if val != UNSET_SENTINEL:
+                if val is not None or k not in optional_fields:
+                    m[k] = val
+
+        return m
+
 
 class BatchSupportTypedDict(TypedDict):
     r"""How this connector satisfies a batch write, per resource. Read this before calling a batch endpoint: support, execution mode and the per-request limit all vary by resource on the same connector, and the mode determines both latency and how many requests the call counts against your plan."""
@@ -65,7 +90,7 @@ class BatchSupportTypedDict(TypedDict):
 class BatchSupport(BaseModel):
     r"""How this connector satisfies a batch write, per resource. Read this before calling a batch endpoint: support, execution mode and the per-request limit all vary by resource on the same connector, and the mode determines both latency and how many requests the call counts against your plan."""
 
-    mode: Annotated[BatchSupportMode, PlainValidator(validate_open_enum(False))]
+    mode: BatchSupportMode
     r"""The connector's overall batch capability: `none` when no resource supports a batch write, otherwise the mode most of its resources use. This is a summary — read `resources` for the answer that applies to the resource you are calling, because a connector can be `native` for one resource and `loop` for another."""
 
     resources: Optional[Dict[str, Resources]] = None
@@ -79,3 +104,26 @@ class BatchSupport(BaseModel):
             except ValueError:
                 return value
         return value
+
+    @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
+    def serialize_model(self, handler):
+        optional_fields = set(["resources"])
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
+        serialized = handler(self)
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+
+            if val != UNSET_SENTINEL:
+                if val is not None or k not in optional_fields:
+                    m[k] = val
+
+        return m

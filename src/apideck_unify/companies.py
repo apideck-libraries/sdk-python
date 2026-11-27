@@ -22,7 +22,7 @@ class Companies(BaseSDK):
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
         fields: OptionalNullable[str] = UNSET,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -65,7 +65,7 @@ class Companies(BaseSDK):
             cursor=cursor,
             limit=limit,
             fields=fields,
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
         )
 
         req = self._build_request(
@@ -85,6 +85,7 @@ class Companies(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -109,9 +110,39 @@ class Companies(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "`companiesAll` lists Sage **entities** (`company-config/entity`), which exist only in a\nmulti-entity company. In a single-entity company the list is empty, and in a multi-entity one\nthe top-level company itself is not an entity so it does not appear.\n\nTo work in one entity, send the `x-apideck-company-id` header or set a **Default Entity** on\nthe connection; the header wins. Send the entity's id (for example `100`). The `id` returned\nhere is the entity's key (for example `1`) and is accepted too. A header value that is the\nid of one entity and the key of another is rejected with `400` naming both. `top-level`, or\nno value, works across the whole company. An entity Sage does not know is rejected with `400`: Sage\nitself would silently answer at top level. An elimination entity is listed here but is\nrejected the same way, because Sage does not let requests work inside one.\n\nRecords created in an entity belong to it. They are read, updated and deleted only with the\nsame entity, and do not appear in top-level lists. Records an entity keeps private, such as\nsome customers and accounts, likewise appear only when scoped to that entity. Records owned\nby the top level can be read from inside an entity but not updated or deleted (`403`\n`REST-3005`); send `top-level` for those calls. Virtual-webhook deleted events are not\nsplit by entity, because Sage's audit trail is not.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics",
+                            "description": "Microsoft Dynamics 365 does not include a total record count in default list responses. `meta.total_count` will not appear. Surfacing the total requires adding `$count=true` to the OData query or calling a separate `$count` endpoint — not currently implemented.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "`meta.total_count` requires `$count=true` OData parameter — not currently implemented. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Xero does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "stripe-billing",
+                            "description": "Stripe removed `total_count` from list responses in March 2025 (API version 2025-03-31.basil). `meta.total_count` will not appear.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -137,17 +168,19 @@ class Companies(BaseSDK):
                 fields=fields,
                 pass_through=pass_through,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingCompaniesAllResponse(
                 get_companies_response=unmarshal_json_response(
-                    Optional[models.GetCompaniesResponse], http_res
+                    Optional[models.GetCompaniesResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -188,11 +221,10 @@ class Companies(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingCompaniesAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -208,7 +240,7 @@ class Companies(BaseSDK):
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
         fields: OptionalNullable[str] = UNSET,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -251,7 +283,7 @@ class Companies(BaseSDK):
             cursor=cursor,
             limit=limit,
             fields=fields,
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
         )
 
         req = self._build_request_async(
@@ -271,6 +303,7 @@ class Companies(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -295,9 +328,39 @@ class Companies(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "`companiesAll` lists Sage **entities** (`company-config/entity`), which exist only in a\nmulti-entity company. In a single-entity company the list is empty, and in a multi-entity one\nthe top-level company itself is not an entity so it does not appear.\n\nTo work in one entity, send the `x-apideck-company-id` header or set a **Default Entity** on\nthe connection; the header wins. Send the entity's id (for example `100`). The `id` returned\nhere is the entity's key (for example `1`) and is accepted too. A header value that is the\nid of one entity and the key of another is rejected with `400` naming both. `top-level`, or\nno value, works across the whole company. An entity Sage does not know is rejected with `400`: Sage\nitself would silently answer at top level. An elimination entity is listed here but is\nrejected the same way, because Sage does not let requests work inside one.\n\nRecords created in an entity belong to it. They are read, updated and deleted only with the\nsame entity, and do not appear in top-level lists. Records an entity keeps private, such as\nsome customers and accounts, likewise appear only when scoped to that entity. Records owned\nby the top level can be read from inside an entity but not updated or deleted (`403`\n`REST-3005`); send `top-level` for those calls. Virtual-webhook deleted events are not\nsplit by entity, because Sage's audit trail is not.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics",
+                            "description": "Microsoft Dynamics 365 does not include a total record count in default list responses. `meta.total_count` will not appear. Surfacing the total requires adding `$count=true` to the OData query or calling a separate `$count` endpoint — not currently implemented.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "`meta.total_count` requires `$count=true` OData parameter — not currently implemented. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Xero does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "stripe-billing",
+                            "description": "Stripe removed `total_count` from list responses in March 2025 (API version 2025-03-31.basil). `meta.total_count` will not appear.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -323,17 +386,19 @@ class Companies(BaseSDK):
                 fields=fields,
                 pass_through=pass_through,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingCompaniesAllResponse(
                 get_companies_response=unmarshal_json_response(
-                    Optional[models.GetCompaniesResponse], http_res
+                    Optional[models.GetCompaniesResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -374,11 +439,10 @@ class Companies(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingCompaniesAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

@@ -1,5 +1,4 @@
-# Customers
-(*accounting.customers*)
+# Accounting.Customers
 
 ## Overview
 
@@ -29,7 +28,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.customers.list(raw=False, service_id="salesforce", company_id="12345", limit=20, filter_={
@@ -104,7 +103,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.customers.create(raw=False, service_id="salesforce", company_id_param="12345", idempotency_key="your-unique-key-per-create", display_id="EMP00101", display_name="Windsurf Shop", company_name="SpaceX", company_id="12345", subsidiary=None, customer_category="Insurance", title="CEO", first_name="Elon", middle_name="D.", last_name="Musk", suffix="Jr.", individual=True, project=False, addresses=[
@@ -194,7 +193,7 @@ with Apideck(
         },
     ], notes="Some notes about this customer", tax_rate={
         "id": "123456",
-        "rate": 10,
+        "rate": 10.0,
     }, tax_number="US123945459", taxable=True, currency=apideck_unify.Currency.USD, account={
         "id": "123456",
         "nominal_code": "N091",
@@ -334,7 +333,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.customers.get(id="<id>", service_id="salesforce", company_id="12345", raw=False, fields="id,updated_at")
@@ -391,7 +390,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.customers.update(id="<id>", service_id="salesforce", raw=False, display_id="EMP00101", display_name="Windsurf Shop", company_name="SpaceX", company_id="12345", subsidiary={
@@ -505,7 +504,7 @@ with Apideck(
         },
     ], notes="Some notes about this customer", tax_rate={
         "id": "123456",
-        "rate": 10,
+        "rate": 10.0,
     }, tax_number="US123945459", taxable=True, currency=apideck_unify.Currency.USD, account={
         "id": "123456",
         "nominal_code": "N091",
@@ -633,7 +632,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.customers.delete(id="<id>", service_id="salesforce", raw=False)
@@ -688,7 +687,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.customers.create_batch(items=[
@@ -781,7 +780,7 @@ with Apideck(
                 "tax_rate": {
                     "id": "123456",
                     "code": "N-T",
-                    "rate": 10,
+                    "rate": 10.0,
                 },
                 "tax_number": "US123945459",
                 "taxable": True,

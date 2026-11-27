@@ -2,6 +2,16 @@
 
 Status of projects to filter by
 
+## Example Usage
+
+```python
+from apideck_unify.models import ProjectStatus
+
+value = ProjectStatus.ACTIVE
+
+# Open enum: unrecognized values are captured as UnrecognizedStr
+```
+
 
 ## Values
 

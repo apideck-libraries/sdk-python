@@ -33,7 +33,7 @@ class GeneralLedgerTransactions(BaseSDK):
                 models.GeneralLedgerTransactionsSortTypedDict,
             ]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -84,7 +84,7 @@ class GeneralLedgerTransactions(BaseSDK):
             sort=utils.get_pydantic_model(
                 sort, Optional[models.GeneralLedgerTransactionsSort]
             ),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -105,6 +105,7 @@ class GeneralLedgerTransactions(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -129,9 +130,43 @@ class GeneralLedgerTransactions(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "fiken",
+                            "description": "Each Fiken transaction is one record, and it can hold several journal entries: an invoice and the payments registered against it share one transaction. `line_items` combines the lines of all its entries, with the VAT of a sale or purchase on its own line against the VAT account, so `net_amount` is excluding VAT and the lines of a transaction sum to zero. `posted_at` and `number` come from the transaction's first entry.\n\n`source_type` is derived from Fiken's transaction type: sales (`Salg`) is `invoice`, purchases (`Kjøp`) is `bill`, sales and purchase credit notes are `credit_note`, free postings are `journal_entry`, payroll is `payroll`, and cash outlays are `expense`. Every other Fiken type, including cancellations and bank postings, is `other`. `source_id` is not returned, so a sale or purchase cannot be fetched from its transaction.\n\nCancelling a record in Fiken posts a reversing transaction instead of removing the original; both are returned and net to zero. `currency` is always `NOK` and amounts are in the company currency.\n\n`filter[updated_since]` works at day granularity: every transaction modified on or after that date is returned. `filter[source_type]` supports `invoice`, `bill`, `journal_entry`, `payroll` and `expense`; other values, including `credit_note`, are rejected with a 400. `sort` is not supported and results come back in Fiken's order.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "FreeAgent records ledger lines without a transaction id. Lines are returned grouped into one\ntransaction per source document and date, with the `id` of the transaction's first line;\neach transaction balances to zero. Zero-value documents, which post no amounts, are left out.\n\nThe list covers the company's current accounting year (FreeAgent does not return ledger\nlines across accounting years in one request). `filter[source_type]`, `filter[source_id]` and\n`filter[updated_since]` are not supported; `sort` supports `posted_at` only.\n\n`source_type` is `invoice` for both invoices and credit notes (they share FreeAgent's invoice\nids), and `other` for bank transaction explanations such as payments and receipts, with the\nexplanation id in `source_id`. `currency` is not returned; amounts are in the company's\ncurrency.\n",
+                        },
+                        {
+                            "connector": "e-boekhouden",
+                            "description": "`source_type: payment` covers both payments received and payments sent, since the unified\nvalue has no separate bill-payment variant. `source_id` can be fetched through the\nresource that matches its direction: `payments` for a payment received, `bill-payments`\nfor one sent. Fetching it through the other resource returns 404 rather than a record with\nthe direction flipped — the same applies to every record shared with `bills`, `invoices`\nand `journal-entries`.\n",
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": "This connector fetches every matching transaction in a single call — there is no\nserver-side pagination, so a large date range can be a large response. `currency_rate` and\n`reference` are not available. Transactions created through this connector's `expenses`\nresource are indistinguishable from manual journal entries and are returned as\n`source_type: journal_entry`.\n\n`posted_at` is approximated as the first day of the transaction's accounting period\n(month), not the actual posting date, since the connector's data source for this endpoint\ndoes not expose the real date.\n\nGetting a specific transaction by `id` is not supported — Twinfield's transaction numbers\nare not globally unique across transaction types, so there is no reliable way to look one\nup directly.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Backed by Xero's `Journals` API, which moves to the Advanced app tier on 2026-03-02. Each posting (invoice, bill, payment, payroll, manual journal, etc.) appears here with its origin discriminated by `source_type` and `source_id`.\n\nFiltering by `source_type=journal_entry` returns no results because Xero's underlying `where=SourceType==\"MANJOURNAL\"` filter does not match any rows on the `Journals` endpoint, even when manual-journal postings clearly exist in the unfiltered list response. To list manual-journal postings, use `accounting/journal-entries?filter[scope]=manual` or `accounting/journal-entries` directly after the manual-only redefinition.\n\n`currency` and `currency_rate` are returned as `null`. Xero's `Journals` endpoint does not expose currency information; fetch the originating document via `source_type` + `source_id` to retrieve currency.\n\nThe `Reference` field on Xero `Journals` is mapped to `reference`. For manual-journal postings, this is the `Narration` of the originating manual journal.\n",
+                        },
+                        {
+                            "connector": "restaurant365",
+                            "description": "Restaurant365 requires a `LocationId` on every call to this endpoint — there is no\ntenant-wide \"all locations\" mode. A request with no `LocationId` returns a 400, not an\nempty or partial result. Pass it via `pass_through[LocationId]=<uuid>`.\n\n`source_type` is derived from R365's transaction `type` field (`APInvoice`, `APCreditMemo`,\n`APPayment`, `JournalEntry`); other R365 transaction types pass through unmapped rather than\nbeing coerced to the nearest enum value.\n\n`line_items` is always empty. R365's own documentation shows the `details`/`distribution`\nfields on this endpoint as empty placeholders and never documents their populated shape, so\nthere is currently nothing to map — the transaction total, type and location are populated,\nbut not the underlying GL distribution lines.\n\nOnly `filter[updated_since]` is wired (to R365's `ModifiedOnStart`). `filter[source_type]`\nand `filter[source_id]` are not — R365 exposes a `TransactionTypes` filter and no source-id\nequivalent, so filtering by either currently has no effect rather than narrowing results.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Built from Zoho Books' Account Transactions report, which is not part of Zoho's published\nAPI reference. Every posting is included: invoices, payments, credit notes, expenses,\nmanual journals and the rest. Zoho's documented account-transactions endpoint only returns\nper-entity counts, so it is not used.\n\nThe list covers the organization's full history by default (postings dated from\n1900-01-01 to 2099-12-31). To narrow it, pass\n`pass_through[from_date]` and `pass_through[to_date]` (`YYYY-MM-DD`, posting date,\ninclusive). Pass `pass_through[cash_based]=true` for cash-basis postings instead of accrual.\n`filter[...]` is not supported, and a `pass_through` override of `sort_column`,\n`sort_order`, `group_by`, `page` or `per_page` is rejected with a 400.\n\n`limit` counts ledger lines, not transactions. Each page returns whole transactions, so it\ncan hold fewer than `limit` records, or none, while `next` is still set: keep following\n`next` until it is `null`. To return whole transactions across page boundaries, a page can\nalso read the previous page and every line of its first and last posting dates, so a page\nusually costs one to four Zoho calls (one more per extra 200 lines on those dates, so at\nmost 22), plus an organization lookup for `currency` at most every few minutes, each counted\nas a request against both Unify and the organization's Zoho API quota. If one of those reads\nfails, or the lines on the page's first or last posting date no longer match between reads,\nthe page is not returned: the request fails with a 502 (or 429 when Zoho rate-limits it) and\ncan be retried. Changes to other dates while a caller is paging are not detected: lines\nadded or removed on earlier dates shift Zoho's pages, as in any offset-paged list. If Zoho\nrejects one of those reads (for example expired credentials), the request fails with Zoho's\n4xx status instead. A single posting date with more than 2,000 ledger lines cannot be paged\nand always returns a 502, as does a page whose lines repeat identically within a date and\ncannot be placed; a larger `limit` avoids the latter.\n\nA Zoho document can post on more than one date, for example a customer payment received in\nadvance and later applied to an invoice. Each date is returned as its own balanced\ntransaction: `id` is `<Zoho document id>-<posting date>` and `source_id` is the Zoho\ndocument id. Because the posting date is part of `id`, editing a document's date in Zoho\nchanges the `id` of its transaction: a sync sees the old transaction disappear and a new\none appear, and should treat them as a removal and an addition.\n\nAmounts are in the organization's base currency, which is what `currency` holds.\n`ledger_account.code`, line ids and tax details are not returned. `number` is Zoho's entity\nnumber on the transaction's first line; on a payment's application to an invoice it is the\ninvoice number. A line's `description` is Zoho's \"Transaction Details\" column: the customer\nor vendor for sales, purchases and payments, the other account for transfers, and the notes\nfor manual journals.\n\n`source_type` maps invoices to `invoice`, bills to `bill`, credit notes and vendor credits\nto `credit_note`, customer and vendor payments to `payment`, refunds to `refund`, expenses\nto `expense` and manual journals to `journal_entry`. Every other Zoho transaction type\n(sales returns, transfers, deposits, card payments, owner drawings and contributions, other\nincome, opening balances, ...) is returned as `other`. A vendor credit's `source_id` is read\nthrough `bill-credit-notes`, not `credit-notes`.\n\nReading a single transaction by `id` is not supported.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -161,17 +196,21 @@ class GeneralLedgerTransactions(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingGeneralLedgerTransactionsAllResponse(
                 get_general_ledger_transactions_response=unmarshal_json_response(
-                    Optional[models.GetGeneralLedgerTransactionsResponse], http_res
+                    Optional[models.GetGeneralLedgerTransactionsResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -212,11 +251,10 @@ class GeneralLedgerTransactions(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingGeneralLedgerTransactionsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -243,7 +281,7 @@ class GeneralLedgerTransactions(BaseSDK):
                 models.GeneralLedgerTransactionsSortTypedDict,
             ]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -294,7 +332,7 @@ class GeneralLedgerTransactions(BaseSDK):
             sort=utils.get_pydantic_model(
                 sort, Optional[models.GeneralLedgerTransactionsSort]
             ),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -315,6 +353,7 @@ class GeneralLedgerTransactions(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -339,9 +378,43 @@ class GeneralLedgerTransactions(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "fiken",
+                            "description": "Each Fiken transaction is one record, and it can hold several journal entries: an invoice and the payments registered against it share one transaction. `line_items` combines the lines of all its entries, with the VAT of a sale or purchase on its own line against the VAT account, so `net_amount` is excluding VAT and the lines of a transaction sum to zero. `posted_at` and `number` come from the transaction's first entry.\n\n`source_type` is derived from Fiken's transaction type: sales (`Salg`) is `invoice`, purchases (`Kjøp`) is `bill`, sales and purchase credit notes are `credit_note`, free postings are `journal_entry`, payroll is `payroll`, and cash outlays are `expense`. Every other Fiken type, including cancellations and bank postings, is `other`. `source_id` is not returned, so a sale or purchase cannot be fetched from its transaction.\n\nCancelling a record in Fiken posts a reversing transaction instead of removing the original; both are returned and net to zero. `currency` is always `NOK` and amounts are in the company currency.\n\n`filter[updated_since]` works at day granularity: every transaction modified on or after that date is returned. `filter[source_type]` supports `invoice`, `bill`, `journal_entry`, `payroll` and `expense`; other values, including `credit_note`, are rejected with a 400. `sort` is not supported and results come back in Fiken's order.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "FreeAgent records ledger lines without a transaction id. Lines are returned grouped into one\ntransaction per source document and date, with the `id` of the transaction's first line;\neach transaction balances to zero. Zero-value documents, which post no amounts, are left out.\n\nThe list covers the company's current accounting year (FreeAgent does not return ledger\nlines across accounting years in one request). `filter[source_type]`, `filter[source_id]` and\n`filter[updated_since]` are not supported; `sort` supports `posted_at` only.\n\n`source_type` is `invoice` for both invoices and credit notes (they share FreeAgent's invoice\nids), and `other` for bank transaction explanations such as payments and receipts, with the\nexplanation id in `source_id`. `currency` is not returned; amounts are in the company's\ncurrency.\n",
+                        },
+                        {
+                            "connector": "e-boekhouden",
+                            "description": "`source_type: payment` covers both payments received and payments sent, since the unified\nvalue has no separate bill-payment variant. `source_id` can be fetched through the\nresource that matches its direction: `payments` for a payment received, `bill-payments`\nfor one sent. Fetching it through the other resource returns 404 rather than a record with\nthe direction flipped — the same applies to every record shared with `bills`, `invoices`\nand `journal-entries`.\n",
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": "This connector fetches every matching transaction in a single call — there is no\nserver-side pagination, so a large date range can be a large response. `currency_rate` and\n`reference` are not available. Transactions created through this connector's `expenses`\nresource are indistinguishable from manual journal entries and are returned as\n`source_type: journal_entry`.\n\n`posted_at` is approximated as the first day of the transaction's accounting period\n(month), not the actual posting date, since the connector's data source for this endpoint\ndoes not expose the real date.\n\nGetting a specific transaction by `id` is not supported — Twinfield's transaction numbers\nare not globally unique across transaction types, so there is no reliable way to look one\nup directly.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Backed by Xero's `Journals` API, which moves to the Advanced app tier on 2026-03-02. Each posting (invoice, bill, payment, payroll, manual journal, etc.) appears here with its origin discriminated by `source_type` and `source_id`.\n\nFiltering by `source_type=journal_entry` returns no results because Xero's underlying `where=SourceType==\"MANJOURNAL\"` filter does not match any rows on the `Journals` endpoint, even when manual-journal postings clearly exist in the unfiltered list response. To list manual-journal postings, use `accounting/journal-entries?filter[scope]=manual` or `accounting/journal-entries` directly after the manual-only redefinition.\n\n`currency` and `currency_rate` are returned as `null`. Xero's `Journals` endpoint does not expose currency information; fetch the originating document via `source_type` + `source_id` to retrieve currency.\n\nThe `Reference` field on Xero `Journals` is mapped to `reference`. For manual-journal postings, this is the `Narration` of the originating manual journal.\n",
+                        },
+                        {
+                            "connector": "restaurant365",
+                            "description": "Restaurant365 requires a `LocationId` on every call to this endpoint — there is no\ntenant-wide \"all locations\" mode. A request with no `LocationId` returns a 400, not an\nempty or partial result. Pass it via `pass_through[LocationId]=<uuid>`.\n\n`source_type` is derived from R365's transaction `type` field (`APInvoice`, `APCreditMemo`,\n`APPayment`, `JournalEntry`); other R365 transaction types pass through unmapped rather than\nbeing coerced to the nearest enum value.\n\n`line_items` is always empty. R365's own documentation shows the `details`/`distribution`\nfields on this endpoint as empty placeholders and never documents their populated shape, so\nthere is currently nothing to map — the transaction total, type and location are populated,\nbut not the underlying GL distribution lines.\n\nOnly `filter[updated_since]` is wired (to R365's `ModifiedOnStart`). `filter[source_type]`\nand `filter[source_id]` are not — R365 exposes a `TransactionTypes` filter and no source-id\nequivalent, so filtering by either currently has no effect rather than narrowing results.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Built from Zoho Books' Account Transactions report, which is not part of Zoho's published\nAPI reference. Every posting is included: invoices, payments, credit notes, expenses,\nmanual journals and the rest. Zoho's documented account-transactions endpoint only returns\nper-entity counts, so it is not used.\n\nThe list covers the organization's full history by default (postings dated from\n1900-01-01 to 2099-12-31). To narrow it, pass\n`pass_through[from_date]` and `pass_through[to_date]` (`YYYY-MM-DD`, posting date,\ninclusive). Pass `pass_through[cash_based]=true` for cash-basis postings instead of accrual.\n`filter[...]` is not supported, and a `pass_through` override of `sort_column`,\n`sort_order`, `group_by`, `page` or `per_page` is rejected with a 400.\n\n`limit` counts ledger lines, not transactions. Each page returns whole transactions, so it\ncan hold fewer than `limit` records, or none, while `next` is still set: keep following\n`next` until it is `null`. To return whole transactions across page boundaries, a page can\nalso read the previous page and every line of its first and last posting dates, so a page\nusually costs one to four Zoho calls (one more per extra 200 lines on those dates, so at\nmost 22), plus an organization lookup for `currency` at most every few minutes, each counted\nas a request against both Unify and the organization's Zoho API quota. If one of those reads\nfails, or the lines on the page's first or last posting date no longer match between reads,\nthe page is not returned: the request fails with a 502 (or 429 when Zoho rate-limits it) and\ncan be retried. Changes to other dates while a caller is paging are not detected: lines\nadded or removed on earlier dates shift Zoho's pages, as in any offset-paged list. If Zoho\nrejects one of those reads (for example expired credentials), the request fails with Zoho's\n4xx status instead. A single posting date with more than 2,000 ledger lines cannot be paged\nand always returns a 502, as does a page whose lines repeat identically within a date and\ncannot be placed; a larger `limit` avoids the latter.\n\nA Zoho document can post on more than one date, for example a customer payment received in\nadvance and later applied to an invoice. Each date is returned as its own balanced\ntransaction: `id` is `<Zoho document id>-<posting date>` and `source_id` is the Zoho\ndocument id. Because the posting date is part of `id`, editing a document's date in Zoho\nchanges the `id` of its transaction: a sync sees the old transaction disappear and a new\none appear, and should treat them as a removal and an addition.\n\nAmounts are in the organization's base currency, which is what `currency` holds.\n`ledger_account.code`, line ids and tax details are not returned. `number` is Zoho's entity\nnumber on the transaction's first line; on a payment's application to an invoice it is the\ninvoice number. A line's `description` is Zoho's \"Transaction Details\" column: the customer\nor vendor for sales, purchases and payments, the other account for transfers, and the notes\nfor manual journals.\n\n`source_type` maps invoices to `invoice`, bills to `bill`, credit notes and vendor credits\nto `credit_note`, customer and vendor payments to `payment`, refunds to `refund`, expenses\nto `expense` and manual journals to `journal_entry`. Every other Zoho transaction type\n(sales returns, transfers, deposits, card payments, owner drawings and contributions, other\nincome, opening balances, ...) is returned as `other`. A vendor credit's `source_id` is read\nthrough `bill-credit-notes`, not `credit-notes`.\n\nReading a single transaction by `id` is not supported.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -371,17 +444,21 @@ class GeneralLedgerTransactions(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingGeneralLedgerTransactionsAllResponse(
                 get_general_ledger_transactions_response=unmarshal_json_response(
-                    Optional[models.GetGeneralLedgerTransactionsResponse], http_res
+                    Optional[models.GetGeneralLedgerTransactionsResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -422,11 +499,10 @@ class GeneralLedgerTransactions(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingGeneralLedgerTransactionsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -499,6 +575,7 @@ class GeneralLedgerTransactions(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -523,9 +600,27 @@ class GeneralLedgerTransactions(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "fiken",
+                            "description": "Each Fiken transaction is one record, and it can hold several journal entries: an invoice and the payments registered against it share one transaction. `line_items` combines the lines of all its entries, with the VAT of a sale or purchase on its own line against the VAT account, so `net_amount` is excluding VAT and the lines of a transaction sum to zero. `posted_at` and `number` come from the transaction's first entry.\n\n`source_type` is derived from Fiken's transaction type: sales (`Salg`) is `invoice`, purchases (`Kjøp`) is `bill`, sales and purchase credit notes are `credit_note`, free postings are `journal_entry`, payroll is `payroll`, and cash outlays are `expense`. Every other Fiken type, including cancellations and bank postings, is `other`. `source_id` is not returned, so a sale or purchase cannot be fetched from its transaction.\n\nCancelling a record in Fiken posts a reversing transaction instead of removing the original; both are returned and net to zero. `currency` is always `NOK` and amounts are in the company currency.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "The id of any line of a transaction returns the whole transaction, with the id of its first\nline.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Backed by Xero's `Journals/{id}` endpoint. Two limitations of that endpoint surface here:\n\n`source_type` and `source_id` are returned as `null` for every record retrieved through this single endpoint — invoices, bills, payments, manual journals, all of them. Xero's `GET /api.xro/2.0/Journals/{id}` strips those fields regardless of journal type. To recover them, query the list endpoint (`GET /accounting/general-ledger-transactions`) where these fields are populated. Note that `filter[source_id]` takes the **originating document id** (e.g., the invoice's id), not this resource's transaction id — use it when you already know the source document and want to find every GL posting it produced. To find a specific transaction by its own id, narrow the list with `filter[updated_since]` close to the transaction's `posted_at` and iterate.\n\n`currency` and `currency_rate` are returned as `null`. Xero's `Journals` endpoint does not expose currency information; fetch the originating document via `source_type` + `source_id` (after recovering them through the list endpoint) to obtain currency.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -533,10 +628,11 @@ class GeneralLedgerTransactions(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingGeneralLedgerTransactionsOneResponse(
                 get_general_ledger_transaction_response=unmarshal_json_response(
-                    Optional[models.GetGeneralLedgerTransactionResponse], http_res
+                    Optional[models.GetGeneralLedgerTransactionResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -577,10 +673,9 @@ class GeneralLedgerTransactions(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingGeneralLedgerTransactionsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -653,6 +748,7 @@ class GeneralLedgerTransactions(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -677,9 +773,27 @@ class GeneralLedgerTransactions(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "fiken",
+                            "description": "Each Fiken transaction is one record, and it can hold several journal entries: an invoice and the payments registered against it share one transaction. `line_items` combines the lines of all its entries, with the VAT of a sale or purchase on its own line against the VAT account, so `net_amount` is excluding VAT and the lines of a transaction sum to zero. `posted_at` and `number` come from the transaction's first entry.\n\n`source_type` is derived from Fiken's transaction type: sales (`Salg`) is `invoice`, purchases (`Kjøp`) is `bill`, sales and purchase credit notes are `credit_note`, free postings are `journal_entry`, payroll is `payroll`, and cash outlays are `expense`. Every other Fiken type, including cancellations and bank postings, is `other`. `source_id` is not returned, so a sale or purchase cannot be fetched from its transaction.\n\nCancelling a record in Fiken posts a reversing transaction instead of removing the original; both are returned and net to zero. `currency` is always `NOK` and amounts are in the company currency.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "The id of any line of a transaction returns the whole transaction, with the id of its first\nline.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Backed by Xero's `Journals/{id}` endpoint. Two limitations of that endpoint surface here:\n\n`source_type` and `source_id` are returned as `null` for every record retrieved through this single endpoint — invoices, bills, payments, manual journals, all of them. Xero's `GET /api.xro/2.0/Journals/{id}` strips those fields regardless of journal type. To recover them, query the list endpoint (`GET /accounting/general-ledger-transactions`) where these fields are populated. Note that `filter[source_id]` takes the **originating document id** (e.g., the invoice's id), not this resource's transaction id — use it when you already know the source document and want to find every GL posting it produced. To find a specific transaction by its own id, narrow the list with `filter[updated_since]` close to the transaction's `posted_at` and iterate.\n\n`currency` and `currency_rate` are returned as `null`. Xero's `Journals` endpoint does not expose currency information; fetch the originating document via `source_type` + `source_id` (after recovering them through the list endpoint) to obtain currency.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -687,10 +801,11 @@ class GeneralLedgerTransactions(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingGeneralLedgerTransactionsOneResponse(
                 get_general_ledger_transaction_response=unmarshal_json_response(
-                    Optional[models.GetGeneralLedgerTransactionResponse], http_res
+                    Optional[models.GetGeneralLedgerTransactionResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -731,10 +846,9 @@ class GeneralLedgerTransactions(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingGeneralLedgerTransactionsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

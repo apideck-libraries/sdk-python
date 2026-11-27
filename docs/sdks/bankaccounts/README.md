@@ -1,5 +1,4 @@
-# BankAccounts
-(*accounting.bank_accounts*)
+# Accounting.BankAccounts
 
 ## Overview
 
@@ -27,7 +26,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.bank_accounts.list(raw=False, service_id="salesforce", company_id="12345", limit=20, filter_={
@@ -94,7 +93,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.bank_accounts.create(raw=False, service_id="salesforce", display_id="BA-001", name="Main Operating Account", account_number="123465", account_type=apideck_unify.AccountingBankAccountAccountType.CHECKING, ledger_account={
@@ -104,7 +103,7 @@ with Apideck(
         "code": "453",
         "parent_id": "123456",
         "display_id": "123456",
-    }, bank_name="Chase Bank", currency=apideck_unify.Currency.USD, balance=25000, available_balance=24500, overdraft_limit=5000, routing_number="021000021", iban="GB33BUKB20201555555555", bic="CHASUS33", bsb_number="062-001", branch_identifier="001", bank_code="BNH", country="US", status=apideck_unify.AccountingBankAccountStatus.ACTIVE, description="Primary operating account for daily transactions", custom_fields=[
+    }, bank_name="Chase Bank", currency=apideck_unify.Currency.USD, balance=25000.0, available_balance=24500.0, overdraft_limit=5000.0, routing_number="021000021", iban="GB33BUKB20201555555555", bic="CHASUS33", bsb_number="062-001", branch_identifier="001", bank_code="BNH", country="US", status=apideck_unify.AccountingBankAccountStatus.ACTIVE, description="Primary operating account for daily transactions", custom_fields=[
         {
             "id": "2389328923893298",
             "name": "employee_level",
@@ -182,7 +181,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.bank_accounts.get(id="<id>", filter_={
@@ -242,7 +241,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.bank_accounts.update(id="<id>", service_id="salesforce", raw=False, display_id="BA-001", name="Main Operating Account", account_number="123465", account_type=apideck_unify.AccountingBankAccountAccountType.CHECKING, ledger_account={
@@ -252,7 +251,7 @@ with Apideck(
         "code": "453",
         "parent_id": "123456",
         "display_id": "123456",
-    }, bank_name="Chase Bank", currency=apideck_unify.Currency.USD, balance=25000, available_balance=24500, overdraft_limit=5000, routing_number="021000021", iban="GB33BUKB20201555555555", bic="CHASUS33", bsb_number="062-001", branch_identifier="001", bank_code="BNH", country="US", status=apideck_unify.AccountingBankAccountStatus.ACTIVE, description="Primary operating account for daily transactions", custom_fields=[
+    }, bank_name="Chase Bank", currency=apideck_unify.Currency.USD, balance=25000.0, available_balance=24500.0, overdraft_limit=5000.0, routing_number="021000021", iban="GB33BUKB20201555555555", bic="CHASUS33", bsb_number="062-001", branch_identifier="001", bank_code="BNH", country="US", status=apideck_unify.AccountingBankAccountStatus.ACTIVE, description="Primary operating account for daily transactions", custom_fields=[
         {
             "id": "2389328923893298",
             "name": "employee_level",
@@ -330,7 +329,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.bank_accounts.delete(id="<id>", service_id="salesforce", raw=False)

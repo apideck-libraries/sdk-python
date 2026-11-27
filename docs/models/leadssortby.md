@@ -2,6 +2,16 @@
 
 The field on which to sort the Leads
 
+## Example Usage
+
+```python
+from apideck_unify.models import LeadsSortBy
+
+value = LeadsSortBy.CREATED_AT
+
+# Open enum: unrecognized values are captured as UnrecognizedStr
+```
+
 
 ## Values
 

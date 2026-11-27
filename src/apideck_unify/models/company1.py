@@ -17,13 +17,14 @@ from apideck_unify.types import (
     OptionalNullable,
     UNSET,
     UNSET_SENTINEL,
+    current_exclude_none,
+    serialize_with_info,
 )
-from apideck_unify.utils import validate_open_enum
+from apideck_unify.types.basemodel import current_filtered_dump
 from datetime import date, datetime
 from pydantic import field_serializer, model_serializer
-from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
-from typing_extensions import Annotated, NotRequired, TypedDict
+from typing_extensions import NotRequired, TypedDict
 
 
 class CompanyRowTypeTypedDict(TypedDict):
@@ -37,32 +38,34 @@ class CompanyRowType(BaseModel):
     name: OptionalNullable[str] = UNSET
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = ["id", "name"]
-        nullable_fields = ["id", "name"]
-        null_default_fields = []
-
+        optional_fields = set(["id", "name"])
+        nullable_fields = set(["id", "name"])
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m
 
@@ -167,9 +170,7 @@ class Company1(BaseModel):
     vat_number: OptionalNullable[str] = UNSET
     r"""The VAT number of the company"""
 
-    currency: Annotated[
-        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    currency: OptionalNullable[Currency] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     status: OptionalNullable[str] = UNSET
@@ -275,106 +276,112 @@ class Company1(BaseModel):
         return value
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = [
-            "id",
-            "interaction_count",
-            "owner_id",
-            "image",
-            "description",
-            "vat_number",
-            "currency",
-            "status",
-            "fax",
-            "annual_revenue",
-            "number_of_employees",
-            "industry",
-            "ownership",
-            "sales_tax_number",
-            "payee_number",
-            "abn_or_tfn",
-            "abn_branch",
-            "acn",
-            "first_name",
-            "last_name",
-            "parent_id",
-            "bank_accounts",
-            "websites",
-            "addresses",
-            "social_links",
-            "phone_numbers",
-            "emails",
-            "row_type",
-            "custom_fields",
-            "tags",
-            "read_only",
-            "last_activity_at",
-            "deleted",
-            "salutation",
-            "birthday",
-            "custom_mappings",
-            "updated_by",
-            "created_by",
-            "updated_at",
-            "created_at",
-            "pass_through",
-        ]
-        nullable_fields = [
-            "name",
-            "interaction_count",
-            "owner_id",
-            "image",
-            "description",
-            "vat_number",
-            "currency",
-            "status",
-            "fax",
-            "annual_revenue",
-            "number_of_employees",
-            "industry",
-            "ownership",
-            "sales_tax_number",
-            "payee_number",
-            "abn_or_tfn",
-            "abn_branch",
-            "acn",
-            "first_name",
-            "last_name",
-            "parent_id",
-            "tags",
-            "read_only",
-            "last_activity_at",
-            "salutation",
-            "birthday",
-            "custom_mappings",
-            "updated_by",
-            "created_by",
-            "updated_at",
-            "created_at",
-        ]
-        null_default_fields = []
-
+        optional_fields = set(
+            [
+                "id",
+                "interaction_count",
+                "owner_id",
+                "image",
+                "description",
+                "vat_number",
+                "currency",
+                "status",
+                "fax",
+                "annual_revenue",
+                "number_of_employees",
+                "industry",
+                "ownership",
+                "sales_tax_number",
+                "payee_number",
+                "abn_or_tfn",
+                "abn_branch",
+                "acn",
+                "first_name",
+                "last_name",
+                "parent_id",
+                "bank_accounts",
+                "websites",
+                "addresses",
+                "social_links",
+                "phone_numbers",
+                "emails",
+                "row_type",
+                "custom_fields",
+                "tags",
+                "read_only",
+                "last_activity_at",
+                "deleted",
+                "salutation",
+                "birthday",
+                "custom_mappings",
+                "updated_by",
+                "created_by",
+                "updated_at",
+                "created_at",
+                "pass_through",
+            ]
+        )
+        nullable_fields = set(
+            [
+                "name",
+                "interaction_count",
+                "owner_id",
+                "image",
+                "description",
+                "vat_number",
+                "currency",
+                "status",
+                "fax",
+                "annual_revenue",
+                "number_of_employees",
+                "industry",
+                "ownership",
+                "sales_tax_number",
+                "payee_number",
+                "abn_or_tfn",
+                "abn_branch",
+                "acn",
+                "first_name",
+                "last_name",
+                "parent_id",
+                "tags",
+                "read_only",
+                "last_activity_at",
+                "salutation",
+                "birthday",
+                "custom_mappings",
+                "updated_by",
+                "created_by",
+                "updated_at",
+                "created_at",
+            ]
+        )
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m
 
@@ -455,9 +462,7 @@ class Company1Input(BaseModel):
     vat_number: OptionalNullable[str] = UNSET
     r"""The VAT number of the company"""
 
-    currency: Annotated[
-        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    currency: OptionalNullable[Currency] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     status: OptionalNullable[str] = UNSET
@@ -542,89 +547,95 @@ class Company1Input(BaseModel):
         return value
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = [
-            "owner_id",
-            "image",
-            "description",
-            "vat_number",
-            "currency",
-            "status",
-            "fax",
-            "annual_revenue",
-            "number_of_employees",
-            "industry",
-            "ownership",
-            "sales_tax_number",
-            "payee_number",
-            "abn_or_tfn",
-            "abn_branch",
-            "acn",
-            "first_name",
-            "last_name",
-            "parent_id",
-            "bank_accounts",
-            "websites",
-            "addresses",
-            "social_links",
-            "phone_numbers",
-            "emails",
-            "row_type",
-            "custom_fields",
-            "tags",
-            "read_only",
-            "salutation",
-            "birthday",
-            "pass_through",
-        ]
-        nullable_fields = [
-            "name",
-            "owner_id",
-            "image",
-            "description",
-            "vat_number",
-            "currency",
-            "status",
-            "fax",
-            "annual_revenue",
-            "number_of_employees",
-            "industry",
-            "ownership",
-            "sales_tax_number",
-            "payee_number",
-            "abn_or_tfn",
-            "abn_branch",
-            "acn",
-            "first_name",
-            "last_name",
-            "parent_id",
-            "tags",
-            "read_only",
-            "salutation",
-            "birthday",
-        ]
-        null_default_fields = []
-
+        optional_fields = set(
+            [
+                "owner_id",
+                "image",
+                "description",
+                "vat_number",
+                "currency",
+                "status",
+                "fax",
+                "annual_revenue",
+                "number_of_employees",
+                "industry",
+                "ownership",
+                "sales_tax_number",
+                "payee_number",
+                "abn_or_tfn",
+                "abn_branch",
+                "acn",
+                "first_name",
+                "last_name",
+                "parent_id",
+                "bank_accounts",
+                "websites",
+                "addresses",
+                "social_links",
+                "phone_numbers",
+                "emails",
+                "row_type",
+                "custom_fields",
+                "tags",
+                "read_only",
+                "salutation",
+                "birthday",
+                "pass_through",
+            ]
+        )
+        nullable_fields = set(
+            [
+                "name",
+                "owner_id",
+                "image",
+                "description",
+                "vat_number",
+                "currency",
+                "status",
+                "fax",
+                "annual_revenue",
+                "number_of_employees",
+                "industry",
+                "ownership",
+                "sales_tax_number",
+                "payee_number",
+                "abn_or_tfn",
+                "abn_branch",
+                "acn",
+                "first_name",
+                "last_name",
+                "parent_id",
+                "tags",
+                "read_only",
+                "salutation",
+                "birthday",
+            ]
+        )
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m

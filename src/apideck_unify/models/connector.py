@@ -21,13 +21,14 @@ from apideck_unify.types import (
     OptionalNullable,
     UNSET,
     UNSET_SENTINEL,
+    current_exclude_none,
+    serialize_with_info,
 )
-from apideck_unify.utils import validate_open_enum
+from apideck_unify.types.basemodel import current_filtered_dump
 from enum import Enum
 from pydantic import field_serializer, model_serializer
-from pydantic.functional_validators import PlainValidator
 from typing import List, Optional
-from typing_extensions import Annotated, NotRequired, TypedDict
+from typing_extensions import NotRequired, TypedDict
 
 
 class ConnectorAuthType(str, Enum, metaclass=utils.OpenEnumMeta):
@@ -74,6 +75,29 @@ class OauthScopes(BaseModel):
     default_apis: Optional[List[str]] = None
     r"""List of Unified APIs that request this OAuth Scope by default. Application owners can customize the requested scopes."""
 
+    @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
+    def serialize_model(self, handler):
+        optional_fields = set(["id", "label", "default_apis"])
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
+        serialized = handler(self)
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+
+            if val != UNSET_SENTINEL:
+                if val is not None or k not in optional_fields:
+                    m[k] = val
+
+        return m
+
 
 class ConnectorOauthScopesTypedDict(TypedDict):
     r"""OAuth scopes required for the connector. Add these scopes to your OAuth app."""
@@ -93,6 +117,29 @@ class ConnectorOauthScopes(BaseModel):
     label: Optional[str] = None
     r"""Label of the OAuth scope."""
 
+    @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
+    def serialize_model(self, handler):
+        optional_fields = set(["id", "label"])
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
+        serialized = handler(self)
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+
+            if val != UNSET_SENTINEL:
+                if val is not None or k not in optional_fields:
+                    m[k] = val
+
+        return m
+
 
 class UnifiedApisTypedDict(TypedDict):
     id: NotRequired[UnifiedAPIID]
@@ -111,9 +158,7 @@ class UnifiedApisTypedDict(TypedDict):
 
 
 class UnifiedApis(BaseModel):
-    id: Annotated[Optional[UnifiedAPIID], PlainValidator(validate_open_enum(False))] = (
-        None
-    )
+    id: Optional[UnifiedAPIID] = None
     r"""Name of Apideck Unified API"""
 
     name: Optional[str] = None
@@ -142,6 +187,39 @@ class UnifiedApis(BaseModel):
                 return value
         return value
 
+    @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
+    def serialize_model(self, handler):
+        optional_fields = set(
+            [
+                "id",
+                "name",
+                "auth_only",
+                "oauth_scopes",
+                "supported_resources",
+                "downstream_unsupported_resources",
+                "supported_events",
+            ]
+        )
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
+        serialized = handler(self)
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+
+            if val != UNSET_SENTINEL:
+                if val is not None or k not in optional_fields:
+                    m[k] = val
+
+        return m
+
 
 class TLSSupportTypedDict(TypedDict):
     type: NotRequired[str]
@@ -154,6 +232,29 @@ class TLSSupport(BaseModel):
 
     description: Optional[str] = None
     r"""Description of the TLS support"""
+
+    @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
+    def serialize_model(self, handler):
+        optional_fields = set(["type", "description"])
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
+        serialized = handler(self)
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+
+            if val != UNSET_SENTINEL:
+                if val is not None or k not in optional_fields:
+                    m[k] = val
+
+        return m
 
 
 class ConnectorTypedDict(TypedDict):
@@ -225,9 +326,7 @@ class Connector(BaseModel):
     name: Optional[str] = None
     r"""Name of the connector."""
 
-    status: Annotated[
-        Optional[ConnectorStatus], PlainValidator(validate_open_enum(False))
-    ] = None
+    status: Optional[ConnectorStatus] = None
     r"""Status of the connector. Connectors with status live or beta are callable."""
 
     description: OptionalNullable[str] = UNSET
@@ -254,9 +353,7 @@ class Connector(BaseModel):
     migration_targets: Optional[List[str]] = None
     r"""Service ids of connectors this connector's connections can be migrated to via the Vault connectionsMigrate operation."""
 
-    auth_type: Annotated[
-        Optional[ConnectorAuthType], PlainValidator(validate_open_enum(False))
-    ] = None
+    auth_type: Optional[ConnectorAuthType] = None
     r"""Type of authorization used by the connector"""
 
     auth_only: Optional[bool] = None
@@ -265,14 +362,10 @@ class Connector(BaseModel):
     blind_mapped: Optional[bool] = None
     r"""Set to `true` when connector was implemented from downstream docs only and without API access. This state indicates that integration will require Apideck support, and access to downstream API to validate mapping quality."""
 
-    oauth_grant_type: Annotated[
-        Optional[ConnectorOauthGrantType], PlainValidator(validate_open_enum(False))
-    ] = None
+    oauth_grant_type: Optional[ConnectorOauthGrantType] = None
     r"""OAuth grant type used by the connector. More info: https://oauth.net/2/grant-types"""
 
-    oauth_credentials_source: Annotated[
-        Optional[OauthCredentialsSource], PlainValidator(validate_open_enum(False))
-    ] = None
+    oauth_credentials_source: Optional[OauthCredentialsSource] = None
     r"""Location of the OAuth client credentials. For most connectors the OAuth client credentials are stored on integration and managed by the application owner. For others they are stored on connection and managed by the consumer in Vault."""
 
     oauth_scopes: Optional[List[OauthScopes]] = None
@@ -354,63 +447,67 @@ class Connector(BaseModel):
         return value
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = [
-            "id",
-            "name",
-            "status",
-            "description",
-            "icon_url",
-            "logo_url",
-            "website_url",
-            "signup_url",
-            "partner_signup_url",
-            "free_trial_available",
-            "migration_targets",
-            "auth_type",
-            "auth_only",
-            "blind_mapped",
-            "oauth_grant_type",
-            "oauth_credentials_source",
-            "oauth_scopes",
-            "custom_scopes",
-            "has_sandbox_credentials",
-            "settings",
-            "service_id",
-            "unified_apis",
-            "supported_resources",
-            "configurable_resources",
-            "supported_events",
-            "webhook_support",
-            "batch_support",
-            "schema_support",
-            "docs",
-            "overview",
-            "tls_support",
-        ]
-        nullable_fields = ["description"]
-        null_default_fields = []
-
+        optional_fields = set(
+            [
+                "id",
+                "name",
+                "status",
+                "description",
+                "icon_url",
+                "logo_url",
+                "website_url",
+                "signup_url",
+                "partner_signup_url",
+                "free_trial_available",
+                "migration_targets",
+                "auth_type",
+                "auth_only",
+                "blind_mapped",
+                "oauth_grant_type",
+                "oauth_credentials_source",
+                "oauth_scopes",
+                "custom_scopes",
+                "has_sandbox_credentials",
+                "settings",
+                "service_id",
+                "unified_apis",
+                "supported_resources",
+                "configurable_resources",
+                "supported_events",
+                "webhook_support",
+                "batch_support",
+                "schema_support",
+                "docs",
+                "overview",
+                "tls_support",
+            ]
+        )
+        nullable_fields = set(["description"])
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m

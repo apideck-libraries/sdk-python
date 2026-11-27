@@ -2,6 +2,16 @@
 
 The field on which to sort the Customers
 
+## Example Usage
+
+```python
+from apideck_unify.models import CustomersSortBy
+
+value = CustomersSortBy.CREATED_AT
+
+# Open enum: unrecognized values are captured as UnrecognizedStr
+```
+
 
 ## Values
 

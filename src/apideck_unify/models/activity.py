@@ -17,13 +17,14 @@ from apideck_unify.types import (
     OptionalNullable,
     UNSET,
     UNSET_SENTINEL,
+    current_exclude_none,
+    serialize_with_info,
 )
-from apideck_unify.utils import validate_open_enum
+from apideck_unify.types.basemodel import current_filtered_dump
 from enum import Enum
 from pydantic import field_serializer, model_serializer
-from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
-from typing_extensions import Annotated, NotRequired, TypedDict
+from typing_extensions import NotRequired, TypedDict
 
 
 class ActivityType(str, Enum, metaclass=utils.OpenEnumMeta):
@@ -150,7 +151,7 @@ class ActivityTypedDict(TypedDict):
 
 
 class Activity(BaseModel):
-    type: Annotated[Nullable[ActivityType], PlainValidator(validate_open_enum(False))]
+    type: Nullable[ActivityType]
     r"""The type of the activity"""
 
     id: Optional[str] = None
@@ -245,9 +246,7 @@ class Activity(BaseModel):
     deleted: OptionalNullable[bool] = UNSET
     r"""Whether the activity is deleted or not"""
 
-    show_as: Annotated[
-        OptionalNullable[ShowAs], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    show_as: OptionalNullable[ShowAs] = UNSET
 
     done: OptionalNullable[bool] = UNSET
     r"""Whether the Activity is done or not"""
@@ -324,131 +323,137 @@ class Activity(BaseModel):
         return value
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = [
-            "id",
-            "downstream_id",
-            "activity_datetime",
-            "duration_seconds",
-            "user_id",
-            "account_id",
-            "contact_id",
-            "company_id",
-            "opportunity_id",
-            "lead_id",
-            "owner_id",
-            "campaign_id",
-            "case_id",
-            "asset_id",
-            "contract_id",
-            "product_id",
-            "solution_id",
-            "custom_object_id",
-            "title",
-            "description",
-            "note",
-            "location",
-            "location_address",
-            "all_day_event",
-            "private",
-            "group_event",
-            "event_sub_type",
-            "group_event_type",
-            "child",
-            "archived",
-            "deleted",
-            "show_as",
-            "done",
-            "start_datetime",
-            "end_datetime",
-            "duration_minutes",
-            "activity_date",
-            "end_date",
-            "recurrent",
-            "reminder_datetime",
-            "reminder_set",
-            "video_conference_url",
-            "video_conference_id",
-            "custom_fields",
-            "attendees",
-            "custom_mappings",
-            "updated_by",
-            "created_by",
-            "updated_at",
-            "created_at",
-            "pass_through",
-        ]
-        nullable_fields = [
-            "downstream_id",
-            "activity_datetime",
-            "duration_seconds",
-            "user_id",
-            "account_id",
-            "contact_id",
-            "company_id",
-            "opportunity_id",
-            "lead_id",
-            "owner_id",
-            "campaign_id",
-            "case_id",
-            "asset_id",
-            "contract_id",
-            "product_id",
-            "solution_id",
-            "custom_object_id",
-            "type",
-            "title",
-            "description",
-            "note",
-            "location",
-            "all_day_event",
-            "private",
-            "group_event",
-            "event_sub_type",
-            "group_event_type",
-            "child",
-            "archived",
-            "deleted",
-            "show_as",
-            "done",
-            "start_datetime",
-            "end_datetime",
-            "duration_minutes",
-            "activity_date",
-            "end_date",
-            "reminder_datetime",
-            "reminder_set",
-            "video_conference_url",
-            "video_conference_id",
-            "custom_mappings",
-            "updated_by",
-            "created_by",
-            "updated_at",
-            "created_at",
-        ]
-        null_default_fields = []
-
+        optional_fields = set(
+            [
+                "id",
+                "downstream_id",
+                "activity_datetime",
+                "duration_seconds",
+                "user_id",
+                "account_id",
+                "contact_id",
+                "company_id",
+                "opportunity_id",
+                "lead_id",
+                "owner_id",
+                "campaign_id",
+                "case_id",
+                "asset_id",
+                "contract_id",
+                "product_id",
+                "solution_id",
+                "custom_object_id",
+                "title",
+                "description",
+                "note",
+                "location",
+                "location_address",
+                "all_day_event",
+                "private",
+                "group_event",
+                "event_sub_type",
+                "group_event_type",
+                "child",
+                "archived",
+                "deleted",
+                "show_as",
+                "done",
+                "start_datetime",
+                "end_datetime",
+                "duration_minutes",
+                "activity_date",
+                "end_date",
+                "recurrent",
+                "reminder_datetime",
+                "reminder_set",
+                "video_conference_url",
+                "video_conference_id",
+                "custom_fields",
+                "attendees",
+                "custom_mappings",
+                "updated_by",
+                "created_by",
+                "updated_at",
+                "created_at",
+                "pass_through",
+            ]
+        )
+        nullable_fields = set(
+            [
+                "downstream_id",
+                "activity_datetime",
+                "duration_seconds",
+                "user_id",
+                "account_id",
+                "contact_id",
+                "company_id",
+                "opportunity_id",
+                "lead_id",
+                "owner_id",
+                "campaign_id",
+                "case_id",
+                "asset_id",
+                "contract_id",
+                "product_id",
+                "solution_id",
+                "custom_object_id",
+                "type",
+                "title",
+                "description",
+                "note",
+                "location",
+                "all_day_event",
+                "private",
+                "group_event",
+                "event_sub_type",
+                "group_event_type",
+                "child",
+                "archived",
+                "deleted",
+                "show_as",
+                "done",
+                "start_datetime",
+                "end_datetime",
+                "duration_minutes",
+                "activity_date",
+                "end_date",
+                "reminder_datetime",
+                "reminder_set",
+                "video_conference_url",
+                "video_conference_id",
+                "custom_mappings",
+                "updated_by",
+                "created_by",
+                "updated_at",
+                "created_at",
+            ]
+        )
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m
 
@@ -542,7 +547,7 @@ class ActivityInputTypedDict(TypedDict):
 
 
 class ActivityInput(BaseModel):
-    type: Annotated[Nullable[ActivityType], PlainValidator(validate_open_enum(False))]
+    type: Nullable[ActivityType]
     r"""The type of the activity"""
 
     activity_datetime: OptionalNullable[str] = UNSET
@@ -631,9 +636,7 @@ class ActivityInput(BaseModel):
     deleted: OptionalNullable[bool] = UNSET
     r"""Whether the activity is deleted or not"""
 
-    show_as: Annotated[
-        OptionalNullable[ShowAs], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    show_as: OptionalNullable[ShowAs] = UNSET
 
     done: OptionalNullable[bool] = UNSET
     r"""Whether the Activity is done or not"""
@@ -692,115 +695,121 @@ class ActivityInput(BaseModel):
         return value
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = [
-            "activity_datetime",
-            "duration_seconds",
-            "user_id",
-            "account_id",
-            "contact_id",
-            "company_id",
-            "opportunity_id",
-            "lead_id",
-            "owner_id",
-            "campaign_id",
-            "case_id",
-            "asset_id",
-            "contract_id",
-            "product_id",
-            "solution_id",
-            "custom_object_id",
-            "title",
-            "description",
-            "note",
-            "location",
-            "location_address",
-            "all_day_event",
-            "private",
-            "group_event",
-            "event_sub_type",
-            "group_event_type",
-            "child",
-            "archived",
-            "deleted",
-            "show_as",
-            "done",
-            "start_datetime",
-            "end_datetime",
-            "activity_date",
-            "end_date",
-            "recurrent",
-            "reminder_datetime",
-            "reminder_set",
-            "video_conference_url",
-            "video_conference_id",
-            "custom_fields",
-            "attendees",
-            "pass_through",
-        ]
-        nullable_fields = [
-            "activity_datetime",
-            "duration_seconds",
-            "user_id",
-            "account_id",
-            "contact_id",
-            "company_id",
-            "opportunity_id",
-            "lead_id",
-            "owner_id",
-            "campaign_id",
-            "case_id",
-            "asset_id",
-            "contract_id",
-            "product_id",
-            "solution_id",
-            "custom_object_id",
-            "type",
-            "title",
-            "description",
-            "note",
-            "location",
-            "all_day_event",
-            "private",
-            "group_event",
-            "event_sub_type",
-            "group_event_type",
-            "child",
-            "archived",
-            "deleted",
-            "show_as",
-            "done",
-            "start_datetime",
-            "end_datetime",
-            "activity_date",
-            "end_date",
-            "reminder_datetime",
-            "reminder_set",
-            "video_conference_url",
-            "video_conference_id",
-        ]
-        null_default_fields = []
-
+        optional_fields = set(
+            [
+                "activity_datetime",
+                "duration_seconds",
+                "user_id",
+                "account_id",
+                "contact_id",
+                "company_id",
+                "opportunity_id",
+                "lead_id",
+                "owner_id",
+                "campaign_id",
+                "case_id",
+                "asset_id",
+                "contract_id",
+                "product_id",
+                "solution_id",
+                "custom_object_id",
+                "title",
+                "description",
+                "note",
+                "location",
+                "location_address",
+                "all_day_event",
+                "private",
+                "group_event",
+                "event_sub_type",
+                "group_event_type",
+                "child",
+                "archived",
+                "deleted",
+                "show_as",
+                "done",
+                "start_datetime",
+                "end_datetime",
+                "activity_date",
+                "end_date",
+                "recurrent",
+                "reminder_datetime",
+                "reminder_set",
+                "video_conference_url",
+                "video_conference_id",
+                "custom_fields",
+                "attendees",
+                "pass_through",
+            ]
+        )
+        nullable_fields = set(
+            [
+                "activity_datetime",
+                "duration_seconds",
+                "user_id",
+                "account_id",
+                "contact_id",
+                "company_id",
+                "opportunity_id",
+                "lead_id",
+                "owner_id",
+                "campaign_id",
+                "case_id",
+                "asset_id",
+                "contract_id",
+                "product_id",
+                "solution_id",
+                "custom_object_id",
+                "type",
+                "title",
+                "description",
+                "note",
+                "location",
+                "all_day_event",
+                "private",
+                "group_event",
+                "event_sub_type",
+                "group_event_type",
+                "child",
+                "archived",
+                "deleted",
+                "show_as",
+                "done",
+                "start_datetime",
+                "end_datetime",
+                "activity_date",
+                "end_date",
+                "reminder_datetime",
+                "reminder_set",
+                "video_conference_url",
+                "video_conference_id",
+            ]
+        )
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m

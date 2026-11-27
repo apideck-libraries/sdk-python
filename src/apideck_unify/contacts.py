@@ -7,7 +7,7 @@ from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from jsonpath import JSONPath
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
 
 
 class Contacts(BaseSDK):
@@ -24,7 +24,7 @@ class Contacts(BaseSDK):
             Union[models.ContactsFilter, models.ContactsFilterTypedDict]
         ] = None,
         sort: Optional[Union[models.ContactsSort, models.ContactsSortTypedDict]] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -69,7 +69,7 @@ class Contacts(BaseSDK):
             limit=limit,
             filter_=utils.get_pydantic_model(filter_, Optional[models.ContactsFilter]),
             sort=utils.get_pydantic_model(sort, Optional[models.ContactsSort]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -90,6 +90,7 @@ class Contacts(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -114,9 +115,67 @@ class Contacts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "hubspot",
+                            "description": "When using a filter or sorting for contacts, Hubspot will only return a maximum of 10.000 contacts.",
+                        },
+                        {
+                            "connector": "salesforce",
+                            "description": "Salesforce imposes a maximum offset limit of 2000. Exceeding this offset will result in an error from Salesforce. For result sets larger than 2000 items, it is necessary to set the pagination limit to 200, as this will enforce the use of batchSize for pagination. Note that setting a limit lower than 200 will not reduce the batchSize due to Salesforce's minimum batch size policy of 200, as detailed in their documentation [here](https://developer.salesforce.com/docs/atlas.en-us.250.0.api_rest.meta/api_rest/headers_queryoptions.htm) and will have no effect.",
+                        },
+                        {
+                            "connector": "zoho-crm",
+                            "description": "When using the phone_number filter for contacts in Zoho CRM, the filter does not work with numbers containing dashes (e.g., 989-989-989) or their URL-encoded equivalents (e.g., 989%2D989%2D989). It only works with continuous digits (e.g., 9898989898).",
+                        },
+                        {
+                            "connector": "microsoft-outlook",
+                            "description": "To get custom fields, make a get contact call with owner_id. If no owner_id is provided, the list call will return the contacts of the authenticated user. Microsoft Outlook allows multiple emails without a type. We will return the type of the first email as primary and the rest as other.",
+                        },
+                        {
+                            "connector": "blackbaud",
+                            "description": "Blackbaud does not support contacts and companies as separate entities. Both are managed under the **Constituent** model in Blackbaud's API.\nThis endpoint returns both contacts and companies. To distinguish between them, use [custom mappings](https://developers.apideck.com/apis/crm/reference#tag/Contacts/operation/contactsAll) to retrieve the `type` field. Possible values are `Individual` and `Organization`.\n",
+                        },
+                        {
+                            "connector": "pipedrive",
+                            "description": "Pipedrive does not expose a cross-page total record count in list responses. `meta.total_count` will not appear.\n\nContacts are paginated with an opaque cursor. A cursor obtained before the move to cursor pagination is rejected with `InvalidCursorError`; restart the listing from the first page instead of resuming it.\n\nEvery phone number and email address stored on the Pipedrive person is returned, and `phone_numbers[].type` / `emails[].type` reflect the label set in Pipedrive. Labels that match a unified type (`work`, `home`, `mobile`, `fax`, `primary`, `billing`, ..., compared case-insensitively) are preserved; a custom label that has no unified equivalent, or an empty label, is reported as `other`, and updating such a contact writes `other` back as the label. Pipedrive's per-entry \"primary\" flag is not surfaced because the unified schema has no field for it.\n\nDeleting a contact is a soft delete in Pipedrive: the contact disappears from the list, but `GET /crm/contacts/{id}` keeps returning it with `active: false`, and Pipedrive's search index can keep returning it for filtered requests for a while, without an `active` value.\n\nSorting is limited to `created_at` and `updated_at`; `sort[by]=name`, `first_name`, `last_name` or `email` returns an unsupported-sort error.\n\nFilters are served by Pipedrive's search and cannot be combined: use one of `name`, `email` or `phone_number` per request (combining them searches for all values together and typically returns nothing). `filter[email]` and `filter[phone_number]` are exact matches (case-insensitive): only contacts whose stored email or phone number equals the value are returned, so a partial value returns nothing, and a phone number must be formatted exactly as stored in Pipedrive (e.g. `+15550100100` does not match `15550100100`). `filter[name]` is a partial match. Filtered results omit `first_name`, `last_name`, `created_at`, `active` and custom fields, carry `company_name` (which unfiltered results do not), and their phone numbers and emails have no labels, so `type` is always `other`. Pipedrive's search cannot be sorted, so a `sort` combined with a filter is ignored.\n",
+                        },
+                        {
+                            "connector": "zendesk-sell",
+                            "description": "Zendesk Sell does not expose a native cross-page total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate request to the Zendesk Sell `GET /v2/{resource}/count` endpoint — an extra API call not currently implemented.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics",
+                            "description": "Microsoft Dynamics 365 does not include a total record count in default list responses. `meta.total_count` will not appear. Surfacing the total requires adding `$count=true` to the OData query or calling a separate `$count` endpoint — not currently implemented.\n",
+                        },
+                        {
+                            "connector": "zoho-crm",
+                            "description": "Zoho CRM's `info.count` in list responses is a per-page count only, not a cross-page total. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "attio",
+                            "description": "Attio does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "salesflare",
+                            "description": "Salesflare does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "auth0",
+                            "description": "`total_count` is available in Auth0 but requires `?include_totals=true` and is only available with offset-based pagination. Checkpoint-based pagination does not expose a total. Currently not wired — `meta.total_count` will not appear.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -143,17 +202,19 @@ class Contacts(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmContactsAllResponse(
                 get_contacts_response=unmarshal_json_response(
-                    Optional[models.GetContactsResponse], http_res
+                    Optional[models.GetContactsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -194,11 +255,10 @@ class Contacts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmContactsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -216,7 +276,7 @@ class Contacts(BaseSDK):
             Union[models.ContactsFilter, models.ContactsFilterTypedDict]
         ] = None,
         sort: Optional[Union[models.ContactsSort, models.ContactsSortTypedDict]] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -261,7 +321,7 @@ class Contacts(BaseSDK):
             limit=limit,
             filter_=utils.get_pydantic_model(filter_, Optional[models.ContactsFilter]),
             sort=utils.get_pydantic_model(sort, Optional[models.ContactsSort]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -282,6 +342,7 @@ class Contacts(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -306,9 +367,67 @@ class Contacts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "hubspot",
+                            "description": "When using a filter or sorting for contacts, Hubspot will only return a maximum of 10.000 contacts.",
+                        },
+                        {
+                            "connector": "salesforce",
+                            "description": "Salesforce imposes a maximum offset limit of 2000. Exceeding this offset will result in an error from Salesforce. For result sets larger than 2000 items, it is necessary to set the pagination limit to 200, as this will enforce the use of batchSize for pagination. Note that setting a limit lower than 200 will not reduce the batchSize due to Salesforce's minimum batch size policy of 200, as detailed in their documentation [here](https://developer.salesforce.com/docs/atlas.en-us.250.0.api_rest.meta/api_rest/headers_queryoptions.htm) and will have no effect.",
+                        },
+                        {
+                            "connector": "zoho-crm",
+                            "description": "When using the phone_number filter for contacts in Zoho CRM, the filter does not work with numbers containing dashes (e.g., 989-989-989) or their URL-encoded equivalents (e.g., 989%2D989%2D989). It only works with continuous digits (e.g., 9898989898).",
+                        },
+                        {
+                            "connector": "microsoft-outlook",
+                            "description": "To get custom fields, make a get contact call with owner_id. If no owner_id is provided, the list call will return the contacts of the authenticated user. Microsoft Outlook allows multiple emails without a type. We will return the type of the first email as primary and the rest as other.",
+                        },
+                        {
+                            "connector": "blackbaud",
+                            "description": "Blackbaud does not support contacts and companies as separate entities. Both are managed under the **Constituent** model in Blackbaud's API.\nThis endpoint returns both contacts and companies. To distinguish between them, use [custom mappings](https://developers.apideck.com/apis/crm/reference#tag/Contacts/operation/contactsAll) to retrieve the `type` field. Possible values are `Individual` and `Organization`.\n",
+                        },
+                        {
+                            "connector": "pipedrive",
+                            "description": "Pipedrive does not expose a cross-page total record count in list responses. `meta.total_count` will not appear.\n\nContacts are paginated with an opaque cursor. A cursor obtained before the move to cursor pagination is rejected with `InvalidCursorError`; restart the listing from the first page instead of resuming it.\n\nEvery phone number and email address stored on the Pipedrive person is returned, and `phone_numbers[].type` / `emails[].type` reflect the label set in Pipedrive. Labels that match a unified type (`work`, `home`, `mobile`, `fax`, `primary`, `billing`, ..., compared case-insensitively) are preserved; a custom label that has no unified equivalent, or an empty label, is reported as `other`, and updating such a contact writes `other` back as the label. Pipedrive's per-entry \"primary\" flag is not surfaced because the unified schema has no field for it.\n\nDeleting a contact is a soft delete in Pipedrive: the contact disappears from the list, but `GET /crm/contacts/{id}` keeps returning it with `active: false`, and Pipedrive's search index can keep returning it for filtered requests for a while, without an `active` value.\n\nSorting is limited to `created_at` and `updated_at`; `sort[by]=name`, `first_name`, `last_name` or `email` returns an unsupported-sort error.\n\nFilters are served by Pipedrive's search and cannot be combined: use one of `name`, `email` or `phone_number` per request (combining them searches for all values together and typically returns nothing). `filter[email]` and `filter[phone_number]` are exact matches (case-insensitive): only contacts whose stored email or phone number equals the value are returned, so a partial value returns nothing, and a phone number must be formatted exactly as stored in Pipedrive (e.g. `+15550100100` does not match `15550100100`). `filter[name]` is a partial match. Filtered results omit `first_name`, `last_name`, `created_at`, `active` and custom fields, carry `company_name` (which unfiltered results do not), and their phone numbers and emails have no labels, so `type` is always `other`. Pipedrive's search cannot be sorted, so a `sort` combined with a filter is ignored.\n",
+                        },
+                        {
+                            "connector": "zendesk-sell",
+                            "description": "Zendesk Sell does not expose a native cross-page total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate request to the Zendesk Sell `GET /v2/{resource}/count` endpoint — an extra API call not currently implemented.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics",
+                            "description": "Microsoft Dynamics 365 does not include a total record count in default list responses. `meta.total_count` will not appear. Surfacing the total requires adding `$count=true` to the OData query or calling a separate `$count` endpoint — not currently implemented.\n",
+                        },
+                        {
+                            "connector": "zoho-crm",
+                            "description": "Zoho CRM's `info.count` in list responses is a per-page count only, not a cross-page total. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "attio",
+                            "description": "Attio does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "salesflare",
+                            "description": "Salesflare does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "auth0",
+                            "description": "`total_count` is available in Auth0 but requires `?include_totals=true` and is only available with offset-based pagination. Checkpoint-based pagination does not expose a total. Currently not wired — `meta.total_count` will not appear.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -335,17 +454,19 @@ class Contacts(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmContactsAllResponse(
                 get_contacts_response=unmarshal_json_response(
-                    Optional[models.GetContactsResponse], http_res
+                    Optional[models.GetContactsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -386,11 +507,10 @@ class Contacts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmContactsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -427,26 +547,31 @@ class Contacts(BaseSDK):
         status: OptionalNullable[str] = UNSET,
         active: OptionalNullable[bool] = UNSET,
         websites: Optional[
-            Union[List[models.Website], List[models.WebsiteTypedDict]]
+            Union[Iterable[models.Website], Iterable[models.WebsiteTypedDict]]
         ] = None,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         social_links: Optional[
-            Union[List[models.SocialLink], List[models.SocialLinkTypedDict]]
+            Union[Iterable[models.SocialLink], Iterable[models.SocialLinkTypedDict]]
         ] = None,
         phone_numbers: Optional[
-            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+            Union[Iterable[models.PhoneNumber], Iterable[models.PhoneNumberTypedDict]]
         ] = None,
-        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        emails: Optional[
+            Union[Iterable[models.Email], Iterable[models.EmailTypedDict]]
+        ] = None,
         email_domain: OptionalNullable[str] = UNSET,
         custom_fields: OptionalNullable[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = UNSET,
-        tags: OptionalNullable[List[str]] = UNSET,
-        opportunity_ids: Optional[List[str]] = None,
+        tags: OptionalNullable[Iterable[str]] = UNSET,
+        opportunity_ids: Optional[Iterable[str]] = None,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -463,7 +588,7 @@ class Contacts(BaseSDK):
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param name: Full name of the contact.
         :param owner_id: The owner of the contact.
-        :param type: The type of the contact.
+        :param type_: The type of the contact.
         :param company_id: The company the contact is associated with.
         :param company_name: The name of the company the contact is associated with.
         :param lead_id: The lead the contact is associated with.
@@ -557,8 +682,8 @@ class Contacts(BaseSDK):
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, OptionalNullable[List[models.CustomField]]
                 ),
-                tags=tags,
-                opportunity_ids=opportunity_ids,
+                tags=utils.unmarshal(tags, OptionalNullable[List[str]]),
+                opportunity_ids=utils.unmarshal(opportunity_ids, Optional[List[str]]),
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
@@ -585,6 +710,7 @@ class Contacts(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.contact, False, False, "json", models.ContactInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -609,9 +735,31 @@ class Contacts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "hubspot",
+                            "description": "When creating a contact, it is advised to always include an unique email address since Hubspot uses it to prevent duplicate contacts in HubSpot. More info on the [Hubspot developer docs](https://developers.hubspot.com/docs/api/crm/contacts).",
+                        },
+                        {
+                            "connector": "pipedrive",
+                            "description": 'Pipedrive accepts either `name` or the pair `first_name` + `last_name`, never both. When `name` is present it is sent and `first_name`/`last_name` are ignored; without `name`, both `first_name` and `last_name` are required.\n\n`owner_id` and `company_id` must be numeric Pipedrive ids; any other value is passed to Pipedrive and rejected with a 400.\n\n`custom_fields[].id` must be the Pipedrive custom field key. Multi-part fields (monetary, date range, time, address) can be sent as the combined object, e.g. `{"value": 2300, "currency": "EUR"}`, or as flat entries `<key>` plus `<key>_currency`, `<key>_until`, ..., which are folded together.\n\n`phone_numbers[].type` and `emails[].type` are written as the Pipedrive label. Only `number` / `email` are stored: `country_code`, `area_code` and `extension` are dropped. `title`, `department`, `description`, `websites`, `addresses` and `social_links` are not supported by Pipedrive persons and are ignored.\n',
+                        },
+                        {
+                            "connector": "microsoft-outlook",
+                            "description": "Microsoft Outlook allows multiple emails without a type. Please provide the first email as primary and the rest as other.",
+                        },
+                        {
+                            "connector": "microsoft-dynamics",
+                            "description": "Entity Reference (lookup) custom fields are written using Dataverse navigation-property\nsyntax automatically: supply the custom field id as either the read-side `_<attribute>_value`\nform or the bare attribute logical name, with the target row GUID as the value, and the\nconnector emits `<navigationProperty>@odata.bind` for you.\n\nTwo limitations: polymorphic multi-target lookup columns (e.g. Customer-type columns\ntargeting both accounts and contacts) cannot be auto-resolved from a bare GUID — the request\nfails with an actionable error; write those via pass_through with an explicit\n`<navigationProperty>@odata.bind` key. Clearing a lookup custom field by sending a null\nvalue is not supported.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -619,10 +767,9 @@ class Contacts(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.CrmContactsAddResponse(
                 create_contact_response=unmarshal_json_response(
-                    Optional[models.CreateContactResponse], http_res
+                    Optional[models.CreateContactResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -663,10 +810,9 @@ class Contacts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmContactsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -703,26 +849,31 @@ class Contacts(BaseSDK):
         status: OptionalNullable[str] = UNSET,
         active: OptionalNullable[bool] = UNSET,
         websites: Optional[
-            Union[List[models.Website], List[models.WebsiteTypedDict]]
+            Union[Iterable[models.Website], Iterable[models.WebsiteTypedDict]]
         ] = None,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         social_links: Optional[
-            Union[List[models.SocialLink], List[models.SocialLinkTypedDict]]
+            Union[Iterable[models.SocialLink], Iterable[models.SocialLinkTypedDict]]
         ] = None,
         phone_numbers: Optional[
-            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+            Union[Iterable[models.PhoneNumber], Iterable[models.PhoneNumberTypedDict]]
         ] = None,
-        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        emails: Optional[
+            Union[Iterable[models.Email], Iterable[models.EmailTypedDict]]
+        ] = None,
         email_domain: OptionalNullable[str] = UNSET,
         custom_fields: OptionalNullable[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = UNSET,
-        tags: OptionalNullable[List[str]] = UNSET,
-        opportunity_ids: Optional[List[str]] = None,
+        tags: OptionalNullable[Iterable[str]] = UNSET,
+        opportunity_ids: Optional[Iterable[str]] = None,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -739,7 +890,7 @@ class Contacts(BaseSDK):
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param name: Full name of the contact.
         :param owner_id: The owner of the contact.
-        :param type: The type of the contact.
+        :param type_: The type of the contact.
         :param company_id: The company the contact is associated with.
         :param company_name: The name of the company the contact is associated with.
         :param lead_id: The lead the contact is associated with.
@@ -833,8 +984,8 @@ class Contacts(BaseSDK):
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, OptionalNullable[List[models.CustomField]]
                 ),
-                tags=tags,
-                opportunity_ids=opportunity_ids,
+                tags=utils.unmarshal(tags, OptionalNullable[List[str]]),
+                opportunity_ids=utils.unmarshal(opportunity_ids, Optional[List[str]]),
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
@@ -861,6 +1012,7 @@ class Contacts(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.contact, False, False, "json", models.ContactInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -885,9 +1037,31 @@ class Contacts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "hubspot",
+                            "description": "When creating a contact, it is advised to always include an unique email address since Hubspot uses it to prevent duplicate contacts in HubSpot. More info on the [Hubspot developer docs](https://developers.hubspot.com/docs/api/crm/contacts).",
+                        },
+                        {
+                            "connector": "pipedrive",
+                            "description": 'Pipedrive accepts either `name` or the pair `first_name` + `last_name`, never both. When `name` is present it is sent and `first_name`/`last_name` are ignored; without `name`, both `first_name` and `last_name` are required.\n\n`owner_id` and `company_id` must be numeric Pipedrive ids; any other value is passed to Pipedrive and rejected with a 400.\n\n`custom_fields[].id` must be the Pipedrive custom field key. Multi-part fields (monetary, date range, time, address) can be sent as the combined object, e.g. `{"value": 2300, "currency": "EUR"}`, or as flat entries `<key>` plus `<key>_currency`, `<key>_until`, ..., which are folded together.\n\n`phone_numbers[].type` and `emails[].type` are written as the Pipedrive label. Only `number` / `email` are stored: `country_code`, `area_code` and `extension` are dropped. `title`, `department`, `description`, `websites`, `addresses` and `social_links` are not supported by Pipedrive persons and are ignored.\n',
+                        },
+                        {
+                            "connector": "microsoft-outlook",
+                            "description": "Microsoft Outlook allows multiple emails without a type. Please provide the first email as primary and the rest as other.",
+                        },
+                        {
+                            "connector": "microsoft-dynamics",
+                            "description": "Entity Reference (lookup) custom fields are written using Dataverse navigation-property\nsyntax automatically: supply the custom field id as either the read-side `_<attribute>_value`\nform or the bare attribute logical name, with the target row GUID as the value, and the\nconnector emits `<navigationProperty>@odata.bind` for you.\n\nTwo limitations: polymorphic multi-target lookup columns (e.g. Customer-type columns\ntargeting both accounts and contacts) cannot be auto-resolved from a bare GUID — the request\nfails with an actionable error; write those via pass_through with an explicit\n`<navigationProperty>@odata.bind` key. Clearing a lookup custom field by sending a null\nvalue is not supported.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -895,10 +1069,9 @@ class Contacts(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.CrmContactsAddResponse(
                 create_contact_response=unmarshal_json_response(
-                    Optional[models.CreateContactResponse], http_res
+                    Optional[models.CreateContactResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -939,10 +1112,9 @@ class Contacts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmContactsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1017,6 +1189,7 @@ class Contacts(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1041,9 +1214,19 @@ class Contacts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "microsoft-outlook",
+                            "description": "If no owner_id is provided, the get call will return the contacts of the authenticated user only. Microsoft Outlook allows multiple emails without a type. We will return the type of the first email as primary and the rest as other.",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1051,10 +1234,9 @@ class Contacts(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmContactsOneResponse(
                 get_contact_response=unmarshal_json_response(
-                    Optional[models.GetContactResponse], http_res
+                    Optional[models.GetContactResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1095,10 +1277,9 @@ class Contacts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmContactsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1173,6 +1354,7 @@ class Contacts(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1197,9 +1379,19 @@ class Contacts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "microsoft-outlook",
+                            "description": "If no owner_id is provided, the get call will return the contacts of the authenticated user only. Microsoft Outlook allows multiple emails without a type. We will return the type of the first email as primary and the rest as other.",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1207,10 +1399,9 @@ class Contacts(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmContactsOneResponse(
                 get_contact_response=unmarshal_json_response(
-                    Optional[models.GetContactResponse], http_res
+                    Optional[models.GetContactResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1251,10 +1442,9 @@ class Contacts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmContactsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1292,26 +1482,31 @@ class Contacts(BaseSDK):
         status: OptionalNullable[str] = UNSET,
         active: OptionalNullable[bool] = UNSET,
         websites: Optional[
-            Union[List[models.Website], List[models.WebsiteTypedDict]]
+            Union[Iterable[models.Website], Iterable[models.WebsiteTypedDict]]
         ] = None,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         social_links: Optional[
-            Union[List[models.SocialLink], List[models.SocialLinkTypedDict]]
+            Union[Iterable[models.SocialLink], Iterable[models.SocialLinkTypedDict]]
         ] = None,
         phone_numbers: Optional[
-            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+            Union[Iterable[models.PhoneNumber], Iterable[models.PhoneNumberTypedDict]]
         ] = None,
-        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        emails: Optional[
+            Union[Iterable[models.Email], Iterable[models.EmailTypedDict]]
+        ] = None,
         email_domain: OptionalNullable[str] = UNSET,
         custom_fields: OptionalNullable[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = UNSET,
-        tags: OptionalNullable[List[str]] = UNSET,
-        opportunity_ids: Optional[List[str]] = None,
+        tags: OptionalNullable[Iterable[str]] = UNSET,
+        opportunity_ids: Optional[Iterable[str]] = None,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1329,7 +1524,7 @@ class Contacts(BaseSDK):
         :param raw: Include raw response. Mostly used for debugging purposes
         :param name: Full name of the contact.
         :param owner_id: The owner of the contact.
-        :param type: The type of the contact.
+        :param type_: The type of the contact.
         :param company_id: The company the contact is associated with.
         :param company_name: The name of the company the contact is associated with.
         :param lead_id: The lead the contact is associated with.
@@ -1424,8 +1619,8 @@ class Contacts(BaseSDK):
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, OptionalNullable[List[models.CustomField]]
                 ),
-                tags=tags,
-                opportunity_ids=opportunity_ids,
+                tags=utils.unmarshal(tags, OptionalNullable[List[str]]),
+                opportunity_ids=utils.unmarshal(opportunity_ids, Optional[List[str]]),
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
@@ -1452,6 +1647,7 @@ class Contacts(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.contact, False, False, "json", models.ContactInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1476,9 +1672,27 @@ class Contacts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "pipedrive",
+                            "description": 'Updates are partial: fields left out of the request are not changed. Sending an empty `phone_numbers` or `emails` array clears the entries; a shorter array replaces the stored set rather than merging with it.\n\nSending `"value": null` for a custom field clears it; sending `company_id: null` unlinks the organization. An owner cannot be cleared (`owner_id: null` is rejected by Pipedrive).\n\nA contact read from the API can be sent back unchanged: `name`, `first_name` and `last_name` are all returned, and on update only `name` is written when it is present. Multi-part custom fields round-trip as `<key>` plus `<key>_currency` / `<key>_until` entries.\n\nPipedrive accepts either `name` or the pair `first_name` + `last_name`, never both; `owner_id`/`company_id` must be numeric Pipedrive ids.\n',
+                        },
+                        {
+                            "connector": "microsoft-outlook",
+                            "description": "Microsoft Outlook allows multiple emails without a type. Please provide the first email as primary and the rest as other.",
+                        },
+                        {
+                            "connector": "microsoft-dynamics",
+                            "description": "Entity Reference (lookup) custom fields are written using Dataverse navigation-property\nsyntax automatically: supply the custom field id as either the read-side `_<attribute>_value`\nform or the bare attribute logical name, with the target row GUID as the value, and the\nconnector emits `<navigationProperty>@odata.bind` for you.\n\nTwo limitations: polymorphic multi-target lookup columns (e.g. Customer-type columns\ntargeting both accounts and contacts) cannot be auto-resolved from a bare GUID — the request\nfails with an actionable error; write those via pass_through with an explicit\n`<navigationProperty>@odata.bind` key. Clearing a lookup custom field by sending a null\nvalue is not supported.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1486,10 +1700,9 @@ class Contacts(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmContactsUpdateResponse(
                 update_contact_response=unmarshal_json_response(
-                    Optional[models.UpdateContactResponse], http_res
+                    Optional[models.UpdateContactResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1530,10 +1743,9 @@ class Contacts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmContactsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1571,26 +1783,31 @@ class Contacts(BaseSDK):
         status: OptionalNullable[str] = UNSET,
         active: OptionalNullable[bool] = UNSET,
         websites: Optional[
-            Union[List[models.Website], List[models.WebsiteTypedDict]]
+            Union[Iterable[models.Website], Iterable[models.WebsiteTypedDict]]
         ] = None,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         social_links: Optional[
-            Union[List[models.SocialLink], List[models.SocialLinkTypedDict]]
+            Union[Iterable[models.SocialLink], Iterable[models.SocialLinkTypedDict]]
         ] = None,
         phone_numbers: Optional[
-            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+            Union[Iterable[models.PhoneNumber], Iterable[models.PhoneNumberTypedDict]]
         ] = None,
-        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        emails: Optional[
+            Union[Iterable[models.Email], Iterable[models.EmailTypedDict]]
+        ] = None,
         email_domain: OptionalNullable[str] = UNSET,
         custom_fields: OptionalNullable[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = UNSET,
-        tags: OptionalNullable[List[str]] = UNSET,
-        opportunity_ids: Optional[List[str]] = None,
+        tags: OptionalNullable[Iterable[str]] = UNSET,
+        opportunity_ids: Optional[Iterable[str]] = None,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1608,7 +1825,7 @@ class Contacts(BaseSDK):
         :param raw: Include raw response. Mostly used for debugging purposes
         :param name: Full name of the contact.
         :param owner_id: The owner of the contact.
-        :param type: The type of the contact.
+        :param type_: The type of the contact.
         :param company_id: The company the contact is associated with.
         :param company_name: The name of the company the contact is associated with.
         :param lead_id: The lead the contact is associated with.
@@ -1703,8 +1920,8 @@ class Contacts(BaseSDK):
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, OptionalNullable[List[models.CustomField]]
                 ),
-                tags=tags,
-                opportunity_ids=opportunity_ids,
+                tags=utils.unmarshal(tags, OptionalNullable[List[str]]),
+                opportunity_ids=utils.unmarshal(opportunity_ids, Optional[List[str]]),
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
@@ -1731,6 +1948,7 @@ class Contacts(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.contact, False, False, "json", models.ContactInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1755,9 +1973,27 @@ class Contacts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "pipedrive",
+                            "description": 'Updates are partial: fields left out of the request are not changed. Sending an empty `phone_numbers` or `emails` array clears the entries; a shorter array replaces the stored set rather than merging with it.\n\nSending `"value": null` for a custom field clears it; sending `company_id: null` unlinks the organization. An owner cannot be cleared (`owner_id: null` is rejected by Pipedrive).\n\nA contact read from the API can be sent back unchanged: `name`, `first_name` and `last_name` are all returned, and on update only `name` is written when it is present. Multi-part custom fields round-trip as `<key>` plus `<key>_currency` / `<key>_until` entries.\n\nPipedrive accepts either `name` or the pair `first_name` + `last_name`, never both; `owner_id`/`company_id` must be numeric Pipedrive ids.\n',
+                        },
+                        {
+                            "connector": "microsoft-outlook",
+                            "description": "Microsoft Outlook allows multiple emails without a type. Please provide the first email as primary and the rest as other.",
+                        },
+                        {
+                            "connector": "microsoft-dynamics",
+                            "description": "Entity Reference (lookup) custom fields are written using Dataverse navigation-property\nsyntax automatically: supply the custom field id as either the read-side `_<attribute>_value`\nform or the bare attribute logical name, with the target row GUID as the value, and the\nconnector emits `<navigationProperty>@odata.bind` for you.\n\nTwo limitations: polymorphic multi-target lookup columns (e.g. Customer-type columns\ntargeting both accounts and contacts) cannot be auto-resolved from a bare GUID — the request\nfails with an actionable error; write those via pass_through with an explicit\n`<navigationProperty>@odata.bind` key. Clearing a lookup custom field by sending a null\nvalue is not supported.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1765,10 +2001,9 @@ class Contacts(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmContactsUpdateResponse(
                 update_contact_response=unmarshal_json_response(
-                    Optional[models.UpdateContactResponse], http_res
+                    Optional[models.UpdateContactResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1809,10 +2044,9 @@ class Contacts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmContactsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1879,6 +2113,7 @@ class Contacts(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1903,9 +2138,19 @@ class Contacts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "microsoft-outlook",
+                            "description": "To delete another user's contact use proxy api.",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1913,10 +2158,9 @@ class Contacts(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmContactsDeleteResponse(
                 delete_contact_response=unmarshal_json_response(
-                    Optional[models.DeleteContactResponse], http_res
+                    Optional[models.DeleteContactResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1957,10 +2201,9 @@ class Contacts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmContactsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2027,6 +2270,7 @@ class Contacts(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2051,9 +2295,19 @@ class Contacts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "microsoft-outlook",
+                            "description": "To delete another user's contact use proxy api.",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2061,10 +2315,9 @@ class Contacts(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmContactsDeleteResponse(
                 delete_contact_response=unmarshal_json_response(
-                    Optional[models.DeleteContactResponse], http_res
+                    Optional[models.DeleteContactResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2105,10 +2358,9 @@ class Contacts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmContactsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

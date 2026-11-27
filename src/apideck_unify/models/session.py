@@ -4,12 +4,17 @@ from __future__ import annotations
 from .consumermetadata import ConsumerMetadata, ConsumerMetadataTypedDict
 from .unifiedapiid import UnifiedAPIID
 from apideck_unify import utils
-from apideck_unify.types import BaseModel
-from apideck_unify.utils import validate_open_enum
+from apideck_unify.types import (
+    BaseModel,
+    UNSET_SENTINEL,
+    current_exclude_none,
+    serialize_with_info,
+)
+from apideck_unify.types.basemodel import current_filtered_dump
 from enum import Enum
-from pydantic.functional_validators import PlainValidator
+from pydantic import model_serializer
 from typing import Any, Dict, List, Optional
-from typing_extensions import Annotated, NotRequired, TypedDict
+from typing_extensions import NotRequired, TypedDict
 
 
 class AllowActions(str, Enum, metaclass=utils.OpenEnumMeta):
@@ -52,9 +57,7 @@ class SettingsTypedDict(TypedDict):
 class Settings(BaseModel):
     r"""Settings to change the way the Vault is displayed."""
 
-    unified_apis: Optional[
-        List[Annotated[UnifiedAPIID, PlainValidator(validate_open_enum(False))]]
-    ] = None
+    unified_apis: Optional[List[UnifiedAPIID]] = None
     r"""Provide the IDs of the Unified APIs you want to be visible. Leaving it empty or omitting this field will show all Unified APIs."""
 
     hide_resource_settings: Optional[bool] = False
@@ -84,13 +87,48 @@ class Settings(BaseModel):
     hide_guides: Optional[bool] = False
     r"""Hide Apideck connection guides in [Vault](/apis/vault/reference#section/Get-Started). Defaults to `false`."""
 
-    allow_actions: Optional[
-        List[Annotated[AllowActions, PlainValidator(validate_open_enum(False))]]
-    ] = None
+    allow_actions: Optional[List[AllowActions]] = None
     r"""Hide actions from your users in [Vault](/apis/vault/reference#section/Get-Started). Actions in `allow_actions` will be shown on a connection in Vault.
     Available actions are: `delete`, `disconnect`, `reauthorize` and `disable`.
     Empty array will hide all actions. By default all actions are visible.
     """
+
+    @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
+    def serialize_model(self, handler):
+        optional_fields = set(
+            [
+                "unified_apis",
+                "hide_resource_settings",
+                "sandbox_mode",
+                "isolation_mode",
+                "session_length",
+                "show_logs",
+                "show_suggestions",
+                "show_sidebar",
+                "auto_redirect",
+                "hide_guides",
+                "allow_actions",
+            ]
+        )
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
+        serialized = handler(self)
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+
+            if val != UNSET_SENTINEL:
+                if val is not None or k not in optional_fields:
+                    m[k] = val
+
+        return m
 
 
 class ThemeTypedDict(TypedDict):
@@ -141,6 +179,40 @@ class Theme(BaseModel):
     terms_url: Optional[str] = None
     r"""The URL to the terms and conditions that will be shown in the sidebar."""
 
+    @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
+    def serialize_model(self, handler):
+        optional_fields = set(
+            [
+                "favicon",
+                "logo",
+                "primary_color",
+                "sidepanel_background_color",
+                "sidepanel_text_color",
+                "vault_name",
+                "privacy_url",
+                "terms_url",
+            ]
+        )
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
+        serialized = handler(self)
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+
+            if val != UNSET_SENTINEL:
+                if val is not None or k not in optional_fields:
+                    m[k] = val
+
+        return m
+
 
 class SessionTypedDict(TypedDict):
     consumer_metadata: NotRequired[ConsumerMetadataTypedDict]
@@ -170,3 +242,34 @@ class Session(BaseModel):
 
     custom_consumer_settings: Optional[Dict[str, Any]] = None
     r"""Custom consumer settings that are passed as part of the session."""
+
+    @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
+    def serialize_model(self, handler):
+        optional_fields = set(
+            [
+                "consumer_metadata",
+                "redirect_uri",
+                "settings",
+                "theme",
+                "custom_consumer_settings",
+            ]
+        )
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
+        serialized = handler(self)
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+
+            if val != UNSET_SENTINEL:
+                if val is not None or k not in optional_fields:
+                    m[k] = val
+
+        return m

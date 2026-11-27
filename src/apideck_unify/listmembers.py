@@ -21,7 +21,7 @@ class ListMembers(BaseSDK):
         service_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -65,7 +65,7 @@ class ListMembers(BaseSDK):
             service_id=service_id,
             cursor=cursor,
             limit=limit,
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -86,6 +86,7 @@ class ListMembers(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -110,9 +111,19 @@ class ListMembers(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "hubspot",
+                            "description": "HubSpot's list-memberships endpoint returns only the record id and the timestamp at which\nthe record joined the list, so `object_type` is always `null` for HubSpot members. The\nrecord type is a property of the List itself, not of each member — read `object_type` from\n`GET /crm/lists/{id}` and apply it to every member of that list.\n\nMembers are returned sorted by record id ascending, not by the order records were added to\nthe list. For dynamic lists the membership is a saved segment evaluated by HubSpot, so the\nresult is a point-in-time snapshot rather than a stored set.\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -138,17 +149,19 @@ class ListMembers(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmListMembersAllResponse(
                 get_list_members_response=unmarshal_json_response(
-                    Optional[models.GetListMembersResponse], http_res
+                    Optional[models.GetListMembersResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -189,11 +202,10 @@ class ListMembers(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmListMembersAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -208,7 +220,7 @@ class ListMembers(BaseSDK):
         service_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -252,7 +264,7 @@ class ListMembers(BaseSDK):
             service_id=service_id,
             cursor=cursor,
             limit=limit,
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -273,6 +285,7 @@ class ListMembers(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -297,9 +310,19 @@ class ListMembers(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "hubspot",
+                            "description": "HubSpot's list-memberships endpoint returns only the record id and the timestamp at which\nthe record joined the list, so `object_type` is always `null` for HubSpot members. The\nrecord type is a property of the List itself, not of each member — read `object_type` from\n`GET /crm/lists/{id}` and apply it to every member of that list.\n\nMembers are returned sorted by record id ascending, not by the order records were added to\nthe list. For dynamic lists the membership is a saved segment evaluated by HubSpot, so the\nresult is a point-in-time snapshot rather than a stored set.\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -325,17 +348,19 @@ class ListMembers(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmListMembersAllResponse(
                 get_list_members_response=unmarshal_json_response(
-                    Optional[models.GetListMembersResponse], http_res
+                    Optional[models.GetListMembersResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -376,11 +401,10 @@ class ListMembers(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmListMembersAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

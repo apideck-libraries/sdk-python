@@ -7,7 +7,7 @@ from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from jsonpath import JSONPath
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
 
 
 class ExpenseCategories(BaseSDK):
@@ -26,7 +26,7 @@ class ExpenseCategories(BaseSDK):
                 models.ExpenseCategoriesFilter, models.ExpenseCategoriesFilterTypedDict
             ]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -71,7 +71,7 @@ class ExpenseCategories(BaseSDK):
             filter_=utils.get_pydantic_model(
                 filter_, Optional[models.ExpenseCategoriesFilter]
             ),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
         )
 
         req = self._build_request(
@@ -91,6 +91,7 @@ class ExpenseCategories(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -115,9 +116,23 @@ class ExpenseCategories(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "afas",
+                            "description": "AFAS does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": 'A **Default Subsidiary** on the connection scopes this list, and this list does not follow the same rule transactions do: a record marked "include children" in NetSuite **is** returned for every descendant subsidiary, whereas filtering transactions by a parent subsidiary is **not**.\n',
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -143,17 +158,21 @@ class ExpenseCategories(BaseSDK):
                 filter_=filter_,
                 pass_through=pass_through,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingExpenseCategoriesAllResponse(
                 get_expense_categories_response=unmarshal_json_response(
-                    Optional[models.GetExpenseCategoriesResponse], http_res
+                    Optional[models.GetExpenseCategoriesResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -194,11 +213,10 @@ class ExpenseCategories(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingExpenseCategoriesAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -218,7 +236,7 @@ class ExpenseCategories(BaseSDK):
                 models.ExpenseCategoriesFilter, models.ExpenseCategoriesFilterTypedDict
             ]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -263,7 +281,7 @@ class ExpenseCategories(BaseSDK):
             filter_=utils.get_pydantic_model(
                 filter_, Optional[models.ExpenseCategoriesFilter]
             ),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
         )
 
         req = self._build_request_async(
@@ -283,6 +301,7 @@ class ExpenseCategories(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -307,9 +326,23 @@ class ExpenseCategories(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "afas",
+                            "description": "AFAS does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": 'A **Default Subsidiary** on the connection scopes this list, and this list does not follow the same rule transactions do: a record marked "include children" in NetSuite **is** returned for every descendant subsidiary, whereas filtering transactions by a parent subsidiary is **not**.\n',
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -335,17 +368,21 @@ class ExpenseCategories(BaseSDK):
                 filter_=filter_,
                 pass_through=pass_through,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingExpenseCategoriesAllResponse(
                 get_expense_categories_response=unmarshal_json_response(
-                    Optional[models.GetExpenseCategoriesResponse], http_res
+                    Optional[models.GetExpenseCategoriesResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -386,11 +423,10 @@ class ExpenseCategories(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingExpenseCategoriesAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -420,7 +456,10 @@ class ExpenseCategories(BaseSDK):
         default_rate: OptionalNullable[float] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -515,6 +554,7 @@ class ExpenseCategories(BaseSDK):
                 "json",
                 models.ExpenseCategoryInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -539,9 +579,19 @@ class ExpenseCategories(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sap-business-one",
+                            "description": "Expense categories are SAP Business One expense G/L accounts. On a segmented chart of accounts SAP Business One needs the parent title account and the segmented account number, which have no unified field: send them in `pass_through` as `FatherAccountKey` and `FormatCode`. SAP Business One assigns the account code and appends the segment names to `name` (for example `Travel (HO, USA, GA)`).\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -549,10 +599,11 @@ class ExpenseCategories(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingExpenseCategoriesAddResponse(
                 create_expense_category_response=unmarshal_json_response(
-                    Optional[models.CreateExpenseCategoryResponse], http_res
+                    Optional[models.CreateExpenseCategoryResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -593,10 +644,9 @@ class ExpenseCategories(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingExpenseCategoriesAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -626,7 +676,10 @@ class ExpenseCategories(BaseSDK):
         default_rate: OptionalNullable[float] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -721,6 +774,7 @@ class ExpenseCategories(BaseSDK):
                 "json",
                 models.ExpenseCategoryInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -745,9 +799,19 @@ class ExpenseCategories(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sap-business-one",
+                            "description": "Expense categories are SAP Business One expense G/L accounts. On a segmented chart of accounts SAP Business One needs the parent title account and the segmented account number, which have no unified field: send them in `pass_through` as `FatherAccountKey` and `FormatCode`. SAP Business One assigns the account code and appends the segment names to `name` (for example `Travel (HO, USA, GA)`).\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -755,10 +819,11 @@ class ExpenseCategories(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingExpenseCategoriesAddResponse(
                 create_expense_category_response=unmarshal_json_response(
-                    Optional[models.CreateExpenseCategoryResponse], http_res
+                    Optional[models.CreateExpenseCategoryResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -799,10 +864,9 @@ class ExpenseCategories(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingExpenseCategoriesAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -872,6 +936,7 @@ class ExpenseCategories(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -896,9 +961,11 @@ class ExpenseCategories(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={"x-apideck-api": "accounting"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -906,10 +973,11 @@ class ExpenseCategories(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingExpenseCategoriesOneResponse(
                 get_expense_category_response=unmarshal_json_response(
-                    Optional[models.GetExpenseCategoryResponse], http_res
+                    Optional[models.GetExpenseCategoryResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -950,10 +1018,9 @@ class ExpenseCategories(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingExpenseCategoriesOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1023,6 +1090,7 @@ class ExpenseCategories(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1047,9 +1115,11 @@ class ExpenseCategories(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={"x-apideck-api": "accounting"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1057,10 +1127,11 @@ class ExpenseCategories(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingExpenseCategoriesOneResponse(
                 get_expense_category_response=unmarshal_json_response(
-                    Optional[models.GetExpenseCategoryResponse], http_res
+                    Optional[models.GetExpenseCategoryResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1101,10 +1172,9 @@ class ExpenseCategories(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingExpenseCategoriesOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1135,7 +1205,10 @@ class ExpenseCategories(BaseSDK):
         default_rate: OptionalNullable[float] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1232,6 +1305,7 @@ class ExpenseCategories(BaseSDK):
                 "json",
                 models.ExpenseCategoryUpdateInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1256,9 +1330,11 @@ class ExpenseCategories(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={"x-apideck-api": "accounting"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1266,10 +1342,11 @@ class ExpenseCategories(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingExpenseCategoriesUpdateResponse(
                 update_expense_category_response=unmarshal_json_response(
-                    Optional[models.UpdateExpenseCategoryResponse], http_res
+                    Optional[models.UpdateExpenseCategoryResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1310,10 +1387,9 @@ class ExpenseCategories(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingExpenseCategoriesUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1344,7 +1420,10 @@ class ExpenseCategories(BaseSDK):
         default_rate: OptionalNullable[float] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1441,6 +1520,7 @@ class ExpenseCategories(BaseSDK):
                 "json",
                 models.ExpenseCategoryUpdateInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1465,9 +1545,11 @@ class ExpenseCategories(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={"x-apideck-api": "accounting"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1475,10 +1557,11 @@ class ExpenseCategories(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingExpenseCategoriesUpdateResponse(
                 update_expense_category_response=unmarshal_json_response(
-                    Optional[models.UpdateExpenseCategoryResponse], http_res
+                    Optional[models.UpdateExpenseCategoryResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1519,10 +1602,9 @@ class ExpenseCategories(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingExpenseCategoriesUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1589,6 +1671,7 @@ class ExpenseCategories(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1613,9 +1696,11 @@ class ExpenseCategories(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={"x-apideck-api": "accounting"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1623,10 +1708,11 @@ class ExpenseCategories(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingExpenseCategoriesDeleteResponse(
                 delete_expense_category_response=unmarshal_json_response(
-                    Optional[models.DeleteExpenseCategoryResponse], http_res
+                    Optional[models.DeleteExpenseCategoryResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1667,10 +1753,9 @@ class ExpenseCategories(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingExpenseCategoriesDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1737,6 +1822,7 @@ class ExpenseCategories(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1761,9 +1847,11 @@ class ExpenseCategories(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={"x-apideck-api": "accounting"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1771,10 +1859,11 @@ class ExpenseCategories(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingExpenseCategoriesDeleteResponse(
                 delete_expense_category_response=unmarshal_json_response(
-                    Optional[models.DeleteExpenseCategoryResponse], http_res
+                    Optional[models.DeleteExpenseCategoryResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1815,10 +1904,9 @@ class ExpenseCategories(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingExpenseCategoriesDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

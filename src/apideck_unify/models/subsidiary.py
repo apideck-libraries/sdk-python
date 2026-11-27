@@ -11,14 +11,15 @@ from apideck_unify.types import (
     OptionalNullable,
     UNSET,
     UNSET_SENTINEL,
+    current_exclude_none,
+    serialize_with_info,
 )
-from apideck_unify.utils import validate_open_enum
+from apideck_unify.types.basemodel import current_filtered_dump
 from datetime import datetime
 from enum import Enum
 from pydantic import field_serializer, model_serializer
-from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
-from typing_extensions import Annotated, NotRequired, TypedDict
+from typing_extensions import NotRequired, TypedDict
 
 
 class SubsidiaryStatus(str, Enum, metaclass=utils.OpenEnumMeta):
@@ -76,16 +77,12 @@ class Subsidiary(BaseModel):
     downstream_id: OptionalNullable[str] = UNSET
     r"""The third-party API ID of original entity"""
 
-    status: Annotated[
-        Optional[SubsidiaryStatus], PlainValidator(validate_open_enum(False))
-    ] = None
+    status: Optional[SubsidiaryStatus] = None
     r"""Based on the status some functionality is enabled or disabled."""
 
     address: Optional[Address] = None
 
-    currencies: OptionalNullable[
-        List[Annotated[Nullable[Currency], PlainValidator(validate_open_enum(False))]]
-    ] = UNSET
+    currencies: OptionalNullable[List[Nullable[Currency]]] = UNSET
     r"""List of currencies supported by this subsidiary"""
 
     custom_mappings: OptionalNullable[Dict[str, Any]] = UNSET
@@ -119,60 +116,66 @@ class Subsidiary(BaseModel):
         return value
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = [
-            "id",
-            "parent_id",
-            "name",
-            "display_id",
-            "downstream_id",
-            "status",
-            "address",
-            "currencies",
-            "custom_mappings",
-            "row_version",
-            "updated_by",
-            "created_by",
-            "updated_at",
-            "created_at",
-            "pass_through",
-        ]
-        nullable_fields = [
-            "parent_id",
-            "name",
-            "display_id",
-            "downstream_id",
-            "currencies",
-            "custom_mappings",
-            "row_version",
-            "updated_by",
-            "created_by",
-            "updated_at",
-            "created_at",
-        ]
-        null_default_fields = []
-
+        optional_fields = set(
+            [
+                "id",
+                "parent_id",
+                "name",
+                "display_id",
+                "downstream_id",
+                "status",
+                "address",
+                "currencies",
+                "custom_mappings",
+                "row_version",
+                "updated_by",
+                "created_by",
+                "updated_at",
+                "created_at",
+                "pass_through",
+            ]
+        )
+        nullable_fields = set(
+            [
+                "parent_id",
+                "name",
+                "display_id",
+                "downstream_id",
+                "currencies",
+                "custom_mappings",
+                "row_version",
+                "updated_by",
+                "created_by",
+                "updated_at",
+                "created_at",
+            ]
+        )
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m
 
@@ -205,16 +208,12 @@ class SubsidiaryInput(BaseModel):
     display_id: OptionalNullable[str] = UNSET
     r"""Display ID of the subsidiary"""
 
-    status: Annotated[
-        Optional[SubsidiaryStatus], PlainValidator(validate_open_enum(False))
-    ] = None
+    status: Optional[SubsidiaryStatus] = None
     r"""Based on the status some functionality is enabled or disabled."""
 
     address: Optional[Address] = None
 
-    currencies: OptionalNullable[
-        List[Annotated[Nullable[Currency], PlainValidator(validate_open_enum(False))]]
-    ] = UNSET
+    currencies: OptionalNullable[List[Nullable[Currency]]] = UNSET
     r"""List of currencies supported by this subsidiary"""
 
     row_version: OptionalNullable[str] = UNSET
@@ -233,46 +232,46 @@ class SubsidiaryInput(BaseModel):
         return value
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = [
-            "parent_id",
-            "name",
-            "display_id",
-            "status",
-            "address",
-            "currencies",
-            "row_version",
-            "pass_through",
-        ]
-        nullable_fields = [
-            "parent_id",
-            "name",
-            "display_id",
-            "currencies",
-            "row_version",
-        ]
-        null_default_fields = []
-
+        optional_fields = set(
+            [
+                "parent_id",
+                "name",
+                "display_id",
+                "status",
+                "address",
+                "currencies",
+                "row_version",
+                "pass_through",
+            ]
+        )
+        nullable_fields = set(
+            ["parent_id", "name", "display_id", "currencies", "row_version"]
+        )
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m

@@ -7,7 +7,7 @@ from apideck_unify.types import Nullable, OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from jsonpath import JSONPath
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
 
 
 class Subsidiaries(BaseSDK):
@@ -22,7 +22,7 @@ class Subsidiaries(BaseSDK):
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
         fields: OptionalNullable[str] = UNSET,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -65,7 +65,7 @@ class Subsidiaries(BaseSDK):
             cursor=cursor,
             limit=limit,
             fields=fields,
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
         )
 
         req = self._build_request(
@@ -85,6 +85,7 @@ class Subsidiaries(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -109,9 +110,39 @@ class Subsidiaries(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "oracle-fusion",
+                            "description": "Subsidiaries are Oracle Fusion **legal entities**. Oracle exposes no other entity of this\nshape that an accounting connection can read.\n\nThis list is **tenant-wide, not scoped to your connection's ledger** — unlike the\njournal-entry and ledger-account reads on this connector. Oracle's legal-entities list of values publishes no finders, so\nthere is no way to ask it for the entities assigned to one ledger. Expect to see legal\nentities that have nothing to do with the ledger you connected.\n\n`id` is Oracle's internal legal-entity id. The human-readable code an administrator assigns\n(for example `APIDECK-LE-01`) is returned as `display_id` — it does not address the record,\nso it cannot be used in place of `id`.\n\n`status` is derived from the legal entity's effective dates: it is `inactive` once the end\ndate has passed, and also before the start date arrives, since Oracle allows an entity to be\ncreated ahead of the date it takes effect. The dates are compared with the current date in\nUTC, so on the first or last day of an entity's effective window `status` can differ by one\nday from what the date in your tenant's time zone would give.\n\n`address`, `currencies` and `parent_id` are not available — the list of values carries no\naddress, no currency and no hierarchy. Create, update and delete are not supported either:\nOracle refuses writes on this resource, and legal entities are maintained in its setup work\narea.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "The minimun page size accepted for Netsuite is 5. The cursor for Netsuite expires if they have not been used within 15 minutes after its creation.\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": "Moneybird does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "rillet",
+                            "description": "Rillet does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "AFAS does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -137,17 +168,19 @@ class Subsidiaries(BaseSDK):
                 fields=fields,
                 pass_through=pass_through,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingSubsidiariesAllResponse(
                 get_subsidiaries_response=unmarshal_json_response(
-                    Optional[models.GetSubsidiariesResponse], http_res
+                    Optional[models.GetSubsidiariesResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -188,11 +221,10 @@ class Subsidiaries(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSubsidiariesAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -208,7 +240,7 @@ class Subsidiaries(BaseSDK):
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
         fields: OptionalNullable[str] = UNSET,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -251,7 +283,7 @@ class Subsidiaries(BaseSDK):
             cursor=cursor,
             limit=limit,
             fields=fields,
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
         )
 
         req = self._build_request_async(
@@ -271,6 +303,7 @@ class Subsidiaries(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -295,9 +328,39 @@ class Subsidiaries(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "oracle-fusion",
+                            "description": "Subsidiaries are Oracle Fusion **legal entities**. Oracle exposes no other entity of this\nshape that an accounting connection can read.\n\nThis list is **tenant-wide, not scoped to your connection's ledger** — unlike the\njournal-entry and ledger-account reads on this connector. Oracle's legal-entities list of values publishes no finders, so\nthere is no way to ask it for the entities assigned to one ledger. Expect to see legal\nentities that have nothing to do with the ledger you connected.\n\n`id` is Oracle's internal legal-entity id. The human-readable code an administrator assigns\n(for example `APIDECK-LE-01`) is returned as `display_id` — it does not address the record,\nso it cannot be used in place of `id`.\n\n`status` is derived from the legal entity's effective dates: it is `inactive` once the end\ndate has passed, and also before the start date arrives, since Oracle allows an entity to be\ncreated ahead of the date it takes effect. The dates are compared with the current date in\nUTC, so on the first or last day of an entity's effective window `status` can differ by one\nday from what the date in your tenant's time zone would give.\n\n`address`, `currencies` and `parent_id` are not available — the list of values carries no\naddress, no currency and no hierarchy. Create, update and delete are not supported either:\nOracle refuses writes on this resource, and legal entities are maintained in its setup work\narea.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "The minimun page size accepted for Netsuite is 5. The cursor for Netsuite expires if they have not been used within 15 minutes after its creation.\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": "Moneybird does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "rillet",
+                            "description": "Rillet does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "AFAS does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -323,17 +386,19 @@ class Subsidiaries(BaseSDK):
                 fields=fields,
                 pass_through=pass_through,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingSubsidiariesAllResponse(
                 get_subsidiaries_response=unmarshal_json_response(
-                    Optional[models.GetSubsidiariesResponse], http_res
+                    Optional[models.GetSubsidiariesResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -374,11 +439,10 @@ class Subsidiaries(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSubsidiariesAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -396,10 +460,13 @@ class Subsidiaries(BaseSDK):
         display_id: OptionalNullable[str] = UNSET,
         status: Optional[models.SubsidiaryStatus] = None,
         address: Optional[Union[models.Address, models.AddressTypedDict]] = None,
-        currencies: OptionalNullable[List[Nullable[models.Currency]]] = UNSET,
+        currencies: OptionalNullable[Iterable[Nullable[models.Currency]]] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -450,7 +517,9 @@ class Subsidiaries(BaseSDK):
                 display_id=display_id,
                 status=status,
                 address=utils.get_pydantic_model(address, Optional[models.Address]),
-                currencies=currencies,
+                currencies=utils.unmarshal(
+                    currencies, OptionalNullable[List[Nullable[models.Currency]]]
+                ),
                 row_version=row_version,
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
@@ -478,6 +547,7 @@ class Subsidiaries(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.subsidiary, False, False, "json", models.SubsidiaryInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -502,9 +572,19 @@ class Subsidiaries(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "`display_id` becomes the Sage entity code and cannot be changed afterwards; it falls back to `name` when\nomitted. `parent_id` and `address` have no equivalent on Sage's `company-config/entity` object and are\nignored, and only the first entry of `currencies` is used, as the entity's base currency.\n\nSage requires a tax solution on every entity, which the unified Subsidiary has no field for. The tax\nsolution an existing entity already uses is applied, falling back to the company's first configured one.\nTo pin a specific one, pass `pass_through[taxSolution][key]`. A company with no tax solution configured at\nall cannot create entities through the API.\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -512,10 +592,9 @@ class Subsidiaries(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingSubsidiariesAddResponse(
                 create_subsidiary_response=unmarshal_json_response(
-                    Optional[models.CreateSubsidiaryResponse], http_res
+                    Optional[models.CreateSubsidiaryResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -556,10 +635,9 @@ class Subsidiaries(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSubsidiariesAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -577,10 +655,13 @@ class Subsidiaries(BaseSDK):
         display_id: OptionalNullable[str] = UNSET,
         status: Optional[models.SubsidiaryStatus] = None,
         address: Optional[Union[models.Address, models.AddressTypedDict]] = None,
-        currencies: OptionalNullable[List[Nullable[models.Currency]]] = UNSET,
+        currencies: OptionalNullable[Iterable[Nullable[models.Currency]]] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -631,7 +712,9 @@ class Subsidiaries(BaseSDK):
                 display_id=display_id,
                 status=status,
                 address=utils.get_pydantic_model(address, Optional[models.Address]),
-                currencies=currencies,
+                currencies=utils.unmarshal(
+                    currencies, OptionalNullable[List[Nullable[models.Currency]]]
+                ),
                 row_version=row_version,
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
@@ -659,6 +742,7 @@ class Subsidiaries(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.subsidiary, False, False, "json", models.SubsidiaryInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -683,9 +767,19 @@ class Subsidiaries(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "`display_id` becomes the Sage entity code and cannot be changed afterwards; it falls back to `name` when\nomitted. `parent_id` and `address` have no equivalent on Sage's `company-config/entity` object and are\nignored, and only the first entry of `currencies` is used, as the entity's base currency.\n\nSage requires a tax solution on every entity, which the unified Subsidiary has no field for. The tax\nsolution an existing entity already uses is applied, falling back to the company's first configured one.\nTo pin a specific one, pass `pass_through[taxSolution][key]`. A company with no tax solution configured at\nall cannot create entities through the API.\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -693,10 +787,9 @@ class Subsidiaries(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingSubsidiariesAddResponse(
                 create_subsidiary_response=unmarshal_json_response(
-                    Optional[models.CreateSubsidiaryResponse], http_res
+                    Optional[models.CreateSubsidiaryResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -737,10 +830,9 @@ class Subsidiaries(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSubsidiariesAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -813,6 +905,7 @@ class Subsidiaries(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -837,9 +930,11 @@ class Subsidiaries(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={"x-apideck-api": "accounting"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -847,10 +942,9 @@ class Subsidiaries(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingSubsidiariesOneResponse(
                 get_subsidiary_response=unmarshal_json_response(
-                    Optional[models.GetSubsidiaryResponse], http_res
+                    Optional[models.GetSubsidiaryResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -891,10 +985,9 @@ class Subsidiaries(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSubsidiariesOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -967,6 +1060,7 @@ class Subsidiaries(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -991,9 +1085,11 @@ class Subsidiaries(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={"x-apideck-api": "accounting"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1001,10 +1097,9 @@ class Subsidiaries(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingSubsidiariesOneResponse(
                 get_subsidiary_response=unmarshal_json_response(
-                    Optional[models.GetSubsidiaryResponse], http_res
+                    Optional[models.GetSubsidiaryResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1045,10 +1140,9 @@ class Subsidiaries(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSubsidiariesOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1067,10 +1161,13 @@ class Subsidiaries(BaseSDK):
         display_id: OptionalNullable[str] = UNSET,
         status: Optional[models.SubsidiaryStatus] = None,
         address: Optional[Union[models.Address, models.AddressTypedDict]] = None,
-        currencies: OptionalNullable[List[Nullable[models.Currency]]] = UNSET,
+        currencies: OptionalNullable[Iterable[Nullable[models.Currency]]] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1123,7 +1220,9 @@ class Subsidiaries(BaseSDK):
                 display_id=display_id,
                 status=status,
                 address=utils.get_pydantic_model(address, Optional[models.Address]),
-                currencies=currencies,
+                currencies=utils.unmarshal(
+                    currencies, OptionalNullable[List[Nullable[models.Currency]]]
+                ),
                 row_version=row_version,
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
@@ -1151,6 +1250,7 @@ class Subsidiaries(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.subsidiary, False, False, "json", models.SubsidiaryInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1175,9 +1275,19 @@ class Subsidiaries(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "Only `name`, `status` and the base currency (the first entry of `currencies`) can be changed. `display_id`\nis the Sage entity code and is fixed once the entity exists; `parent_id` and `address` have no equivalent\non Sage's `company-config/entity` object.\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1185,10 +1295,9 @@ class Subsidiaries(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingSubsidiariesUpdateResponse(
                 update_subsidiary_response=unmarshal_json_response(
-                    Optional[models.UpdateSubsidiaryResponse], http_res
+                    Optional[models.UpdateSubsidiaryResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1229,10 +1338,9 @@ class Subsidiaries(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSubsidiariesUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1251,10 +1359,13 @@ class Subsidiaries(BaseSDK):
         display_id: OptionalNullable[str] = UNSET,
         status: Optional[models.SubsidiaryStatus] = None,
         address: Optional[Union[models.Address, models.AddressTypedDict]] = None,
-        currencies: OptionalNullable[List[Nullable[models.Currency]]] = UNSET,
+        currencies: OptionalNullable[Iterable[Nullable[models.Currency]]] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1307,7 +1418,9 @@ class Subsidiaries(BaseSDK):
                 display_id=display_id,
                 status=status,
                 address=utils.get_pydantic_model(address, Optional[models.Address]),
-                currencies=currencies,
+                currencies=utils.unmarshal(
+                    currencies, OptionalNullable[List[Nullable[models.Currency]]]
+                ),
                 row_version=row_version,
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
@@ -1335,6 +1448,7 @@ class Subsidiaries(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.subsidiary, False, False, "json", models.SubsidiaryInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1359,9 +1473,19 @@ class Subsidiaries(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "Only `name`, `status` and the base currency (the first entry of `currencies`) can be changed. `display_id`\nis the Sage entity code and is fixed once the entity exists; `parent_id` and `address` have no equivalent\non Sage's `company-config/entity` object.\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1369,10 +1493,9 @@ class Subsidiaries(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingSubsidiariesUpdateResponse(
                 update_subsidiary_response=unmarshal_json_response(
-                    Optional[models.UpdateSubsidiaryResponse], http_res
+                    Optional[models.UpdateSubsidiaryResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1413,10 +1536,9 @@ class Subsidiaries(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSubsidiariesUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1486,6 +1608,7 @@ class Subsidiaries(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1510,9 +1633,11 @@ class Subsidiaries(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={"x-apideck-api": "accounting"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1520,10 +1645,9 @@ class Subsidiaries(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingSubsidiariesDeleteResponse(
                 delete_subsidiary_response=unmarshal_json_response(
-                    Optional[models.DeleteSubsidiaryResponse], http_res
+                    Optional[models.DeleteSubsidiaryResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1564,10 +1688,9 @@ class Subsidiaries(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSubsidiariesDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1637,6 +1760,7 @@ class Subsidiaries(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1661,9 +1785,11 @@ class Subsidiaries(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={"x-apideck-api": "accounting"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1671,10 +1797,9 @@ class Subsidiaries(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingSubsidiariesDeleteResponse(
                 delete_subsidiary_response=unmarshal_json_response(
-                    Optional[models.DeleteSubsidiaryResponse], http_res
+                    Optional[models.DeleteSubsidiaryResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1715,10 +1840,9 @@ class Subsidiaries(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSubsidiariesDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

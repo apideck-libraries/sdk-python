@@ -2,12 +2,17 @@
 
 from __future__ import annotations
 from apideck_unify import models, utils
-from apideck_unify.types import BaseModel
-from apideck_unify.utils import FieldMetadata, validate_open_enum
+from apideck_unify.types import (
+    BaseModel,
+    UNSET_SENTINEL,
+    current_exclude_none,
+    serialize_with_info,
+)
+from apideck_unify.types.basemodel import current_filtered_dump
+from apideck_unify.utils import FieldMetadata
 from datetime import datetime
 from enum import Enum
-from pydantic import field_serializer
-from pydantic.functional_validators import PlainValidator
+from pydantic import field_serializer, model_serializer
 from typing import Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
@@ -35,11 +40,7 @@ class ExpenseReportsFilter(BaseModel):
     updated_since: Annotated[Optional[datetime], FieldMetadata(query=True)] = None
 
     status: Annotated[
-        Annotated[
-            Optional[ExpenseReportsFilterStatus],
-            PlainValidator(validate_open_enum(False)),
-        ],
-        FieldMetadata(query=True),
+        Optional[ExpenseReportsFilterStatus], FieldMetadata(query=True)
     ] = None
 
     employee_id: Annotated[Optional[str], FieldMetadata(query=True)] = None
@@ -56,3 +57,28 @@ class ExpenseReportsFilter(BaseModel):
             except ValueError:
                 return value
         return value
+
+    @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
+    def serialize_model(self, handler):
+        optional_fields = set(
+            ["updated_since", "status", "employee_id", "subsidiary_id"]
+        )
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
+        serialized = handler(self)
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+
+            if val != UNSET_SENTINEL:
+                if val is not None or k not in optional_fields:
+                    m[k] = val
+
+        return m

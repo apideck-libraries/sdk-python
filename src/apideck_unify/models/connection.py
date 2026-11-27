@@ -22,14 +22,15 @@ from apideck_unify.types import (
     OptionalNullable,
     UNSET,
     UNSET_SENTINEL,
+    current_exclude_none,
+    serialize_with_info,
 )
-from apideck_unify.utils import validate_open_enum
+from apideck_unify.types.basemodel import current_filtered_dump
 from enum import Enum
 import pydantic
 from pydantic import ConfigDict, field_serializer, model_serializer
-from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing_extensions import NotRequired, TypeAliasType, TypedDict
 
 
 class ConnectionStatus(str, Enum, metaclass=utils.OpenEnumMeta):
@@ -66,6 +67,32 @@ class ConnectionMetadata(BaseModel):
     def additional_properties(self, value):
         self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
 
+    @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
+    def serialize_model(self, handler):
+        optional_fields = set(["company_id"])
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
+        serialized = handler(self)
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            serialized.pop(k, serialized.pop(n, None))
+
+            if val != UNSET_SENTINEL:
+                if val is not None or k not in optional_fields:
+                    m[k] = val
+        for k, v in serialized.items():
+            m[k] = v
+
+        return m
+
 
 class Target(str, Enum, metaclass=utils.OpenEnumMeta):
     CUSTOM_FIELDS = "custom_fields"
@@ -96,9 +123,7 @@ class DefaultsTypedDict(TypedDict):
 
 
 class Defaults(BaseModel):
-    target: Annotated[Optional[Target], PlainValidator(validate_open_enum(False))] = (
-        None
-    )
+    target: Optional[Target] = None
 
     id: Optional[str] = None
 
@@ -115,6 +140,29 @@ class Defaults(BaseModel):
                 return value
         return value
 
+    @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
+    def serialize_model(self, handler):
+        optional_fields = set(["target", "id", "options", "value"])
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
+        serialized = handler(self)
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+
+            if val != UNSET_SENTINEL:
+                if val is not None or k not in optional_fields:
+                    m[k] = val
+
+        return m
+
 
 class ConfigurationTypedDict(TypedDict):
     resource: NotRequired[str]
@@ -125,6 +173,29 @@ class Configuration(BaseModel):
     resource: Optional[str] = None
 
     defaults: Optional[List[Defaults]] = None
+
+    @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
+    def serialize_model(self, handler):
+        optional_fields = set(["resource", "defaults"])
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
+        serialized = handler(self)
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+
+            if val != UNSET_SENTINEL:
+                if val is not None or k not in optional_fields:
+                    m[k] = val
+
+        return m
 
 
 class Health(str, Enum, metaclass=utils.OpenEnumMeta):
@@ -224,29 +295,19 @@ class Connection(BaseModel):
     unified_api: Optional[str] = None
     r"""The unified API category where the connection belongs to."""
 
-    state: Annotated[
-        Optional[ConnectionState], PlainValidator(validate_open_enum(False))
-    ] = None
+    state: Optional[ConnectionState] = None
     r"""[Connection state flow](#section/Connection-state)"""
 
-    integration_state: Annotated[
-        Optional[IntegrationState], PlainValidator(validate_open_enum(False))
-    ] = None
+    integration_state: Optional[IntegrationState] = None
     r"""The current state of the Integration."""
 
-    auth_type: Annotated[
-        Optional[AuthType], PlainValidator(validate_open_enum(False))
-    ] = None
+    auth_type: Optional[AuthType] = None
     r"""Type of authorization used by the connector"""
 
-    oauth_grant_type: Annotated[
-        Optional[OAuthGrantType], PlainValidator(validate_open_enum(False))
-    ] = None
+    oauth_grant_type: Optional[OAuthGrantType] = None
     r"""OAuth grant type used by the connector. More info: https://oauth.net/2/grant-types"""
 
-    status: Annotated[
-        Optional[ConnectionStatus], PlainValidator(validate_open_enum(False))
-    ] = None
+    status: Optional[ConnectionStatus] = None
     r"""Status of the connection."""
 
     enabled: Optional[bool] = None
@@ -299,9 +360,7 @@ class Connection(BaseModel):
     custom_mappings: Optional[List[CustomMapping]] = None
     r"""List of custom mappings configured for this connection"""
 
-    consent_state: Annotated[
-        Optional[ConsentState], PlainValidator(validate_open_enum(False))
-    ] = None
+    consent_state: Optional[ConsentState] = None
     r"""The current consent state of the connection"""
 
     consents: Optional[List[ConsentRecord]] = None
@@ -311,9 +370,7 @@ class Connection(BaseModel):
 
     application_data_scopes: Optional[DataScopes] = None
 
-    health: Annotated[Optional[Health], PlainValidator(validate_open_enum(False))] = (
-        None
-    )
+    health: Optional[Health] = None
     r"""Operational health status of the connection"""
 
     credentials_expire_at: Optional[float] = None
@@ -393,78 +450,78 @@ class Connection(BaseModel):
         return value
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = [
-            "id",
-            "service_id",
-            "name",
-            "tag_line",
-            "unified_api",
-            "state",
-            "integration_state",
-            "auth_type",
-            "oauth_grant_type",
-            "status",
-            "enabled",
-            "website",
-            "icon",
-            "logo",
-            "authorize_url",
-            "revoke_url",
-            "settings",
-            "metadata",
-            "form_fields",
-            "configuration",
-            "configurable_resources",
-            "resource_schema_support",
-            "resource_settings_support",
-            "validation_support",
-            "schema_support",
-            "settings_required_for_authorization",
-            "subscriptions",
-            "has_guide",
-            "custom_mappings",
-            "consent_state",
-            "consents",
-            "latest_consent",
-            "application_data_scopes",
-            "health",
-            "credentials_expire_at",
-            "last_refresh_failed_at",
-            "last_downstream_error_at",
-            "created_at",
-            "updated_at",
-        ]
-        nullable_fields = [
-            "authorize_url",
-            "revoke_url",
-            "settings",
-            "metadata",
-            "updated_at",
-        ]
-        null_default_fields = []
-
+        optional_fields = set(
+            [
+                "id",
+                "service_id",
+                "name",
+                "tag_line",
+                "unified_api",
+                "state",
+                "integration_state",
+                "auth_type",
+                "oauth_grant_type",
+                "status",
+                "enabled",
+                "website",
+                "icon",
+                "logo",
+                "authorize_url",
+                "revoke_url",
+                "settings",
+                "metadata",
+                "form_fields",
+                "configuration",
+                "configurable_resources",
+                "resource_schema_support",
+                "resource_settings_support",
+                "validation_support",
+                "schema_support",
+                "settings_required_for_authorization",
+                "subscriptions",
+                "has_guide",
+                "custom_mappings",
+                "consent_state",
+                "consents",
+                "latest_consent",
+                "application_data_scopes",
+                "health",
+                "credentials_expire_at",
+                "last_refresh_failed_at",
+                "last_downstream_error_at",
+                "created_at",
+                "updated_at",
+            ]
+        )
+        nullable_fields = set(
+            ["authorize_url", "revoke_url", "settings", "metadata", "updated_at"]
+        )
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m
 
@@ -503,6 +560,29 @@ class ConnectionDefaults(BaseModel):
 
     value: Optional[ConnectionValue] = None
 
+    @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
+    def serialize_model(self, handler):
+        optional_fields = set(["id", "options", "value"])
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
+        serialized = handler(self)
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+
+            if val != UNSET_SENTINEL:
+                if val is not None or k not in optional_fields:
+                    m[k] = val
+
+        return m
+
 
 class ConnectionConfigurationTypedDict(TypedDict):
     resource: NotRequired[str]
@@ -513,6 +593,29 @@ class ConnectionConfiguration(BaseModel):
     resource: Optional[str] = None
 
     defaults: Optional[List[ConnectionDefaults]] = None
+
+    @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
+    def serialize_model(self, handler):
+        optional_fields = set(["resource", "defaults"])
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
+        serialized = handler(self)
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+
+            if val != UNSET_SENTINEL:
+                if val is not None or k not in optional_fields:
+                    m[k] = val
+
+        return m
 
 
 class ConnectionInputTypedDict(TypedDict):
@@ -546,9 +649,7 @@ class ConnectionInput(BaseModel):
     custom_mappings: Optional[List[CustomMappingInput]] = None
     r"""List of custom mappings configured for this connection"""
 
-    consent_state: Annotated[
-        Optional[ConsentState], PlainValidator(validate_open_enum(False))
-    ] = None
+    consent_state: Optional[ConsentState] = None
     r"""The current consent state of the connection"""
 
     latest_consent: Optional[ConsentRecordInput] = None
@@ -565,40 +666,44 @@ class ConnectionInput(BaseModel):
         return value
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = [
-            "enabled",
-            "settings",
-            "metadata",
-            "configuration",
-            "custom_mappings",
-            "consent_state",
-            "latest_consent",
-            "application_data_scopes",
-        ]
-        nullable_fields = ["settings", "metadata"]
-        null_default_fields = []
-
+        optional_fields = set(
+            [
+                "enabled",
+                "settings",
+                "metadata",
+                "configuration",
+                "custom_mappings",
+                "consent_state",
+                "latest_consent",
+                "application_data_scopes",
+            ]
+        )
+        nullable_fields = set(["settings", "metadata"])
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m

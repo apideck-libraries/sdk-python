@@ -20,7 +20,7 @@ class Products(BaseSDK):
         service_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         filter_: Optional[
             Union[
@@ -67,7 +67,7 @@ class Products(BaseSDK):
             service_id=service_id,
             cursor=cursor,
             limit=limit,
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
             filter_=utils.get_pydantic_model(
                 filter_, Optional[models.EcommerceProductsFilter]
@@ -91,6 +91,7 @@ class Products(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -115,9 +116,71 @@ class Products(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["ecommerce"],
+                extensions={
+                    "x-apideck-api": "ecommerce",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "prestashop",
+                            "description": "PrestaShop primarily uses an `id` field to identify product associations (Ie: categories, variants etc). To maintain performance on the list endpoint, fewer properties are returned than other connectors.",
+                        },
+                        {
+                            "connector": "wix",
+                            "description": "Wix V3 catalog assigns unique SKUs and weights to each product variant. The product-level `sku` and `weight` fields represent only the first variant for backward compatibility. To access complete variant data across all product variations, reference the individual `variants[].sku` and `variants[].weight` fields which contain the accurate data for each variant.",
+                        },
+                        {
+                            "connector": "walmart",
+                            "description": "The cursor for Walmart expires if it has not been used within 2 minutes of the last request.\n",
+                        },
+                        {
+                            "connector": "bigcommerce",
+                            "description": "On the list endpoint, the product-level `options` array is not returned. BigCommerce caps results to 10 per\npage whenever product `options` are requested, which would force slow multi-page fetches. To keep full-page\npagination (up to 200 per page), `options` are omitted from the list response. Each variant still includes its\nconcrete selections under `variants[].options`. To retrieve the full product-level `options` array, fetch the\nproduct individually via the get-by-id endpoint.\n",
+                        },
+                        {
+                            "connector": "shopify",
+                            "description": "Shopify list responses do not include a total record count. `meta.total_count` will not appear. Surfacing the total requires a separate GET request to the `/admin/api/{version}/{resource}/count.json` endpoint — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "wix",
+                            "description": "Wix does not expose a native cross-page total record count in list responses. `meta.total_count` will not appear. Surfacing the total requires a POST to the Wix Stores query endpoint (`/wix-stores/v1/{resource}/query`) which returns a `totalResults` field — an extra API call not currently implemented.\n",
+                        },
+                        {
+                            "connector": "shopware",
+                            "description": "Shopware does not expose a native cross-page total record count in default list responses. `meta.total_count` will not appear. Surfacing the total requires setting `total-count-mode: 1` in the request criteria when calling the Shopware Admin search API — an extra requirement not currently implemented.\n",
+                        },
+                        {
+                            "connector": "amazon-seller-central",
+                            "description": "Amazon Seller Central does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "prestashop",
+                            "description": "PrestaShop does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "picqer",
+                            "description": "Picqer does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "lightspeed-ecommerce",
+                            "description": "Lightspeed Ecommerce does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "shopify-public-app",
+                            "description": "Shopify exposes counts via dedicated `/count.json` endpoints only — requires an extra API call not currently implemented. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "woocommerce",
+                            "description": "The `name` filter matches on the product name only on stores running WooCommerce 10.1 (August 2025)\nor newer. On older stores the name-scoped search is not supported and the filter falls back to a\nbroader search across the product name, description, and short description — results may include\nproducts whose name does not contain the search term.\n\nThe `updated_since` and `created_since` filters require WooCommerce 5.8 (October 2021) or newer.\nOn older stores they are silently ignored and the unfiltered product list is returned. Both filters\nare exclusive boundaries (strictly after the given timestamp) and are evaluated in UTC.\n",
+                        },
+                        {
+                            "connector": "magento",
+                            "description": "`tax_status` is derived heuristically from Magento's product tax class (`tax_class_id`): the\ndefault untaxed class `0` maps to `none`, and any other configured tax class maps to `taxable`.\nMagento tax class ids are merchant-configurable, so a store that created an additional\ntax-exempt class will have those products reported as `taxable`. To read the raw class id\ninstead, use a Field Mapping on `$.custom_attributes[?(@.attribute_code=='tax_class_id')].value`.\nMagento has no equivalent of the `shipping` value.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -143,17 +206,19 @@ class Products(BaseSDK):
                 fields=fields,
                 filter_=filter_,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.EcommerceProductsAllResponse(
                 get_products_response=unmarshal_json_response(
-                    Optional[models.GetProductsResponse], http_res
+                    Optional[models.GetProductsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -194,11 +259,10 @@ class Products(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.EcommerceProductsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -212,7 +276,7 @@ class Products(BaseSDK):
         service_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         filter_: Optional[
             Union[
@@ -259,7 +323,7 @@ class Products(BaseSDK):
             service_id=service_id,
             cursor=cursor,
             limit=limit,
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
             filter_=utils.get_pydantic_model(
                 filter_, Optional[models.EcommerceProductsFilter]
@@ -283,6 +347,7 @@ class Products(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -307,9 +372,71 @@ class Products(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["ecommerce"],
+                extensions={
+                    "x-apideck-api": "ecommerce",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "prestashop",
+                            "description": "PrestaShop primarily uses an `id` field to identify product associations (Ie: categories, variants etc). To maintain performance on the list endpoint, fewer properties are returned than other connectors.",
+                        },
+                        {
+                            "connector": "wix",
+                            "description": "Wix V3 catalog assigns unique SKUs and weights to each product variant. The product-level `sku` and `weight` fields represent only the first variant for backward compatibility. To access complete variant data across all product variations, reference the individual `variants[].sku` and `variants[].weight` fields which contain the accurate data for each variant.",
+                        },
+                        {
+                            "connector": "walmart",
+                            "description": "The cursor for Walmart expires if it has not been used within 2 minutes of the last request.\n",
+                        },
+                        {
+                            "connector": "bigcommerce",
+                            "description": "On the list endpoint, the product-level `options` array is not returned. BigCommerce caps results to 10 per\npage whenever product `options` are requested, which would force slow multi-page fetches. To keep full-page\npagination (up to 200 per page), `options` are omitted from the list response. Each variant still includes its\nconcrete selections under `variants[].options`. To retrieve the full product-level `options` array, fetch the\nproduct individually via the get-by-id endpoint.\n",
+                        },
+                        {
+                            "connector": "shopify",
+                            "description": "Shopify list responses do not include a total record count. `meta.total_count` will not appear. Surfacing the total requires a separate GET request to the `/admin/api/{version}/{resource}/count.json` endpoint — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "wix",
+                            "description": "Wix does not expose a native cross-page total record count in list responses. `meta.total_count` will not appear. Surfacing the total requires a POST to the Wix Stores query endpoint (`/wix-stores/v1/{resource}/query`) which returns a `totalResults` field — an extra API call not currently implemented.\n",
+                        },
+                        {
+                            "connector": "shopware",
+                            "description": "Shopware does not expose a native cross-page total record count in default list responses. `meta.total_count` will not appear. Surfacing the total requires setting `total-count-mode: 1` in the request criteria when calling the Shopware Admin search API — an extra requirement not currently implemented.\n",
+                        },
+                        {
+                            "connector": "amazon-seller-central",
+                            "description": "Amazon Seller Central does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "prestashop",
+                            "description": "PrestaShop does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "picqer",
+                            "description": "Picqer does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "lightspeed-ecommerce",
+                            "description": "Lightspeed Ecommerce does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "shopify-public-app",
+                            "description": "Shopify exposes counts via dedicated `/count.json` endpoints only — requires an extra API call not currently implemented. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "woocommerce",
+                            "description": "The `name` filter matches on the product name only on stores running WooCommerce 10.1 (August 2025)\nor newer. On older stores the name-scoped search is not supported and the filter falls back to a\nbroader search across the product name, description, and short description — results may include\nproducts whose name does not contain the search term.\n\nThe `updated_since` and `created_since` filters require WooCommerce 5.8 (October 2021) or newer.\nOn older stores they are silently ignored and the unfiltered product list is returned. Both filters\nare exclusive boundaries (strictly after the given timestamp) and are evaluated in UTC.\n",
+                        },
+                        {
+                            "connector": "magento",
+                            "description": "`tax_status` is derived heuristically from Magento's product tax class (`tax_class_id`): the\ndefault untaxed class `0` maps to `none`, and any other configured tax class maps to `taxable`.\nMagento tax class ids are merchant-configurable, so a store that created an additional\ntax-exempt class will have those products reported as `taxable`. To read the raw class id\ninstead, use a Field Mapping on `$.custom_attributes[?(@.attribute_code=='tax_class_id')].value`.\nMagento has no equivalent of the `shipping` value.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -335,17 +462,19 @@ class Products(BaseSDK):
                 fields=fields,
                 filter_=filter_,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.EcommerceProductsAllResponse(
                 get_products_response=unmarshal_json_response(
-                    Optional[models.GetProductsResponse], http_res
+                    Optional[models.GetProductsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -386,11 +515,10 @@ class Products(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.EcommerceProductsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -460,6 +588,7 @@ class Products(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -484,9 +613,27 @@ class Products(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["ecommerce"],
+                extensions={
+                    "x-apideck-api": "ecommerce",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "prestashop",
+                            "description": "Product images for PrestaShop are limited to the default image set on the product.",
+                        },
+                        {
+                            "connector": "wix",
+                            "description": "Wix V3 catalog assigns unique SKUs and weights to each product variant. The product-level `sku` and `weight` fields represent only the first variant for backward compatibility. To access complete variant data across all product variations, reference the individual `variants[].sku` and `variants[].weight` fields which contain the accurate data for each variant.",
+                        },
+                        {
+                            "connector": "magento",
+                            "description": "For simple products with customizable options, child SKUs (e.g. `WSR-POL-PPQ-001-PRB-ROL-120`)\nare not stored as separate catalog records in Magento — they are synthesized at order time by\nconcatenating the parent SKU with each selected option value's SKU. These child SKUs do not\nexist in the Magento catalog and calling `GET /rest/V1/products/{child_sku}` against Magento\ndirectly returns 404.\n\n**Fetching a child SKU directly via `GET /ecommerce/products/{child_sku}`** triggers an internal\nprefix walk-back: Apideck progressively shortens the hyphen-delimited SKU to locate the parent\nproduct, then verifies the remaining suffix against the parent's customizable option values\n(including Cartesian combinations for products with multiple option groups). This recovery makes\nup to N–1 additional Magento API calls, where N is the number of hyphen-delimited segments in\nthe child SKU (e.g. a 7-segment SKU requires up to 6 calls; a 15-segment SKU up to 14). Child\nSKUs with more than 20 hyphen-delimited segments are not resolved and return 404.\n\n**Price calculation:** the child SKU price is the parent base price plus the sum of each matched\noption value's added price. Only `price_type: \"fixed\"` option values contribute to the price\ndelta. Option values with `price_type: \"percent\"` contribute 0 to the delta.\n\n**Recommended approach:** to avoid the extra API calls and latency, fetch the parent SKU first\nvia `GET /ecommerce/products/{parent_sku}`. The `variants[]` array is pre-populated with all\nvalid option combinations, their synthesized SKUs, and their correct prices in a single call.\nUse `variants[]` to build a local lookup table rather than calling the child SKU endpoint\nrepeatedly.\n\n**`tax_status`** is derived heuristically from Magento's product tax class (`tax_class_id`): the\ndefault untaxed class `0` maps to `none`, and any other configured tax class maps to `taxable`.\nMagento tax class ids are merchant-configurable, so a store that created an additional\ntax-exempt class will have those products reported as `taxable`. To read the raw class id\ninstead, use a Field Mapping on `$.custom_attributes[?(@.attribute_code=='tax_class_id')].value`.\nMagento has no equivalent of the `shipping` value.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -494,10 +641,9 @@ class Products(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.EcommerceProductsOneResponse(
                 get_product_response=unmarshal_json_response(
-                    Optional[models.GetProductResponse], http_res
+                    Optional[models.GetProductResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -538,10 +684,9 @@ class Products(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.EcommerceProductsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -611,6 +756,7 @@ class Products(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -635,9 +781,27 @@ class Products(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["ecommerce"],
+                extensions={
+                    "x-apideck-api": "ecommerce",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "prestashop",
+                            "description": "Product images for PrestaShop are limited to the default image set on the product.",
+                        },
+                        {
+                            "connector": "wix",
+                            "description": "Wix V3 catalog assigns unique SKUs and weights to each product variant. The product-level `sku` and `weight` fields represent only the first variant for backward compatibility. To access complete variant data across all product variations, reference the individual `variants[].sku` and `variants[].weight` fields which contain the accurate data for each variant.",
+                        },
+                        {
+                            "connector": "magento",
+                            "description": "For simple products with customizable options, child SKUs (e.g. `WSR-POL-PPQ-001-PRB-ROL-120`)\nare not stored as separate catalog records in Magento — they are synthesized at order time by\nconcatenating the parent SKU with each selected option value's SKU. These child SKUs do not\nexist in the Magento catalog and calling `GET /rest/V1/products/{child_sku}` against Magento\ndirectly returns 404.\n\n**Fetching a child SKU directly via `GET /ecommerce/products/{child_sku}`** triggers an internal\nprefix walk-back: Apideck progressively shortens the hyphen-delimited SKU to locate the parent\nproduct, then verifies the remaining suffix against the parent's customizable option values\n(including Cartesian combinations for products with multiple option groups). This recovery makes\nup to N–1 additional Magento API calls, where N is the number of hyphen-delimited segments in\nthe child SKU (e.g. a 7-segment SKU requires up to 6 calls; a 15-segment SKU up to 14). Child\nSKUs with more than 20 hyphen-delimited segments are not resolved and return 404.\n\n**Price calculation:** the child SKU price is the parent base price plus the sum of each matched\noption value's added price. Only `price_type: \"fixed\"` option values contribute to the price\ndelta. Option values with `price_type: \"percent\"` contribute 0 to the delta.\n\n**Recommended approach:** to avoid the extra API calls and latency, fetch the parent SKU first\nvia `GET /ecommerce/products/{parent_sku}`. The `variants[]` array is pre-populated with all\nvalid option combinations, their synthesized SKUs, and their correct prices in a single call.\nUse `variants[]` to build a local lookup table rather than calling the child SKU endpoint\nrepeatedly.\n\n**`tax_status`** is derived heuristically from Magento's product tax class (`tax_class_id`): the\ndefault untaxed class `0` maps to `none`, and any other configured tax class maps to `taxable`.\nMagento tax class ids are merchant-configurable, so a store that created an additional\ntax-exempt class will have those products reported as `taxable`. To read the raw class id\ninstead, use a Field Mapping on `$.custom_attributes[?(@.attribute_code=='tax_class_id')].value`.\nMagento has no equivalent of the `shipping` value.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -645,10 +809,9 @@ class Products(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.EcommerceProductsOneResponse(
                 get_product_response=unmarshal_json_response(
-                    Optional[models.GetProductResponse], http_res
+                    Optional[models.GetProductResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -689,10 +852,9 @@ class Products(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.EcommerceProductsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

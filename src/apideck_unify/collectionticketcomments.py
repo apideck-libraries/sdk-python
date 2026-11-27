@@ -7,7 +7,7 @@ from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from jsonpath import JSONPath
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
 
 
 class CollectionTicketComments(BaseSDK):
@@ -23,7 +23,7 @@ class CollectionTicketComments(BaseSDK):
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
         sort: Optional[Union[models.CommentsSort, models.CommentsSortTypedDict]] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -70,7 +70,7 @@ class CollectionTicketComments(BaseSDK):
             collection_id=collection_id,
             ticket_id=ticket_id,
             sort=utils.get_pydantic_model(sort, Optional[models.CommentsSort]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -91,6 +91,7 @@ class CollectionTicketComments(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -115,9 +116,19 @@ class CollectionTicketComments(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["issueTracking"],
+                extensions={
+                    "x-apideck-api": "issueTracking",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "jira",
+                            "description": "Jira's comment list API exposes a `total` field but it is not currently wired to `meta.total_count`. Support may be added in a future update.\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -147,17 +158,19 @@ class CollectionTicketComments(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.IssueTrackingCollectionTicketCommentsAllResponse(
                 get_comments_response=unmarshal_json_response(
-                    Optional[models.GetCommentsResponse], http_res
+                    Optional[models.GetCommentsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -198,11 +211,10 @@ class CollectionTicketComments(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.IssueTrackingCollectionTicketCommentsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -219,7 +231,7 @@ class CollectionTicketComments(BaseSDK):
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
         sort: Optional[Union[models.CommentsSort, models.CommentsSortTypedDict]] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -266,7 +278,7 @@ class CollectionTicketComments(BaseSDK):
             collection_id=collection_id,
             ticket_id=ticket_id,
             sort=utils.get_pydantic_model(sort, Optional[models.CommentsSort]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -287,6 +299,7 @@ class CollectionTicketComments(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -311,9 +324,19 @@ class CollectionTicketComments(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["issueTracking"],
+                extensions={
+                    "x-apideck-api": "issueTracking",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "jira",
+                            "description": "Jira's comment list API exposes a `total` field but it is not currently wired to `meta.total_count`. Support may be added in a future update.\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -343,17 +366,19 @@ class CollectionTicketComments(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.IssueTrackingCollectionTicketCommentsAllResponse(
                 get_comments_response=unmarshal_json_response(
-                    Optional[models.GetCommentsResponse], http_res
+                    Optional[models.GetCommentsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -394,11 +419,10 @@ class CollectionTicketComments(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.IssueTrackingCollectionTicketCommentsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -414,7 +438,10 @@ class CollectionTicketComments(BaseSDK):
         service_id: Optional[str] = None,
         body: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -487,6 +514,7 @@ class CollectionTicketComments(BaseSDK):
                 "json",
                 models.CollectionTicketCommentInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -511,9 +539,11 @@ class CollectionTicketComments(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["issueTracking"],
+                extensions={"x-apideck-api": "issueTracking"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -521,10 +551,9 @@ class CollectionTicketComments(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.IssueTrackingCollectionTicketCommentsAddResponse(
                 create_comment_response=unmarshal_json_response(
-                    Optional[models.CreateCommentResponse], http_res
+                    Optional[models.CreateCommentResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -565,10 +594,9 @@ class CollectionTicketComments(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.IssueTrackingCollectionTicketCommentsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -584,7 +612,10 @@ class CollectionTicketComments(BaseSDK):
         service_id: Optional[str] = None,
         body: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -657,6 +688,7 @@ class CollectionTicketComments(BaseSDK):
                 "json",
                 models.CollectionTicketCommentInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -681,9 +713,11 @@ class CollectionTicketComments(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["issueTracking"],
+                extensions={"x-apideck-api": "issueTracking"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -691,10 +725,9 @@ class CollectionTicketComments(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.IssueTrackingCollectionTicketCommentsAddResponse(
                 create_comment_response=unmarshal_json_response(
-                    Optional[models.CreateCommentResponse], http_res
+                    Optional[models.CreateCommentResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -735,10 +768,9 @@ class CollectionTicketComments(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.IssueTrackingCollectionTicketCommentsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -820,6 +852,7 @@ class CollectionTicketComments(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -844,9 +877,11 @@ class CollectionTicketComments(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["issueTracking"],
+                extensions={"x-apideck-api": "issueTracking"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -875,17 +910,19 @@ class CollectionTicketComments(BaseSDK):
                 limit=limit,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.IssueTrackingCollectionTicketCommentsOneResponse(
                 get_comment_response=unmarshal_json_response(
-                    Optional[models.GetCommentResponse], http_res
+                    Optional[models.GetCommentResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -926,11 +963,10 @@ class CollectionTicketComments(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.IssueTrackingCollectionTicketCommentsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1012,6 +1048,7 @@ class CollectionTicketComments(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1036,9 +1073,11 @@ class CollectionTicketComments(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["issueTracking"],
+                extensions={"x-apideck-api": "issueTracking"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1067,17 +1106,19 @@ class CollectionTicketComments(BaseSDK):
                 limit=limit,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.IssueTrackingCollectionTicketCommentsOneResponse(
                 get_comment_response=unmarshal_json_response(
-                    Optional[models.GetCommentResponse], http_res
+                    Optional[models.GetCommentResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1118,11 +1159,10 @@ class CollectionTicketComments(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.IssueTrackingCollectionTicketCommentsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1139,7 +1179,10 @@ class CollectionTicketComments(BaseSDK):
         raw: Optional[bool] = False,
         body: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1214,6 +1257,7 @@ class CollectionTicketComments(BaseSDK):
                 "json",
                 models.CollectionTicketCommentInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1238,9 +1282,11 @@ class CollectionTicketComments(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["issueTracking"],
+                extensions={"x-apideck-api": "issueTracking"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1248,10 +1294,9 @@ class CollectionTicketComments(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.IssueTrackingCollectionTicketCommentsUpdateResponse(
                 update_comment_response=unmarshal_json_response(
-                    Optional[models.UpdateCommentResponse], http_res
+                    Optional[models.UpdateCommentResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1292,10 +1337,9 @@ class CollectionTicketComments(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.IssueTrackingCollectionTicketCommentsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1312,7 +1356,10 @@ class CollectionTicketComments(BaseSDK):
         raw: Optional[bool] = False,
         body: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1387,6 +1434,7 @@ class CollectionTicketComments(BaseSDK):
                 "json",
                 models.CollectionTicketCommentInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1411,9 +1459,11 @@ class CollectionTicketComments(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["issueTracking"],
+                extensions={"x-apideck-api": "issueTracking"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1421,10 +1471,9 @@ class CollectionTicketComments(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.IssueTrackingCollectionTicketCommentsUpdateResponse(
                 update_comment_response=unmarshal_json_response(
-                    Optional[models.UpdateCommentResponse], http_res
+                    Optional[models.UpdateCommentResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1465,10 +1514,9 @@ class CollectionTicketComments(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.IssueTrackingCollectionTicketCommentsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1541,6 +1589,7 @@ class CollectionTicketComments(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1565,9 +1614,11 @@ class CollectionTicketComments(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["issueTracking"],
+                extensions={"x-apideck-api": "issueTracking"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1575,10 +1626,9 @@ class CollectionTicketComments(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.IssueTrackingCollectionTicketCommentsDeleteResponse(
                 delete_comment_response=unmarshal_json_response(
-                    Optional[models.DeleteCommentResponse], http_res
+                    Optional[models.DeleteCommentResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1619,10 +1669,9 @@ class CollectionTicketComments(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.IssueTrackingCollectionTicketCommentsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1695,6 +1744,7 @@ class CollectionTicketComments(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1719,9 +1769,11 @@ class CollectionTicketComments(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["issueTracking"],
+                extensions={"x-apideck-api": "issueTracking"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1729,10 +1781,9 @@ class CollectionTicketComments(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.IssueTrackingCollectionTicketCommentsDeleteResponse(
                 delete_comment_response=unmarshal_json_response(
-                    Optional[models.DeleteCommentResponse], http_res
+                    Optional[models.DeleteCommentResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1773,10 +1824,9 @@ class CollectionTicketComments(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.IssueTrackingCollectionTicketCommentsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

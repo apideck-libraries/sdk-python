@@ -2,6 +2,16 @@
 
 Type of amortization
 
+## Example Usage
+
+```python
+from apideck_unify.models import AmortizationType
+
+value = AmortizationType.MANUAL
+
+# Open enum: unrecognized values are captured as UnrecognizedStr
+```
+
 
 ## Values
 

@@ -2,6 +2,16 @@
 
 Type of authorization used by the connector
 
+## Example Usage
+
+```python
+from apideck_unify.models import ConnectorAuthType
+
+value = ConnectorAuthType.OAUTH2
+
+# Open enum: unrecognized values are captured as UnrecognizedStr
+```
+
 
 ## Values
 

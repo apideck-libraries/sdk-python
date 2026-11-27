@@ -2,6 +2,16 @@
 
 Invoice status
 
+## Example Usage
+
+```python
+from apideck_unify.models import InvoiceCreateInputStatus
+
+value = InvoiceCreateInputStatus.DRAFT
+
+# Open enum: unrecognized values are captured as UnrecognizedStr
+```
+
 
 ## Values
 

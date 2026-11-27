@@ -25,7 +25,7 @@ class Categories(BaseSDK):
         filter_: Optional[
             Union[models.CategoriesFilter, models.CategoriesFilterTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -72,7 +72,7 @@ class Categories(BaseSDK):
             filter_=utils.get_pydantic_model(
                 filter_, Optional[models.CategoriesFilter]
             ),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
         )
 
         req = self._build_request(
@@ -92,6 +92,7 @@ class Categories(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -116,9 +117,55 @@ class Categories(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Categories are the QuickBooks customer types (`type: customer`) and vendor types (`type: supplier`), customer types first. QuickBooks has no expense or revenue categories: `filter[type]=expense` and `filter[type]=revenue` return an empty list. The `id` is `customer-` or `supplier-` followed by the QuickBooks ListID, because the two lists are numbered separately and share ids. `name` is the full name of the type, with its parents (`Parent:Child`). Read-only.\n\nQuickBooks Desktop does not expose a reliable cross-page total record count. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "workday",
+                            "description": "It is required to pass the filter[type] parameter to the request. For supplier categories, use the `supplier` value. For resource/spend categories, use the `expense` value. For revenue categories, use the `revenue` value.",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks Online does not expose a reliable cross-page total record count. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite uses the same underlying QuickBooks API. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "If you encounter a '400 Bad Request' error indicating \"Control 'fieldName' is read-only\" it means the 'editable' property for this field in Microsoft Dynamics 365 Business Central is currently set to false. To resolve this issue and make the field writable, simply update the 'editable' property to true in Microsoft Dynamics 365 Business Central. Additionally, line item tax rates must be specified by tax rate *code* (e.g., \"G3\"), not by ID. In U.S.-regionalized Business Central tenants, the `tax_inclusive` field cannot be set to `true`.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Xero limits to 10 attachments per resource (invoices/bills) of 3.5MB each.",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": "Moneybird does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "pennylane",
+                            "description": "Pennylane does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "AFAS does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -145,17 +192,19 @@ class Categories(BaseSDK):
                 filter_=filter_,
                 pass_through=pass_through,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingCategoriesAllResponse(
                 get_categories_response=unmarshal_json_response(
-                    Optional[models.GetCategoriesResponse], http_res
+                    Optional[models.GetCategoriesResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -196,11 +245,10 @@ class Categories(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingCategoriesAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -219,7 +267,7 @@ class Categories(BaseSDK):
         filter_: Optional[
             Union[models.CategoriesFilter, models.CategoriesFilterTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -266,7 +314,7 @@ class Categories(BaseSDK):
             filter_=utils.get_pydantic_model(
                 filter_, Optional[models.CategoriesFilter]
             ),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
         )
 
         req = self._build_request_async(
@@ -286,6 +334,7 @@ class Categories(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -310,9 +359,55 @@ class Categories(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Categories are the QuickBooks customer types (`type: customer`) and vendor types (`type: supplier`), customer types first. QuickBooks has no expense or revenue categories: `filter[type]=expense` and `filter[type]=revenue` return an empty list. The `id` is `customer-` or `supplier-` followed by the QuickBooks ListID, because the two lists are numbered separately and share ids. `name` is the full name of the type, with its parents (`Parent:Child`). Read-only.\n\nQuickBooks Desktop does not expose a reliable cross-page total record count. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "workday",
+                            "description": "It is required to pass the filter[type] parameter to the request. For supplier categories, use the `supplier` value. For resource/spend categories, use the `expense` value. For revenue categories, use the `revenue` value.",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks Online does not expose a reliable cross-page total record count. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite uses the same underlying QuickBooks API. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "If you encounter a '400 Bad Request' error indicating \"Control 'fieldName' is read-only\" it means the 'editable' property for this field in Microsoft Dynamics 365 Business Central is currently set to false. To resolve this issue and make the field writable, simply update the 'editable' property to true in Microsoft Dynamics 365 Business Central. Additionally, line item tax rates must be specified by tax rate *code* (e.g., \"G3\"), not by ID. In U.S.-regionalized Business Central tenants, the `tax_inclusive` field cannot be set to `true`.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Xero limits to 10 attachments per resource (invoices/bills) of 3.5MB each.",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": "Moneybird does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "pennylane",
+                            "description": "Pennylane does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "AFAS does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -339,17 +434,19 @@ class Categories(BaseSDK):
                 filter_=filter_,
                 pass_through=pass_through,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingCategoriesAllResponse(
                 get_categories_response=unmarshal_json_response(
-                    Optional[models.GetCategoriesResponse], http_res
+                    Optional[models.GetCategoriesResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -390,11 +487,10 @@ class Categories(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingCategoriesAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -474,6 +570,7 @@ class Categories(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -498,9 +595,23 @@ class Categories(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "A category is a QuickBooks customer type or vendor type. The `id` is `customer-` or `supplier-` followed by the QuickBooks ListID (as returned by the list); a bare ListID answers `404`, because the two lists share ids.\n",
+                        },
+                        {
+                            "connector": "workday",
+                            "description": "It is required to pass the filter[type] parameter to the request. For supplier categories, use the `supplier` value. For resource/spend categories, use the `expense` value. For revenue categories, use the `revenue` value.",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -508,10 +619,9 @@ class Categories(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingCategoriesOneResponse(
                 get_category_response=unmarshal_json_response(
-                    Optional[models.GetCategoryResponse], http_res
+                    Optional[models.GetCategoryResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -552,10 +662,9 @@ class Categories(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingCategoriesOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -635,6 +744,7 @@ class Categories(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -659,9 +769,23 @@ class Categories(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "A category is a QuickBooks customer type or vendor type. The `id` is `customer-` or `supplier-` followed by the QuickBooks ListID (as returned by the list); a bare ListID answers `404`, because the two lists share ids.\n",
+                        },
+                        {
+                            "connector": "workday",
+                            "description": "It is required to pass the filter[type] parameter to the request. For supplier categories, use the `supplier` value. For resource/spend categories, use the `expense` value. For revenue categories, use the `revenue` value.",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -669,10 +793,9 @@ class Categories(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingCategoriesOneResponse(
                 get_category_response=unmarshal_json_response(
-                    Optional[models.GetCategoryResponse], http_res
+                    Optional[models.GetCategoryResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -713,10 +836,9 @@ class Categories(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingCategoriesOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

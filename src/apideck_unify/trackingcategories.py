@@ -7,7 +7,7 @@ from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from jsonpath import JSONPath
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
 
 
 class TrackingCategories(BaseSDK):
@@ -21,7 +21,7 @@ class TrackingCategories(BaseSDK):
         company_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -64,7 +64,7 @@ class TrackingCategories(BaseSDK):
             company_id=company_id,
             cursor=cursor,
             limit=limit,
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -85,6 +85,7 @@ class TrackingCategories(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -109,9 +110,87 @@ class TrackingCategories(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Tracking categories are QuickBooks classes. `name` is the class's own name; a sub-class carries its parent in `parent_id` and `parent_name`.\n\nQuickBooks Desktop does not expose a reliable cross-page total record count. Getting `total_count` requires a separate COUNT query — an extra API call that is not currently implemented. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Tracking categories are Fiken projects, Fiken's only analytic dimension, so they are the same\nrecords as `/accounting/projects`. They are flat: `parent_id` and `parent_name` are never set.\n`code` is the project number and `status` is `inactive` for a completed project. Creating one sets\nFiken's required project start date to today (Europe/Oslo). The Fiken company needs the Project and\nTimeføring (time tracking) add-ons; without them Fiken answers 402.\n",
+                        },
+                        {
+                            "connector": "oracle-fusion",
+                            "description": "Tracking categories are Oracle chart-of-accounts **segment values**. Reads only — creating,\nupdating or deleting one is an Oracle setup task performed in the Setup and Maintenance work\narea, and Oracle marks the value itself unmodifiable, so it could not be changed through the\nAPI even with setup privileges.\n\n**A connection exposes exactly one segment**, chosen by the **Tracking Segment Value Set\nCode** connection setting, so that tracking category ids stay unambiguous. A `pass_through`\nnaming `valueSets_Id` is refused with a `400`, because it would read a different segment. Oracle's chart of\naccounts has several segments — company, natural account, and, only when the tenant has\nconfigured one, cost centre / department / project — and it is one of that last kind the\nsetting should point at. Oracle offers no way to discover the code through the API, so it has\nto be supplied when the connection is created; your Oracle administrator finds it in Setup\nand Maintenance.\n\n**This needs a tenant whose chart of accounts actually has such a segment.** A chart built\nfrom only a company and a natural-account segment has no tracking dimension to expose.\nWithout the **Tracking Segment Value Set Code** setting the list is refused rather than\nanswered empty, so the setting is what this resource depends on, not the chart alone.\nOracle does not return a total record count for this list; `meta.total_count` will not\nappear.\n\n`id` is Oracle's identifier for the segment value and `code` is the value itself (for example\n`100`). Address a single tracking category by `id` — the `code` is not addressable.\n\nThe integration user needs an Oracle role beyond the baseline accounting one to read this\nresource; without it Oracle returns `403`. Ask your Oracle administrator to follow the\nconnection guide before relying on it.\n",
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "Tracking categories are SAP profit centers and are read-only: creating, updating or deleting\none returns an unsupported-operation error, so maintain profit centers in SAP itself.\n\n`id` and `code` are the profit center code (for example `YB110`). This is the value to send\nas `line_items[].tracking_categories[0].id` when creating invoices, credit notes and journal\nentries, and the value those resources return. Only the first tracking category on a line\nis posted.\n\nOnly profit centers with an open-ended validity (`ValidityEndDate` 9999-12-31) are listed and\ncan be fetched: one whose validity ends on a fixed date is not listed and returns 404, and one\nwhose open-ended period starts in the future is already listed. `subsidiaries` lists the\ncompany codes the profit center is assigned to. Profit centers are flat here: `parent_id`\nand `parent_name` are not set.\n\nIf your SAP tenant uses more than one controlling area and the same profit center code\nexists in several of them, the list returns each of them under the same `id`, and fetching\nthat `id` returns only one.\n",
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": "`status` is not returned by this list call — the underlying vendor list only returns code\nand name per row. Fetch the tracking category by id to read it.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite uses the same underlying QuickBooks API. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks Online does not expose a reliable cross-page total record count. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "The Parent ID field refers to the parent tracking category code.",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": 'Returns tracking category options only. IDs and names are concatenated as "CategoryName - OptionName". The provided ID can be used to link to the correct tracking category to invoices, bills, etc.',
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "The `limit` parameter is ignored. All tracking categories (parent dimensions and their Standard\ndimension values) are always returned in a single response. Non-Standard dimension value types\n(Begin-Total, End-Total, Heading, Total) are excluded as they cannot be assigned to transactions.\n",
+                        },
+                        {
+                            "connector": "fortnox",
+                            "description": 'Fortnox has multiple analytic dimensions (`projects`, `cost-centers`, `DimAx1-3`). The unified\n`tracking-categories` resource exposes a **single** dimension (`projects`) to keep ids unambiguous.\n\nIf you need values from another dimension, or values from multiple dimensions in one response, use\n`?raw=true` to retrieve the raw Fortnox payload and inspect the dimension you need. Note that\nFortnox category codes are unique only within a dimension -- e.g. code `"100"` may exist on both\n`projects` and `cost-centers` and refer to different things. The unified id is the project number\nonly; cross-dimension uniqueness is not guaranteed when raw-mode-merging happens client-side.\n\nFor multi-dimension awareness in the unified API, see the upcoming `analytic-plans` /\n`analytic-categories` resources (parallel-resource path; non-breaking to this endpoint).\n',
+                        },
+                        {
+                            "connector": "pennylane",
+                            "description": "Pennylane is multi-plan native (`/analytic-plans` + `/analytic-accounts`). The unified\n`tracking-categories` resource flattens to one default plan; ids are unique within that plan but\nmay collide across plans. Use `?raw=true` to retrieve the full multi-plan structure.\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": "Moneybird does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "pennylane",
+                            "description": "Pennylane does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "access-financials",
+                            "description": "Access Financials does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "AFAS does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": 'A **Default Subsidiary** on the connection scopes this list, and this list does not follow the same rule transactions do: a record marked "include children" in NetSuite **is** returned for every descendant subsidiary, whereas filtering transactions by a parent subsidiary is **not**.\n',
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -137,17 +216,21 @@ class TrackingCategories(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingTrackingCategoriesAllResponse(
                 get_tracking_categories_response=unmarshal_json_response(
-                    Optional[models.GetTrackingCategoriesResponse], http_res
+                    Optional[models.GetTrackingCategoriesResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -188,11 +271,10 @@ class TrackingCategories(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingTrackingCategoriesAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -207,7 +289,7 @@ class TrackingCategories(BaseSDK):
         company_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -250,7 +332,7 @@ class TrackingCategories(BaseSDK):
             company_id=company_id,
             cursor=cursor,
             limit=limit,
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -271,6 +353,7 @@ class TrackingCategories(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -295,9 +378,87 @@ class TrackingCategories(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Tracking categories are QuickBooks classes. `name` is the class's own name; a sub-class carries its parent in `parent_id` and `parent_name`.\n\nQuickBooks Desktop does not expose a reliable cross-page total record count. Getting `total_count` requires a separate COUNT query — an extra API call that is not currently implemented. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Tracking categories are Fiken projects, Fiken's only analytic dimension, so they are the same\nrecords as `/accounting/projects`. They are flat: `parent_id` and `parent_name` are never set.\n`code` is the project number and `status` is `inactive` for a completed project. Creating one sets\nFiken's required project start date to today (Europe/Oslo). The Fiken company needs the Project and\nTimeføring (time tracking) add-ons; without them Fiken answers 402.\n",
+                        },
+                        {
+                            "connector": "oracle-fusion",
+                            "description": "Tracking categories are Oracle chart-of-accounts **segment values**. Reads only — creating,\nupdating or deleting one is an Oracle setup task performed in the Setup and Maintenance work\narea, and Oracle marks the value itself unmodifiable, so it could not be changed through the\nAPI even with setup privileges.\n\n**A connection exposes exactly one segment**, chosen by the **Tracking Segment Value Set\nCode** connection setting, so that tracking category ids stay unambiguous. A `pass_through`\nnaming `valueSets_Id` is refused with a `400`, because it would read a different segment. Oracle's chart of\naccounts has several segments — company, natural account, and, only when the tenant has\nconfigured one, cost centre / department / project — and it is one of that last kind the\nsetting should point at. Oracle offers no way to discover the code through the API, so it has\nto be supplied when the connection is created; your Oracle administrator finds it in Setup\nand Maintenance.\n\n**This needs a tenant whose chart of accounts actually has such a segment.** A chart built\nfrom only a company and a natural-account segment has no tracking dimension to expose.\nWithout the **Tracking Segment Value Set Code** setting the list is refused rather than\nanswered empty, so the setting is what this resource depends on, not the chart alone.\nOracle does not return a total record count for this list; `meta.total_count` will not\nappear.\n\n`id` is Oracle's identifier for the segment value and `code` is the value itself (for example\n`100`). Address a single tracking category by `id` — the `code` is not addressable.\n\nThe integration user needs an Oracle role beyond the baseline accounting one to read this\nresource; without it Oracle returns `403`. Ask your Oracle administrator to follow the\nconnection guide before relying on it.\n",
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "Tracking categories are SAP profit centers and are read-only: creating, updating or deleting\none returns an unsupported-operation error, so maintain profit centers in SAP itself.\n\n`id` and `code` are the profit center code (for example `YB110`). This is the value to send\nas `line_items[].tracking_categories[0].id` when creating invoices, credit notes and journal\nentries, and the value those resources return. Only the first tracking category on a line\nis posted.\n\nOnly profit centers with an open-ended validity (`ValidityEndDate` 9999-12-31) are listed and\ncan be fetched: one whose validity ends on a fixed date is not listed and returns 404, and one\nwhose open-ended period starts in the future is already listed. `subsidiaries` lists the\ncompany codes the profit center is assigned to. Profit centers are flat here: `parent_id`\nand `parent_name` are not set.\n\nIf your SAP tenant uses more than one controlling area and the same profit center code\nexists in several of them, the list returns each of them under the same `id`, and fetching\nthat `id` returns only one.\n",
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": "`status` is not returned by this list call — the underlying vendor list only returns code\nand name per row. Fetch the tracking category by id to read it.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite uses the same underlying QuickBooks API. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks Online does not expose a reliable cross-page total record count. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "The Parent ID field refers to the parent tracking category code.",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": 'Returns tracking category options only. IDs and names are concatenated as "CategoryName - OptionName". The provided ID can be used to link to the correct tracking category to invoices, bills, etc.',
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "The `limit` parameter is ignored. All tracking categories (parent dimensions and their Standard\ndimension values) are always returned in a single response. Non-Standard dimension value types\n(Begin-Total, End-Total, Heading, Total) are excluded as they cannot be assigned to transactions.\n",
+                        },
+                        {
+                            "connector": "fortnox",
+                            "description": 'Fortnox has multiple analytic dimensions (`projects`, `cost-centers`, `DimAx1-3`). The unified\n`tracking-categories` resource exposes a **single** dimension (`projects`) to keep ids unambiguous.\n\nIf you need values from another dimension, or values from multiple dimensions in one response, use\n`?raw=true` to retrieve the raw Fortnox payload and inspect the dimension you need. Note that\nFortnox category codes are unique only within a dimension -- e.g. code `"100"` may exist on both\n`projects` and `cost-centers` and refer to different things. The unified id is the project number\nonly; cross-dimension uniqueness is not guaranteed when raw-mode-merging happens client-side.\n\nFor multi-dimension awareness in the unified API, see the upcoming `analytic-plans` /\n`analytic-categories` resources (parallel-resource path; non-breaking to this endpoint).\n',
+                        },
+                        {
+                            "connector": "pennylane",
+                            "description": "Pennylane is multi-plan native (`/analytic-plans` + `/analytic-accounts`). The unified\n`tracking-categories` resource flattens to one default plan; ids are unique within that plan but\nmay collide across plans. Use `?raw=true` to retrieve the full multi-plan structure.\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": "Moneybird does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "pennylane",
+                            "description": "Pennylane does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "access-financials",
+                            "description": "Access Financials does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "AFAS does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": 'A **Default Subsidiary** on the connection scopes this list, and this list does not follow the same rule transactions do: a record marked "include children" in NetSuite **is** returned for every descendant subsidiary, whereas filtering transactions by a parent subsidiary is **not**.\n',
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -323,17 +484,21 @@ class TrackingCategories(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingTrackingCategoriesAllResponse(
                 get_tracking_categories_response=unmarshal_json_response(
-                    Optional[models.GetTrackingCategoriesResponse], http_res
+                    Optional[models.GetTrackingCategoriesResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -374,11 +539,10 @@ class TrackingCategories(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingTrackingCategoriesAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -398,12 +562,15 @@ class TrackingCategories(BaseSDK):
         status: Optional[models.TrackingCategoryStatus] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         subsidiaries: Optional[
             Union[
-                List[models.TrackingCategorySubsidiaries],
-                List[models.TrackingCategorySubsidiariesTypedDict],
+                Iterable[models.TrackingCategorySubsidiaries],
+                Iterable[models.TrackingCategorySubsidiariesTypedDict],
             ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -489,6 +656,7 @@ class TrackingCategories(BaseSDK):
                 "json",
                 models.TrackingCategoryInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -513,9 +681,31 @@ class TrackingCategories(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "To create a sub-class send `parent_name` with the parent class's full name (for example `Remodel`, or `Remodel:Kitchen` for a class two levels down). `parent_id` on its own is not used.\n\nWrites are applied on the Web Connector's next run, so a create can return a `504` timeout after 28 seconds while QuickBooks still creates the class. List tracking categories to find it before retrying: sending the create again adds a second class.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Fiken requires a project number, so `code` is required; a tracking category without it is\nrejected with `400`.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "`code` is required: a positive whole number, and it becomes the tracking category id. A code that is already in use is rejected with a `409`. Tracking categories cannot be deleted.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "When creating a category with parent ID please use the tracking category code.",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -523,10 +713,11 @@ class TrackingCategories(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingTrackingCategoriesAddResponse(
                 create_tracking_category_response=unmarshal_json_response(
-                    Optional[models.CreateTrackingCategoryResponse], http_res
+                    Optional[models.CreateTrackingCategoryResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -567,10 +758,9 @@ class TrackingCategories(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingTrackingCategoriesAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -590,12 +780,15 @@ class TrackingCategories(BaseSDK):
         status: Optional[models.TrackingCategoryStatus] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         subsidiaries: Optional[
             Union[
-                List[models.TrackingCategorySubsidiaries],
-                List[models.TrackingCategorySubsidiariesTypedDict],
+                Iterable[models.TrackingCategorySubsidiaries],
+                Iterable[models.TrackingCategorySubsidiariesTypedDict],
             ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -681,6 +874,7 @@ class TrackingCategories(BaseSDK):
                 "json",
                 models.TrackingCategoryInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -705,9 +899,31 @@ class TrackingCategories(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "To create a sub-class send `parent_name` with the parent class's full name (for example `Remodel`, or `Remodel:Kitchen` for a class two levels down). `parent_id` on its own is not used.\n\nWrites are applied on the Web Connector's next run, so a create can return a `504` timeout after 28 seconds while QuickBooks still creates the class. List tracking categories to find it before retrying: sending the create again adds a second class.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Fiken requires a project number, so `code` is required; a tracking category without it is\nrejected with `400`.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "`code` is required: a positive whole number, and it becomes the tracking category id. A code that is already in use is rejected with a `409`. Tracking categories cannot be deleted.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "When creating a category with parent ID please use the tracking category code.",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -715,10 +931,11 @@ class TrackingCategories(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingTrackingCategoriesAddResponse(
                 create_tracking_category_response=unmarshal_json_response(
-                    Optional[models.CreateTrackingCategoryResponse], http_res
+                    Optional[models.CreateTrackingCategoryResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -759,10 +976,9 @@ class TrackingCategories(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingTrackingCategoriesAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -835,6 +1051,7 @@ class TrackingCategories(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -859,9 +1076,19 @@ class TrackingCategories(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sage-intacct",
+                            "description": "The Parent ID field refers to the parent tracking category code.",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -869,10 +1096,11 @@ class TrackingCategories(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingTrackingCategoriesOneResponse(
                 get_tracking_category_response=unmarshal_json_response(
-                    Optional[models.GetTrackingCategoryResponse], http_res
+                    Optional[models.GetTrackingCategoryResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -913,10 +1141,9 @@ class TrackingCategories(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingTrackingCategoriesOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -989,6 +1216,7 @@ class TrackingCategories(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1013,9 +1241,19 @@ class TrackingCategories(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sage-intacct",
+                            "description": "The Parent ID field refers to the parent tracking category code.",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1023,10 +1261,11 @@ class TrackingCategories(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingTrackingCategoriesOneResponse(
                 get_tracking_category_response=unmarshal_json_response(
-                    Optional[models.GetTrackingCategoryResponse], http_res
+                    Optional[models.GetTrackingCategoryResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1067,10 +1306,9 @@ class TrackingCategories(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingTrackingCategoriesOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1091,12 +1329,15 @@ class TrackingCategories(BaseSDK):
         status: Optional[models.TrackingCategoryStatus] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         subsidiaries: Optional[
             Union[
-                List[models.TrackingCategorySubsidiaries],
-                List[models.TrackingCategorySubsidiariesTypedDict],
+                Iterable[models.TrackingCategorySubsidiaries],
+                Iterable[models.TrackingCategorySubsidiariesTypedDict],
             ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -1184,6 +1425,7 @@ class TrackingCategories(BaseSDK):
                 "json",
                 models.TrackingCategoryInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1208,9 +1450,23 @@ class TrackingCategories(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "`name` and `status` can be changed, and the parent through `parent_name`.\n\nUpdates need `row_version` from a prior read of the record. Writes are applied on the Web Connector's next run, so an update can return a `504` timeout after 28 seconds while QuickBooks still applies it, and the change can take a few minutes to show when the record is read back.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "When updating the Parent ID field please use the tracking category code.",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1218,10 +1474,11 @@ class TrackingCategories(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingTrackingCategoriesUpdateResponse(
                 update_tracking_category_response=unmarshal_json_response(
-                    Optional[models.UpdateTrackingCategoryResponse], http_res
+                    Optional[models.UpdateTrackingCategoryResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1262,10 +1519,9 @@ class TrackingCategories(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingTrackingCategoriesUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1286,12 +1542,15 @@ class TrackingCategories(BaseSDK):
         status: Optional[models.TrackingCategoryStatus] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         subsidiaries: Optional[
             Union[
-                List[models.TrackingCategorySubsidiaries],
-                List[models.TrackingCategorySubsidiariesTypedDict],
+                Iterable[models.TrackingCategorySubsidiaries],
+                Iterable[models.TrackingCategorySubsidiariesTypedDict],
             ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -1379,6 +1638,7 @@ class TrackingCategories(BaseSDK):
                 "json",
                 models.TrackingCategoryInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1403,9 +1663,23 @@ class TrackingCategories(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "`name` and `status` can be changed, and the parent through `parent_name`.\n\nUpdates need `row_version` from a prior read of the record. Writes are applied on the Web Connector's next run, so an update can return a `504` timeout after 28 seconds while QuickBooks still applies it, and the change can take a few minutes to show when the record is read back.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "When updating the Parent ID field please use the tracking category code.",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1413,10 +1687,11 @@ class TrackingCategories(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingTrackingCategoriesUpdateResponse(
                 update_tracking_category_response=unmarshal_json_response(
-                    Optional[models.UpdateTrackingCategoryResponse], http_res
+                    Optional[models.UpdateTrackingCategoryResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1457,10 +1732,9 @@ class TrackingCategories(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingTrackingCategoriesUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1530,6 +1804,7 @@ class TrackingCategories(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1554,9 +1829,19 @@ class TrackingCategories(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "A delete can return a `504` timeout after 28 seconds while QuickBooks still deletes the class. Read it back before retrying: a `404` means it is gone.\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1564,10 +1849,11 @@ class TrackingCategories(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingTrackingCategoriesDeleteResponse(
                 delete_tracking_category_response=unmarshal_json_response(
-                    Optional[models.DeleteTrackingCategoryResponse], http_res
+                    Optional[models.DeleteTrackingCategoryResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1608,10 +1894,9 @@ class TrackingCategories(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingTrackingCategoriesDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1681,6 +1966,7 @@ class TrackingCategories(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1705,9 +1991,19 @@ class TrackingCategories(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "A delete can return a `504` timeout after 28 seconds while QuickBooks still deletes the class. Read it back before retrying: a `404` means it is gone.\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1715,10 +2011,11 @@ class TrackingCategories(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingTrackingCategoriesDeleteResponse(
                 delete_tracking_category_response=unmarshal_json_response(
-                    Optional[models.DeleteTrackingCategoryResponse], http_res
+                    Optional[models.DeleteTrackingCategoryResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1759,10 +2056,9 @@ class TrackingCategories(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingTrackingCategoriesDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1770,7 +2066,7 @@ class TrackingCategories(BaseSDK):
     def create_batch(
         self,
         *,
-        items: Union[List[models.Items], List[models.ItemsTypedDict]],
+        items: Union[Iterable[models.Items], Iterable[models.ItemsTypedDict]],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
@@ -1841,6 +2137,7 @@ class TrackingCategories(BaseSDK):
                 "json",
                 models.BatchTrackingCategoriesRequest,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1865,9 +2162,31 @@ class TrackingCategories(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "xero",
+                            "description": "Creating tracking categories is not supported on Xero.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Creating tracking categories is not supported on Zoho Books.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "The whole request is one call to the provider, so it counts as **one request**\nagainst your plan however many records it carries.\n\nAt most 20 tracking categories per request. A request carrying more is rejected before any\nrecord is written.\n\nResponse time scales with the number of records rather than being a fixed cost,\nso set client timeouts for the size of request you send.\n\nA request that times out may still have written some or all of its records. When\nthat happens no ids are returned for them, so treat a timed-out batch as uncertain\nrather than failed: list the records to find what was written before retrying, or a\nretry will duplicate them.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "The whole request is one call to the provider, so it counts as **one request**\nagainst your plan however many records it carries.\n\nAt most 20 tracking categories per request. A request carrying more is rejected before any\nrecord is written.\n\nResponse time scales with the number of records rather than being a fixed cost,\nso set client timeouts for the size of request you send.\n\nA request that times out may still have written some or all of its records. When\nthat happens no ids are returned for them, so treat a timed-out batch as uncertain\nrather than failed: list the records to find what was written before retrying, or a\nretry will duplicate them.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1875,10 +2194,11 @@ class TrackingCategories(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingTrackingCategoriesBatchAddResponse(
                 batch_tracking_categories_response=unmarshal_json_response(
-                    Optional[models.BatchTrackingCategoriesResponse], http_res
+                    Optional[models.BatchTrackingCategoriesResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1919,10 +2239,9 @@ class TrackingCategories(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingTrackingCategoriesBatchAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1930,7 +2249,7 @@ class TrackingCategories(BaseSDK):
     async def create_batch_async(
         self,
         *,
-        items: Union[List[models.Items], List[models.ItemsTypedDict]],
+        items: Union[Iterable[models.Items], Iterable[models.ItemsTypedDict]],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
@@ -2001,6 +2320,7 @@ class TrackingCategories(BaseSDK):
                 "json",
                 models.BatchTrackingCategoriesRequest,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2025,9 +2345,31 @@ class TrackingCategories(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "xero",
+                            "description": "Creating tracking categories is not supported on Xero.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Creating tracking categories is not supported on Zoho Books.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "The whole request is one call to the provider, so it counts as **one request**\nagainst your plan however many records it carries.\n\nAt most 20 tracking categories per request. A request carrying more is rejected before any\nrecord is written.\n\nResponse time scales with the number of records rather than being a fixed cost,\nso set client timeouts for the size of request you send.\n\nA request that times out may still have written some or all of its records. When\nthat happens no ids are returned for them, so treat a timed-out batch as uncertain\nrather than failed: list the records to find what was written before retrying, or a\nretry will duplicate them.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "The whole request is one call to the provider, so it counts as **one request**\nagainst your plan however many records it carries.\n\nAt most 20 tracking categories per request. A request carrying more is rejected before any\nrecord is written.\n\nResponse time scales with the number of records rather than being a fixed cost,\nso set client timeouts for the size of request you send.\n\nA request that times out may still have written some or all of its records. When\nthat happens no ids are returned for them, so treat a timed-out batch as uncertain\nrather than failed: list the records to find what was written before retrying, or a\nretry will duplicate them.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2035,10 +2377,11 @@ class TrackingCategories(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingTrackingCategoriesBatchAddResponse(
                 batch_tracking_categories_response=unmarshal_json_response(
-                    Optional[models.BatchTrackingCategoriesResponse], http_res
+                    Optional[models.BatchTrackingCategoriesResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2079,10 +2422,9 @@ class TrackingCategories(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingTrackingCategoriesBatchAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

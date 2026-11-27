@@ -2,6 +2,16 @@
 
 Method used for billing this project
 
+## Example Usage
+
+```python
+from apideck_unify.models import BillingMethod
+
+value = BillingMethod.FIXED_PRICE
+
+# Open enum: unrecognized values are captured as UnrecognizedStr
+```
+
 
 ## Values
 

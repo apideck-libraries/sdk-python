@@ -8,7 +8,7 @@ from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from datetime import date
 from jsonpath import JSONPath
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
 
 
 class Bills(BaseSDK):
@@ -26,7 +26,7 @@ class Bills(BaseSDK):
             Union[models.BillsFilter, models.BillsFilterTypedDict]
         ] = None,
         sort: Optional[Union[models.BillsSort, models.BillsSortTypedDict]] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -73,7 +73,7 @@ class Bills(BaseSDK):
             limit=limit,
             filter_=utils.get_pydantic_model(filter_, Optional[models.BillsFilter]),
             sort=utils.get_pydantic_model(sort, Optional[models.BillsSort]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -94,6 +94,7 @@ class Bills(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -118,9 +119,167 @@ class Bills(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "minox",
+                            "description": "Lists the bills of every fiscal year in the administration; `filter[billed_since]`\nreturns the bills dated on or after that date. `status` and `balance` come from Minox's open items: `paid` when nothing is\nopen (an overpayment shows as a negative `balance`), `partially_paid` when part is,\n`authorised` when all of it is. Minox keeps no open item for some older bills; those are\n`posted` with `balance` `null`. The same applies when two of Minox's open items match one document (same number, date and kind). Sorting is not supported: Minox bookings have no created\nor updated timestamps.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "`filter[status]` supports `paid` and `unpaid`. `unpaid` returns every bill with an amount\nstill due, including partly paid bills (`status: partially_paid`); check `balance` to tell\nthem apart. `partially_paid` cannot be filtered and is rejected with a 400.\n\nThe list includes supplier credit notes, which FreeAgent stores as bills with a negative\ntotal. `filter[updated_since]` is supported.\n",
+                        },
+                        {
+                            "connector": "exact-online-nl",
+                            "description": 'Only `updated_since`, `bill_number` and `billed_since` can be filtered on. Exact Online\nrefuses a filter on the fields behind `reference`, `due_since` and `status` — its\npurchase-invoice endpoint answers *"Filtering on these fields is not supported"* — so\nthose are rejected rather than silently ignored.\n\nA filter value Exact cannot be asked about, such as a malformed date or a non-numeric\n`bill_number`, returns an **empty page rather than an error**, so an empty result does\nnot by itself mean there are no matching bills.\n',
+                        },
+                        {
+                            "connector": "exact-online",
+                            "description": "Same as `exact-online-nl`.\n",
+                        },
+                        {
+                            "connector": "exact-online-uk",
+                            "description": "Same as `exact-online-nl`.\n",
+                        },
+                        {
+                            "connector": "e-boekhouden",
+                            "description": "The list returns a summary view of each bill: `line_items`, `total_tax`, `notes`,\n`supplier` and `due_date` are only available from `bills.get` by id, not from this list.\n`total` and `sub_total` are taken from the bill's single summary amount.\n",
+                        },
+                        {
+                            "connector": "snelstart",
+                            "description": '`line_items`, `sub_total` and `total_tax` are never returned from this list — SnelStart\'s\nlist endpoint for bills is a read-only summary view with no line-item detail. `line_items`\nIS available from `bills.get` (by id), which reads the underlying "purchase booking"\nrecord instead (the same one `billsAdd`/`billsUpdate` write to). `sub_total` and\n`total_tax` are not mapped there either — not because the booking model lacks the data\n(it includes a `btw` VAT breakdown, one entry per VAT type), but because this connector\ndoes not currently derive the two unified fields from it; only `total` is exposed.\n',
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": "This connector fetches every matching bill in a single call — there is no server-side\npagination, so a large date range can be a large response. The `id` returned matches what\n`bills.get` expects, and other transaction types (bank, journal entries) are excluded.\n\n`sub_total`, `total_tax`, `line_items` and `updated_at` are not available from this list\nview — only one summary row per bill is returned, not the underlying line items. `total`\nis the posted gross value (net + VAT once a bill carries tax). `balance` and `paid_date`,\nnotably, ARE available here even though they are always null on `GET` by id — this list\nsurfaces data the single-record read does not.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "The `balance` field is not populated for bills. Business Central's API does not expose a\nremaining (unpaid) amount on purchase invoices — unlike sales invoices, which back the\ninvoices resource — so the open remainder of a bill cannot be read. A fully paid bill can\nbe detected via `status: paid`; partially paid amounts are not visible.\n",
+                        },
+                        {
+                            "connector": "dualentry",
+                            "description": "`updated_since` is inclusive and is applied at whole-second granularity, so a poll that\nreuses the newest `updated_at` it received will re-receive the records from that final\nsecond. De-duplicate on `id`, or advance the cursor past the boundary second.\n\nTwo DualEntry behaviours combine to cause this. Its `updated_after` filter is a\n`>=` comparison, and while DualEntry stores update times with sub-second precision it\nreturns them truncated to the second — so a returned timestamp is always slightly earlier\nthan the value the filter compares against. Any sub-second component supplied in\n`updated_since` is therefore rounded down before the request is sent, which guarantees no\nrecord is ever skipped at the boundary, at the cost of re-delivering that second.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "`sub_total` equals `total` and does not exclude tax. Sage Intacct's REST bill object\nexposes only document-level totals (`totalTxnAmount`, `totalBaseAmount`) with no\npre-tax subtotal field, so the two unified fields are populated from the same source.\nFor a bill with no tax this is correct; for a taxed bill `sub_total` will be the\ntax-inclusive amount rather than the net. Derive the net from the line items\n(`line_items[].total_amount`) when the distinction matters.\n\n`accounting_period` is derived, not read from Sage. The REST bill object exposes no\nperiod field, so the returned `MM-YY` is computed from the posting date. That is the\ncorrect period for a calendar-aligned fiscal year; a company using custom fiscal\nperiods may see a posting near a period boundary attributed to the adjacent month.\n\n`line_items` and `payment_allocations` are each attached via one extra batched query\nper page, covering every bill on that page. Sage caps a query at 4000 rows. If the\ncombined line count across a single page of bills exceeds 4000, the remaining bills on\nthat page receive an empty (rather than incomplete) `line_items`. If the combined\npayment-allocation count exceeds 4000, the lookup is truncated and no bill on that page\ncarries `payment_allocations` — the field is omitted rather than returned empty, so a\ntruncated page is never mistaken for a page of unpaid bills. Reduce the page size\n(`limit`) if you have unusually large bills or bills with many applied payments.\n\nBills return `payment_hold` but not `purchase_order` on line items or `custom_fields` on the\nbill or its lines, on bills.list and bills.get alike.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "bills.list returns `payment_hold` but no line items, so no `purchase_order` link, and no\n`custom_fields`. Both are returned on bills.get only. If you poll with `updated_since`, read\neach changed bill with bills.get to get its purchase order lines and dispute fields.\n",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "AFAS Profit has no first-party purchase-invoice GetConnector on most tenants. The default `purchase_invoices_connector` setting (`Profit_Creditor_Invoices`) is the open-items / aged-creditors report — it only returns purchase invoices that are still unpaid. Posted-and-cleared invoices will not appear.\n\nTo list all bills (paid + open), the customer must deploy a tenant-specific GetConnector (e.g. one over `FbInkfct`) and set its name on the connection via `purchase_invoices_connector`.\n\n`Profit_Creditor_Invoices` returns one flat row per bill (header only) — there is no line-item detail, so `line_items` is always empty and `limit=N` directly caps the number of bills returned, one row per bill.\n\n`status` is always reported as `authorised`: this GetConnector exposes no status field, so the real payment/void state of a bill (paid, draft, void) cannot be determined from it. `sub_total` and `total` are always equal for the same reason — the connector exposes a single invoice amount, with no separate pre-tax/tax breakdown, so `total_tax` is always `0`.\n",
+                        },
+                        {
+                            "connector": "clearbooks-uk",
+                            "description": "Clearbooks does not support setting the pagination size.",
+                        },
+                        {
+                            "connector": "freshbooks",
+                            "description": "The Freshbooks Bills api is currently in beta.",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": 'The minimun page size accepted for Netsuite is 5. The cursor for Netsuite expires if they have not been used within 15 minutes after its creation.\n`filter[subsidiary_id]` scopes results to a single subsidiary and is only supported on NetSuite OneWorld accounts; on standard (single-entity) accounts it is ignored.\nVendor Credits / Bill Credits are not returned by this resource, nor by `credit-notes` — NetSuite models them as a separate transaction type that neither resource\'s query is scoped to. Requesting one by id returns a `400` (`INVALID_TRANS_TYP`); a list or `updated_since` poll that happens to cover only vendor-credit activity returns an empty `200` with no error and no other signal that matching records were withheld.\n\nBill line-item `tracking_categories[].name` is normalized to the leaf class name: a hierarchical class path such as `"Fruit : Apple"` returns `name: "Apple"` and `parent_name: "Fruit"` (deeper paths return the deepest leaf). NetSuite bill line items do not carry a department or location name.\n\n`custom_fields`, on the bill and on its line items, are returned on the get-by-id call (`GET /accounting/bills/{id}`) and on unfiltered list calls, but not on filtered or sorted list calls, which NetSuite serves through its SuiteQL endpoint. To retrieve custom fields when a `filter[*]` or `sort` is applied (for example incremental or large-dataset syncs), fetch each bill individually via `GET /accounting/bills/{id}`. This includes `filter[updated_since]` polling: a line field such as a dispute flag is only visible by reading each changed bill.\n\nBill line items return `purchase_order` on every read when the line was billed from a purchase order, including through an item receipt: `id` is the NetSuite purchase order and `line_id` its line, matching `line_items[].id` on Purchase Orders. A bill line returns one linked purchase order line. `line_number` is not returned.\n\nOn a SuiteTax account, `line_items[].tax_rate` is resolved from NetSuite\'s transaction-level tax details on the get-by-id call (`GET /accounting/bills/{id}`) and on unfiltered list calls. When a line\'s tax splits across several jurisdictions — common for US sales tax, where one line can carry state, county, city and district codes — `rate` is the **combined** rate and `id`, `code` and `name` are omitted, because the unified `tax_rate` holds a single code and no one component names the line\'s tax. Single-jurisdiction lines, such as UK VAT, return the full `id`/`code`/`name`/`rate`. `tax_amount` always carries the line\'s full tax either way, so reconcile against that rather than against `rate`.\nOn **filtered or sorted** list calls, which NetSuite serves through its SuiteQL endpoint, `line_items[].tax_rate` carries only `id` — and on a SuiteTax account not even that, because the per-line tax code SuiteQL exposes is empty there. Fetch the bill individually via `GET /accounting/bills/{id}` when you need the code or the rate alongside a filter.\n\n`tax_inclusive` is not returned on reads. NetSuite does not store it: `line_items[].total_amount` is always the net amount, with the tax in `tax_amount` and the gross in `total`. On writes it only tells NetSuite how to interpret the `total_amount` you send, so a value read back can be re-sent unchanged without setting it.\n',
+                        },
+                        {
+                            "connector": "spiris",
+                            "description": "Spiris (Visma eAccounting) does not expose per-payment detail on the bill response. To check whether a bill is paid, use the `balance` and `total` fields:\n\n- `balance === 0` → fully paid\n- `balance < total` → partially paid (reflected in `status: partially_paid`)\n- `balance === total` → unpaid (reflected in `status: authorised`)\n\n`status` is derived from Spiris's `Status` field combined with `RemainingAmount`, not from `Status` alone.\n\nPer-payment records (payment date, amount, bank account) are scoped under `/supplierinvoices/{id}/payments` in the Spiris API and are not surfaced on the unified Bill. Bill payments can be created via `POST /bill-payments` but not listed or retrieved individually through the unified API.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": 'On bill line items, QuickBooks returns `ClassRef.name` as the `FullyQualifiedName`\n(e.g. `"Fruit:Apple"`) rather than the leaf class name. Apideck normalises this by\nextracting the last `:` segment, so `tracking_categories[].name` returns `"Apple"` and\n`parent_name` returns `"Fruit"`. Expense line items are unaffected — QuickBooks returns\nonly the short name there.\n',
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": 'On bill line items, Intuit Enterprise Suite returns `ClassRef.name` as the `FullyQualifiedName`\n(e.g. `"Fruit:Apple"`) rather than the leaf class name. Apideck normalises this by\nextracting the last `:` segment, so `tracking_categories[].name` returns `"Apple"` and\n`parent_name` returns `"Fruit"`. Expense line items are unaffected — Intuit Enterprise Suite returns\nonly the short name there.\n',
+                        },
+                        {
+                            "connector": "visma-eaccounting",
+                            "description": "Visma eAccounting does not expose per-payment detail on the bill response. To check whether a bill is paid, use the `balance` and `total` fields:\n\n- `balance === 0` → fully paid\n- `balance < total` → partially paid (reflected in `status: partially_paid`)\n- `balance === total` → unpaid (reflected in `status: authorised`)\n\n`status` is derived from Visma eAccounting's `Status` field combined with `RemainingAmount`, not from `Status` alone.\n\nPer-payment records (payment date, amount, bank account) are scoped under `/supplierinvoices/{id}/payments` in the Visma eAccounting API and are not surfaced on the unified Bill. Bill payments can be created via `POST /bill-payments` but not listed or retrieved individually through the unified API.\n",
+                        },
+                        {
+                            "connector": "alegra",
+                            "description": "Each bill line is costed against either a catalog item (`line_items[].type: expense_item`, which sets `line.item`) or an expense ledger account (`expense_account`, which sets `line.ledger_account`); a single bill may mix both. See the Alegra usage guide for details.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks Online does not expose a reliable cross-page total record count. The `QueryResponse.totalCount` field in list responses reflects the count for that page only, not the full dataset. `meta.total_count` will not appear in list responses. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite uses the same underlying QuickBooks API. The `QueryResponse.totalCount` field in list responses reflects the per-page count only. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n\nLine-level tax is written from `line_items[].tax_rate.id` (an Odoo tax id) and read back on `line_items[].tax_rate`/`tax_amount`. `tax_rate` is present only on a line with exactly one tax; it is absent on both untaxed lines and lines with multiple taxes (which still report the aggregate `tax_amount`), so its absence does not by itself mean a line is untaxed.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics",
+                            "description": "Microsoft Dynamics 365 does not include a total record count in default list responses. `meta.total_count` will not appear. Surfacing the total requires adding `$count=true` to the OData query or calling a separate `$count` endpoint — not currently implemented.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Zoho Books does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": "Moneybird does not expose a total record count in list responses. `meta.total_count` will not appear.\n\nMoneybird's native purchase invoice `state` is normalized to unified `status` as follows: `open`, `late`,\nand `pending_payment` all map to `submitted` (a booked bill awaiting payment — Moneybird has no distinct\nunified `overdue` value, so an overdue bill reads as `submitted`, not `draft`); `new` maps to `draft`\n(not yet booked); `saved` maps to `posted` (booked, no payment lifecycle); `paid` maps to `paid`. To\ndistinguish these underlying states (e.g. `late` vs `open`), read the native `state` via `raw: true`.\n",
+                        },
+                        {
+                            "connector": "rillet",
+                            "description": "Rillet does not expose a total record count in list responses. `meta.total_count` will not appear.\n\nA bill settled in part by an applied vendor credit reports `status: partially_paid` — the same\nvalue used when a bill is settled in part by payment. The two cannot be told apart from\n`status`, and Rillet exposes no `balance` for a bill, so there is no field to disambiguate them.\n",
+                        },
+                        {
+                            "connector": "pennylane",
+                            "description": "Pennylane does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "procountor-fi",
+                            "description": "Procountor does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "dualentry",
+                            "description": "DualEntry scopes bills by company. Pass the `x-apideck-company-id` header (or set a Default\nCompany on the connection) to return only records belonging to that company within the tenant.\nWithout it, records across all companies in the tenant are returned.\n",
+                        },
+                        {
+                            "connector": "myob-acumatica",
+                            "description": "The Apideck service type is used for MYOB Acumatica non-stock items, and inventory is used for stock items.\n",
+                        },
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "QuickBooks Desktop does not expose a reliable cross-page total record count. Getting `total_count` requires a separate COUNT query — an extra API call that is not currently implemented. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "acumatica",
+                            "description": "The Apideck service type is used for Acumatica non-stock items, and inventory is used for stock items.\n",
+                        },
+                        {
+                            "connector": "workday",
+                            "description": "Workday bills are backed by the SOAP `Get_Supplier_Invoices` operation, which does not\nsurface a last-modified timestamp through the unified API:\n\n- `updated_at` and `created_at` are not populated — they return empty for Workday bills.\n- `filter[updated_since]` is not supported — Workday exposes no last-modified filter for\n  supplier invoices, so passing `updated_since` returns an `UnsupportedFiltersError`.\n- Sorting is not supported: `sort[by]=updated_at` (or any `sort`) returns\n  `UnsupportedSortFieldError`.\n\nDate narrowing is supported via `filter[billed_since]` (invoice document date on or after)\nand `filter[due_since]` (invoice due date on or after).\n",
+                        },
+                        {
+                            "connector": "lexware-office",
+                            "description": "This list always excludes overdue bills — the vendor's status filter rejects any request\nthat combines an overdue filter with other statuses. This connector does not implement\nany filters on this resource (including `filter[status]`), so there is no way to request\noverdue bills on their own. An overdue bill is still reachable via `bills.one` by id.\n\n`sub_total` and `total_tax` are not returned on this list — the vendor's list endpoint\nis a lighter summary view than the get-by-id response. Fetch the bill by `id` for those\nfields.\n",
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "Supplier credit notes are excluded from this list and returned under the\n`bill-credit-notes` resource instead.\n\n`due_date` is the net due date SAP keeps on the bill's accounting document, so it follows a due\ndate or payment terms changed there after posting. A bill that is paid in instalments shows the\nnext instalment still open, and the last one once all are paid.\n\nA bill that is not posted yet has no accounting document: its `due_date` is calculated from the\nbill itself, as the baseline date plus the days of its payment terms (`terms`). The same\ncalculated date is returned, with a warning in the response, when the accounting document cannot\nbe read, for example because Communication Scenario `SAP_COM_0303` is not activated.\n\n`status` follows the bill's accounting document. A posted bill reads `paid` once SAP has cleared\nit, and `partially_paid` while part of it is still open: after a partial payment, when a payment\nleft a remainder open, or when only some of its instalments are paid. A cancelled bill reads\n`void`. Reading the status needs Communication Scenario `SAP_COM_0303`: without it a posted bill\nreads `authorised` and the response carries a warning. If SAP cannot be reached while the status\nis read, the request returns a retryable error. Reading the status adds calls to SAP for each\npage: if a page cannot be read in time, or has too many supplier lines, the error asks for a\nsmaller `limit`. A payment does not change `updated_at`, so `filter[updated_since]` does not\nreturn a bill whose only change is that it was paid: to follow payments, read posted bills\nagain. `balance` is not returned.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "`filter[bill_number]` and `filter[reference]` are exact matches on Xero's `InvoiceNumber`\nand `Reference` respectively. The comparison is case-insensitive (`filter[bill_number]=inv-01`\nmatches `INV-01`) but otherwise literal, so surrounding whitespace has to match too.\n\nXero does not enforce unique bill numbers, so `filter[bill_number]` can return more than one\nbill. When using it to verify whether a create that timed out (`outcome: uncertain`) was\npersisted, compare `supplier.id`, `total` or `reference` on the matches rather than assuming\na single hit. Combine with `filter[updated_since]` to narrow the window; the two are ANDed.\n\nWithout a filter or sort, Xero returns bills oldest-updated first, so a bill created moments\nago appears on the **last** page rather than the first. To find recent bills, use\n`filter[bill_number]`/`filter[reference]`, or `sort[by]=updated_at&sort[direction]=desc`.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -148,17 +307,19 @@ class Bills(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingBillsAllResponse(
                 get_bills_response=unmarshal_json_response(
-                    Optional[models.GetBillsResponse], http_res
+                    Optional[models.GetBillsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -199,11 +360,10 @@ class Bills(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingBillsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -222,7 +382,7 @@ class Bills(BaseSDK):
             Union[models.BillsFilter, models.BillsFilterTypedDict]
         ] = None,
         sort: Optional[Union[models.BillsSort, models.BillsSortTypedDict]] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -269,7 +429,7 @@ class Bills(BaseSDK):
             limit=limit,
             filter_=utils.get_pydantic_model(filter_, Optional[models.BillsFilter]),
             sort=utils.get_pydantic_model(sort, Optional[models.BillsSort]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -290,6 +450,7 @@ class Bills(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -314,9 +475,167 @@ class Bills(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "minox",
+                            "description": "Lists the bills of every fiscal year in the administration; `filter[billed_since]`\nreturns the bills dated on or after that date. `status` and `balance` come from Minox's open items: `paid` when nothing is\nopen (an overpayment shows as a negative `balance`), `partially_paid` when part is,\n`authorised` when all of it is. Minox keeps no open item for some older bills; those are\n`posted` with `balance` `null`. The same applies when two of Minox's open items match one document (same number, date and kind). Sorting is not supported: Minox bookings have no created\nor updated timestamps.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "`filter[status]` supports `paid` and `unpaid`. `unpaid` returns every bill with an amount\nstill due, including partly paid bills (`status: partially_paid`); check `balance` to tell\nthem apart. `partially_paid` cannot be filtered and is rejected with a 400.\n\nThe list includes supplier credit notes, which FreeAgent stores as bills with a negative\ntotal. `filter[updated_since]` is supported.\n",
+                        },
+                        {
+                            "connector": "exact-online-nl",
+                            "description": 'Only `updated_since`, `bill_number` and `billed_since` can be filtered on. Exact Online\nrefuses a filter on the fields behind `reference`, `due_since` and `status` — its\npurchase-invoice endpoint answers *"Filtering on these fields is not supported"* — so\nthose are rejected rather than silently ignored.\n\nA filter value Exact cannot be asked about, such as a malformed date or a non-numeric\n`bill_number`, returns an **empty page rather than an error**, so an empty result does\nnot by itself mean there are no matching bills.\n',
+                        },
+                        {
+                            "connector": "exact-online",
+                            "description": "Same as `exact-online-nl`.\n",
+                        },
+                        {
+                            "connector": "exact-online-uk",
+                            "description": "Same as `exact-online-nl`.\n",
+                        },
+                        {
+                            "connector": "e-boekhouden",
+                            "description": "The list returns a summary view of each bill: `line_items`, `total_tax`, `notes`,\n`supplier` and `due_date` are only available from `bills.get` by id, not from this list.\n`total` and `sub_total` are taken from the bill's single summary amount.\n",
+                        },
+                        {
+                            "connector": "snelstart",
+                            "description": '`line_items`, `sub_total` and `total_tax` are never returned from this list — SnelStart\'s\nlist endpoint for bills is a read-only summary view with no line-item detail. `line_items`\nIS available from `bills.get` (by id), which reads the underlying "purchase booking"\nrecord instead (the same one `billsAdd`/`billsUpdate` write to). `sub_total` and\n`total_tax` are not mapped there either — not because the booking model lacks the data\n(it includes a `btw` VAT breakdown, one entry per VAT type), but because this connector\ndoes not currently derive the two unified fields from it; only `total` is exposed.\n',
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": "This connector fetches every matching bill in a single call — there is no server-side\npagination, so a large date range can be a large response. The `id` returned matches what\n`bills.get` expects, and other transaction types (bank, journal entries) are excluded.\n\n`sub_total`, `total_tax`, `line_items` and `updated_at` are not available from this list\nview — only one summary row per bill is returned, not the underlying line items. `total`\nis the posted gross value (net + VAT once a bill carries tax). `balance` and `paid_date`,\nnotably, ARE available here even though they are always null on `GET` by id — this list\nsurfaces data the single-record read does not.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "The `balance` field is not populated for bills. Business Central's API does not expose a\nremaining (unpaid) amount on purchase invoices — unlike sales invoices, which back the\ninvoices resource — so the open remainder of a bill cannot be read. A fully paid bill can\nbe detected via `status: paid`; partially paid amounts are not visible.\n",
+                        },
+                        {
+                            "connector": "dualentry",
+                            "description": "`updated_since` is inclusive and is applied at whole-second granularity, so a poll that\nreuses the newest `updated_at` it received will re-receive the records from that final\nsecond. De-duplicate on `id`, or advance the cursor past the boundary second.\n\nTwo DualEntry behaviours combine to cause this. Its `updated_after` filter is a\n`>=` comparison, and while DualEntry stores update times with sub-second precision it\nreturns them truncated to the second — so a returned timestamp is always slightly earlier\nthan the value the filter compares against. Any sub-second component supplied in\n`updated_since` is therefore rounded down before the request is sent, which guarantees no\nrecord is ever skipped at the boundary, at the cost of re-delivering that second.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "`sub_total` equals `total` and does not exclude tax. Sage Intacct's REST bill object\nexposes only document-level totals (`totalTxnAmount`, `totalBaseAmount`) with no\npre-tax subtotal field, so the two unified fields are populated from the same source.\nFor a bill with no tax this is correct; for a taxed bill `sub_total` will be the\ntax-inclusive amount rather than the net. Derive the net from the line items\n(`line_items[].total_amount`) when the distinction matters.\n\n`accounting_period` is derived, not read from Sage. The REST bill object exposes no\nperiod field, so the returned `MM-YY` is computed from the posting date. That is the\ncorrect period for a calendar-aligned fiscal year; a company using custom fiscal\nperiods may see a posting near a period boundary attributed to the adjacent month.\n\n`line_items` and `payment_allocations` are each attached via one extra batched query\nper page, covering every bill on that page. Sage caps a query at 4000 rows. If the\ncombined line count across a single page of bills exceeds 4000, the remaining bills on\nthat page receive an empty (rather than incomplete) `line_items`. If the combined\npayment-allocation count exceeds 4000, the lookup is truncated and no bill on that page\ncarries `payment_allocations` — the field is omitted rather than returned empty, so a\ntruncated page is never mistaken for a page of unpaid bills. Reduce the page size\n(`limit`) if you have unusually large bills or bills with many applied payments.\n\nBills return `payment_hold` but not `purchase_order` on line items or `custom_fields` on the\nbill or its lines, on bills.list and bills.get alike.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "bills.list returns `payment_hold` but no line items, so no `purchase_order` link, and no\n`custom_fields`. Both are returned on bills.get only. If you poll with `updated_since`, read\neach changed bill with bills.get to get its purchase order lines and dispute fields.\n",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "AFAS Profit has no first-party purchase-invoice GetConnector on most tenants. The default `purchase_invoices_connector` setting (`Profit_Creditor_Invoices`) is the open-items / aged-creditors report — it only returns purchase invoices that are still unpaid. Posted-and-cleared invoices will not appear.\n\nTo list all bills (paid + open), the customer must deploy a tenant-specific GetConnector (e.g. one over `FbInkfct`) and set its name on the connection via `purchase_invoices_connector`.\n\n`Profit_Creditor_Invoices` returns one flat row per bill (header only) — there is no line-item detail, so `line_items` is always empty and `limit=N` directly caps the number of bills returned, one row per bill.\n\n`status` is always reported as `authorised`: this GetConnector exposes no status field, so the real payment/void state of a bill (paid, draft, void) cannot be determined from it. `sub_total` and `total` are always equal for the same reason — the connector exposes a single invoice amount, with no separate pre-tax/tax breakdown, so `total_tax` is always `0`.\n",
+                        },
+                        {
+                            "connector": "clearbooks-uk",
+                            "description": "Clearbooks does not support setting the pagination size.",
+                        },
+                        {
+                            "connector": "freshbooks",
+                            "description": "The Freshbooks Bills api is currently in beta.",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": 'The minimun page size accepted for Netsuite is 5. The cursor for Netsuite expires if they have not been used within 15 minutes after its creation.\n`filter[subsidiary_id]` scopes results to a single subsidiary and is only supported on NetSuite OneWorld accounts; on standard (single-entity) accounts it is ignored.\nVendor Credits / Bill Credits are not returned by this resource, nor by `credit-notes` — NetSuite models them as a separate transaction type that neither resource\'s query is scoped to. Requesting one by id returns a `400` (`INVALID_TRANS_TYP`); a list or `updated_since` poll that happens to cover only vendor-credit activity returns an empty `200` with no error and no other signal that matching records were withheld.\n\nBill line-item `tracking_categories[].name` is normalized to the leaf class name: a hierarchical class path such as `"Fruit : Apple"` returns `name: "Apple"` and `parent_name: "Fruit"` (deeper paths return the deepest leaf). NetSuite bill line items do not carry a department or location name.\n\n`custom_fields`, on the bill and on its line items, are returned on the get-by-id call (`GET /accounting/bills/{id}`) and on unfiltered list calls, but not on filtered or sorted list calls, which NetSuite serves through its SuiteQL endpoint. To retrieve custom fields when a `filter[*]` or `sort` is applied (for example incremental or large-dataset syncs), fetch each bill individually via `GET /accounting/bills/{id}`. This includes `filter[updated_since]` polling: a line field such as a dispute flag is only visible by reading each changed bill.\n\nBill line items return `purchase_order` on every read when the line was billed from a purchase order, including through an item receipt: `id` is the NetSuite purchase order and `line_id` its line, matching `line_items[].id` on Purchase Orders. A bill line returns one linked purchase order line. `line_number` is not returned.\n\nOn a SuiteTax account, `line_items[].tax_rate` is resolved from NetSuite\'s transaction-level tax details on the get-by-id call (`GET /accounting/bills/{id}`) and on unfiltered list calls. When a line\'s tax splits across several jurisdictions — common for US sales tax, where one line can carry state, county, city and district codes — `rate` is the **combined** rate and `id`, `code` and `name` are omitted, because the unified `tax_rate` holds a single code and no one component names the line\'s tax. Single-jurisdiction lines, such as UK VAT, return the full `id`/`code`/`name`/`rate`. `tax_amount` always carries the line\'s full tax either way, so reconcile against that rather than against `rate`.\nOn **filtered or sorted** list calls, which NetSuite serves through its SuiteQL endpoint, `line_items[].tax_rate` carries only `id` — and on a SuiteTax account not even that, because the per-line tax code SuiteQL exposes is empty there. Fetch the bill individually via `GET /accounting/bills/{id}` when you need the code or the rate alongside a filter.\n\n`tax_inclusive` is not returned on reads. NetSuite does not store it: `line_items[].total_amount` is always the net amount, with the tax in `tax_amount` and the gross in `total`. On writes it only tells NetSuite how to interpret the `total_amount` you send, so a value read back can be re-sent unchanged without setting it.\n',
+                        },
+                        {
+                            "connector": "spiris",
+                            "description": "Spiris (Visma eAccounting) does not expose per-payment detail on the bill response. To check whether a bill is paid, use the `balance` and `total` fields:\n\n- `balance === 0` → fully paid\n- `balance < total` → partially paid (reflected in `status: partially_paid`)\n- `balance === total` → unpaid (reflected in `status: authorised`)\n\n`status` is derived from Spiris's `Status` field combined with `RemainingAmount`, not from `Status` alone.\n\nPer-payment records (payment date, amount, bank account) are scoped under `/supplierinvoices/{id}/payments` in the Spiris API and are not surfaced on the unified Bill. Bill payments can be created via `POST /bill-payments` but not listed or retrieved individually through the unified API.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": 'On bill line items, QuickBooks returns `ClassRef.name` as the `FullyQualifiedName`\n(e.g. `"Fruit:Apple"`) rather than the leaf class name. Apideck normalises this by\nextracting the last `:` segment, so `tracking_categories[].name` returns `"Apple"` and\n`parent_name` returns `"Fruit"`. Expense line items are unaffected — QuickBooks returns\nonly the short name there.\n',
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": 'On bill line items, Intuit Enterprise Suite returns `ClassRef.name` as the `FullyQualifiedName`\n(e.g. `"Fruit:Apple"`) rather than the leaf class name. Apideck normalises this by\nextracting the last `:` segment, so `tracking_categories[].name` returns `"Apple"` and\n`parent_name` returns `"Fruit"`. Expense line items are unaffected — Intuit Enterprise Suite returns\nonly the short name there.\n',
+                        },
+                        {
+                            "connector": "visma-eaccounting",
+                            "description": "Visma eAccounting does not expose per-payment detail on the bill response. To check whether a bill is paid, use the `balance` and `total` fields:\n\n- `balance === 0` → fully paid\n- `balance < total` → partially paid (reflected in `status: partially_paid`)\n- `balance === total` → unpaid (reflected in `status: authorised`)\n\n`status` is derived from Visma eAccounting's `Status` field combined with `RemainingAmount`, not from `Status` alone.\n\nPer-payment records (payment date, amount, bank account) are scoped under `/supplierinvoices/{id}/payments` in the Visma eAccounting API and are not surfaced on the unified Bill. Bill payments can be created via `POST /bill-payments` but not listed or retrieved individually through the unified API.\n",
+                        },
+                        {
+                            "connector": "alegra",
+                            "description": "Each bill line is costed against either a catalog item (`line_items[].type: expense_item`, which sets `line.item`) or an expense ledger account (`expense_account`, which sets `line.ledger_account`); a single bill may mix both. See the Alegra usage guide for details.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks Online does not expose a reliable cross-page total record count. The `QueryResponse.totalCount` field in list responses reflects the count for that page only, not the full dataset. `meta.total_count` will not appear in list responses. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite uses the same underlying QuickBooks API. The `QueryResponse.totalCount` field in list responses reflects the per-page count only. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n\nLine-level tax is written from `line_items[].tax_rate.id` (an Odoo tax id) and read back on `line_items[].tax_rate`/`tax_amount`. `tax_rate` is present only on a line with exactly one tax; it is absent on both untaxed lines and lines with multiple taxes (which still report the aggregate `tax_amount`), so its absence does not by itself mean a line is untaxed.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics",
+                            "description": "Microsoft Dynamics 365 does not include a total record count in default list responses. `meta.total_count` will not appear. Surfacing the total requires adding `$count=true` to the OData query or calling a separate `$count` endpoint — not currently implemented.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Zoho Books does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": "Moneybird does not expose a total record count in list responses. `meta.total_count` will not appear.\n\nMoneybird's native purchase invoice `state` is normalized to unified `status` as follows: `open`, `late`,\nand `pending_payment` all map to `submitted` (a booked bill awaiting payment — Moneybird has no distinct\nunified `overdue` value, so an overdue bill reads as `submitted`, not `draft`); `new` maps to `draft`\n(not yet booked); `saved` maps to `posted` (booked, no payment lifecycle); `paid` maps to `paid`. To\ndistinguish these underlying states (e.g. `late` vs `open`), read the native `state` via `raw: true`.\n",
+                        },
+                        {
+                            "connector": "rillet",
+                            "description": "Rillet does not expose a total record count in list responses. `meta.total_count` will not appear.\n\nA bill settled in part by an applied vendor credit reports `status: partially_paid` — the same\nvalue used when a bill is settled in part by payment. The two cannot be told apart from\n`status`, and Rillet exposes no `balance` for a bill, so there is no field to disambiguate them.\n",
+                        },
+                        {
+                            "connector": "pennylane",
+                            "description": "Pennylane does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "procountor-fi",
+                            "description": "Procountor does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "dualentry",
+                            "description": "DualEntry scopes bills by company. Pass the `x-apideck-company-id` header (or set a Default\nCompany on the connection) to return only records belonging to that company within the tenant.\nWithout it, records across all companies in the tenant are returned.\n",
+                        },
+                        {
+                            "connector": "myob-acumatica",
+                            "description": "The Apideck service type is used for MYOB Acumatica non-stock items, and inventory is used for stock items.\n",
+                        },
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "QuickBooks Desktop does not expose a reliable cross-page total record count. Getting `total_count` requires a separate COUNT query — an extra API call that is not currently implemented. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "acumatica",
+                            "description": "The Apideck service type is used for Acumatica non-stock items, and inventory is used for stock items.\n",
+                        },
+                        {
+                            "connector": "workday",
+                            "description": "Workday bills are backed by the SOAP `Get_Supplier_Invoices` operation, which does not\nsurface a last-modified timestamp through the unified API:\n\n- `updated_at` and `created_at` are not populated — they return empty for Workday bills.\n- `filter[updated_since]` is not supported — Workday exposes no last-modified filter for\n  supplier invoices, so passing `updated_since` returns an `UnsupportedFiltersError`.\n- Sorting is not supported: `sort[by]=updated_at` (or any `sort`) returns\n  `UnsupportedSortFieldError`.\n\nDate narrowing is supported via `filter[billed_since]` (invoice document date on or after)\nand `filter[due_since]` (invoice due date on or after).\n",
+                        },
+                        {
+                            "connector": "lexware-office",
+                            "description": "This list always excludes overdue bills — the vendor's status filter rejects any request\nthat combines an overdue filter with other statuses. This connector does not implement\nany filters on this resource (including `filter[status]`), so there is no way to request\noverdue bills on their own. An overdue bill is still reachable via `bills.one` by id.\n\n`sub_total` and `total_tax` are not returned on this list — the vendor's list endpoint\nis a lighter summary view than the get-by-id response. Fetch the bill by `id` for those\nfields.\n",
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "Supplier credit notes are excluded from this list and returned under the\n`bill-credit-notes` resource instead.\n\n`due_date` is the net due date SAP keeps on the bill's accounting document, so it follows a due\ndate or payment terms changed there after posting. A bill that is paid in instalments shows the\nnext instalment still open, and the last one once all are paid.\n\nA bill that is not posted yet has no accounting document: its `due_date` is calculated from the\nbill itself, as the baseline date plus the days of its payment terms (`terms`). The same\ncalculated date is returned, with a warning in the response, when the accounting document cannot\nbe read, for example because Communication Scenario `SAP_COM_0303` is not activated.\n\n`status` follows the bill's accounting document. A posted bill reads `paid` once SAP has cleared\nit, and `partially_paid` while part of it is still open: after a partial payment, when a payment\nleft a remainder open, or when only some of its instalments are paid. A cancelled bill reads\n`void`. Reading the status needs Communication Scenario `SAP_COM_0303`: without it a posted bill\nreads `authorised` and the response carries a warning. If SAP cannot be reached while the status\nis read, the request returns a retryable error. Reading the status adds calls to SAP for each\npage: if a page cannot be read in time, or has too many supplier lines, the error asks for a\nsmaller `limit`. A payment does not change `updated_at`, so `filter[updated_since]` does not\nreturn a bill whose only change is that it was paid: to follow payments, read posted bills\nagain. `balance` is not returned.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "`filter[bill_number]` and `filter[reference]` are exact matches on Xero's `InvoiceNumber`\nand `Reference` respectively. The comparison is case-insensitive (`filter[bill_number]=inv-01`\nmatches `INV-01`) but otherwise literal, so surrounding whitespace has to match too.\n\nXero does not enforce unique bill numbers, so `filter[bill_number]` can return more than one\nbill. When using it to verify whether a create that timed out (`outcome: uncertain`) was\npersisted, compare `supplier.id`, `total` or `reference` on the matches rather than assuming\na single hit. Combine with `filter[updated_since]` to narrow the window; the two are ANDed.\n\nWithout a filter or sort, Xero returns bills oldest-updated first, so a bill created moments\nago appears on the **last** page rather than the first. To find recent bills, use\n`filter[bill_number]`/`filter[reference]`, or `sort[by]=updated_at&sort[direction]=desc`.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -344,17 +663,19 @@ class Bills(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingBillsAllResponse(
                 get_bills_response=unmarshal_json_response(
-                    Optional[models.GetBillsResponse], http_res
+                    Optional[models.GetBillsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -395,11 +716,10 @@ class Bills(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingBillsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -433,7 +753,8 @@ class Bills(BaseSDK):
         reference: OptionalNullable[str] = UNSET,
         line_items: Optional[
             Union[
-                List[models.BillLineItemInput], List[models.BillLineItemInputTypedDict]
+                Iterable[models.BillLineItemInput],
+                Iterable[models.BillLineItemInputTypedDict],
             ]
         ] = None,
         terms: OptionalNullable[str] = UNSET,
@@ -465,28 +786,31 @@ class Bills(BaseSDK):
         source_document_url: OptionalNullable[str] = UNSET,
         payment_allocations: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedPaymentAllocations]],
-                List[Nullable[models.LinkedPaymentAllocationsTypedDict]],
+                Iterable[Nullable[models.LinkedPaymentAllocations]],
+                Iterable[Nullable[models.LinkedPaymentAllocationsTypedDict]],
             ]
         ] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         accounting_period: OptionalNullable[str] = UNSET,
         attachments: Optional[
             Union[
-                List[Nullable[models.LinkedAttachment]],
-                List[Nullable[models.LinkedAttachmentTypedDict]],
+                Iterable[Nullable[models.LinkedAttachment]],
+                Iterable[Nullable[models.LinkedAttachmentTypedDict]],
             ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -662,6 +986,7 @@ class Bills(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.bill, False, False, "json", models.BillInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -686,9 +1011,126 @@ class Bills(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sap-business-one",
+                            "description": "`reference` cannot be written: SAP Business One sets it to the document number. Use `bill_number` for the vendor's invoice number (*Vendor Ref. No.*). Bills are posted when created: `status` is not written, because SAP Business One keeps drafts in a separate Drafts object.\n",
+                        },
+                        {
+                            "connector": "e-conomic",
+                            "description": "Bills are created as unbooked supplier invoices in e-conomic journal 1. `status` is\nalways `draft`: once the journal is booked in e-conomic the voucher leaves the journal,\nand the bill can no longer be read through its `id`. Required: `supplier.id` (the supplier\nnumber) and, on every line, `ledger_account.id` (the expense account number) and\n`total_amount`. Line amounts include VAT; e-conomic splits the VAT off by the line's\n`tax_rate.id` (a VAT code such as `I25`). Send line amounts positive; negative line amounts\nare rejected.\n`bill_date` must fall in an accounting year set up in e-conomic. The returned `id` has\nthe form `{journal}-{accounting year}-{voucher number}`; a split accounting year such as\n`2025/2026` is written `2025_6_2026`. Listing, updating and deleting\nbills are not supported. `reference` (or `notes`, when there is no reference) becomes the text of lines without a `description` and is not returned as a separate field. Dates are taken as written, regardless of time zone.\nA `status` other than `draft` is rejected with a 400, because e-conomic bills are written as drafts only.\nSend an `Idempotency-Key` to make retrying a create safe: Unify sends e-conomic a 32-character key derived from it as e-conomic's own `Idempotency-Key` header, and e-conomic answers a repeat with the original bill instead of creating a second one. e-conomic keeps a key for one hour, and Unify remembers it for the same hour. Reusing a key with a different body returns 422, from Unify within its hour and from e-conomic while e-conomic still remembers the key; after both have forgotten it, the same key is treated as a new request. Use a new key for every bill. Unify builds the e-conomic request again on a retry, from what it reads from e-conomic and from today's date in Copenhagen when you leave the date out. If either changed between the attempts, e-conomic refuses the retry as a reused key and Unify returns 422 instead of creating a second bill. The first attempt may have created the bill: look it up before resending with a new key. Send the date to keep a retry identical across midnight.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "Creates the bill as a booking on the administration's purchase journal, which\nupdates the payables straight away. Required: `bill_number` (a whole number of at\nmost 8 digits; Minox stores no letters in bill numbers), `supplier.id`, `bill_date`\nand, on every line, `ledger_account.id` plus either `total_amount` or `quantity` and\n`unit_price`.\n\nVAT is calculated per line from the `tax_rate` percentage, rounded to the cent,\nunless the line sends its own `tax_amount`; with `tax_inclusive: true` the line\namounts include VAT. A `total` that does not match the lines is rejected. The total\nmust be positive: book credits as credit notes. `due_date` defaults to the\nsupplier's payment terms.\n\nA `bill_number` the same supplier already used in that fiscal year is rejected with\n`409`; the same number on a different supplier is accepted. Updating is not\nsupported: delete the bill and create it again.\n\nMinox bookings have no discounts: `discount_percentage` and `discount_amount`, on the\ndocument or a line, are rejected; send the discounted amounts. A line `tax_amount`\nneeds a `tax_rate`.\n\nBookings are posted on create: `status: draft` is rejected. `currency` must be the\nadministration's own currency: Minox needs an exchange rate with any other, which this record\nhas no field for, so another currency is rejected with a `400`. `currency_rate`,\ndocument-level `tracking_categories` and `terms` are not stored. The booking goes on the\nadministration's purchase journal; when it has more than one, choose it in the\nconnection's purchase journal setting, or the create is rejected with a `400`.\n",
+                        },
+                        {
+                            "connector": "campfire",
+                            "description": "`bill_number` is required on create, even though the unified schema treats it as\noptional — omitting it fails with `bill_number: This field is required.` and no bill\nis created.\n",
+                        },
+                        {
+                            "connector": "e-boekhouden",
+                            "description": "Every line item is sent as a line of the bill; the payable-account side of the entry is\nresolved automatically rather than taken from `line_items` — it uses the supplier's own\nconfigured payable account when the supplier has one set, and the administration's single\npayable account otherwise. Each line needs a VAT code; a line with no tax rate is sent with\nthe \"no VAT\" code.\n\n`line_items[].tax_rate.code` must be one of e-Boekhouden's own VAT code strings (there is\nno tax-rates resource/endpoint to look these up — see the tax-rates gotcha on this\nconnector). Supplying `tax_rate.rate` or `tax_rate.id` instead of `.code` is not\nrecognized and the line silently falls back to the \"no VAT\" code rather than being\nrejected.\n\nA line's own `description` is not preserved — e-Boekhouden always returns the bill's own\ntop-level notes for every line, regardless of what was sent for that specific line.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "`line_items[].item` must reference the item by its Sage item code (`ITEMID`), not by the\nnumeric record number. Pass the value Invoice Items returns in `code` — either as\n`item.code` (preferred; it wins when both are sent) or as `item.id`. The numeric `id`\nreturned by Invoice Items is rejected by Sage with \"Item 'N' specified is not valid\"\n(BL01001973). No automatic translation is applied: Sage item codes may themselves be\nnumeric, so a record number cannot be told apart from a code.\n",
+                        },
+                        {
+                            "connector": "restaurant365",
+                            "description": "`location_id` is optional in the unified schema but effectively required by R365 —\nR365's create-invoice endpoint requires a `LocationId`. Omitting it on create risks a\nrejected write rather than a bill created against a default location.\n",
+                        },
+                        {
+                            "connector": "myob",
+                            "description": "MYOB requires a `FreightTaxCode` on bill create and update. Apideck sends the tax rate of the first line item (`line_items[0].tax_rate.id`), so every bill must include at least one line item with a `tax_rate.id`.\n\nMYOB stores bills in layout-specific endpoints (Service, Item, Professional, Miscellaneous). On create, Apideck routes to the Item layout when any line item references an inventory item (`line_items[].item.id`) and to the Service layout otherwise. The returned `id` encodes the layout, so always use ids returned by the API.\n\nOn update, MYOB requires optimistic-locking versions: pass the bill's current `row_version` and, for every existing line, its `row_id` and `row_version` (all returned by a get call). Updates and deletes are only supported for Service and Item layout bills.\n\nMYOB does not return the company file's base currency on bill records, so domestic bills (no foreign currency set) are reported with `currency: AUD`. For an NZD-based company file, treat the reported currency of domestic bills as the file's base currency, or read the raw payload via `raw=true`.\n\n`filter[status]` is coarser than the unified enum. MYOB stores only `Open`, `Closed` and `Debit`, so `unpaid` and `partially_paid` both map to `Open` and return the **same** result set — they cannot be distinguished server-side. `paid` maps to `Closed`. To separate unpaid from partially paid, compare `balance` against `total` on the returned records.\n\nFor the same reason a partially-paid bill reads back as `status: submitted`, not `partially_paid` — MYOB's `Open` covers submitted, draft and partially paid, and the response mapping resolves it to `submitted`. Use `balance` versus `total` to detect partial payment.\n",
+                        },
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Bill expense lines map from `line_items[]` (`ledger_account` → expense account, `total_amount`, `description`). Lines cannot be changed after creation; see the update operation.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "When providing both supplier.id and supplier.display_name (or supplier.name), Xero will update the contact's name if the ContactID exists. If the ContactID doesn't exist, Xero will automatically create a new contact using the provided name. This allows for automatic contact creation but may update existing contact names if the display_name differs from the stored name.\n\n`notes` is not written — Xero's ACCPAY invoice has no field it maps to, so the value is accepted and silently discarded. Use `line_items[].description` instead.\n\n`reference` and `bill_number` do not collide (`Reference` and `InvoiceNumber` respectively), but Xero documents `InvoiceNumber` as the value that \"will also display as Reference in the UI\" on ACCPAY, and treats the `Reference` field as ACCREC-only. A value sent in `reference` therefore round-trips through the API without appearing in the Xero bill UI. See https://developer.xero.com/documentation/api/accounting/invoices\n\nOn read, `bill_number` and `po_number` are both mapped from `InvoiceNumber` and are always identical — Xero's Invoice object has no separate purchase-order-number field.\n",
+                        },
+                        {
+                            "connector": "lexware-office",
+                            "description": 'Bills can only be created in a finalized state — `status: "draft"` is rejected with a\n`400` explaining the limitation, rather than silently creating a finalized bill. Lexware\nOffice\'s own create endpoint for this document type accepts only its finalized status\nvalue, with no draft option.\n',
+                        },
+                        {
+                            "Procountor only accepts the following values for the channel field": "EMAIL, MAIL, ELECTRONIC_INVOICE, EDIFACT, PAPER_INVOICE, NO_SENDING.",
+                            "Procountor only accepts the following values for the language field": "EN, FI, SV, ET, NO, and DA.",
+                            "Procountor only accepts the following values for the payment_method field": "BANK_TRANSFER, DIRECT_PAYMENT, CLEARING, CREDIT_CARD_CHARGE, FOREIGN_PAYMENT, OTHER, CASH, DOMESTIC_PAYMENT_PLUSGIRO, DOMESTIC_PAYMENT_BANKGIRO, DOMESTIC_PAYMENT_CREDITOR, DKLMPKRE, NETS.",
+                            "connector": "procountor-fi",
+                            "description": "",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": 'When creating a bill in QuickBooks, each line item must be accompanied by a type designation. If the type is set to "expense_item," an item ID is required. Conversely, if the type is "expense_account," a ledger account ID must be provided.\n\n`reference` and `notes` both map to the single `PrivateNote` field — QuickBooks\' one reference-number slot (`DocNumber`) is taken by `bill_number` on bills, so `reference` shares the memo instead. Only one of the two survives a write (the other is dropped with no error), and on read both are populated from `PrivateNote` and are always identical. Send only one. Which of the two wins on write is currently under review — do not rely on it.\n\n`bill_number` maps to `DocNumber`, limited to 21 characters; a longer value is rejected with `400 ValidationFault` (code `6000`), so a 36-character UUID does not fit.\n\nAdditionally, multicurrency needs to be enabled in your QBO account. If creating a bill in your default currency, you do not need to send the currency value as long as the supplier uses the same currency. For bills with suppliers using a different currency than your default, you must include the currency value, matching the supplier\'s configured currency. To change the currency of a customer or vendor, a new one must be created with the desired currency. Foreign currencies can only be sent to suppliers configured with that currency.\n',
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": 'When creating a bill in Intuit Enterprise Suite, each line item must be accompanied by a type designation. If the type is set to "expense_item," an item ID is required. Conversely, if the type is "expense_account," a ledger account ID must be provided.\n\n`reference` and `notes` both map to the single `PrivateNote` field — Intuit Enterprise Suite\'s one reference-number slot (`DocNumber`) is taken by `bill_number` on bills, so `reference` shares the memo instead. Only one of the two survives a write (the other is dropped with no error), and on read both are populated from `PrivateNote` and are always identical. Send only one. Which of the two wins on write is currently under review — do not rely on it.\n\n`bill_number` maps to `DocNumber`, limited to 21 characters; a longer value is rejected with `400 ValidationFault` (code `6000`), so a 36-character UUID does not fit.\n\nAdditionally, multicurrency needs to be enabled in your Intuit Enterprise Suite account. If creating a bill in your default currency, you do not need to send the currency value as long as the supplier uses the same currency. For bills with suppliers using a different currency than your default, you must include the currency value, matching the supplier\'s configured currency. To change the currency of a customer or vendor, a new one must be created with the desired currency. Foreign currencies can only be sent to suppliers configured with that currency.\n',
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "NetSuite bills have two kinds of line: expense lines (posted to a ledger account)\nand item lines (posted against an item). Set `line_items[].type` to choose:\n`expense_account` (requires `ledger_account.id`) or `expense_item` (requires\n`item.id`).\n\nAn explicit `type` always wins. When `type` is omitted, the line is routed on the\nreference it carries: a line with `item.id` is sent as an item line, otherwise a\nline with `ledger_account.id` is sent as an expense line. A line that carries both\nand no `type` is sent as an item line and its `ledger_account` is not used; set\n`type: expense_account` to post it to the ledger account instead.\n\nA line with `type: other`, or with no `type` and neither reference, is not sent.\nWhen other lines remain the bill is created without it; when no line remains,\nNetSuite rejects the request with `USER_ERROR: \"You must enter at least one line\nitem for this transaction.\"`\n\n`reference`, `bill_number` and `notes` map to `externalId`, the transaction ID and the memo respectively, so all three round-trip independently. Because `reference` is the `externalId` it must be unique — reusing a value already on another bill fails with `DUP_RCRD`.\n\n`line_items[].tracking_categories` maps to the NetSuite per-line `class` (Classification), which accepts only one value — entries at index 1 or beyond are dropped silently.\n\nWhen `line_items[].customer` is set without an explicit `line_items[].rebilling.rebillable`, NetSuite defaults `rebillable` to `true`. Pass `rebilling: { rebillable: false }` explicitly if you want a customer-linked line that is not rebillable.\n\n`custom_fields` on the bill itself: identify a field by `id` (its NetSuite internal ID or script ID) or by `name` (its script ID). For a list (dropdown) field, send the internal ID of the option as `value` and identify the field by its script ID, either in `id` or in `name` next to the internal ID, which is the shape `GET /accounting/bills/{id}` returns. A list field identified only by its numeric internal ID is rejected by NetSuite with an `Invalid … reference key` error. The connector learns that a field is a list field from NetSuite's field definitions; if they cannot be read for the connection, the option ID is sent as a number and NetSuite rejects it. An entry with no `value` is rejected with a `400`, except a custom segment (a `name` starting with `cseg`), which is sent without a value.\n\nA custom field that is not on the NetSuite form used for the bill is accepted and not stored, and no error is returned. Read the bill back to confirm that a value was stored.\n\n`line_items[].custom_fields` are stored on both expense lines and item lines. Identify a field by `id` (its NetSuite internal ID or script ID) or by `name` (its script ID). `value` must match the field's type: a boolean for a checkbox, a number for a numeric field, an ISO 8601 date for a date field, a string for a text field, and the option's internal ID as a string for a list field. An entry with an empty `value` is rejected with a `400`, so a line custom field cannot be cleared. NetSuite can refuse a changed value for a line field that it maintains itself, which fails the whole request, so send only the fields you want to change.\n\n`pass_through` must target a node inside the SOAP envelope. NetSuite takes an XML request body, and a root-level `extend_object` (or an `extend_paths` path that does not start at `soap:Envelope`) would place the value outside the XML document element, so it is rejected with `UnsupportedPassThroughError` instead of being sent. To set a NetSuite field the mapping does not cover — e.g. the `customForm` RecordRef — use an `extend_paths` entry addressing the record node, and note that a RecordRef is expressed as an `internalId` attribute rather than a text node:\n\n```json\n\"pass_through\": [\n  {\n    \"service_id\": \"netsuite\",\n    \"extend_paths\": [\n      {\n        \"path\": \"$['soap:Envelope']['soap:Body']['platformMsgs:add']['platformMsgs:record']['tranPurch:customForm']['_attributes']['internalId']\",\n        \"value\": \"229\"\n      }\n    ]\n  }\n]\n```\n\nOn update the message node is `platformMsgs:update` instead of `platformMsgs:add`.\n\n`tax_inclusive: true` is supported via a connector-side gross-down. NetSuite's SOAP VendorBill has no native tax-inclusive flag, so when `tax_inclusive: true` the connector divides each line's `total_amount` by `(1 + tax_rate.rate / 100)` before sending. `line_items[].tax_rate.id` is required per line when `tax_inclusive: true`; `line_items[].tax_rate.rate` is optional — when omitted, the connector resolves the rate server-side from the tax code (a caller-supplied rate still takes precedence). If a tax-inclusive tax-rated line's rate genuinely cannot be resolved, the request fails fast with a `400` naming the line rather than silently sending the un-grossed amount. `tax_inclusive` is not returned on read — NetSuite's SOAP schema has no equivalent read field. Due to intermediate rounding (net is computed to 4 decimal places), the posted total may differ from the consumer gross by ±0.01 in rare rate/amount combinations where the exact net is not representable in 4dp.\n\nOn SuiteTax-enabled tenants the per-line `tax_rate.id` is applied through NetSuite's SuiteTax tax-details override, so the tax is included in the bill total; the legacy per-line tax fields are used only on non-SuiteTax (legacy) tenants. The tax code must be valid for the bill's subsidiary/nexus — NetSuite rejects a mismatch with a `400` (`Invalid taxtype reference key … for nexus …`). On a SuiteTax tenant a tax-rated line whose tax code cannot be resolved fails fast with a `400` naming the line, for both `tax_inclusive: true` and `tax_inclusive: false`, rather than posting the line untaxed.\n\nDate-only fields need no configuration: NetSuite converts the datetime it receives into the\nSOAP/integration user's time zone before storing the date part, and these fields are anchored so\nthey store on the intended calendar day for any integration user between UTC-10 and UTC+13.\n\nFour zones fall outside that range and need the optional `timezone` connection setting:\n`Pacific/Pago_Pago`, `Pacific/Niue` and `Pacific/Midway` (UTC-11) store one day early without it,\nand `Pacific/Kiritimati` (UTC+14) stores one day late. Set it to the IANA zone of the NetSuite user\nthis connection authenticates as, read from that user's Home > Set Preferences > Time Zone — Setup >\nCompany > Company Information only supplies the default, so a user who overrode it needs their own\nzone.\n\nWhen the setting is used its value must be within 12 hours of that user's real zone in either\ndirection: more than ~12h east stores dates one day early, more than ~12h west stores them one day\nlate.\n\nThis applies to every NetSuite date-only write field across the accounting resources.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "When a line omits `tax_rate`, the VAT group configured on the G/L Account Card applies. A foreign vendor's VAT business posting group can zero the line VAT regardless of the `tax_rate` sent.\nIn U.S.-localized tenants the returned `tax_inclusive` reads `false` even when `true` was sent; line amounts are still computed inclusive of the sent tax rate, so totals match what was sent.\nA '400 Bad Request' error \"Control 'fieldName' is read-only\" means that field's 'editable' property is disabled in Business Central.\n`bill_number` and `reference` both map to the single `vendorInvoiceNumber` field, and `bill_number` wins — when both are sent, `reference` is silently discarded. On read both are populated from it and are always identical. Send only `reference` if you need it to survive a round trip.\n`notes` is not written — Business Central's purchase invoice has no field it maps to, so the value is silently discarded.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "`bill_number` and `reference` both map to the single `DOCNUMBER` field, and `bill_number` wins — when both are sent, `reference` is silently discarded. On read both are populated from `DOCNUMBER` and are always identical. Send `reference` without `bill_number` if you rely on it as a back-reference. `bill_number` is additionally written to `RECORDID`.\n\n`notes` is unaffected — it maps to `DESCRIPTION` and round-trips independently.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": 'The status of the bill will be "submitted" by default when creating a bill.\n',
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": 'Required fields on create: `company_id`, `bill_date`, `supplier.id`, `currency`, `total` and `line_items`.\nThe posting date is set to `bill_date`.\n\nEach line item is either a purchase-order line or a G/L line:\n- Lines with `line_items[].purchase_order.id` are posted against that purchase order. Optionally provide\n  `line_items[].purchase_order.line_id` for the purchase order item (for example `00010`), as a bill read\n  returns it; `line_number` is accepted when `line_id` is not sent. Send `quantity` with the invoiced\n  quantity: without it SAP ignores the line amount and rejects the bill as unbalanced.\n  `unit_of_measure` is the order unit of the purchase order item (for example `PC`) and is taken from\n  the purchase order when it is not sent. That needs the item reference (`line_id` or `line_number`)\n  when the purchase order has more than one item; without it, send `unit_of_measure`.\n- All other lines are G/L lines and require `line_items[].ledger_account.id` (or `.code`). A line with\n  neither a purchase order nor a ledger account is rejected with a 400.\n\nOn a G/L line, `line_items[].department_id` sets the cost center and `line_items[].tracking_categories`\nthe profit center, with the ids the departments and tracking-categories resources return. SAP has one\nprofit center per line, so a line with two or more different tracking category ids is rejected with a 400\n(a repeated id counts once, and a blank id is ignored). The profit center sent is stored as is, even\nwhen the cost center belongs to a different profit center. A\npurchase order line takes its cost center and profit center from the purchase order, so a purchase\norder line that sets `department_id` or `tracking_categories` is rejected with a 400.\n\n`line_items[].tax_rate.code` takes the SAP tax code (e.g. `V1`). SAP S/4HANA Cloud does not expose tax\nrates as readable data, so the tax code must be supplied directly.\n\n`due_date` is the date the bill falls due for payment. SAP has no due-date field: it calculates the\ndue date from a baseline date plus the days of the payment terms, so the baseline date is set to\n`due_date` minus those days. `terms` sets the payment terms; when omitted, the supplier\'s default\nterms apply. Without `due_date`, SAP derives the baseline date from the payment terms.\n\nThe days of the payment terms are taken from the most recent posted bill in SAP that uses the same\nterms. When no posted bill uses them yet, or they cannot be read, `due_date` is sent as the baseline\ndate and SAP makes the bill due later by the terms\' days (for example 30 days later for net 30); the\n`due_date` read back then shows the date SAP calculated.\n\n`pass_through` values for the baseline date (`DueCalculationBaseDate`) or the payment terms\' day\ncounts are sent to SAP as supplied and replace this calculation, so the bill can then fall due on a\ndate other than `due_date`.\n\nA bill with purchase order lines that sends no `terms` gets the payment terms of the purchase\norder, not those of the supplier, and the days are read from that purchase order.\n\nThe tax determination date is set to `bill_date`. SAP only accepts it in company codes whose country\nuses time-dependent taxes; where it does not (for example a US company code), SAP rejects the bill and\nthe connector sends it again without the tax determination date, so the create normally succeeds. This\nhappens on every create in such a company code; the extra SAP requests are not counted against your\nusage. To set the tax determination date yourself, pass `TaxDeterminationDate` through `pass_through` in\nSAP\'s `/Date(<milliseconds>)/` form, for example:\n\n`"pass_through": [{"service_id": "sap-s4hana-cloud", "extend_object": {"TaxDeterminationDate": "/Date(1759276800000)/"}}]`\n\nA date you set is never dropped, and if SAP rejects it that error is returned. To skip the tax\ndetermination date altogether in a company code whose country does not use time-dependent taxes, set it\nto `null` the same way: SAP then accepts the create in a single request. In a company code that uses\ntime-dependent taxes, SAP rejects a `null` date with `Time-dependent taxes active: Fill Tax Determ. Date\nin invoice header`, and that error is returned. If a later request fails,\nthe error of the request that failed is returned. If a write times out or returns an unexpected `5xx`\nresponse, the bill may still have been posted, so check SAP before sending it again.\n',
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "`line_items[].tax_rate`, `line_items[].unit_price` and `line_items[].type` are not supported. Sage's underlying bill-line object is a flat GL-distribution line (account + amount only) — it has no per-line tax field (rejected outright as \"not a valid field\", unlike the header-level `tax_inclusive`, which is writable), no quantity/unit-price breakdown, and no line-type classification.\n\n`po_number` is not supported on write or read. Sage exposes only a linked purchasing-document reference (a full PO transaction), not a plain PO-number string field; a value here previously read back from the header's `reference` field, which was a fabricated value, not the caller's own — that has been removed rather than fixed, since Sage has nothing to fix it to.\n\n`source_document_url` is not supported. A caller-supplied value has no field to write to, and the read side previously returned Sage's own `webURL` (a link to view the record in Sage's own UI) in its place — a different thing from the caller's source document, and indistinguishable from a real value without checking the URL's domain. Removed rather than left silently misleading.\n\n`line_items[].location_id` is required on every line, not optional, in a multi-entity tenant — omitting it fails with `422 REST-7001 / SL-0401 / SL-0592 \"Location is empty. A valid Multi-entity location must be specified\"`. There is no header-level location field or default; each line needs its own. This is a tenant-setup fact to surface up front, not a mapping bug — it also applies to `expenses` (verified live) and likely every other transaction type on a multi-entity tenant.\n",
+                        },
+                        {
+                            "connector": "snelstart",
+                            "description": "Only `Laag`, `Hoog` and `Overig` are recognized `line_items[].tax_rate.code` values on\nwrite (SnelStart's purchase-side VAT types); any other value — including `Geen` — results\nin that line being booked with no VAT allocation, silently, not as an error.\n\n`bill_date` falling in a period your accountant has locked for review or already closed is\nrejected — see the `journal-entries` create gotcha, which this connector's bookings share\nthe same restriction with.\n",
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": "Both `supplier.id` and `bill_number` are required — Twinfield rejects a bill without an invoice number, and every line must post against the accounts-payable control account, which requires knowing the supplier.\n\nThe accounts-payable control account itself is per-organisation configuration Twinfield exposes no way to look up. It defaults to `1600` (Twinfield's standard chart of accounts); if this office uses a different code, configure it on the connection.\n\n`reference` is not sent — Twinfield's purchase transaction header has no free-text field\ndistinct from the invoice number (`invoicenumber`, already used for `bill_number`) to hold\nit. Treat `reference` as write-unsupported for this connector.\n\n`line_items[].tax_rate.id` is sent to Twinfield as a per-line `vatcode`; Twinfield computes\nthe VAT and posts it as its own line, so the balancing control-account line must equal net +\nVAT, not just net. The connector computes that VAT total itself — using each line's\n`tax_amount` when supplied, otherwise the `tax_rate.id` code's rate in effect on\n`bill_date` (today when `bill_date` is omitted) — and adds it to the control-account line.\n\nA code that books its VAT to both sides (reverse charge, EU acquisition) adds nothing to the\ncontrol-account line; the connector recognises one by its VAT accounts' shares of the VAT\nadding up to 0. A supplied `tax_amount` is added as sent, so on such lines omit it or send\n`tax_amount: 0`.\n\nAn unknown `tax_rate.id`, or one the connector cannot read from Twinfield, fails the request\nwith a 400 that names the code.\n",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "On tenants without a dedicated purchase-invoice booking connector configured (see the\n`bills.all` gotcha above), a created bill is not immediately retrievable via `bills.one` or\n`bills.all` — it is recorded in AFAS's purchase-order system rather than the invoice-booking\nsystem those read operations query. Reading it back requires the same tenant-specific\nGetConnector setup described for listing bills.\n",
+                        },
+                        {
+                            "connector": "sevdesk",
+                            "description": 'Every bill line is booked to a generic "Miscellaneous" expense account — there is no field\non this endpoint to choose a specific expense category. Re-categorize individual lines in\nthe sevDesk UI if a specific account is needed for bookkeeping.\n\nLine items have no quantity/unit-price breakdown — sevDesk records each bill line as a\nsingle lump-sum amount plus tax rate, so `quantity` is always `1` and `unit_price` equals\n`total_amount`.\n\nNew bills are always created as `draft`, regardless of the `status` you send — a\nnon-draft bill needs additional fields this connector does not currently set. Transition\nit to a later status from within sevDesk after creation.\n\nBills are created under a fixed VAT rule ("Regelbesteuerung") — there is no field on this\nendpoint to change it. Unlike invoices and credit notes, this rule does not restrict\n`line_items[].tax_rate.rate` to a fixed set of values — any rate is accepted unchanged.\n',
+                        },
+                        {
+                            "connector": "exact-online",
+                            "description": "`line_items[].ledger_account` is not supported on create — Exact's purchase-invoice line\nobject rejects an unknown `GLAccount` property outright (400, \"The property name\n'GLAccount' ... is not valid\"), so the connector does not send it: a `ledger_account` on\na create request is silently dropped rather than rejected, and the created bill line will\nnot be coded to that ledger account. Code the expense via `line_items[].item` instead, or\nuse `journal-entries` for a GL-coded posting.\n",
+                        },
+                        {
+                            "connector": "exact-online-nl",
+                            "description": "`line_items[].ledger_account` is not supported on create — Exact's purchase-invoice line\nobject rejects an unknown `GLAccount` property outright (400, \"The property name\n'GLAccount' ... is not valid\"), so the connector does not send it: a `ledger_account` on\na create request is silently dropped rather than rejected, and the created bill line will\nnot be coded to that ledger account. Code the expense via `line_items[].item` instead, or\nuse `journal-entries` for a GL-coded posting.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Every line needs a `ledger_account.id` (an expense account such as `6300`) and a `tax_rate.id` that is a Fiken purchase VAT code such as `HIGH`, `MEDIUM`, `LOW`, `NONE` or `HIGH_DIRECT`. `terms` is not stored, and a bill is always created as a posted bill, so `status` `draft` comes back as a submitted bill. A bill created with `status` `paid` needs the bank account it was paid from in `bank_account` (its `id` from `/accounting/bank-accounts`, or its 11-digit `account_number`).\n\nFor a bill in NOK, send `unit_price` (or `total_amount`) as the net amount and `tax_amount` as the VAT amount. For another currency, send the net amount in that currency and leave `tax_amount` out.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -696,10 +1138,9 @@ class Bills(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingBillsAddResponse(
                 create_bill_response=unmarshal_json_response(
-                    Optional[models.CreateBillResponse], http_res
+                    Optional[models.CreateBillResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -740,10 +1181,9 @@ class Bills(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingBillsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -777,7 +1217,8 @@ class Bills(BaseSDK):
         reference: OptionalNullable[str] = UNSET,
         line_items: Optional[
             Union[
-                List[models.BillLineItemInput], List[models.BillLineItemInputTypedDict]
+                Iterable[models.BillLineItemInput],
+                Iterable[models.BillLineItemInputTypedDict],
             ]
         ] = None,
         terms: OptionalNullable[str] = UNSET,
@@ -809,28 +1250,31 @@ class Bills(BaseSDK):
         source_document_url: OptionalNullable[str] = UNSET,
         payment_allocations: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedPaymentAllocations]],
-                List[Nullable[models.LinkedPaymentAllocationsTypedDict]],
+                Iterable[Nullable[models.LinkedPaymentAllocations]],
+                Iterable[Nullable[models.LinkedPaymentAllocationsTypedDict]],
             ]
         ] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         accounting_period: OptionalNullable[str] = UNSET,
         attachments: Optional[
             Union[
-                List[Nullable[models.LinkedAttachment]],
-                List[Nullable[models.LinkedAttachmentTypedDict]],
+                Iterable[Nullable[models.LinkedAttachment]],
+                Iterable[Nullable[models.LinkedAttachmentTypedDict]],
             ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -1006,6 +1450,7 @@ class Bills(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.bill, False, False, "json", models.BillInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1030,9 +1475,126 @@ class Bills(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sap-business-one",
+                            "description": "`reference` cannot be written: SAP Business One sets it to the document number. Use `bill_number` for the vendor's invoice number (*Vendor Ref. No.*). Bills are posted when created: `status` is not written, because SAP Business One keeps drafts in a separate Drafts object.\n",
+                        },
+                        {
+                            "connector": "e-conomic",
+                            "description": "Bills are created as unbooked supplier invoices in e-conomic journal 1. `status` is\nalways `draft`: once the journal is booked in e-conomic the voucher leaves the journal,\nand the bill can no longer be read through its `id`. Required: `supplier.id` (the supplier\nnumber) and, on every line, `ledger_account.id` (the expense account number) and\n`total_amount`. Line amounts include VAT; e-conomic splits the VAT off by the line's\n`tax_rate.id` (a VAT code such as `I25`). Send line amounts positive; negative line amounts\nare rejected.\n`bill_date` must fall in an accounting year set up in e-conomic. The returned `id` has\nthe form `{journal}-{accounting year}-{voucher number}`; a split accounting year such as\n`2025/2026` is written `2025_6_2026`. Listing, updating and deleting\nbills are not supported. `reference` (or `notes`, when there is no reference) becomes the text of lines without a `description` and is not returned as a separate field. Dates are taken as written, regardless of time zone.\nA `status` other than `draft` is rejected with a 400, because e-conomic bills are written as drafts only.\nSend an `Idempotency-Key` to make retrying a create safe: Unify sends e-conomic a 32-character key derived from it as e-conomic's own `Idempotency-Key` header, and e-conomic answers a repeat with the original bill instead of creating a second one. e-conomic keeps a key for one hour, and Unify remembers it for the same hour. Reusing a key with a different body returns 422, from Unify within its hour and from e-conomic while e-conomic still remembers the key; after both have forgotten it, the same key is treated as a new request. Use a new key for every bill. Unify builds the e-conomic request again on a retry, from what it reads from e-conomic and from today's date in Copenhagen when you leave the date out. If either changed between the attempts, e-conomic refuses the retry as a reused key and Unify returns 422 instead of creating a second bill. The first attempt may have created the bill: look it up before resending with a new key. Send the date to keep a retry identical across midnight.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "Creates the bill as a booking on the administration's purchase journal, which\nupdates the payables straight away. Required: `bill_number` (a whole number of at\nmost 8 digits; Minox stores no letters in bill numbers), `supplier.id`, `bill_date`\nand, on every line, `ledger_account.id` plus either `total_amount` or `quantity` and\n`unit_price`.\n\nVAT is calculated per line from the `tax_rate` percentage, rounded to the cent,\nunless the line sends its own `tax_amount`; with `tax_inclusive: true` the line\namounts include VAT. A `total` that does not match the lines is rejected. The total\nmust be positive: book credits as credit notes. `due_date` defaults to the\nsupplier's payment terms.\n\nA `bill_number` the same supplier already used in that fiscal year is rejected with\n`409`; the same number on a different supplier is accepted. Updating is not\nsupported: delete the bill and create it again.\n\nMinox bookings have no discounts: `discount_percentage` and `discount_amount`, on the\ndocument or a line, are rejected; send the discounted amounts. A line `tax_amount`\nneeds a `tax_rate`.\n\nBookings are posted on create: `status: draft` is rejected. `currency` must be the\nadministration's own currency: Minox needs an exchange rate with any other, which this record\nhas no field for, so another currency is rejected with a `400`. `currency_rate`,\ndocument-level `tracking_categories` and `terms` are not stored. The booking goes on the\nadministration's purchase journal; when it has more than one, choose it in the\nconnection's purchase journal setting, or the create is rejected with a `400`.\n",
+                        },
+                        {
+                            "connector": "campfire",
+                            "description": "`bill_number` is required on create, even though the unified schema treats it as\noptional — omitting it fails with `bill_number: This field is required.` and no bill\nis created.\n",
+                        },
+                        {
+                            "connector": "e-boekhouden",
+                            "description": "Every line item is sent as a line of the bill; the payable-account side of the entry is\nresolved automatically rather than taken from `line_items` — it uses the supplier's own\nconfigured payable account when the supplier has one set, and the administration's single\npayable account otherwise. Each line needs a VAT code; a line with no tax rate is sent with\nthe \"no VAT\" code.\n\n`line_items[].tax_rate.code` must be one of e-Boekhouden's own VAT code strings (there is\nno tax-rates resource/endpoint to look these up — see the tax-rates gotcha on this\nconnector). Supplying `tax_rate.rate` or `tax_rate.id` instead of `.code` is not\nrecognized and the line silently falls back to the \"no VAT\" code rather than being\nrejected.\n\nA line's own `description` is not preserved — e-Boekhouden always returns the bill's own\ntop-level notes for every line, regardless of what was sent for that specific line.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "`line_items[].item` must reference the item by its Sage item code (`ITEMID`), not by the\nnumeric record number. Pass the value Invoice Items returns in `code` — either as\n`item.code` (preferred; it wins when both are sent) or as `item.id`. The numeric `id`\nreturned by Invoice Items is rejected by Sage with \"Item 'N' specified is not valid\"\n(BL01001973). No automatic translation is applied: Sage item codes may themselves be\nnumeric, so a record number cannot be told apart from a code.\n",
+                        },
+                        {
+                            "connector": "restaurant365",
+                            "description": "`location_id` is optional in the unified schema but effectively required by R365 —\nR365's create-invoice endpoint requires a `LocationId`. Omitting it on create risks a\nrejected write rather than a bill created against a default location.\n",
+                        },
+                        {
+                            "connector": "myob",
+                            "description": "MYOB requires a `FreightTaxCode` on bill create and update. Apideck sends the tax rate of the first line item (`line_items[0].tax_rate.id`), so every bill must include at least one line item with a `tax_rate.id`.\n\nMYOB stores bills in layout-specific endpoints (Service, Item, Professional, Miscellaneous). On create, Apideck routes to the Item layout when any line item references an inventory item (`line_items[].item.id`) and to the Service layout otherwise. The returned `id` encodes the layout, so always use ids returned by the API.\n\nOn update, MYOB requires optimistic-locking versions: pass the bill's current `row_version` and, for every existing line, its `row_id` and `row_version` (all returned by a get call). Updates and deletes are only supported for Service and Item layout bills.\n\nMYOB does not return the company file's base currency on bill records, so domestic bills (no foreign currency set) are reported with `currency: AUD`. For an NZD-based company file, treat the reported currency of domestic bills as the file's base currency, or read the raw payload via `raw=true`.\n\n`filter[status]` is coarser than the unified enum. MYOB stores only `Open`, `Closed` and `Debit`, so `unpaid` and `partially_paid` both map to `Open` and return the **same** result set — they cannot be distinguished server-side. `paid` maps to `Closed`. To separate unpaid from partially paid, compare `balance` against `total` on the returned records.\n\nFor the same reason a partially-paid bill reads back as `status: submitted`, not `partially_paid` — MYOB's `Open` covers submitted, draft and partially paid, and the response mapping resolves it to `submitted`. Use `balance` versus `total` to detect partial payment.\n",
+                        },
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Bill expense lines map from `line_items[]` (`ledger_account` → expense account, `total_amount`, `description`). Lines cannot be changed after creation; see the update operation.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "When providing both supplier.id and supplier.display_name (or supplier.name), Xero will update the contact's name if the ContactID exists. If the ContactID doesn't exist, Xero will automatically create a new contact using the provided name. This allows for automatic contact creation but may update existing contact names if the display_name differs from the stored name.\n\n`notes` is not written — Xero's ACCPAY invoice has no field it maps to, so the value is accepted and silently discarded. Use `line_items[].description` instead.\n\n`reference` and `bill_number` do not collide (`Reference` and `InvoiceNumber` respectively), but Xero documents `InvoiceNumber` as the value that \"will also display as Reference in the UI\" on ACCPAY, and treats the `Reference` field as ACCREC-only. A value sent in `reference` therefore round-trips through the API without appearing in the Xero bill UI. See https://developer.xero.com/documentation/api/accounting/invoices\n\nOn read, `bill_number` and `po_number` are both mapped from `InvoiceNumber` and are always identical — Xero's Invoice object has no separate purchase-order-number field.\n",
+                        },
+                        {
+                            "connector": "lexware-office",
+                            "description": 'Bills can only be created in a finalized state — `status: "draft"` is rejected with a\n`400` explaining the limitation, rather than silently creating a finalized bill. Lexware\nOffice\'s own create endpoint for this document type accepts only its finalized status\nvalue, with no draft option.\n',
+                        },
+                        {
+                            "Procountor only accepts the following values for the channel field": "EMAIL, MAIL, ELECTRONIC_INVOICE, EDIFACT, PAPER_INVOICE, NO_SENDING.",
+                            "Procountor only accepts the following values for the language field": "EN, FI, SV, ET, NO, and DA.",
+                            "Procountor only accepts the following values for the payment_method field": "BANK_TRANSFER, DIRECT_PAYMENT, CLEARING, CREDIT_CARD_CHARGE, FOREIGN_PAYMENT, OTHER, CASH, DOMESTIC_PAYMENT_PLUSGIRO, DOMESTIC_PAYMENT_BANKGIRO, DOMESTIC_PAYMENT_CREDITOR, DKLMPKRE, NETS.",
+                            "connector": "procountor-fi",
+                            "description": "",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": 'When creating a bill in QuickBooks, each line item must be accompanied by a type designation. If the type is set to "expense_item," an item ID is required. Conversely, if the type is "expense_account," a ledger account ID must be provided.\n\n`reference` and `notes` both map to the single `PrivateNote` field — QuickBooks\' one reference-number slot (`DocNumber`) is taken by `bill_number` on bills, so `reference` shares the memo instead. Only one of the two survives a write (the other is dropped with no error), and on read both are populated from `PrivateNote` and are always identical. Send only one. Which of the two wins on write is currently under review — do not rely on it.\n\n`bill_number` maps to `DocNumber`, limited to 21 characters; a longer value is rejected with `400 ValidationFault` (code `6000`), so a 36-character UUID does not fit.\n\nAdditionally, multicurrency needs to be enabled in your QBO account. If creating a bill in your default currency, you do not need to send the currency value as long as the supplier uses the same currency. For bills with suppliers using a different currency than your default, you must include the currency value, matching the supplier\'s configured currency. To change the currency of a customer or vendor, a new one must be created with the desired currency. Foreign currencies can only be sent to suppliers configured with that currency.\n',
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": 'When creating a bill in Intuit Enterprise Suite, each line item must be accompanied by a type designation. If the type is set to "expense_item," an item ID is required. Conversely, if the type is "expense_account," a ledger account ID must be provided.\n\n`reference` and `notes` both map to the single `PrivateNote` field — Intuit Enterprise Suite\'s one reference-number slot (`DocNumber`) is taken by `bill_number` on bills, so `reference` shares the memo instead. Only one of the two survives a write (the other is dropped with no error), and on read both are populated from `PrivateNote` and are always identical. Send only one. Which of the two wins on write is currently under review — do not rely on it.\n\n`bill_number` maps to `DocNumber`, limited to 21 characters; a longer value is rejected with `400 ValidationFault` (code `6000`), so a 36-character UUID does not fit.\n\nAdditionally, multicurrency needs to be enabled in your Intuit Enterprise Suite account. If creating a bill in your default currency, you do not need to send the currency value as long as the supplier uses the same currency. For bills with suppliers using a different currency than your default, you must include the currency value, matching the supplier\'s configured currency. To change the currency of a customer or vendor, a new one must be created with the desired currency. Foreign currencies can only be sent to suppliers configured with that currency.\n',
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "NetSuite bills have two kinds of line: expense lines (posted to a ledger account)\nand item lines (posted against an item). Set `line_items[].type` to choose:\n`expense_account` (requires `ledger_account.id`) or `expense_item` (requires\n`item.id`).\n\nAn explicit `type` always wins. When `type` is omitted, the line is routed on the\nreference it carries: a line with `item.id` is sent as an item line, otherwise a\nline with `ledger_account.id` is sent as an expense line. A line that carries both\nand no `type` is sent as an item line and its `ledger_account` is not used; set\n`type: expense_account` to post it to the ledger account instead.\n\nA line with `type: other`, or with no `type` and neither reference, is not sent.\nWhen other lines remain the bill is created without it; when no line remains,\nNetSuite rejects the request with `USER_ERROR: \"You must enter at least one line\nitem for this transaction.\"`\n\n`reference`, `bill_number` and `notes` map to `externalId`, the transaction ID and the memo respectively, so all three round-trip independently. Because `reference` is the `externalId` it must be unique — reusing a value already on another bill fails with `DUP_RCRD`.\n\n`line_items[].tracking_categories` maps to the NetSuite per-line `class` (Classification), which accepts only one value — entries at index 1 or beyond are dropped silently.\n\nWhen `line_items[].customer` is set without an explicit `line_items[].rebilling.rebillable`, NetSuite defaults `rebillable` to `true`. Pass `rebilling: { rebillable: false }` explicitly if you want a customer-linked line that is not rebillable.\n\n`custom_fields` on the bill itself: identify a field by `id` (its NetSuite internal ID or script ID) or by `name` (its script ID). For a list (dropdown) field, send the internal ID of the option as `value` and identify the field by its script ID, either in `id` or in `name` next to the internal ID, which is the shape `GET /accounting/bills/{id}` returns. A list field identified only by its numeric internal ID is rejected by NetSuite with an `Invalid … reference key` error. The connector learns that a field is a list field from NetSuite's field definitions; if they cannot be read for the connection, the option ID is sent as a number and NetSuite rejects it. An entry with no `value` is rejected with a `400`, except a custom segment (a `name` starting with `cseg`), which is sent without a value.\n\nA custom field that is not on the NetSuite form used for the bill is accepted and not stored, and no error is returned. Read the bill back to confirm that a value was stored.\n\n`line_items[].custom_fields` are stored on both expense lines and item lines. Identify a field by `id` (its NetSuite internal ID or script ID) or by `name` (its script ID). `value` must match the field's type: a boolean for a checkbox, a number for a numeric field, an ISO 8601 date for a date field, a string for a text field, and the option's internal ID as a string for a list field. An entry with an empty `value` is rejected with a `400`, so a line custom field cannot be cleared. NetSuite can refuse a changed value for a line field that it maintains itself, which fails the whole request, so send only the fields you want to change.\n\n`pass_through` must target a node inside the SOAP envelope. NetSuite takes an XML request body, and a root-level `extend_object` (or an `extend_paths` path that does not start at `soap:Envelope`) would place the value outside the XML document element, so it is rejected with `UnsupportedPassThroughError` instead of being sent. To set a NetSuite field the mapping does not cover — e.g. the `customForm` RecordRef — use an `extend_paths` entry addressing the record node, and note that a RecordRef is expressed as an `internalId` attribute rather than a text node:\n\n```json\n\"pass_through\": [\n  {\n    \"service_id\": \"netsuite\",\n    \"extend_paths\": [\n      {\n        \"path\": \"$['soap:Envelope']['soap:Body']['platformMsgs:add']['platformMsgs:record']['tranPurch:customForm']['_attributes']['internalId']\",\n        \"value\": \"229\"\n      }\n    ]\n  }\n]\n```\n\nOn update the message node is `platformMsgs:update` instead of `platformMsgs:add`.\n\n`tax_inclusive: true` is supported via a connector-side gross-down. NetSuite's SOAP VendorBill has no native tax-inclusive flag, so when `tax_inclusive: true` the connector divides each line's `total_amount` by `(1 + tax_rate.rate / 100)` before sending. `line_items[].tax_rate.id` is required per line when `tax_inclusive: true`; `line_items[].tax_rate.rate` is optional — when omitted, the connector resolves the rate server-side from the tax code (a caller-supplied rate still takes precedence). If a tax-inclusive tax-rated line's rate genuinely cannot be resolved, the request fails fast with a `400` naming the line rather than silently sending the un-grossed amount. `tax_inclusive` is not returned on read — NetSuite's SOAP schema has no equivalent read field. Due to intermediate rounding (net is computed to 4 decimal places), the posted total may differ from the consumer gross by ±0.01 in rare rate/amount combinations where the exact net is not representable in 4dp.\n\nOn SuiteTax-enabled tenants the per-line `tax_rate.id` is applied through NetSuite's SuiteTax tax-details override, so the tax is included in the bill total; the legacy per-line tax fields are used only on non-SuiteTax (legacy) tenants. The tax code must be valid for the bill's subsidiary/nexus — NetSuite rejects a mismatch with a `400` (`Invalid taxtype reference key … for nexus …`). On a SuiteTax tenant a tax-rated line whose tax code cannot be resolved fails fast with a `400` naming the line, for both `tax_inclusive: true` and `tax_inclusive: false`, rather than posting the line untaxed.\n\nDate-only fields need no configuration: NetSuite converts the datetime it receives into the\nSOAP/integration user's time zone before storing the date part, and these fields are anchored so\nthey store on the intended calendar day for any integration user between UTC-10 and UTC+13.\n\nFour zones fall outside that range and need the optional `timezone` connection setting:\n`Pacific/Pago_Pago`, `Pacific/Niue` and `Pacific/Midway` (UTC-11) store one day early without it,\nand `Pacific/Kiritimati` (UTC+14) stores one day late. Set it to the IANA zone of the NetSuite user\nthis connection authenticates as, read from that user's Home > Set Preferences > Time Zone — Setup >\nCompany > Company Information only supplies the default, so a user who overrode it needs their own\nzone.\n\nWhen the setting is used its value must be within 12 hours of that user's real zone in either\ndirection: more than ~12h east stores dates one day early, more than ~12h west stores them one day\nlate.\n\nThis applies to every NetSuite date-only write field across the accounting resources.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "When a line omits `tax_rate`, the VAT group configured on the G/L Account Card applies. A foreign vendor's VAT business posting group can zero the line VAT regardless of the `tax_rate` sent.\nIn U.S.-localized tenants the returned `tax_inclusive` reads `false` even when `true` was sent; line amounts are still computed inclusive of the sent tax rate, so totals match what was sent.\nA '400 Bad Request' error \"Control 'fieldName' is read-only\" means that field's 'editable' property is disabled in Business Central.\n`bill_number` and `reference` both map to the single `vendorInvoiceNumber` field, and `bill_number` wins — when both are sent, `reference` is silently discarded. On read both are populated from it and are always identical. Send only `reference` if you need it to survive a round trip.\n`notes` is not written — Business Central's purchase invoice has no field it maps to, so the value is silently discarded.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "`bill_number` and `reference` both map to the single `DOCNUMBER` field, and `bill_number` wins — when both are sent, `reference` is silently discarded. On read both are populated from `DOCNUMBER` and are always identical. Send `reference` without `bill_number` if you rely on it as a back-reference. `bill_number` is additionally written to `RECORDID`.\n\n`notes` is unaffected — it maps to `DESCRIPTION` and round-trips independently.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": 'The status of the bill will be "submitted" by default when creating a bill.\n',
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": 'Required fields on create: `company_id`, `bill_date`, `supplier.id`, `currency`, `total` and `line_items`.\nThe posting date is set to `bill_date`.\n\nEach line item is either a purchase-order line or a G/L line:\n- Lines with `line_items[].purchase_order.id` are posted against that purchase order. Optionally provide\n  `line_items[].purchase_order.line_id` for the purchase order item (for example `00010`), as a bill read\n  returns it; `line_number` is accepted when `line_id` is not sent. Send `quantity` with the invoiced\n  quantity: without it SAP ignores the line amount and rejects the bill as unbalanced.\n  `unit_of_measure` is the order unit of the purchase order item (for example `PC`) and is taken from\n  the purchase order when it is not sent. That needs the item reference (`line_id` or `line_number`)\n  when the purchase order has more than one item; without it, send `unit_of_measure`.\n- All other lines are G/L lines and require `line_items[].ledger_account.id` (or `.code`). A line with\n  neither a purchase order nor a ledger account is rejected with a 400.\n\nOn a G/L line, `line_items[].department_id` sets the cost center and `line_items[].tracking_categories`\nthe profit center, with the ids the departments and tracking-categories resources return. SAP has one\nprofit center per line, so a line with two or more different tracking category ids is rejected with a 400\n(a repeated id counts once, and a blank id is ignored). The profit center sent is stored as is, even\nwhen the cost center belongs to a different profit center. A\npurchase order line takes its cost center and profit center from the purchase order, so a purchase\norder line that sets `department_id` or `tracking_categories` is rejected with a 400.\n\n`line_items[].tax_rate.code` takes the SAP tax code (e.g. `V1`). SAP S/4HANA Cloud does not expose tax\nrates as readable data, so the tax code must be supplied directly.\n\n`due_date` is the date the bill falls due for payment. SAP has no due-date field: it calculates the\ndue date from a baseline date plus the days of the payment terms, so the baseline date is set to\n`due_date` minus those days. `terms` sets the payment terms; when omitted, the supplier\'s default\nterms apply. Without `due_date`, SAP derives the baseline date from the payment terms.\n\nThe days of the payment terms are taken from the most recent posted bill in SAP that uses the same\nterms. When no posted bill uses them yet, or they cannot be read, `due_date` is sent as the baseline\ndate and SAP makes the bill due later by the terms\' days (for example 30 days later for net 30); the\n`due_date` read back then shows the date SAP calculated.\n\n`pass_through` values for the baseline date (`DueCalculationBaseDate`) or the payment terms\' day\ncounts are sent to SAP as supplied and replace this calculation, so the bill can then fall due on a\ndate other than `due_date`.\n\nA bill with purchase order lines that sends no `terms` gets the payment terms of the purchase\norder, not those of the supplier, and the days are read from that purchase order.\n\nThe tax determination date is set to `bill_date`. SAP only accepts it in company codes whose country\nuses time-dependent taxes; where it does not (for example a US company code), SAP rejects the bill and\nthe connector sends it again without the tax determination date, so the create normally succeeds. This\nhappens on every create in such a company code; the extra SAP requests are not counted against your\nusage. To set the tax determination date yourself, pass `TaxDeterminationDate` through `pass_through` in\nSAP\'s `/Date(<milliseconds>)/` form, for example:\n\n`"pass_through": [{"service_id": "sap-s4hana-cloud", "extend_object": {"TaxDeterminationDate": "/Date(1759276800000)/"}}]`\n\nA date you set is never dropped, and if SAP rejects it that error is returned. To skip the tax\ndetermination date altogether in a company code whose country does not use time-dependent taxes, set it\nto `null` the same way: SAP then accepts the create in a single request. In a company code that uses\ntime-dependent taxes, SAP rejects a `null` date with `Time-dependent taxes active: Fill Tax Determ. Date\nin invoice header`, and that error is returned. If a later request fails,\nthe error of the request that failed is returned. If a write times out or returns an unexpected `5xx`\nresponse, the bill may still have been posted, so check SAP before sending it again.\n',
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "`line_items[].tax_rate`, `line_items[].unit_price` and `line_items[].type` are not supported. Sage's underlying bill-line object is a flat GL-distribution line (account + amount only) — it has no per-line tax field (rejected outright as \"not a valid field\", unlike the header-level `tax_inclusive`, which is writable), no quantity/unit-price breakdown, and no line-type classification.\n\n`po_number` is not supported on write or read. Sage exposes only a linked purchasing-document reference (a full PO transaction), not a plain PO-number string field; a value here previously read back from the header's `reference` field, which was a fabricated value, not the caller's own — that has been removed rather than fixed, since Sage has nothing to fix it to.\n\n`source_document_url` is not supported. A caller-supplied value has no field to write to, and the read side previously returned Sage's own `webURL` (a link to view the record in Sage's own UI) in its place — a different thing from the caller's source document, and indistinguishable from a real value without checking the URL's domain. Removed rather than left silently misleading.\n\n`line_items[].location_id` is required on every line, not optional, in a multi-entity tenant — omitting it fails with `422 REST-7001 / SL-0401 / SL-0592 \"Location is empty. A valid Multi-entity location must be specified\"`. There is no header-level location field or default; each line needs its own. This is a tenant-setup fact to surface up front, not a mapping bug — it also applies to `expenses` (verified live) and likely every other transaction type on a multi-entity tenant.\n",
+                        },
+                        {
+                            "connector": "snelstart",
+                            "description": "Only `Laag`, `Hoog` and `Overig` are recognized `line_items[].tax_rate.code` values on\nwrite (SnelStart's purchase-side VAT types); any other value — including `Geen` — results\nin that line being booked with no VAT allocation, silently, not as an error.\n\n`bill_date` falling in a period your accountant has locked for review or already closed is\nrejected — see the `journal-entries` create gotcha, which this connector's bookings share\nthe same restriction with.\n",
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": "Both `supplier.id` and `bill_number` are required — Twinfield rejects a bill without an invoice number, and every line must post against the accounts-payable control account, which requires knowing the supplier.\n\nThe accounts-payable control account itself is per-organisation configuration Twinfield exposes no way to look up. It defaults to `1600` (Twinfield's standard chart of accounts); if this office uses a different code, configure it on the connection.\n\n`reference` is not sent — Twinfield's purchase transaction header has no free-text field\ndistinct from the invoice number (`invoicenumber`, already used for `bill_number`) to hold\nit. Treat `reference` as write-unsupported for this connector.\n\n`line_items[].tax_rate.id` is sent to Twinfield as a per-line `vatcode`; Twinfield computes\nthe VAT and posts it as its own line, so the balancing control-account line must equal net +\nVAT, not just net. The connector computes that VAT total itself — using each line's\n`tax_amount` when supplied, otherwise the `tax_rate.id` code's rate in effect on\n`bill_date` (today when `bill_date` is omitted) — and adds it to the control-account line.\n\nA code that books its VAT to both sides (reverse charge, EU acquisition) adds nothing to the\ncontrol-account line; the connector recognises one by its VAT accounts' shares of the VAT\nadding up to 0. A supplied `tax_amount` is added as sent, so on such lines omit it or send\n`tax_amount: 0`.\n\nAn unknown `tax_rate.id`, or one the connector cannot read from Twinfield, fails the request\nwith a 400 that names the code.\n",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "On tenants without a dedicated purchase-invoice booking connector configured (see the\n`bills.all` gotcha above), a created bill is not immediately retrievable via `bills.one` or\n`bills.all` — it is recorded in AFAS's purchase-order system rather than the invoice-booking\nsystem those read operations query. Reading it back requires the same tenant-specific\nGetConnector setup described for listing bills.\n",
+                        },
+                        {
+                            "connector": "sevdesk",
+                            "description": 'Every bill line is booked to a generic "Miscellaneous" expense account — there is no field\non this endpoint to choose a specific expense category. Re-categorize individual lines in\nthe sevDesk UI if a specific account is needed for bookkeeping.\n\nLine items have no quantity/unit-price breakdown — sevDesk records each bill line as a\nsingle lump-sum amount plus tax rate, so `quantity` is always `1` and `unit_price` equals\n`total_amount`.\n\nNew bills are always created as `draft`, regardless of the `status` you send — a\nnon-draft bill needs additional fields this connector does not currently set. Transition\nit to a later status from within sevDesk after creation.\n\nBills are created under a fixed VAT rule ("Regelbesteuerung") — there is no field on this\nendpoint to change it. Unlike invoices and credit notes, this rule does not restrict\n`line_items[].tax_rate.rate` to a fixed set of values — any rate is accepted unchanged.\n',
+                        },
+                        {
+                            "connector": "exact-online",
+                            "description": "`line_items[].ledger_account` is not supported on create — Exact's purchase-invoice line\nobject rejects an unknown `GLAccount` property outright (400, \"The property name\n'GLAccount' ... is not valid\"), so the connector does not send it: a `ledger_account` on\na create request is silently dropped rather than rejected, and the created bill line will\nnot be coded to that ledger account. Code the expense via `line_items[].item` instead, or\nuse `journal-entries` for a GL-coded posting.\n",
+                        },
+                        {
+                            "connector": "exact-online-nl",
+                            "description": "`line_items[].ledger_account` is not supported on create — Exact's purchase-invoice line\nobject rejects an unknown `GLAccount` property outright (400, \"The property name\n'GLAccount' ... is not valid\"), so the connector does not send it: a `ledger_account` on\na create request is silently dropped rather than rejected, and the created bill line will\nnot be coded to that ledger account. Code the expense via `line_items[].item` instead, or\nuse `journal-entries` for a GL-coded posting.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Every line needs a `ledger_account.id` (an expense account such as `6300`) and a `tax_rate.id` that is a Fiken purchase VAT code such as `HIGH`, `MEDIUM`, `LOW`, `NONE` or `HIGH_DIRECT`. `terms` is not stored, and a bill is always created as a posted bill, so `status` `draft` comes back as a submitted bill. A bill created with `status` `paid` needs the bank account it was paid from in `bank_account` (its `id` from `/accounting/bank-accounts`, or its 11-digit `account_number`).\n\nFor a bill in NOK, send `unit_price` (or `total_amount`) as the net amount and `tax_amount` as the VAT amount. For another currency, send the net amount in that currency and leave `tax_amount` out.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1040,10 +1602,9 @@ class Bills(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingBillsAddResponse(
                 create_bill_response=unmarshal_json_response(
-                    Optional[models.CreateBillResponse], http_res
+                    Optional[models.CreateBillResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1084,10 +1645,9 @@ class Bills(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingBillsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1160,6 +1720,7 @@ class Bills(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1184,9 +1745,67 @@ class Bills(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "twinfield",
+                            "description": "`line_items` are the bill's net lines. A line's VAT code, when it has one, is returned as\n`tax_rate.id`. The VAT line Twinfield books for the bill is not a line item, and a line's\nown `tax_amount` is not returned. `sub_total` is the sum of `line_items`, and `total_tax` is\n`total` minus `sub_total`. `balance` and `paid_date` are always null on this get-by-id\noperation; they are available on `bills.list`.\n",
+                        },
+                        {
+                            "connector": "snelstart",
+                            "description": 'This reads the same underlying "purchase booking" record `bills.create`/`bills.update`\nwrite to — SnelStart\'s summary view has no per-record read of its own. `line_items` is\navailable here (unlike on `bills.list`), but `due_date` is always `null` — the booking\nmodel has no due-date field at all — and `status` is always `"authorised"`, since the\nbooking model has no payment/workflow state this connector can read either. `sub_total`\nand `total_tax` are not mapped either — the booking model does include a `btw` VAT\nbreakdown, but this connector does not currently derive the two unified fields from it, so\nonly `total` is exposed. `balance` is genuinely unavailable: the booking model has no\nopen-balance figure at all.\n',
+                        },
+                        {
+                            "connector": "freshbooks",
+                            "description": "The Freshbooks Bills api is currently in beta.",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": 'NetSuite populates `payment_allocations` only on bills.get (detail), not on the bills list. To list the payments applied to a bill, use `bill-payments.list?filter[bill_id]=<bill_id>`.\n\nBill line items return `purchase_order` when the line was billed from a purchase order, including through an item receipt: `id` is the NetSuite purchase order and `line_id` its line, matching `line_items[].id` on Purchase Orders. A bill line returns one linked purchase order line. `line_number` is not returned.\n\nBill line-item `tracking_categories[].name` is normalized to the leaf class name: a NetSuite hierarchical class path such as `"Fruit : Apple"` returns `name: "Apple"` and `parent_name: "Fruit"` (deeper paths return the deepest leaf). NetSuite bill line items do not carry a department or location name.\n',
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": 'On bill line items, QuickBooks returns `ClassRef.name` as the `FullyQualifiedName`\n(e.g. `"Fruit:Apple"`) rather than the leaf class name. Apideck normalises this by\nextracting the last `:` segment, so `tracking_categories[].name` returns `"Apple"` and\n`parent_name` returns `"Fruit"`. Expense line items are unaffected — QuickBooks returns\nonly the short name there.\n\nBill line items return `purchase_order` (`id`, `line_id`) only on lines QuickBooks links to a\npurchase order. `line_number` is not returned; use `line_id` to match the purchase order line.\n',
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": 'On bill line items, Intuit Enterprise Suite returns `ClassRef.name` as the `FullyQualifiedName`\n(e.g. `"Fruit:Apple"`) rather than the leaf class name. Apideck normalises this by\nextracting the last `:` segment, so `tracking_categories[].name` returns `"Apple"` and\n`parent_name` returns `"Fruit"`. Expense line items are unaffected — Intuit Enterprise Suite returns\nonly the short name there.\n\nBill line items return `purchase_order` (`id`, `line_id`) only on lines Intuit Enterprise Suite links\nto a purchase order. `line_number` is not returned; use `line_id` to match the purchase order line.\n',
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "For a bill created from a purchasing transaction (for example a vendor invoice converted from a\npurchase order or receiver), each line item returns `purchase_order` with the originating purchase\norder (`id`, the purchase order's record number, not its document number such as `PO0044`) and\npurchase order line (`line_id`, and `line_number` counting from 1). It is returned on bills.get only,\nbecause bills.list returns no line items. Bills entered directly in Accounts Payable have no\npurchase order link. Sage Intacct does not store the link on the bill itself, so reading a\npurchasing bill makes a few extra Sage Intacct requests; if they fail, the bill is still returned\nwithout `purchase_order` and the response includes a warning. A bill line that is still not traced\nto a purchase order after four purchasing documents is also returned without `purchase_order`,\nwith a warning.\n\n`custom_fields` on the bill and on its line items returns the company's own custom fields that\nhave a value, on bills.get only; bills.list does not return them. Checkbox fields return `true`\nor `false` and number fields return numbers. Reading a bill makes one extra Sage Intacct request\nfor the custom field definitions; if it fails, even in part, the bill is still returned without the affected `custom_fields`\nand the response includes a warning.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": '`payment_allocations` is populated on both bills.get and bills.list via an extra batched query against `accounts-payable/payment-detail`, filtered by the bill\'s own key — this is a permanent added query on every bill read, not something only bills with payments pay for, since a bill with none still needs the lookup to know that. Live-verified: a bill with an applied payment returns `payment_allocations: [{id: "<payment id>", allocated_amount, date}]`; one with none returns `payment_allocations: null`.\n\nBills return `payment_hold` but not `purchase_order` on line items or `custom_fields` on the bill or its lines.\n',
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "`payment_hold` is `true` when the bill's payment status is Blocked. That status exists from Odoo 18;\n`payment_hold` is not returned on earlier versions, or when Odoo's payment statuses cannot be read. Bill line items return `purchase_order` (`id`,\n`line_id`) only when the Odoo Purchase app is installed and the line was created from a purchase\norder line. Without the Purchase app, bill line items are still returned, without `purchase_order`.\n`line_number` is not returned.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Bill line items return `purchase_order` (`id`, `line_id`) when the line was created from a purchase\norder and the bill is linked to exactly one purchase order. On a bill linked to several purchase\norders the line cannot be attributed to one of them, and `purchase_order` is not returned.\n`line_number` is not returned.\n",
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "`payment_hold` is `true` whenever the supplier invoice has a payment block reason, whether set by\nhand or automatically (for example a price or quantity variance block). Bill line items return\n`purchase_order` only for lines posted against a purchase order; `line_id` is the purchase order\nitem number as SAP formats it (for example `00010`), matching `line_items[].id` on Purchase Orders.\n`line_number` is not returned.\n",
+                        },
+                        {
+                            "connector": "lexware-office",
+                            "description": '`currency` is always `"EUR"` on this get-by-id operation, regardless of the bill\'s actual\ncurrency — this endpoint does not return a currency field. `currency` is accurate on\n`bills.list`.\n',
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "`due_date` is the net due date SAP keeps on the bill's accounting document, so it follows a due\ndate or payment terms changed there after posting. A bill that is paid in instalments shows the\nnext instalment still open, and the last one once all are paid.\n\nA bill that is not posted yet has no accounting document: its `due_date` is calculated from the\nbill itself, as the baseline date plus the days of its payment terms (`terms`). The same\ncalculated date is returned, with a warning in the response, when the accounting document cannot\nbe read, for example because Communication Scenario `SAP_COM_0303` is not activated.\n\n`status` follows the bill's accounting document. A posted bill reads `paid` once SAP has cleared\nit, and `partially_paid` while part of it is still open: after a partial payment, when a payment\nleft a remainder open, or when only some of its instalments are paid. A cancelled bill reads\n`void`. Reading the status needs Communication Scenario `SAP_COM_0303`: without it a posted bill\nreads `authorised` and the response carries a warning. If SAP cannot be reached while the status\nis read, the request returns a retryable error. A payment does not change `updated_at`.\n`balance` is not returned.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1194,10 +1813,9 @@ class Bills(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingBillsOneResponse(
                 get_bill_response=unmarshal_json_response(
-                    Optional[models.GetBillResponse], http_res
+                    Optional[models.GetBillResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1238,10 +1856,9 @@ class Bills(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingBillsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1314,6 +1931,7 @@ class Bills(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1338,9 +1956,67 @@ class Bills(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "twinfield",
+                            "description": "`line_items` are the bill's net lines. A line's VAT code, when it has one, is returned as\n`tax_rate.id`. The VAT line Twinfield books for the bill is not a line item, and a line's\nown `tax_amount` is not returned. `sub_total` is the sum of `line_items`, and `total_tax` is\n`total` minus `sub_total`. `balance` and `paid_date` are always null on this get-by-id\noperation; they are available on `bills.list`.\n",
+                        },
+                        {
+                            "connector": "snelstart",
+                            "description": 'This reads the same underlying "purchase booking" record `bills.create`/`bills.update`\nwrite to — SnelStart\'s summary view has no per-record read of its own. `line_items` is\navailable here (unlike on `bills.list`), but `due_date` is always `null` — the booking\nmodel has no due-date field at all — and `status` is always `"authorised"`, since the\nbooking model has no payment/workflow state this connector can read either. `sub_total`\nand `total_tax` are not mapped either — the booking model does include a `btw` VAT\nbreakdown, but this connector does not currently derive the two unified fields from it, so\nonly `total` is exposed. `balance` is genuinely unavailable: the booking model has no\nopen-balance figure at all.\n',
+                        },
+                        {
+                            "connector": "freshbooks",
+                            "description": "The Freshbooks Bills api is currently in beta.",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": 'NetSuite populates `payment_allocations` only on bills.get (detail), not on the bills list. To list the payments applied to a bill, use `bill-payments.list?filter[bill_id]=<bill_id>`.\n\nBill line items return `purchase_order` when the line was billed from a purchase order, including through an item receipt: `id` is the NetSuite purchase order and `line_id` its line, matching `line_items[].id` on Purchase Orders. A bill line returns one linked purchase order line. `line_number` is not returned.\n\nBill line-item `tracking_categories[].name` is normalized to the leaf class name: a NetSuite hierarchical class path such as `"Fruit : Apple"` returns `name: "Apple"` and `parent_name: "Fruit"` (deeper paths return the deepest leaf). NetSuite bill line items do not carry a department or location name.\n',
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": 'On bill line items, QuickBooks returns `ClassRef.name` as the `FullyQualifiedName`\n(e.g. `"Fruit:Apple"`) rather than the leaf class name. Apideck normalises this by\nextracting the last `:` segment, so `tracking_categories[].name` returns `"Apple"` and\n`parent_name` returns `"Fruit"`. Expense line items are unaffected — QuickBooks returns\nonly the short name there.\n\nBill line items return `purchase_order` (`id`, `line_id`) only on lines QuickBooks links to a\npurchase order. `line_number` is not returned; use `line_id` to match the purchase order line.\n',
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": 'On bill line items, Intuit Enterprise Suite returns `ClassRef.name` as the `FullyQualifiedName`\n(e.g. `"Fruit:Apple"`) rather than the leaf class name. Apideck normalises this by\nextracting the last `:` segment, so `tracking_categories[].name` returns `"Apple"` and\n`parent_name` returns `"Fruit"`. Expense line items are unaffected — Intuit Enterprise Suite returns\nonly the short name there.\n\nBill line items return `purchase_order` (`id`, `line_id`) only on lines Intuit Enterprise Suite links\nto a purchase order. `line_number` is not returned; use `line_id` to match the purchase order line.\n',
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "For a bill created from a purchasing transaction (for example a vendor invoice converted from a\npurchase order or receiver), each line item returns `purchase_order` with the originating purchase\norder (`id`, the purchase order's record number, not its document number such as `PO0044`) and\npurchase order line (`line_id`, and `line_number` counting from 1). It is returned on bills.get only,\nbecause bills.list returns no line items. Bills entered directly in Accounts Payable have no\npurchase order link. Sage Intacct does not store the link on the bill itself, so reading a\npurchasing bill makes a few extra Sage Intacct requests; if they fail, the bill is still returned\nwithout `purchase_order` and the response includes a warning. A bill line that is still not traced\nto a purchase order after four purchasing documents is also returned without `purchase_order`,\nwith a warning.\n\n`custom_fields` on the bill and on its line items returns the company's own custom fields that\nhave a value, on bills.get only; bills.list does not return them. Checkbox fields return `true`\nor `false` and number fields return numbers. Reading a bill makes one extra Sage Intacct request\nfor the custom field definitions; if it fails, even in part, the bill is still returned without the affected `custom_fields`\nand the response includes a warning.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": '`payment_allocations` is populated on both bills.get and bills.list via an extra batched query against `accounts-payable/payment-detail`, filtered by the bill\'s own key — this is a permanent added query on every bill read, not something only bills with payments pay for, since a bill with none still needs the lookup to know that. Live-verified: a bill with an applied payment returns `payment_allocations: [{id: "<payment id>", allocated_amount, date}]`; one with none returns `payment_allocations: null`.\n\nBills return `payment_hold` but not `purchase_order` on line items or `custom_fields` on the bill or its lines.\n',
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "`payment_hold` is `true` when the bill's payment status is Blocked. That status exists from Odoo 18;\n`payment_hold` is not returned on earlier versions, or when Odoo's payment statuses cannot be read. Bill line items return `purchase_order` (`id`,\n`line_id`) only when the Odoo Purchase app is installed and the line was created from a purchase\norder line. Without the Purchase app, bill line items are still returned, without `purchase_order`.\n`line_number` is not returned.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Bill line items return `purchase_order` (`id`, `line_id`) when the line was created from a purchase\norder and the bill is linked to exactly one purchase order. On a bill linked to several purchase\norders the line cannot be attributed to one of them, and `purchase_order` is not returned.\n`line_number` is not returned.\n",
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "`payment_hold` is `true` whenever the supplier invoice has a payment block reason, whether set by\nhand or automatically (for example a price or quantity variance block). Bill line items return\n`purchase_order` only for lines posted against a purchase order; `line_id` is the purchase order\nitem number as SAP formats it (for example `00010`), matching `line_items[].id` on Purchase Orders.\n`line_number` is not returned.\n",
+                        },
+                        {
+                            "connector": "lexware-office",
+                            "description": '`currency` is always `"EUR"` on this get-by-id operation, regardless of the bill\'s actual\ncurrency — this endpoint does not return a currency field. `currency` is accurate on\n`bills.list`.\n',
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "`due_date` is the net due date SAP keeps on the bill's accounting document, so it follows a due\ndate or payment terms changed there after posting. A bill that is paid in instalments shows the\nnext instalment still open, and the last one once all are paid.\n\nA bill that is not posted yet has no accounting document: its `due_date` is calculated from the\nbill itself, as the baseline date plus the days of its payment terms (`terms`). The same\ncalculated date is returned, with a warning in the response, when the accounting document cannot\nbe read, for example because Communication Scenario `SAP_COM_0303` is not activated.\n\n`status` follows the bill's accounting document. A posted bill reads `paid` once SAP has cleared\nit, and `partially_paid` while part of it is still open: after a partial payment, when a payment\nleft a remainder open, or when only some of its instalments are paid. A cancelled bill reads\n`void`. Reading the status needs Communication Scenario `SAP_COM_0303`: without it a posted bill\nreads `authorised` and the response carries a warning. If SAP cannot be reached while the status\nis read, the request returns a retryable error. A payment does not change `updated_at`.\n`balance` is not returned.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1348,10 +2024,9 @@ class Bills(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingBillsOneResponse(
                 get_bill_response=unmarshal_json_response(
-                    Optional[models.GetBillResponse], http_res
+                    Optional[models.GetBillResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1392,10 +2067,9 @@ class Bills(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingBillsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1429,7 +2103,8 @@ class Bills(BaseSDK):
         reference: OptionalNullable[str] = UNSET,
         line_items: Optional[
             Union[
-                List[models.BillLineItemInput], List[models.BillLineItemInputTypedDict]
+                Iterable[models.BillLineItemInput],
+                Iterable[models.BillLineItemInputTypedDict],
             ]
         ] = None,
         terms: OptionalNullable[str] = UNSET,
@@ -1461,28 +2136,31 @@ class Bills(BaseSDK):
         source_document_url: OptionalNullable[str] = UNSET,
         payment_allocations: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedPaymentAllocations]],
-                List[Nullable[models.LinkedPaymentAllocationsTypedDict]],
+                Iterable[Nullable[models.LinkedPaymentAllocations]],
+                Iterable[Nullable[models.LinkedPaymentAllocationsTypedDict]],
             ]
         ] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         accounting_period: OptionalNullable[str] = UNSET,
         attachments: Optional[
             Union[
-                List[Nullable[models.LinkedAttachment]],
-                List[Nullable[models.LinkedAttachmentTypedDict]],
+                Iterable[Nullable[models.LinkedAttachment]],
+                Iterable[Nullable[models.LinkedAttachmentTypedDict]],
             ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -1658,6 +2336,7 @@ class Bills(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.bill, False, False, "json", models.BillInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1682,9 +2361,66 @@ class Bills(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "QuickBooks Desktop cannot modify bill line items: `line_items` sent on update are ignored and the response still returns the bill `id`. Only header fields change — `supplier`, `bill_date`, `due_date`, `bill_number`, `terms`, `notes`. `currency`, `currency_rate` and `tracking_categories` are also ignored on update. Delete and recreate the bill to change its lines.\n\nUpdates need `row_version` from a prior read of the record: without it the update is rejected with `Missing required field: data.editSequence`. Writes are applied on the Web Connector's next run, so an update can return a `504` timeout after 28 seconds while QuickBooks still applies it; read the record back before retrying.\n",
+                        },
+                        {
+                            "connector": "sap-business-one",
+                            "description": "To change a line, send it with the `id` from a read: SAP Business One updates the line with that number. A line without an `id` is matched by its position in `line_items`, so it is added only when it comes after all of the document's existing lines; otherwise it replaces the line at that position. To add lines safely, send every existing line with its `id` followed by the new ones. Lines left out of the request are kept.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "`line_items[].item` must reference the item by its Sage item code (`ITEMID`), not by the\nnumeric record number. Pass the value Invoice Items returns in `code` — either as\n`item.code` (preferred; it wins when both are sent) or as `item.id`. The numeric `id`\nreturned by Invoice Items is rejected by Sage with \"Item 'N' specified is not valid\"\n(BL01001973). No automatic translation is applied: Sage item codes may themselves be\nnumeric, so a record number cannot be told apart from a code.\n",
+                        },
+                        {
+                            "connector": "restaurant365",
+                            "description": "Bills cannot be updated through this connector at all — the update operation is\nunsupported, not merely limited. R365's own PATCH endpoint accepts only an\n`approvalStatus` field (approve/reject), not general field updates, so mapping it under\nthe unified update operation would have silently discarded any other field the caller\nsent. There is no workaround; bills can only be created and read.\n",
+                        },
+                        {
+                            "Procountor only accepts the following values for the channel field": "EMAIL, MAIL, ELECTRONIC_INVOICE, EDIFACT, PAPER_INVOICE, NO_SENDING.",
+                            "Procountor only accepts the following values for the language field": "EN, FI, SV, ET, NO, and DA.",
+                            "Procountor only accepts the following values for the payment_method field": "BANK_TRANSFER, DIRECT_PAYMENT, CLEARING, CREDIT_CARD_CHARGE, FOREIGN_PAYMENT, OTHER, CASH, DOMESTIC_PAYMENT_PLUSGIRO, DOMESTIC_PAYMENT_BANKGIRO, DOMESTIC_PAYMENT_CREDITOR, DKLMPKRE, NETS.",
+                            "connector": "procountor-fi",
+                            "description": "",
+                        },
+                        {
+                            "connector": "Quickbooks",
+                            "description": "Quickbooks requires the supplier.id to be sent in order to make update operations.",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite requires the supplier.id to be sent in order to make update operations.",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": 'The allowed values for the status field are "draft", "submitted" and "void" when using the update method.\nPlease send status updates separately from other bill updates.\n',
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Bills in xero can be tax inclusive, tax exclusive or no tax. The tax_inclusive field should be set to true, false or null if the bill is tax inclusive, tax exclusive or no tax.",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "NetSuite bills have two kinds of line: expense lines (posted to a ledger account)\nand item lines (posted against an item). Set `line_items[].type` to choose:\n`expense_account` (requires `ledger_account.id`) or `expense_item` (requires\n`item.id`).\n\nAn explicit `type` always wins. When `type` is omitted, the line is routed on the\nreference it carries: a line with `item.id` is sent as an item line, otherwise a\nline with `ledger_account.id` is sent as an expense line. A line that carries both\nand no `type` is sent as an item line and its `ledger_account` is not used; set\n`type: expense_account` to post it to the ledger account instead.\n\nA line with `type: other`, or with no `type` and neither reference, is not sent.\n\nSending `line_items` on an update replaces every existing line of the same kind (expense\nlines or item lines): lines of that kind that are left out of the request are removed, and\nlines sent without a `line_number` are re-created rather than matched. Include every line\nyou want to keep, with its `line_number`. Lines of the other kind are left untouched.\n\n`line_items[].tracking_categories` maps to the NetSuite per-line `class` (Classification), which accepts only one value — entries at index 1 or beyond are dropped silently.\n\n`line_items[].rebilling.rebillable` cannot be changed after the bill is created — NetSuite rejects updates to `isbillable` on VendorBill. The field is silently dropped from update requests; create a new bill if you need to change the flag. Additionally, any PATCH that updates a line with `customer` set will cause NetSuite to reset `rebilling.rebillable` to its default (`true`) because the SOAP update omits the field and NetSuite re-applies the default for billable lines.\n\n`custom_fields` on the bill itself: identify a field by `id` (its NetSuite internal ID or script ID) or by `name` (its script ID). For a list (dropdown) field, send the internal ID of the option as `value` and identify the field by its script ID, either in `id` or in `name` next to the internal ID, which is the shape `GET /accounting/bills/{id}` returns. A list field identified only by its numeric internal ID is rejected by NetSuite with an `Invalid … reference key` error. The connector learns that a field is a list field from NetSuite's field definitions; if they cannot be read for the connection, the option ID is sent as a number and NetSuite rejects it. An entry with no `value` is rejected with a `400`, except a custom segment (a `name` starting with `cseg`), which is sent without a value.\n\nA custom field that is not on the NetSuite form used for the bill is accepted and not stored, and no error is returned. Read the bill back to confirm that a value was stored.\n\n`line_items[].custom_fields` are stored on both expense lines and item lines. Identify a field by `id` (its NetSuite internal ID or script ID) or by `name` (its script ID). `value` must match the field's type: a boolean for a checkbox, a number for a numeric field, an ISO 8601 date for a date field, a string for a text field, and the option's internal ID as a string for a list field. An entry with an empty `value` is rejected with a `400`, so a line custom field cannot be cleared. NetSuite can refuse a changed value for a line field that it maintains itself, which fails the whole request, so send only the fields you want to change.\n\nOn an update, line custom fields that are not sent keep their stored value. A line sent with its `line_number` keeps its custom fields; a line sent without a `line_number` is re-created and keeps only the custom fields sent with it.\n\n`tax_inclusive: true` is supported via a connector-side gross-down. NetSuite's SOAP VendorBill has no native tax-inclusive flag, so when `tax_inclusive: true` the connector divides each line's `total_amount` by `(1 + tax_rate.rate / 100)` before sending. `line_items[].tax_rate.id` is required per line when `tax_inclusive: true`; `line_items[].tax_rate.rate` is optional — when omitted, the connector resolves the rate server-side from the tax code (a caller-supplied rate still takes precedence). If a tax-inclusive tax-rated line's rate genuinely cannot be resolved, the request fails fast with a `400` naming the line rather than silently sending the un-grossed amount. `tax_inclusive` is not returned on read — NetSuite's SOAP schema has no equivalent read field. Due to intermediate rounding (net is computed to 4 decimal places), the posted total may differ from the consumer gross by ±0.01 in rare rate/amount combinations where the exact net is not representable in 4dp.\n\nOn SuiteTax-enabled tenants the per-line `tax_rate.id` is applied through NetSuite's SuiteTax tax-details override, so the tax is included in the bill total; the legacy per-line tax fields are used only on non-SuiteTax (legacy) tenants. The tax code must be valid for the bill's subsidiary/nexus — NetSuite rejects a mismatch with a `400` (`Invalid taxtype reference key … for nexus …`). On a SuiteTax tenant a tax-rated line whose tax code cannot be resolved fails fast with a `400` naming the line, for both `tax_inclusive: true` and `tax_inclusive: false`, rather than posting the line untaxed.\n\nDate-only fields need no configuration: NetSuite converts the datetime it receives into the\nSOAP/integration user's time zone before storing the date part, and these fields are anchored so\nthey store on the intended calendar day for any integration user between UTC-10 and UTC+13.\n\nFour zones fall outside that range and need the optional `timezone` connection setting:\n`Pacific/Pago_Pago`, `Pacific/Niue` and `Pacific/Midway` (UTC-11) store one day early without it,\nand `Pacific/Kiritimati` (UTC+14) stores one day late. Set it to the IANA zone of the NetSuite user\nthis connection authenticates as, read from that user's Home > Set Preferences > Time Zone — Setup >\nCompany > Company Information only supplies the default, so a user who overrode it needs their own\nzone.\n\nWhen the setting is used its value must be within 12 hours of that user's real zone in either\ndirection: more than ~12h east stores dates one day early, more than ~12h west stores them one day\nlate.\n\nThis applies to every NetSuite date-only write field across the accounting resources.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "`line_items[].tax_rate`, `line_items[].unit_price` and `line_items[].type` are not supported — Sage's bill-line object is a flat GL-distribution line with no per-line tax, quantity/unit-price, or type field. `po_number` is not supported either, on read or write — Sage exposes only a linked purchasing-document reference, not a plain PO-number string.\n",
+                        },
+                        {
+                            "connector": "sevdesk",
+                            "description": "`line_items` cannot be changed on update — sevDesk's update endpoint only accepts header\nfields (description, currency, supplier, due date, paid date). A request that includes\nline item changes returns `200` but the line items are unaffected; delete and recreate the\nbill if the amounts need to change.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1692,10 +2428,9 @@ class Bills(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingBillsUpdateResponse(
                 update_bill_response=unmarshal_json_response(
-                    Optional[models.UpdateBillResponse], http_res
+                    Optional[models.UpdateBillResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1736,10 +2471,9 @@ class Bills(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingBillsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1773,7 +2507,8 @@ class Bills(BaseSDK):
         reference: OptionalNullable[str] = UNSET,
         line_items: Optional[
             Union[
-                List[models.BillLineItemInput], List[models.BillLineItemInputTypedDict]
+                Iterable[models.BillLineItemInput],
+                Iterable[models.BillLineItemInputTypedDict],
             ]
         ] = None,
         terms: OptionalNullable[str] = UNSET,
@@ -1805,28 +2540,31 @@ class Bills(BaseSDK):
         source_document_url: OptionalNullable[str] = UNSET,
         payment_allocations: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedPaymentAllocations]],
-                List[Nullable[models.LinkedPaymentAllocationsTypedDict]],
+                Iterable[Nullable[models.LinkedPaymentAllocations]],
+                Iterable[Nullable[models.LinkedPaymentAllocationsTypedDict]],
             ]
         ] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         accounting_period: OptionalNullable[str] = UNSET,
         attachments: Optional[
             Union[
-                List[Nullable[models.LinkedAttachment]],
-                List[Nullable[models.LinkedAttachmentTypedDict]],
+                Iterable[Nullable[models.LinkedAttachment]],
+                Iterable[Nullable[models.LinkedAttachmentTypedDict]],
             ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -2002,6 +2740,7 @@ class Bills(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.bill, False, False, "json", models.BillInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2026,9 +2765,66 @@ class Bills(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "QuickBooks Desktop cannot modify bill line items: `line_items` sent on update are ignored and the response still returns the bill `id`. Only header fields change — `supplier`, `bill_date`, `due_date`, `bill_number`, `terms`, `notes`. `currency`, `currency_rate` and `tracking_categories` are also ignored on update. Delete and recreate the bill to change its lines.\n\nUpdates need `row_version` from a prior read of the record: without it the update is rejected with `Missing required field: data.editSequence`. Writes are applied on the Web Connector's next run, so an update can return a `504` timeout after 28 seconds while QuickBooks still applies it; read the record back before retrying.\n",
+                        },
+                        {
+                            "connector": "sap-business-one",
+                            "description": "To change a line, send it with the `id` from a read: SAP Business One updates the line with that number. A line without an `id` is matched by its position in `line_items`, so it is added only when it comes after all of the document's existing lines; otherwise it replaces the line at that position. To add lines safely, send every existing line with its `id` followed by the new ones. Lines left out of the request are kept.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "`line_items[].item` must reference the item by its Sage item code (`ITEMID`), not by the\nnumeric record number. Pass the value Invoice Items returns in `code` — either as\n`item.code` (preferred; it wins when both are sent) or as `item.id`. The numeric `id`\nreturned by Invoice Items is rejected by Sage with \"Item 'N' specified is not valid\"\n(BL01001973). No automatic translation is applied: Sage item codes may themselves be\nnumeric, so a record number cannot be told apart from a code.\n",
+                        },
+                        {
+                            "connector": "restaurant365",
+                            "description": "Bills cannot be updated through this connector at all — the update operation is\nunsupported, not merely limited. R365's own PATCH endpoint accepts only an\n`approvalStatus` field (approve/reject), not general field updates, so mapping it under\nthe unified update operation would have silently discarded any other field the caller\nsent. There is no workaround; bills can only be created and read.\n",
+                        },
+                        {
+                            "Procountor only accepts the following values for the channel field": "EMAIL, MAIL, ELECTRONIC_INVOICE, EDIFACT, PAPER_INVOICE, NO_SENDING.",
+                            "Procountor only accepts the following values for the language field": "EN, FI, SV, ET, NO, and DA.",
+                            "Procountor only accepts the following values for the payment_method field": "BANK_TRANSFER, DIRECT_PAYMENT, CLEARING, CREDIT_CARD_CHARGE, FOREIGN_PAYMENT, OTHER, CASH, DOMESTIC_PAYMENT_PLUSGIRO, DOMESTIC_PAYMENT_BANKGIRO, DOMESTIC_PAYMENT_CREDITOR, DKLMPKRE, NETS.",
+                            "connector": "procountor-fi",
+                            "description": "",
+                        },
+                        {
+                            "connector": "Quickbooks",
+                            "description": "Quickbooks requires the supplier.id to be sent in order to make update operations.",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite requires the supplier.id to be sent in order to make update operations.",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": 'The allowed values for the status field are "draft", "submitted" and "void" when using the update method.\nPlease send status updates separately from other bill updates.\n',
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Bills in xero can be tax inclusive, tax exclusive or no tax. The tax_inclusive field should be set to true, false or null if the bill is tax inclusive, tax exclusive or no tax.",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "NetSuite bills have two kinds of line: expense lines (posted to a ledger account)\nand item lines (posted against an item). Set `line_items[].type` to choose:\n`expense_account` (requires `ledger_account.id`) or `expense_item` (requires\n`item.id`).\n\nAn explicit `type` always wins. When `type` is omitted, the line is routed on the\nreference it carries: a line with `item.id` is sent as an item line, otherwise a\nline with `ledger_account.id` is sent as an expense line. A line that carries both\nand no `type` is sent as an item line and its `ledger_account` is not used; set\n`type: expense_account` to post it to the ledger account instead.\n\nA line with `type: other`, or with no `type` and neither reference, is not sent.\n\nSending `line_items` on an update replaces every existing line of the same kind (expense\nlines or item lines): lines of that kind that are left out of the request are removed, and\nlines sent without a `line_number` are re-created rather than matched. Include every line\nyou want to keep, with its `line_number`. Lines of the other kind are left untouched.\n\n`line_items[].tracking_categories` maps to the NetSuite per-line `class` (Classification), which accepts only one value — entries at index 1 or beyond are dropped silently.\n\n`line_items[].rebilling.rebillable` cannot be changed after the bill is created — NetSuite rejects updates to `isbillable` on VendorBill. The field is silently dropped from update requests; create a new bill if you need to change the flag. Additionally, any PATCH that updates a line with `customer` set will cause NetSuite to reset `rebilling.rebillable` to its default (`true`) because the SOAP update omits the field and NetSuite re-applies the default for billable lines.\n\n`custom_fields` on the bill itself: identify a field by `id` (its NetSuite internal ID or script ID) or by `name` (its script ID). For a list (dropdown) field, send the internal ID of the option as `value` and identify the field by its script ID, either in `id` or in `name` next to the internal ID, which is the shape `GET /accounting/bills/{id}` returns. A list field identified only by its numeric internal ID is rejected by NetSuite with an `Invalid … reference key` error. The connector learns that a field is a list field from NetSuite's field definitions; if they cannot be read for the connection, the option ID is sent as a number and NetSuite rejects it. An entry with no `value` is rejected with a `400`, except a custom segment (a `name` starting with `cseg`), which is sent without a value.\n\nA custom field that is not on the NetSuite form used for the bill is accepted and not stored, and no error is returned. Read the bill back to confirm that a value was stored.\n\n`line_items[].custom_fields` are stored on both expense lines and item lines. Identify a field by `id` (its NetSuite internal ID or script ID) or by `name` (its script ID). `value` must match the field's type: a boolean for a checkbox, a number for a numeric field, an ISO 8601 date for a date field, a string for a text field, and the option's internal ID as a string for a list field. An entry with an empty `value` is rejected with a `400`, so a line custom field cannot be cleared. NetSuite can refuse a changed value for a line field that it maintains itself, which fails the whole request, so send only the fields you want to change.\n\nOn an update, line custom fields that are not sent keep their stored value. A line sent with its `line_number` keeps its custom fields; a line sent without a `line_number` is re-created and keeps only the custom fields sent with it.\n\n`tax_inclusive: true` is supported via a connector-side gross-down. NetSuite's SOAP VendorBill has no native tax-inclusive flag, so when `tax_inclusive: true` the connector divides each line's `total_amount` by `(1 + tax_rate.rate / 100)` before sending. `line_items[].tax_rate.id` is required per line when `tax_inclusive: true`; `line_items[].tax_rate.rate` is optional — when omitted, the connector resolves the rate server-side from the tax code (a caller-supplied rate still takes precedence). If a tax-inclusive tax-rated line's rate genuinely cannot be resolved, the request fails fast with a `400` naming the line rather than silently sending the un-grossed amount. `tax_inclusive` is not returned on read — NetSuite's SOAP schema has no equivalent read field. Due to intermediate rounding (net is computed to 4 decimal places), the posted total may differ from the consumer gross by ±0.01 in rare rate/amount combinations where the exact net is not representable in 4dp.\n\nOn SuiteTax-enabled tenants the per-line `tax_rate.id` is applied through NetSuite's SuiteTax tax-details override, so the tax is included in the bill total; the legacy per-line tax fields are used only on non-SuiteTax (legacy) tenants. The tax code must be valid for the bill's subsidiary/nexus — NetSuite rejects a mismatch with a `400` (`Invalid taxtype reference key … for nexus …`). On a SuiteTax tenant a tax-rated line whose tax code cannot be resolved fails fast with a `400` naming the line, for both `tax_inclusive: true` and `tax_inclusive: false`, rather than posting the line untaxed.\n\nDate-only fields need no configuration: NetSuite converts the datetime it receives into the\nSOAP/integration user's time zone before storing the date part, and these fields are anchored so\nthey store on the intended calendar day for any integration user between UTC-10 and UTC+13.\n\nFour zones fall outside that range and need the optional `timezone` connection setting:\n`Pacific/Pago_Pago`, `Pacific/Niue` and `Pacific/Midway` (UTC-11) store one day early without it,\nand `Pacific/Kiritimati` (UTC+14) stores one day late. Set it to the IANA zone of the NetSuite user\nthis connection authenticates as, read from that user's Home > Set Preferences > Time Zone — Setup >\nCompany > Company Information only supplies the default, so a user who overrode it needs their own\nzone.\n\nWhen the setting is used its value must be within 12 hours of that user's real zone in either\ndirection: more than ~12h east stores dates one day early, more than ~12h west stores them one day\nlate.\n\nThis applies to every NetSuite date-only write field across the accounting resources.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "`line_items[].tax_rate`, `line_items[].unit_price` and `line_items[].type` are not supported — Sage's bill-line object is a flat GL-distribution line with no per-line tax, quantity/unit-price, or type field. `po_number` is not supported either, on read or write — Sage exposes only a linked purchasing-document reference, not a plain PO-number string.\n",
+                        },
+                        {
+                            "connector": "sevdesk",
+                            "description": "`line_items` cannot be changed on update — sevDesk's update endpoint only accepts header\nfields (description, currency, supplier, due date, paid date). A request that includes\nline item changes returns `200` but the line items are unaffected; delete and recreate the\nbill if the amounts need to change.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2036,10 +2832,9 @@ class Bills(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingBillsUpdateResponse(
                 update_bill_response=unmarshal_json_response(
-                    Optional[models.UpdateBillResponse], http_res
+                    Optional[models.UpdateBillResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2080,10 +2875,9 @@ class Bills(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingBillsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2150,6 +2944,7 @@ class Bills(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2174,9 +2969,31 @@ class Bills(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "restaurant365",
+                            "description": "Bills cannot be deleted through this connector — R365's Public API exposes no delete\nendpoint for AP invoices. There is no soft-delete or status-based workaround; bills can\nonly be created and read.\n",
+                        },
+                        {
+                            "connector": "freshbooks",
+                            "description": "Delete will set the bill to inactive and will soft delete it, meaning it will stop appearing in the list API call. However, it can still be found via the get by id call.\n",
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": 'Cancellation is supported and reverses the posted supplier invoice. By default, reversal reason `01` is used and the posting date is set to today (UTC). To use another reversal reason or posting date, send a JSON body with the delete request: `{"pass_through": {"reversal_reason": "02", "posting_date": "2026-06-15"}}`. SAP rejects a posting date earlier than the bill\'s own.\n\nOnly a bill can be cancelled here: the id of a bill credit note returns `404` and nothing is cancelled (use\n`DELETE /accounting/bill-credit-notes/{id}`). If the document type can\'t be verified (for example SAP is\nunavailable), the request fails and nothing is cancelled; a `429` or `5xx` can be retried.\n',
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Fiken does not remove bills. Deleting a bill posts a reversal of it, so the bill and its reversal stay in the books and are both visible in Fiken.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2184,10 +3001,9 @@ class Bills(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingBillsDeleteResponse(
                 delete_bill_response=unmarshal_json_response(
-                    Optional[models.DeleteBillResponse], http_res
+                    Optional[models.DeleteBillResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2228,10 +3044,9 @@ class Bills(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingBillsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2298,6 +3113,7 @@ class Bills(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2322,9 +3138,31 @@ class Bills(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "restaurant365",
+                            "description": "Bills cannot be deleted through this connector — R365's Public API exposes no delete\nendpoint for AP invoices. There is no soft-delete or status-based workaround; bills can\nonly be created and read.\n",
+                        },
+                        {
+                            "connector": "freshbooks",
+                            "description": "Delete will set the bill to inactive and will soft delete it, meaning it will stop appearing in the list API call. However, it can still be found via the get by id call.\n",
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": 'Cancellation is supported and reverses the posted supplier invoice. By default, reversal reason `01` is used and the posting date is set to today (UTC). To use another reversal reason or posting date, send a JSON body with the delete request: `{"pass_through": {"reversal_reason": "02", "posting_date": "2026-06-15"}}`. SAP rejects a posting date earlier than the bill\'s own.\n\nOnly a bill can be cancelled here: the id of a bill credit note returns `404` and nothing is cancelled (use\n`DELETE /accounting/bill-credit-notes/{id}`). If the document type can\'t be verified (for example SAP is\nunavailable), the request fails and nothing is cancelled; a `429` or `5xx` can be retried.\n',
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Fiken does not remove bills. Deleting a bill posts a reversal of it, so the bill and its reversal stay in the books and are both visible in Fiken.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2332,10 +3170,9 @@ class Bills(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingBillsDeleteResponse(
                 delete_bill_response=unmarshal_json_response(
-                    Optional[models.DeleteBillResponse], http_res
+                    Optional[models.DeleteBillResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2376,10 +3213,9 @@ class Bills(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingBillsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2388,8 +3224,8 @@ class Bills(BaseSDK):
         self,
         *,
         items: Union[
-            List[models.BatchBillsRequestItems],
-            List[models.BatchBillsRequestItemsTypedDict],
+            Iterable[models.BatchBillsRequestItems],
+            Iterable[models.BatchBillsRequestItemsTypedDict],
         ],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
@@ -2463,6 +3299,7 @@ class Bills(BaseSDK):
                 "json",
                 models.BatchBillsRequest,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2487,9 +3324,31 @@ class Bills(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "xero",
+                            "description": "Records are written one at a time, so the request counts as **one request per\nrecord** against your plan — batching saves you round trips, not quota.\n\nRecords are written one at a time rather than in a single batched call, because this\nresource runs a per-record step after the write (rebilling links for bills, allocations\nfor credit notes) and that step has to see its own record. A request of N records\ntherefore takes about N times as long as a single write and counts as N calls against\nyour Xero rate limit.\n\nAt most 20 records per request. That ceiling was measured for the single batched call\nand has not been re-measured for the per-record path, so treat it as an upper bound\nrather than a safe size: prefer smaller requests and set client timeouts from your own\nobserved per-record latency.\n\nEach record succeeds or fails on its own; read the per-item `status` to see which were\nwritten. If the request times out, the items it could not confirm come back with\n`status: uncertain` rather than `failed` — some of them may well have been written, and\nno ids are returned for those. Verify before retrying an `uncertain` item: list the\nresource to find what exists, or a retry will duplicate it.\n\nResults come back in the order the items were sent. Supply `_ref` on every item if you\nneed to tie an outcome back to your own record — it is echoed on every result, including\nfailures, and is never sent to the connector.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Records are written one at a time, so the request counts as **one request per\nrecord** against your plan — batching saves you round trips, not quota.\n\nAt most 10 records per request.\n\nRecords are written one at a time, so a request of N bills takes about N times as\nlong as a single write and counts as N requests against your plan. Each record\nsucceeds or fails on its own; read the per-item `status` to see which were written.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "The whole request is one call to the provider, so it counts as **one request**\nagainst your plan however many records it carries.\n\nAt most 20 bills per request. A request carrying more is rejected before any\nrecord is written.\n\nResponse time scales with the number of records rather than being a fixed cost:\na full request of 20 takes roughly 27 seconds. Set client timeouts accordingly.\n\nA request that times out may still have written some or all of its records. When\nthat happens no ids are returned for them, so treat a timed-out batch as uncertain\nrather than failed: list the records to find what was written before retrying, or a\nretry will duplicate them.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "The whole request is one call to the provider, so it counts as **one request**\nagainst your plan however many records it carries.\n\nAt most 20 bills per request. A request carrying more is rejected before any\nrecord is written.\n\nResponse time scales with the number of records rather than being a fixed cost:\na full request of 20 takes roughly 27 seconds. Set client timeouts accordingly.\n\nA request that times out may still have written some or all of its records. When\nthat happens no ids are returned for them, so treat a timed-out batch as uncertain\nrather than failed: list the records to find what was written before retrying, or a\nretry will duplicate them.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2497,10 +3356,9 @@ class Bills(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingBillsBatchAddResponse(
                 batch_bills_response=unmarshal_json_response(
-                    Optional[models.BatchBillsResponse], http_res
+                    Optional[models.BatchBillsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2541,10 +3399,9 @@ class Bills(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingBillsBatchAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2553,8 +3410,8 @@ class Bills(BaseSDK):
         self,
         *,
         items: Union[
-            List[models.BatchBillsRequestItems],
-            List[models.BatchBillsRequestItemsTypedDict],
+            Iterable[models.BatchBillsRequestItems],
+            Iterable[models.BatchBillsRequestItemsTypedDict],
         ],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
@@ -2628,6 +3485,7 @@ class Bills(BaseSDK):
                 "json",
                 models.BatchBillsRequest,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2652,9 +3510,31 @@ class Bills(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "xero",
+                            "description": "Records are written one at a time, so the request counts as **one request per\nrecord** against your plan — batching saves you round trips, not quota.\n\nRecords are written one at a time rather than in a single batched call, because this\nresource runs a per-record step after the write (rebilling links for bills, allocations\nfor credit notes) and that step has to see its own record. A request of N records\ntherefore takes about N times as long as a single write and counts as N calls against\nyour Xero rate limit.\n\nAt most 20 records per request. That ceiling was measured for the single batched call\nand has not been re-measured for the per-record path, so treat it as an upper bound\nrather than a safe size: prefer smaller requests and set client timeouts from your own\nobserved per-record latency.\n\nEach record succeeds or fails on its own; read the per-item `status` to see which were\nwritten. If the request times out, the items it could not confirm come back with\n`status: uncertain` rather than `failed` — some of them may well have been written, and\nno ids are returned for those. Verify before retrying an `uncertain` item: list the\nresource to find what exists, or a retry will duplicate it.\n\nResults come back in the order the items were sent. Supply `_ref` on every item if you\nneed to tie an outcome back to your own record — it is echoed on every result, including\nfailures, and is never sent to the connector.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Records are written one at a time, so the request counts as **one request per\nrecord** against your plan — batching saves you round trips, not quota.\n\nAt most 10 records per request.\n\nRecords are written one at a time, so a request of N bills takes about N times as\nlong as a single write and counts as N requests against your plan. Each record\nsucceeds or fails on its own; read the per-item `status` to see which were written.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "The whole request is one call to the provider, so it counts as **one request**\nagainst your plan however many records it carries.\n\nAt most 20 bills per request. A request carrying more is rejected before any\nrecord is written.\n\nResponse time scales with the number of records rather than being a fixed cost:\na full request of 20 takes roughly 27 seconds. Set client timeouts accordingly.\n\nA request that times out may still have written some or all of its records. When\nthat happens no ids are returned for them, so treat a timed-out batch as uncertain\nrather than failed: list the records to find what was written before retrying, or a\nretry will duplicate them.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "The whole request is one call to the provider, so it counts as **one request**\nagainst your plan however many records it carries.\n\nAt most 20 bills per request. A request carrying more is rejected before any\nrecord is written.\n\nResponse time scales with the number of records rather than being a fixed cost:\na full request of 20 takes roughly 27 seconds. Set client timeouts accordingly.\n\nA request that times out may still have written some or all of its records. When\nthat happens no ids are returned for them, so treat a timed-out batch as uncertain\nrather than failed: list the records to find what was written before retrying, or a\nretry will duplicate them.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2662,10 +3542,9 @@ class Bills(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingBillsBatchAddResponse(
                 batch_bills_response=unmarshal_json_response(
-                    Optional[models.BatchBillsResponse], http_res
+                    Optional[models.BatchBillsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2706,10 +3585,9 @@ class Bills(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingBillsBatchAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

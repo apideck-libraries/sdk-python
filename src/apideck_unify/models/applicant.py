@@ -13,13 +13,14 @@ from apideck_unify.types import (
     OptionalNullable,
     UNSET,
     UNSET_SENTINEL,
+    current_exclude_none,
+    serialize_with_info,
 )
-from apideck_unify.utils import validate_open_enum
+from apideck_unify.types.basemodel import current_filtered_dump
 from datetime import date, datetime
 from enum import Enum
 import pydantic
 from pydantic import field_serializer, model_serializer
-from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
@@ -60,9 +61,7 @@ class Websites(BaseModel):
     id: OptionalNullable[str] = UNSET
     r"""Unique identifier for the website"""
 
-    type: Annotated[
-        OptionalNullable[ApplicantType], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    type: OptionalNullable[ApplicantType] = UNSET
     r"""The type of website"""
 
     @field_serializer("type")
@@ -75,32 +74,34 @@ class Websites(BaseModel):
         return value
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = ["id", "type"]
-        nullable_fields = ["id", "type"]
-        null_default_fields = []
-
+        optional_fields = set(["id", "type"])
+        nullable_fields = set(["id", "type"])
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m
 
@@ -125,32 +126,34 @@ class SocialLinks(BaseModel):
     r"""Type of the social link, e.g. twitter"""
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = ["id", "type"]
-        nullable_fields = ["id", "type"]
-        null_default_fields = []
-
+        optional_fields = set(["id", "type"])
+        nullable_fields = set(["id", "type"])
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m
 
@@ -255,9 +258,7 @@ class Applicant(BaseModel):
     birthday: OptionalNullable[date] = UNSET
     r"""The date of birth of the person."""
 
-    gender: Annotated[
-        OptionalNullable[ApplicantGender], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    gender: OptionalNullable[ApplicantGender] = UNSET
     r"""The gender represents the gender identity of a person."""
 
     social_security_number: OptionalNullable[str] = UNSET
@@ -369,113 +370,119 @@ class Applicant(BaseModel):
         return value
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = [
-            "id",
-            "name",
-            "salutation",
-            "first_name",
-            "last_name",
-            "middle_name",
-            "initials",
-            "birthday",
-            "gender",
-            "social_security_number",
-            "type",
-            "cover_letter",
-            "job_url",
-            "photo_url",
-            "headline",
-            "title",
-            "emails",
-            "custom_fields",
-            "phone_numbers",
-            "addresses",
-            "websites",
-            "social_links",
-            "stage_id",
-            "recruiter_id",
-            "coordinator_id",
-            "application_ids",
-            "applications",
-            "followers",
-            "sources",
-            "source_id",
-            "confidential",
-            "anonymized",
-            "tags",
-            "archived",
-            "last_interaction_at",
-            "owner_id",
-            "sourced_by",
-            "cv_url",
-            "record_url",
-            "rejected_at",
-            "custom_mappings",
-            "deleted",
-            "deleted_by",
-            "deleted_at",
-            "updated_by",
-            "created_by",
-            "updated_at",
-            "created_at",
-            "pass_through",
-        ]
-        nullable_fields = [
-            "salutation",
-            "first_name",
-            "last_name",
-            "middle_name",
-            "initials",
-            "birthday",
-            "gender",
-            "social_security_number",
-            "job_url",
-            "photo_url",
-            "title",
-            "application_ids",
-            "applications",
-            "followers",
-            "sources",
-            "tags",
-            "archived",
-            "last_interaction_at",
-            "owner_id",
-            "sourced_by",
-            "record_url",
-            "rejected_at",
-            "custom_mappings",
-            "deleted",
-            "deleted_by",
-            "deleted_at",
-            "updated_by",
-            "created_by",
-            "updated_at",
-            "created_at",
-        ]
-        null_default_fields = []
-
+        optional_fields = set(
+            [
+                "id",
+                "name",
+                "salutation",
+                "first_name",
+                "last_name",
+                "middle_name",
+                "initials",
+                "birthday",
+                "gender",
+                "social_security_number",
+                "type",
+                "cover_letter",
+                "job_url",
+                "photo_url",
+                "headline",
+                "title",
+                "emails",
+                "custom_fields",
+                "phone_numbers",
+                "addresses",
+                "websites",
+                "social_links",
+                "stage_id",
+                "recruiter_id",
+                "coordinator_id",
+                "application_ids",
+                "applications",
+                "followers",
+                "sources",
+                "source_id",
+                "confidential",
+                "anonymized",
+                "tags",
+                "archived",
+                "last_interaction_at",
+                "owner_id",
+                "sourced_by",
+                "cv_url",
+                "record_url",
+                "rejected_at",
+                "custom_mappings",
+                "deleted",
+                "deleted_by",
+                "deleted_at",
+                "updated_by",
+                "created_by",
+                "updated_at",
+                "created_at",
+                "pass_through",
+            ]
+        )
+        nullable_fields = set(
+            [
+                "salutation",
+                "first_name",
+                "last_name",
+                "middle_name",
+                "initials",
+                "birthday",
+                "gender",
+                "social_security_number",
+                "job_url",
+                "photo_url",
+                "title",
+                "application_ids",
+                "applications",
+                "followers",
+                "sources",
+                "tags",
+                "archived",
+                "last_interaction_at",
+                "owner_id",
+                "sourced_by",
+                "record_url",
+                "rejected_at",
+                "custom_mappings",
+                "deleted",
+                "deleted_by",
+                "deleted_at",
+                "updated_by",
+                "created_by",
+                "updated_at",
+                "created_at",
+            ]
+        )
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m
 
@@ -555,9 +562,7 @@ class ApplicantInput(BaseModel):
     birthday: OptionalNullable[date] = UNSET
     r"""The date of birth of the person."""
 
-    gender: Annotated[
-        OptionalNullable[ApplicantGender], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    gender: OptionalNullable[ApplicantGender] = UNSET
     r"""The gender represents the gender identity of a person."""
 
     social_security_number: OptionalNullable[str] = UNSET
@@ -636,87 +641,93 @@ class ApplicantInput(BaseModel):
         return value
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = [
-            "name",
-            "salutation",
-            "first_name",
-            "last_name",
-            "middle_name",
-            "initials",
-            "birthday",
-            "gender",
-            "social_security_number",
-            "type",
-            "cover_letter",
-            "photo_url",
-            "headline",
-            "title",
-            "emails",
-            "custom_fields",
-            "phone_numbers",
-            "addresses",
-            "websites",
-            "social_links",
-            "stage_id",
-            "recruiter_id",
-            "coordinator_id",
-            "application_ids",
-            "applications",
-            "followers",
-            "sources",
-            "confidential",
-            "anonymized",
-            "tags",
-            "archived",
-            "owner_id",
-            "record_url",
-            "deleted",
-            "pass_through",
-        ]
-        nullable_fields = [
-            "salutation",
-            "first_name",
-            "last_name",
-            "middle_name",
-            "initials",
-            "birthday",
-            "gender",
-            "social_security_number",
-            "photo_url",
-            "title",
-            "application_ids",
-            "applications",
-            "followers",
-            "sources",
-            "tags",
-            "archived",
-            "owner_id",
-            "record_url",
-            "deleted",
-        ]
-        null_default_fields = []
-
+        optional_fields = set(
+            [
+                "name",
+                "salutation",
+                "first_name",
+                "last_name",
+                "middle_name",
+                "initials",
+                "birthday",
+                "gender",
+                "social_security_number",
+                "type",
+                "cover_letter",
+                "photo_url",
+                "headline",
+                "title",
+                "emails",
+                "custom_fields",
+                "phone_numbers",
+                "addresses",
+                "websites",
+                "social_links",
+                "stage_id",
+                "recruiter_id",
+                "coordinator_id",
+                "application_ids",
+                "applications",
+                "followers",
+                "sources",
+                "confidential",
+                "anonymized",
+                "tags",
+                "archived",
+                "owner_id",
+                "record_url",
+                "deleted",
+                "pass_through",
+            ]
+        )
+        nullable_fields = set(
+            [
+                "salutation",
+                "first_name",
+                "last_name",
+                "middle_name",
+                "initials",
+                "birthday",
+                "gender",
+                "social_security_number",
+                "photo_url",
+                "title",
+                "application_ids",
+                "applications",
+                "followers",
+                "sources",
+                "tags",
+                "archived",
+                "owner_id",
+                "record_url",
+                "deleted",
+            ]
+        )
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m

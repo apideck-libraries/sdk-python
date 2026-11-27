@@ -2,6 +2,16 @@
 
 The type of the category.
 
+## Example Usage
+
+```python
+from apideck_unify.models import CategoriesFilterType
+
+value = CategoriesFilterType.SUPPLIER
+
+# Open enum: unrecognized values are captured as UnrecognizedStr
+```
+
 
 ## Values
 

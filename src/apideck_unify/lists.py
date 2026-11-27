@@ -20,7 +20,7 @@ class Lists(BaseSDK):
         service_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -61,7 +61,7 @@ class Lists(BaseSDK):
             service_id=service_id,
             cursor=cursor,
             limit=limit,
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -82,6 +82,7 @@ class Lists(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -106,9 +107,35 @@ class Lists(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "hubspot",
+                            "description": "HubSpot's Lists v3 API does not expose `description`, `visibility`, `folder_id`, `owner_id`, `is_favorite`, `is_default`, or `is_system`, and `custom_fields` and `tags` are not mapped, so these fields are not returned for HubSpot. `filter_criteria` is not mapped in v1 (HubSpot's `filterBranch` is available downstream via `includeFilters=true` but is not requested). HubSpot's three list processing types map onto `type` as follows: DYNAMIC lists are returned as `dynamic`; MANUAL and SNAPSHOT lists are both returned as `static`.\n",
+                        },
+                        {
+                            "connector": "salesforce",
+                            "description": 'Salesforce list views are always dynamic saved filters, so `type` is always `dynamic`. The list operation returns list views for Contact, Account, Opportunity, and Lead objects only; list views for other objects (Case, Campaign, Task, Event, custom objects, etc.) are excluded from the list but remain retrievable by id, with `object_type` normalized for a few well-known SobjectTypes retrieved this way (Case -> `tickets`, Campaign -> `campaigns`, Task -> `tasks`, Event -> `events`) and the raw SobjectType passed through unchanged for anything else (e.g. custom objects). Private "visible only to me" list views are not accessible via the Salesforce API and are not returned. `description`, `record_count`, `visibility`, `folder_id`, `owner_id`, the favorite/default/system flags, `custom_fields`, `filter_criteria`, and `tags` are not available on Salesforce list views.\n',
+                        },
+                        {
+                            "connector": "attio",
+                            "description": "Attio lists are membership containers and are always returned as `static`. Attio does not expose `updated_at`, `updated_by`, `record_count`, `description`, `owner_id`, `folder_id`, the favorite/default/system flags, `custom_fields`, or `tags`. `visibility` derives from Attio's `workspace_access`: workspace-wide access returns `shared`; member-scoped lists return `private`, even when the list is shared with several specific workspace members (Attio's per-member `workspace_member_access` grants are not surfaced as a separate value — `private` here means \"not workspace-wide\", not necessarily \"single-owner only\"). If a list is scoped to more than one record type, `object_type` reports only the first entry in Attio's `parent_object` array; additional scopes are not surfaced elsewhere. Attio's lists endpoint is not paginated downstream, so all lists are fetched in a single unbounded call on every page request and paginated virtually — `limit` and `cursor` work as normal and consumers should follow `meta.cursors.next` to page through the results, but a workspace with a very large number of lists may see slow responses since there is no server-side page size to cap the underlying fetch.\n",
+                        },
+                        {
+                            "connector": "activecampaign",
+                            "description": "ActiveCampaign lists are always `static` collections of contacts (rule-based segments are a separate ActiveCampaign resource not exposed here), so `object_type` is always `contacts`. `record_count` reflects active subscribers and is only returned on the list operation, not on a single-list fetch. `created_by`/`updated_by` are mapped directly from ActiveCampaign's own `created_by`/`updated_by` fields, which were observed as `null` on every list in testing; population on multi-user accounts has not been verified. `folder_id`, the favorite/default/system flags, `custom_fields`, and `tags` are not available. `visibility` reflects whether the list is exposed to contacts on public subscription/preference pages, not internal user sharing (ActiveCampaign has no per-user list sharing — every list is visible to all account users); it maps from the list's `private` flag (`private` or `shared`).\n",
+                        },
+                        {
+                            "connector": "close",
+                            "description": "Close Smart Views are always `dynamic` saved queries; `filter_criteria` carries Close's structured `s_query` definition, falling back to the older `query` field for saved searches created before Close's structured-search migration. `record_count`, `folder_id`, `created_by`/`updated_by`, the favorite/default/system flags, `custom_fields`, and `tags` are not available. `visibility` derives from `is_shared`, and `owner_id` reflects the saved search's `user_id`; every saved search observed in testing (shared and private alike) had a `user_id`, so whether `owner_id` is ever genuinely null for organization-wide views has not been confirmed against a real account. The list operation only returns saved searches of type lead, contact, or opportunity; saved searches of other types (call, email, sms, meeting, note, whatsapp_message, custom_activity, form_submission) are excluded from the list but remain retrievable by id, with `object_type` set to the raw Close type. Close's saved-search endpoint ignores server-side offsets, so results are fetched as a single page (up to Close's undeclared server default of around 100 smart views) and paginated virtually; accounts with more than that many smart views will have the overflow silently dropped, with no field in the response indicating truncation occurred.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -133,17 +160,19 @@ class Lists(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmListsAllResponse(
                 get_lists_response=unmarshal_json_response(
-                    Optional[models.GetListsResponse], http_res
+                    Optional[models.GetListsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -184,11 +213,10 @@ class Lists(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmListsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -202,7 +230,7 @@ class Lists(BaseSDK):
         service_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -243,7 +271,7 @@ class Lists(BaseSDK):
             service_id=service_id,
             cursor=cursor,
             limit=limit,
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -264,6 +292,7 @@ class Lists(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -288,9 +317,35 @@ class Lists(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "hubspot",
+                            "description": "HubSpot's Lists v3 API does not expose `description`, `visibility`, `folder_id`, `owner_id`, `is_favorite`, `is_default`, or `is_system`, and `custom_fields` and `tags` are not mapped, so these fields are not returned for HubSpot. `filter_criteria` is not mapped in v1 (HubSpot's `filterBranch` is available downstream via `includeFilters=true` but is not requested). HubSpot's three list processing types map onto `type` as follows: DYNAMIC lists are returned as `dynamic`; MANUAL and SNAPSHOT lists are both returned as `static`.\n",
+                        },
+                        {
+                            "connector": "salesforce",
+                            "description": 'Salesforce list views are always dynamic saved filters, so `type` is always `dynamic`. The list operation returns list views for Contact, Account, Opportunity, and Lead objects only; list views for other objects (Case, Campaign, Task, Event, custom objects, etc.) are excluded from the list but remain retrievable by id, with `object_type` normalized for a few well-known SobjectTypes retrieved this way (Case -> `tickets`, Campaign -> `campaigns`, Task -> `tasks`, Event -> `events`) and the raw SobjectType passed through unchanged for anything else (e.g. custom objects). Private "visible only to me" list views are not accessible via the Salesforce API and are not returned. `description`, `record_count`, `visibility`, `folder_id`, `owner_id`, the favorite/default/system flags, `custom_fields`, `filter_criteria`, and `tags` are not available on Salesforce list views.\n',
+                        },
+                        {
+                            "connector": "attio",
+                            "description": "Attio lists are membership containers and are always returned as `static`. Attio does not expose `updated_at`, `updated_by`, `record_count`, `description`, `owner_id`, `folder_id`, the favorite/default/system flags, `custom_fields`, or `tags`. `visibility` derives from Attio's `workspace_access`: workspace-wide access returns `shared`; member-scoped lists return `private`, even when the list is shared with several specific workspace members (Attio's per-member `workspace_member_access` grants are not surfaced as a separate value — `private` here means \"not workspace-wide\", not necessarily \"single-owner only\"). If a list is scoped to more than one record type, `object_type` reports only the first entry in Attio's `parent_object` array; additional scopes are not surfaced elsewhere. Attio's lists endpoint is not paginated downstream, so all lists are fetched in a single unbounded call on every page request and paginated virtually — `limit` and `cursor` work as normal and consumers should follow `meta.cursors.next` to page through the results, but a workspace with a very large number of lists may see slow responses since there is no server-side page size to cap the underlying fetch.\n",
+                        },
+                        {
+                            "connector": "activecampaign",
+                            "description": "ActiveCampaign lists are always `static` collections of contacts (rule-based segments are a separate ActiveCampaign resource not exposed here), so `object_type` is always `contacts`. `record_count` reflects active subscribers and is only returned on the list operation, not on a single-list fetch. `created_by`/`updated_by` are mapped directly from ActiveCampaign's own `created_by`/`updated_by` fields, which were observed as `null` on every list in testing; population on multi-user accounts has not been verified. `folder_id`, the favorite/default/system flags, `custom_fields`, and `tags` are not available. `visibility` reflects whether the list is exposed to contacts on public subscription/preference pages, not internal user sharing (ActiveCampaign has no per-user list sharing — every list is visible to all account users); it maps from the list's `private` flag (`private` or `shared`).\n",
+                        },
+                        {
+                            "connector": "close",
+                            "description": "Close Smart Views are always `dynamic` saved queries; `filter_criteria` carries Close's structured `s_query` definition, falling back to the older `query` field for saved searches created before Close's structured-search migration. `record_count`, `folder_id`, `created_by`/`updated_by`, the favorite/default/system flags, `custom_fields`, and `tags` are not available. `visibility` derives from `is_shared`, and `owner_id` reflects the saved search's `user_id`; every saved search observed in testing (shared and private alike) had a `user_id`, so whether `owner_id` is ever genuinely null for organization-wide views has not been confirmed against a real account. The list operation only returns saved searches of type lead, contact, or opportunity; saved searches of other types (call, email, sms, meeting, note, whatsapp_message, custom_activity, form_submission) are excluded from the list but remain retrievable by id, with `object_type` set to the raw Close type. Close's saved-search endpoint ignores server-side offsets, so results are fetched as a single page (up to Close's undeclared server default of around 100 smart views) and paginated virtually; accounts with more than that many smart views will have the overflow silently dropped, with no field in the response indicating truncation occurred.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -315,17 +370,19 @@ class Lists(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmListsAllResponse(
                 get_lists_response=unmarshal_json_response(
-                    Optional[models.GetListsResponse], http_res
+                    Optional[models.GetListsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -366,11 +423,10 @@ class Lists(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmListsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -440,6 +496,7 @@ class Lists(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -464,9 +521,35 @@ class Lists(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "hubspot",
+                            "description": "HubSpot's Lists v3 API does not expose `description`, `visibility`, `folder_id`, `owner_id`, `is_favorite`, `is_default`, or `is_system`, and `custom_fields` and `tags` are not mapped, so these fields are not returned for HubSpot. `filter_criteria` is not mapped in v1 (HubSpot's `filterBranch` is available downstream via `includeFilters=true` but is not requested). HubSpot's three list processing types map onto `type` as follows: DYNAMIC lists are returned as `dynamic`; MANUAL and SNAPSHOT lists are both returned as `static`. A list id that does not exist in HubSpot returns a 404 error from the downstream API.\n",
+                        },
+                        {
+                            "connector": "salesforce",
+                            "description": 'Salesforce list views are always dynamic saved filters, so `type` is always `dynamic`. Private "visible only to me" list views are not accessible via the Salesforce API. The list operation covers Contact, Account, Opportunity, and Lead list views only; other object types are retrievable by id, with `object_type` normalized for a few well-known SobjectTypes (Case -> `tickets`, Campaign -> `campaigns`, Task -> `tasks`, Event -> `events`) and the raw SobjectType passed through unchanged for anything else (e.g. custom objects). `description`, `record_count`, `visibility`, `folder_id`, `owner_id`, the favorite/default/system flags, `custom_fields`, `filter_criteria`, and `tags` are not available on Salesforce list views.\n',
+                        },
+                        {
+                            "connector": "attio",
+                            "description": "Attio lists are membership containers and are always returned as `static`. Attio does not expose `updated_at`, `updated_by`, `record_count`, `description`, `owner_id`, `folder_id`, the favorite/default/system flags, `custom_fields`, or `tags`. `visibility` derives from Attio's `workspace_access` (workspace-wide access returns `shared`; member-scoped lists return `private`, even when shared with several specific workspace members via Attio's per-member `workspace_member_access`, which is not surfaced as a separate value). If a list is scoped to more than one record type, `object_type` reports only the first entry in Attio's `parent_object` array; additional scopes are not surfaced elsewhere.\n",
+                        },
+                        {
+                            "connector": "activecampaign",
+                            "description": "ActiveCampaign lists are always `static` collections of contacts (rule-based segments are a separate ActiveCampaign resource not exposed here), so `object_type` is always `contacts`. `record_count` reflects active subscribers and is only returned on the list operation, not on a single-list fetch. `created_by`/`updated_by` are mapped directly from ActiveCampaign's own `created_by`/`updated_by` fields, which were observed as `null` on every list in testing; population on multi-user accounts has not been verified. `folder_id`, the favorite/default/system flags, `custom_fields`, and `tags` are not available. `visibility` reflects whether the list is exposed to contacts on public subscription/preference pages, not internal user sharing (ActiveCampaign has no per-user list sharing — every list is visible to all account users); it maps from the list's `private` flag (`private` or `shared`).\n",
+                        },
+                        {
+                            "connector": "close",
+                            "description": "Close Smart Views are always `dynamic` saved queries; `filter_criteria` carries Close's structured `s_query` definition, falling back to the older `query` field for saved searches created before Close's structured-search migration. `record_count`, `folder_id`, `created_by`/`updated_by`, the favorite/default/system flags, `custom_fields`, and `tags` are not available. `visibility` derives from `is_shared`, and `owner_id` reflects the saved search's `user_id`; every saved search observed in testing (shared and private alike) had a `user_id`, so whether `owner_id` is ever genuinely null for organization-wide views has not been confirmed against a real account. A saved search of any type is retrievable by id, including types the list operation excludes (call, email, sms, meeting, note, whatsapp_message, custom_activity, form_submission), in which case `object_type` is set to the raw Close type.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -474,10 +557,9 @@ class Lists(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmListsOneResponse(
                 get_list_response=unmarshal_json_response(
-                    Optional[models.GetListResponse], http_res
+                    Optional[models.GetListResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -518,10 +600,9 @@ class Lists(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmListsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -591,6 +672,7 @@ class Lists(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -615,9 +697,35 @@ class Lists(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "hubspot",
+                            "description": "HubSpot's Lists v3 API does not expose `description`, `visibility`, `folder_id`, `owner_id`, `is_favorite`, `is_default`, or `is_system`, and `custom_fields` and `tags` are not mapped, so these fields are not returned for HubSpot. `filter_criteria` is not mapped in v1 (HubSpot's `filterBranch` is available downstream via `includeFilters=true` but is not requested). HubSpot's three list processing types map onto `type` as follows: DYNAMIC lists are returned as `dynamic`; MANUAL and SNAPSHOT lists are both returned as `static`. A list id that does not exist in HubSpot returns a 404 error from the downstream API.\n",
+                        },
+                        {
+                            "connector": "salesforce",
+                            "description": 'Salesforce list views are always dynamic saved filters, so `type` is always `dynamic`. Private "visible only to me" list views are not accessible via the Salesforce API. The list operation covers Contact, Account, Opportunity, and Lead list views only; other object types are retrievable by id, with `object_type` normalized for a few well-known SobjectTypes (Case -> `tickets`, Campaign -> `campaigns`, Task -> `tasks`, Event -> `events`) and the raw SobjectType passed through unchanged for anything else (e.g. custom objects). `description`, `record_count`, `visibility`, `folder_id`, `owner_id`, the favorite/default/system flags, `custom_fields`, `filter_criteria`, and `tags` are not available on Salesforce list views.\n',
+                        },
+                        {
+                            "connector": "attio",
+                            "description": "Attio lists are membership containers and are always returned as `static`. Attio does not expose `updated_at`, `updated_by`, `record_count`, `description`, `owner_id`, `folder_id`, the favorite/default/system flags, `custom_fields`, or `tags`. `visibility` derives from Attio's `workspace_access` (workspace-wide access returns `shared`; member-scoped lists return `private`, even when shared with several specific workspace members via Attio's per-member `workspace_member_access`, which is not surfaced as a separate value). If a list is scoped to more than one record type, `object_type` reports only the first entry in Attio's `parent_object` array; additional scopes are not surfaced elsewhere.\n",
+                        },
+                        {
+                            "connector": "activecampaign",
+                            "description": "ActiveCampaign lists are always `static` collections of contacts (rule-based segments are a separate ActiveCampaign resource not exposed here), so `object_type` is always `contacts`. `record_count` reflects active subscribers and is only returned on the list operation, not on a single-list fetch. `created_by`/`updated_by` are mapped directly from ActiveCampaign's own `created_by`/`updated_by` fields, which were observed as `null` on every list in testing; population on multi-user accounts has not been verified. `folder_id`, the favorite/default/system flags, `custom_fields`, and `tags` are not available. `visibility` reflects whether the list is exposed to contacts on public subscription/preference pages, not internal user sharing (ActiveCampaign has no per-user list sharing — every list is visible to all account users); it maps from the list's `private` flag (`private` or `shared`).\n",
+                        },
+                        {
+                            "connector": "close",
+                            "description": "Close Smart Views are always `dynamic` saved queries; `filter_criteria` carries Close's structured `s_query` definition, falling back to the older `query` field for saved searches created before Close's structured-search migration. `record_count`, `folder_id`, `created_by`/`updated_by`, the favorite/default/system flags, `custom_fields`, and `tags` are not available. `visibility` derives from `is_shared`, and `owner_id` reflects the saved search's `user_id`; every saved search observed in testing (shared and private alike) had a `user_id`, so whether `owner_id` is ever genuinely null for organization-wide views has not been confirmed against a real account. A saved search of any type is retrievable by id, including types the list operation excludes (call, email, sms, meeting, note, whatsapp_message, custom_activity, form_submission), in which case `object_type` is set to the raw Close type.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -625,10 +733,9 @@ class Lists(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmListsOneResponse(
                 get_list_response=unmarshal_json_response(
-                    Optional[models.GetListResponse], http_res
+                    Optional[models.GetListResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -669,10 +776,9 @@ class Lists(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmListsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

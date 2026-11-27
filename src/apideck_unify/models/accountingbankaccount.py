@@ -11,14 +11,15 @@ from apideck_unify.types import (
     OptionalNullable,
     UNSET,
     UNSET_SENTINEL,
+    current_exclude_none,
+    serialize_with_info,
 )
-from apideck_unify.utils import validate_open_enum
+from apideck_unify.types.basemodel import current_filtered_dump
 from datetime import datetime
 from enum import Enum
 from pydantic import field_serializer, model_serializer
-from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
-from typing_extensions import Annotated, NotRequired, TypedDict
+from typing_extensions import NotRequired, TypedDict
 
 
 class AccountingBankAccountAccountType(str, Enum, metaclass=utils.OpenEnumMeta):
@@ -112,10 +113,7 @@ class AccountingBankAccount(BaseModel):
     account_number: OptionalNullable[str] = UNSET
     r"""The bank account number"""
 
-    account_type: Annotated[
-        Optional[AccountingBankAccountAccountType],
-        PlainValidator(validate_open_enum(False)),
-    ] = None
+    account_type: Optional[AccountingBankAccountAccountType] = None
     r"""The type of bank account"""
 
     ledger_account: OptionalNullable[LinkedLedgerAccount] = UNSET
@@ -123,9 +121,7 @@ class AccountingBankAccount(BaseModel):
     bank_name: OptionalNullable[str] = UNSET
     r"""The name of the bank or financial institution"""
 
-    currency: Annotated[
-        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    currency: OptionalNullable[Currency] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     balance: OptionalNullable[float] = UNSET
@@ -158,10 +154,7 @@ class AccountingBankAccount(BaseModel):
     country: OptionalNullable[str] = UNSET
     r"""Country code according to ISO 3166-1 alpha-2."""
 
-    status: Annotated[
-        OptionalNullable[AccountingBankAccountStatus],
-        PlainValidator(validate_open_enum(False)),
-    ] = UNSET
+    status: OptionalNullable[AccountingBankAccountStatus] = UNSET
     r"""The status of the bank account"""
 
     description: OptionalNullable[str] = UNSET
@@ -212,84 +205,90 @@ class AccountingBankAccount(BaseModel):
         return value
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = [
-            "downstream_id",
-            "display_id",
-            "name",
-            "account_number",
-            "account_type",
-            "ledger_account",
-            "bank_name",
-            "currency",
-            "balance",
-            "available_balance",
-            "overdraft_limit",
-            "routing_number",
-            "iban",
-            "bic",
-            "bsb_number",
-            "branch_identifier",
-            "bank_code",
-            "country",
-            "status",
-            "description",
-            "custom_fields",
-            "custom_mappings",
-            "created_at",
-            "updated_at",
-            "created_by",
-            "updated_by",
-        ]
-        nullable_fields = [
-            "downstream_id",
-            "display_id",
-            "name",
-            "account_number",
-            "ledger_account",
-            "bank_name",
-            "currency",
-            "balance",
-            "available_balance",
-            "overdraft_limit",
-            "routing_number",
-            "iban",
-            "bic",
-            "bsb_number",
-            "branch_identifier",
-            "bank_code",
-            "country",
-            "status",
-            "description",
-            "custom_mappings",
-            "created_at",
-            "updated_at",
-            "created_by",
-            "updated_by",
-        ]
-        null_default_fields = []
-
+        optional_fields = set(
+            [
+                "downstream_id",
+                "display_id",
+                "name",
+                "account_number",
+                "account_type",
+                "ledger_account",
+                "bank_name",
+                "currency",
+                "balance",
+                "available_balance",
+                "overdraft_limit",
+                "routing_number",
+                "iban",
+                "bic",
+                "bsb_number",
+                "branch_identifier",
+                "bank_code",
+                "country",
+                "status",
+                "description",
+                "custom_fields",
+                "custom_mappings",
+                "created_at",
+                "updated_at",
+                "created_by",
+                "updated_by",
+            ]
+        )
+        nullable_fields = set(
+            [
+                "downstream_id",
+                "display_id",
+                "name",
+                "account_number",
+                "ledger_account",
+                "bank_name",
+                "currency",
+                "balance",
+                "available_balance",
+                "overdraft_limit",
+                "routing_number",
+                "iban",
+                "bic",
+                "bsb_number",
+                "branch_identifier",
+                "bank_code",
+                "country",
+                "status",
+                "description",
+                "custom_mappings",
+                "created_at",
+                "updated_at",
+                "created_by",
+                "updated_by",
+            ]
+        )
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m
 
@@ -345,10 +344,7 @@ class AccountingBankAccountInput(BaseModel):
     account_number: OptionalNullable[str] = UNSET
     r"""The bank account number"""
 
-    account_type: Annotated[
-        Optional[AccountingBankAccountAccountType],
-        PlainValidator(validate_open_enum(False)),
-    ] = None
+    account_type: Optional[AccountingBankAccountAccountType] = None
     r"""The type of bank account"""
 
     ledger_account: OptionalNullable[LinkedLedgerAccount] = UNSET
@@ -356,9 +352,7 @@ class AccountingBankAccountInput(BaseModel):
     bank_name: OptionalNullable[str] = UNSET
     r"""The name of the bank or financial institution"""
 
-    currency: Annotated[
-        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    currency: OptionalNullable[Currency] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     balance: OptionalNullable[float] = UNSET
@@ -391,10 +385,7 @@ class AccountingBankAccountInput(BaseModel):
     country: OptionalNullable[str] = UNSET
     r"""Country code according to ISO 3166-1 alpha-2."""
 
-    status: Annotated[
-        OptionalNullable[AccountingBankAccountStatus],
-        PlainValidator(validate_open_enum(False)),
-    ] = UNSET
+    status: OptionalNullable[AccountingBankAccountStatus] = UNSET
     r"""The status of the bank account"""
 
     description: OptionalNullable[str] = UNSET
@@ -430,71 +421,77 @@ class AccountingBankAccountInput(BaseModel):
         return value
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = [
-            "display_id",
-            "name",
-            "account_number",
-            "account_type",
-            "ledger_account",
-            "bank_name",
-            "currency",
-            "balance",
-            "available_balance",
-            "overdraft_limit",
-            "routing_number",
-            "iban",
-            "bic",
-            "bsb_number",
-            "branch_identifier",
-            "bank_code",
-            "country",
-            "status",
-            "description",
-            "custom_fields",
-        ]
-        nullable_fields = [
-            "display_id",
-            "name",
-            "account_number",
-            "ledger_account",
-            "bank_name",
-            "currency",
-            "balance",
-            "available_balance",
-            "overdraft_limit",
-            "routing_number",
-            "iban",
-            "bic",
-            "bsb_number",
-            "branch_identifier",
-            "bank_code",
-            "country",
-            "status",
-            "description",
-        ]
-        null_default_fields = []
-
+        optional_fields = set(
+            [
+                "display_id",
+                "name",
+                "account_number",
+                "account_type",
+                "ledger_account",
+                "bank_name",
+                "currency",
+                "balance",
+                "available_balance",
+                "overdraft_limit",
+                "routing_number",
+                "iban",
+                "bic",
+                "bsb_number",
+                "branch_identifier",
+                "bank_code",
+                "country",
+                "status",
+                "description",
+                "custom_fields",
+            ]
+        )
+        nullable_fields = set(
+            [
+                "display_id",
+                "name",
+                "account_number",
+                "ledger_account",
+                "bank_name",
+                "currency",
+                "balance",
+                "available_balance",
+                "overdraft_limit",
+                "routing_number",
+                "iban",
+                "bic",
+                "bsb_number",
+                "branch_identifier",
+                "bank_code",
+                "country",
+                "status",
+                "description",
+            ]
+        )
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m

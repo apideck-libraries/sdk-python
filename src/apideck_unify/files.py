@@ -8,7 +8,7 @@ from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from enum import Enum
 from jsonpath import JSONPath
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
 
 
 class DownloadAcceptEnum(str, Enum):
@@ -35,7 +35,7 @@ class Files(BaseSDK):
             Union[models.FilesFilter, models.FilesFilterTypedDict]
         ] = None,
         sort: Optional[Union[models.FilesSort, models.FilesSortTypedDict]] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -80,7 +80,7 @@ class Files(BaseSDK):
             limit=limit,
             filter_=utils.get_pydantic_model(filter_, Optional[models.FilesFilter]),
             sort=utils.get_pydantic_model(sort, Optional[models.FilesSort]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -101,6 +101,7 @@ class Files(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -125,9 +126,31 @@ class Files(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["fileStorage"],
+                extensions={
+                    "x-apideck-api": "fileStorage",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "google-drive",
+                            "description": "Google drive does not provide `previous` cursor information, so the cursors for the previous pages will be empty.",
+                        },
+                        {
+                            "connector": "sharepoint",
+                            "description": "SharePoint does not include a total record count in default list responses. `meta.total_count` will not appear. Surfacing the total requires adding `$count=true` to the OData query — not currently implemented.\n",
+                        },
+                        {
+                            "connector": "dropbox",
+                            "description": "Dropbox does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "onedrive",
+                            "description": "OneDrive does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -154,17 +177,19 @@ class Files(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.FileStorageFilesAllResponse(
                 get_files_response=unmarshal_json_response(
-                    Optional[models.GetFilesResponse], http_res
+                    Optional[models.GetFilesResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -205,11 +230,10 @@ class Files(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.FileStorageFilesAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -227,7 +251,7 @@ class Files(BaseSDK):
             Union[models.FilesFilter, models.FilesFilterTypedDict]
         ] = None,
         sort: Optional[Union[models.FilesSort, models.FilesSortTypedDict]] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -272,7 +296,7 @@ class Files(BaseSDK):
             limit=limit,
             filter_=utils.get_pydantic_model(filter_, Optional[models.FilesFilter]),
             sort=utils.get_pydantic_model(sort, Optional[models.FilesSort]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -293,6 +317,7 @@ class Files(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -317,9 +342,31 @@ class Files(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["fileStorage"],
+                extensions={
+                    "x-apideck-api": "fileStorage",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "google-drive",
+                            "description": "Google drive does not provide `previous` cursor information, so the cursors for the previous pages will be empty.",
+                        },
+                        {
+                            "connector": "sharepoint",
+                            "description": "SharePoint does not include a total record count in default list responses. `meta.total_count` will not appear. Surfacing the total requires adding `$count=true` to the OData query — not currently implemented.\n",
+                        },
+                        {
+                            "connector": "dropbox",
+                            "description": "Dropbox does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "onedrive",
+                            "description": "OneDrive does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -346,17 +393,19 @@ class Files(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.FileStorageFilesAllResponse(
                 get_files_response=unmarshal_json_response(
-                    Optional[models.GetFilesResponse], http_res
+                    Optional[models.GetFilesResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -397,11 +446,10 @@ class Files(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.FileStorageFilesAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -413,7 +461,7 @@ class Files(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
-        pass_through_param: Optional[Dict[str, Any]] = None,
+        pass_through_param: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
@@ -423,7 +471,10 @@ class Files(BaseSDK):
         ] = None,
         drive_id: Optional[str] = None,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -465,7 +516,9 @@ class Files(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
-            pass_through_param=pass_through_param,
+            pass_through_param=utils.unmarshal(
+                pass_through_param, Optional[Dict[str, Any]]
+            ),
             fields=fields,
             cursor=cursor,
             limit=limit,
@@ -500,6 +553,7 @@ class Files(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.files_search, False, False, "json", models.FilesSearch
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -524,9 +578,19 @@ class Files(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["fileStorage"],
+                extensions={
+                    "x-apideck-api": "fileStorage",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "onedrive",
+                            "description": "If you want to search for files by name and extension send query as {filename AND extension} like `{apideck AND .png}`.",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -534,10 +598,9 @@ class Files(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.FileStorageFilesSearchResponse(
                 get_files_response=unmarshal_json_response(
-                    Optional[models.GetFilesResponse], http_res
+                    Optional[models.GetFilesResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -578,10 +641,9 @@ class Files(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.FileStorageFilesSearchResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -593,7 +655,7 @@ class Files(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
-        pass_through_param: Optional[Dict[str, Any]] = None,
+        pass_through_param: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
@@ -603,7 +665,10 @@ class Files(BaseSDK):
         ] = None,
         drive_id: Optional[str] = None,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -645,7 +710,9 @@ class Files(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
-            pass_through_param=pass_through_param,
+            pass_through_param=utils.unmarshal(
+                pass_through_param, Optional[Dict[str, Any]]
+            ),
             fields=fields,
             cursor=cursor,
             limit=limit,
@@ -680,6 +747,7 @@ class Files(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.files_search, False, False, "json", models.FilesSearch
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -704,9 +772,19 @@ class Files(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["fileStorage"],
+                extensions={
+                    "x-apideck-api": "fileStorage",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "onedrive",
+                            "description": "If you want to search for files by name and extension send query as {filename AND extension} like `{apideck AND .png}`.",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -714,10 +792,9 @@ class Files(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.FileStorageFilesSearchResponse(
                 get_files_response=unmarshal_json_response(
-                    Optional[models.GetFilesResponse], http_res
+                    Optional[models.GetFilesResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -758,10 +835,9 @@ class Files(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.FileStorageFilesSearchResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -831,6 +907,7 @@ class Files(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -855,9 +932,11 @@ class Files(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["fileStorage"],
+                extensions={"x-apideck-api": "fileStorage"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -865,10 +944,9 @@ class Files(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.FileStorageFilesOneResponse(
                 get_file_response=unmarshal_json_response(
-                    Optional[models.GetFileResponse], http_res
+                    Optional[models.GetFileResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -909,10 +987,9 @@ class Files(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.FileStorageFilesOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -982,6 +1059,7 @@ class Files(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1006,9 +1084,11 @@ class Files(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["fileStorage"],
+                extensions={"x-apideck-api": "fileStorage"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1016,10 +1096,9 @@ class Files(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.FileStorageFilesOneResponse(
                 get_file_response=unmarshal_json_response(
-                    Optional[models.GetFileResponse], http_res
+                    Optional[models.GetFileResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1060,10 +1139,9 @@ class Files(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.FileStorageFilesOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1080,7 +1158,10 @@ class Files(BaseSDK):
         description: Optional[str] = None,
         parent_folder_id: Optional[str] = None,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1155,6 +1236,7 @@ class Files(BaseSDK):
                 "json",
                 models.UpdateFileRequest,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1179,9 +1261,11 @@ class Files(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["fileStorage"],
+                extensions={"x-apideck-api": "fileStorage"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1189,10 +1273,9 @@ class Files(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.FileStorageFilesUpdateResponse(
                 update_file_response=unmarshal_json_response(
-                    Optional[models.UpdateFileResponse], http_res
+                    Optional[models.UpdateFileResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1233,10 +1316,9 @@ class Files(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.FileStorageFilesUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1253,7 +1335,10 @@ class Files(BaseSDK):
         description: Optional[str] = None,
         parent_folder_id: Optional[str] = None,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1328,6 +1413,7 @@ class Files(BaseSDK):
                 "json",
                 models.UpdateFileRequest,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1352,9 +1438,11 @@ class Files(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["fileStorage"],
+                extensions={"x-apideck-api": "fileStorage"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1362,10 +1450,9 @@ class Files(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.FileStorageFilesUpdateResponse(
                 update_file_response=unmarshal_json_response(
-                    Optional[models.UpdateFileResponse], http_res
+                    Optional[models.UpdateFileResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1406,10 +1493,9 @@ class Files(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.FileStorageFilesUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1476,6 +1562,7 @@ class Files(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1500,9 +1587,11 @@ class Files(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["fileStorage"],
+                extensions={"x-apideck-api": "fileStorage"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1510,10 +1599,9 @@ class Files(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.FileStorageFilesDeleteResponse(
                 delete_file_response=unmarshal_json_response(
-                    Optional[models.DeleteFileResponse], http_res
+                    Optional[models.DeleteFileResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1554,10 +1642,9 @@ class Files(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.FileStorageFilesDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1624,6 +1711,7 @@ class Files(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1648,9 +1736,11 @@ class Files(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["fileStorage"],
+                extensions={"x-apideck-api": "fileStorage"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1658,10 +1748,9 @@ class Files(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.FileStorageFilesDeleteResponse(
                 delete_file_response=unmarshal_json_response(
-                    Optional[models.DeleteFileResponse], http_res
+                    Optional[models.DeleteFileResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1702,10 +1791,9 @@ class Files(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.FileStorageFilesDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1721,8 +1809,8 @@ class Files(BaseSDK):
         follow_redirects: Optional[bool] = True,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
         accept_header_override: Optional[DownloadAcceptEnum] = None,
+        timeout_ms: Optional[int] = None,
         http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.FileStorageFilesDownloadResponse:
         r"""Download File
@@ -1779,6 +1867,7 @@ class Files(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1803,9 +1892,11 @@ class Files(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["fileStorage"],
+                extensions={"x-apideck-api": "fileStorage"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             stream=True,
             retry_config=retry_config,
         )
@@ -1815,7 +1906,6 @@ class Files(BaseSDK):
             return models.FileStorageFilesDownloadResponse(
                 get_file_download_response=http_res,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             http_res_text = utils.stream_to_text(http_res)
@@ -1865,10 +1955,12 @@ class Files(BaseSDK):
             http_res_text = utils.stream_to_text(http_res)
             return models.FileStorageFilesDownloadResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res, http_res_text
+                    Optional[models.UnexpectedErrorResponse],
+                    http_res,
+                    http_res_text,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         http_res_text = utils.stream_to_text(http_res)
@@ -1885,8 +1977,8 @@ class Files(BaseSDK):
         follow_redirects: Optional[bool] = True,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
         accept_header_override: Optional[DownloadAcceptEnum] = None,
+        timeout_ms: Optional[int] = None,
         http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.FileStorageFilesDownloadResponse:
         r"""Download File
@@ -1943,6 +2035,7 @@ class Files(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1967,9 +2060,11 @@ class Files(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["fileStorage"],
+                extensions={"x-apideck-api": "fileStorage"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             stream=True,
             retry_config=retry_config,
         )
@@ -1979,7 +2074,6 @@ class Files(BaseSDK):
             return models.FileStorageFilesDownloadResponse(
                 get_file_download_response=http_res,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             http_res_text = await utils.stream_to_text_async(http_res)
@@ -2029,10 +2123,12 @@ class Files(BaseSDK):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.FileStorageFilesDownloadResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res, http_res_text
+                    Optional[models.UnexpectedErrorResponse],
+                    http_res,
+                    http_res_text,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -2049,8 +2145,8 @@ class Files(BaseSDK):
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
         accept_header_override: Optional[ExportAcceptEnum] = None,
+        timeout_ms: Optional[int] = None,
         http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.FileStorageFilesExportResponse:
         r"""Export File
@@ -2107,6 +2203,7 @@ class Files(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2131,9 +2228,11 @@ class Files(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["fileStorage"],
+                extensions={"x-apideck-api": "fileStorage"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             stream=True,
             retry_config=retry_config,
         )
@@ -2143,7 +2242,6 @@ class Files(BaseSDK):
             return models.FileStorageFilesExportResponse(
                 get_file_download_response=http_res,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             http_res_text = utils.stream_to_text(http_res)
@@ -2193,10 +2291,12 @@ class Files(BaseSDK):
             http_res_text = utils.stream_to_text(http_res)
             return models.FileStorageFilesExportResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res, http_res_text
+                    Optional[models.UnexpectedErrorResponse],
+                    http_res,
+                    http_res_text,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         http_res_text = utils.stream_to_text(http_res)
@@ -2213,8 +2313,8 @@ class Files(BaseSDK):
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
         accept_header_override: Optional[ExportAcceptEnum] = None,
+        timeout_ms: Optional[int] = None,
         http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.FileStorageFilesExportResponse:
         r"""Export File
@@ -2271,6 +2371,7 @@ class Files(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2295,9 +2396,11 @@ class Files(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["fileStorage"],
+                extensions={"x-apideck-api": "fileStorage"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             stream=True,
             retry_config=retry_config,
         )
@@ -2307,7 +2410,6 @@ class Files(BaseSDK):
             return models.FileStorageFilesExportResponse(
                 get_file_download_response=http_res,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             http_res_text = await utils.stream_to_text_async(http_res)
@@ -2357,10 +2459,12 @@ class Files(BaseSDK):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.FileStorageFilesExportResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res, http_res_text
+                    Optional[models.UnexpectedErrorResponse],
+                    http_res,
+                    http_res_text,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         http_res_text = await utils.stream_to_text_async(http_res)

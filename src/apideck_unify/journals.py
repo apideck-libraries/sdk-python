@@ -21,7 +21,7 @@ class Journals(BaseSDK):
         company_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -64,7 +64,7 @@ class Journals(BaseSDK):
             company_id=company_id,
             cursor=cursor,
             limit=limit,
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -85,6 +85,7 @@ class Journals(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -109,9 +110,51 @@ class Journals(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "twinfield",
+                            "description": "`type` is derived from the daybook code (e.g. purchase, sales, bank, general); a code outside that known set reports as `other`. `allow_vat` and `currency` are not exposed and are always absent. `default_account` is only present for `bank`/`cash`-type journals, where it references the same account returned by `bank-accounts`; other journal types have no linked account and omit the field.\n",
+                        },
+                        {
+                            "connector": "exact-online",
+                            "description": "Use code as journal_symbol when creating a journal entry. The id is Exact's journal GUID. allow_vat applies to general journals (type general). Select the division with x-apideck-company-id, or the connection's default division. This list has no server-side total count, so pagination metadata never includes a count.\n",
+                        },
+                        {
+                            "connector": "exact-online-nl",
+                            "description": "Use code as journal_symbol when creating a journal entry. allow_vat applies to general journals. x-apideck-company-id selects the division. This list has no server-side total count, so pagination metadata never includes a count.\n",
+                        },
+                        {
+                            "connector": "exact-online-uk",
+                            "description": "Use code as journal_symbol when creating a journal entry. allow_vat applies to general journals. x-apideck-company-id selects the division. This list has no server-side total count, so pagination metadata never includes a count.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": '`code` is the value to use for the connection\'s expense/bill-payment journal batch settings (e.g. an integration configured with journal batch "DEFAULT" posts unposted expenses and bill payments into the journal listed here with that code). `allow_vat` and `currency` are not exposed and are always absent.\n',
+                        },
+                        {
+                            "connector": "fortnox",
+                            "description": 'Use `code` as `journal_symbol` when creating a journal entry — it is the same series letter (e.g. "A") used there. `type` is derived from whether the series is manually posted to: manual series report as `general`, and every other series (invoice series, and any other automated series) reports as `other`, since Fortnox does not expose a specific sales/purchase/cash/bank category for non-manual series; `allow_vat` and `currency` are not exposed and are always absent.\n',
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": 'Use `code` as `journal_symbol` when creating a journal entry — it is the same symbol (e.g. "GJ") already used there. Sage Intacct journals carry no category of their own, so `type` is always `general`; `allow_vat` and `currency` are not exposed and are always absent.\n',
+                        },
+                        {
+                            "connector": "pennylane",
+                            "description": "`type` values beyond `purchase`, `sales`, `bank`, `cash` and `general` are not distinguished and are surfaced as `other`. `allow_vat` and `currency` are not exposed and are always absent.\n",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "`type` may return `bank` for a journal that is actually a cash account, or vice versa — AFAS does not expose a distinct category for these two types at the API level. `allow_vat` and `currency` are not exposed and are always absent.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -137,17 +180,19 @@ class Journals(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingJournalsAllResponse(
                 get_journals_response=unmarshal_json_response(
-                    Optional[models.GetJournalsResponse], http_res
+                    Optional[models.GetJournalsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -188,11 +233,10 @@ class Journals(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingJournalsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -207,7 +251,7 @@ class Journals(BaseSDK):
         company_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -250,7 +294,7 @@ class Journals(BaseSDK):
             company_id=company_id,
             cursor=cursor,
             limit=limit,
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -271,6 +315,7 @@ class Journals(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -295,9 +340,51 @@ class Journals(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "twinfield",
+                            "description": "`type` is derived from the daybook code (e.g. purchase, sales, bank, general); a code outside that known set reports as `other`. `allow_vat` and `currency` are not exposed and are always absent. `default_account` is only present for `bank`/`cash`-type journals, where it references the same account returned by `bank-accounts`; other journal types have no linked account and omit the field.\n",
+                        },
+                        {
+                            "connector": "exact-online",
+                            "description": "Use code as journal_symbol when creating a journal entry. The id is Exact's journal GUID. allow_vat applies to general journals (type general). Select the division with x-apideck-company-id, or the connection's default division. This list has no server-side total count, so pagination metadata never includes a count.\n",
+                        },
+                        {
+                            "connector": "exact-online-nl",
+                            "description": "Use code as journal_symbol when creating a journal entry. allow_vat applies to general journals. x-apideck-company-id selects the division. This list has no server-side total count, so pagination metadata never includes a count.\n",
+                        },
+                        {
+                            "connector": "exact-online-uk",
+                            "description": "Use code as journal_symbol when creating a journal entry. allow_vat applies to general journals. x-apideck-company-id selects the division. This list has no server-side total count, so pagination metadata never includes a count.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": '`code` is the value to use for the connection\'s expense/bill-payment journal batch settings (e.g. an integration configured with journal batch "DEFAULT" posts unposted expenses and bill payments into the journal listed here with that code). `allow_vat` and `currency` are not exposed and are always absent.\n',
+                        },
+                        {
+                            "connector": "fortnox",
+                            "description": 'Use `code` as `journal_symbol` when creating a journal entry — it is the same series letter (e.g. "A") used there. `type` is derived from whether the series is manually posted to: manual series report as `general`, and every other series (invoice series, and any other automated series) reports as `other`, since Fortnox does not expose a specific sales/purchase/cash/bank category for non-manual series; `allow_vat` and `currency` are not exposed and are always absent.\n',
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": 'Use `code` as `journal_symbol` when creating a journal entry — it is the same symbol (e.g. "GJ") already used there. Sage Intacct journals carry no category of their own, so `type` is always `general`; `allow_vat` and `currency` are not exposed and are always absent.\n',
+                        },
+                        {
+                            "connector": "pennylane",
+                            "description": "`type` values beyond `purchase`, `sales`, `bank`, `cash` and `general` are not distinguished and are surfaced as `other`. `allow_vat` and `currency` are not exposed and are always absent.\n",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "`type` may return `bank` for a journal that is actually a cash account, or vice versa — AFAS does not expose a distinct category for these two types at the API level. `allow_vat` and `currency` are not exposed and are always absent.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -323,17 +410,19 @@ class Journals(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingJournalsAllResponse(
                 get_journals_response=unmarshal_json_response(
-                    Optional[models.GetJournalsResponse], http_res
+                    Optional[models.GetJournalsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -374,11 +463,10 @@ class Journals(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingJournalsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -428,7 +516,7 @@ class Journals(BaseSDK):
         :param code: Code used to select this journal when posting entries. For Exact Online, pass this code as journal_symbol, not the journal id.
         :param name: Name of the journal.
         :param description: Description of the journal.
-        :param type: Normalized journal classification.
+        :param type_: Normalized journal classification.
         :param allow_vat: Whether the journal permits VAT on entries. Null or absent means unknown. Exact Online exposes this setting for general journals; it must not be treated as a universal VAT capability flag for other journal types.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param iban: International Bank Account Number
@@ -496,6 +584,7 @@ class Journals(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.journal, False, False, "json", models.JournalInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -520,9 +609,35 @@ class Journals(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "minox",
+                            "description": "`code` is required: 1 to 4 letters or digits, and it becomes the journal id. A code that is already in use, in any letter case, is rejected with a `409` instead of overwriting that journal. Journals cannot be deleted. `currency` must be the administration's own currency (or, on update, the journal's current one); any other currency is rejected with a `400`, since a journal has no field for the exchange rate Minox requires.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "`type` is required — Odoo's underlying account.journal model has no default and rejects a create with it omitted. Use one of `sales`, `purchase`, `cash`, `bank` or `general`.\n`currency` cannot be set on create — it is returned when reading a journal but is not accepted as an input field. New journals use the company's default currency.\n",
+                        },
+                        {
+                            "connector": "exact-online",
+                            "description": "`type: bank` requires `iban` — Exact needs a bank account reference to create a bank journal. `type: payment_service` requires a payment service provider reference that has no equivalent in this unified field set — creating a journal with that type will be rejected by Exact. Use `pass_through` to supply the required vendor field if you need `payment_service`, or use `sales`, `sales_credit_note`, `purchase`, `purchase_credit_note`, `cash` or `general` instead.\n`type: other` has no Exact equivalent and will be rejected — `other` is a read-side fallback for values Exact might introduce in the future, not a valid input.\n`clearing_account` is the unallocated account a bank journal parks incoming movements in. Bank feed statements posted to a journal without one never reach the reconciliation queue. Exact assigns a default on create; set it explicitly to pin a specific account. Only meaningful on `type: bank` and `type: payment_service`.\n",
+                        },
+                        {
+                            "connector": "exact-online-nl",
+                            "description": "`type: bank` requires `iban` — Exact needs a bank account reference to create a bank journal. `type: payment_service` requires a payment service provider reference that has no equivalent in this unified field set — creating a journal with that type will be rejected by Exact. Use `pass_through` to supply the required vendor field if you need `payment_service`, or use `sales`, `sales_credit_note`, `purchase`, `purchase_credit_note`, `cash` or `general` instead.\n`type: other` has no Exact equivalent and will be rejected — `other` is a read-side fallback for values Exact might introduce in the future, not a valid input.\n`clearing_account` is the unallocated account a bank journal parks incoming movements in. Bank feed statements posted to a journal without one never reach the reconciliation queue. Exact assigns a default on create; set it explicitly to pin a specific account. Only meaningful on `type: bank` and `type: payment_service`.\n",
+                        },
+                        {
+                            "connector": "exact-online-uk",
+                            "description": "`type: bank` requires `iban` — Exact needs a bank account reference to create a bank journal. `type: payment_service` requires a payment service provider reference that has no equivalent in this unified field set — creating a journal with that type will be rejected by Exact. Use `pass_through` to supply the required vendor field if you need `payment_service`, or use `sales`, `sales_credit_note`, `purchase`, `purchase_credit_note`, `cash` or `general` instead.\n`type: other` has no Exact equivalent and will be rejected — `other` is a read-side fallback for values Exact might introduce in the future, not a valid input.\n`clearing_account` is the unallocated account a bank journal parks incoming movements in. Bank feed statements posted to a journal without one never reach the reconciliation queue. Exact assigns a default on create; set it explicitly to pin a specific account. Only meaningful on `type: bank` and `type: payment_service`.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -530,10 +645,9 @@ class Journals(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingJournalsAddResponse(
                 create_journal_response=unmarshal_json_response(
-                    Optional[models.CreateJournalResponse], http_res
+                    Optional[models.CreateJournalResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -574,10 +688,9 @@ class Journals(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingJournalsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -627,7 +740,7 @@ class Journals(BaseSDK):
         :param code: Code used to select this journal when posting entries. For Exact Online, pass this code as journal_symbol, not the journal id.
         :param name: Name of the journal.
         :param description: Description of the journal.
-        :param type: Normalized journal classification.
+        :param type_: Normalized journal classification.
         :param allow_vat: Whether the journal permits VAT on entries. Null or absent means unknown. Exact Online exposes this setting for general journals; it must not be treated as a universal VAT capability flag for other journal types.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param iban: International Bank Account Number
@@ -695,6 +808,7 @@ class Journals(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.journal, False, False, "json", models.JournalInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -719,9 +833,35 @@ class Journals(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "minox",
+                            "description": "`code` is required: 1 to 4 letters or digits, and it becomes the journal id. A code that is already in use, in any letter case, is rejected with a `409` instead of overwriting that journal. Journals cannot be deleted. `currency` must be the administration's own currency (or, on update, the journal's current one); any other currency is rejected with a `400`, since a journal has no field for the exchange rate Minox requires.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "`type` is required — Odoo's underlying account.journal model has no default and rejects a create with it omitted. Use one of `sales`, `purchase`, `cash`, `bank` or `general`.\n`currency` cannot be set on create — it is returned when reading a journal but is not accepted as an input field. New journals use the company's default currency.\n",
+                        },
+                        {
+                            "connector": "exact-online",
+                            "description": "`type: bank` requires `iban` — Exact needs a bank account reference to create a bank journal. `type: payment_service` requires a payment service provider reference that has no equivalent in this unified field set — creating a journal with that type will be rejected by Exact. Use `pass_through` to supply the required vendor field if you need `payment_service`, or use `sales`, `sales_credit_note`, `purchase`, `purchase_credit_note`, `cash` or `general` instead.\n`type: other` has no Exact equivalent and will be rejected — `other` is a read-side fallback for values Exact might introduce in the future, not a valid input.\n`clearing_account` is the unallocated account a bank journal parks incoming movements in. Bank feed statements posted to a journal without one never reach the reconciliation queue. Exact assigns a default on create; set it explicitly to pin a specific account. Only meaningful on `type: bank` and `type: payment_service`.\n",
+                        },
+                        {
+                            "connector": "exact-online-nl",
+                            "description": "`type: bank` requires `iban` — Exact needs a bank account reference to create a bank journal. `type: payment_service` requires a payment service provider reference that has no equivalent in this unified field set — creating a journal with that type will be rejected by Exact. Use `pass_through` to supply the required vendor field if you need `payment_service`, or use `sales`, `sales_credit_note`, `purchase`, `purchase_credit_note`, `cash` or `general` instead.\n`type: other` has no Exact equivalent and will be rejected — `other` is a read-side fallback for values Exact might introduce in the future, not a valid input.\n`clearing_account` is the unallocated account a bank journal parks incoming movements in. Bank feed statements posted to a journal without one never reach the reconciliation queue. Exact assigns a default on create; set it explicitly to pin a specific account. Only meaningful on `type: bank` and `type: payment_service`.\n",
+                        },
+                        {
+                            "connector": "exact-online-uk",
+                            "description": "`type: bank` requires `iban` — Exact needs a bank account reference to create a bank journal. `type: payment_service` requires a payment service provider reference that has no equivalent in this unified field set — creating a journal with that type will be rejected by Exact. Use `pass_through` to supply the required vendor field if you need `payment_service`, or use `sales`, `sales_credit_note`, `purchase`, `purchase_credit_note`, `cash` or `general` instead.\n`type: other` has no Exact equivalent and will be rejected — `other` is a read-side fallback for values Exact might introduce in the future, not a valid input.\n`clearing_account` is the unallocated account a bank journal parks incoming movements in. Bank feed statements posted to a journal without one never reach the reconciliation queue. Exact assigns a default on create; set it explicitly to pin a specific account. Only meaningful on `type: bank` and `type: payment_service`.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -729,10 +869,9 @@ class Journals(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingJournalsAddResponse(
                 create_journal_response=unmarshal_json_response(
-                    Optional[models.CreateJournalResponse], http_res
+                    Optional[models.CreateJournalResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -773,10 +912,9 @@ class Journals(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingJournalsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -849,6 +987,7 @@ class Journals(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -873,9 +1012,11 @@ class Journals(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={"x-apideck-api": "accounting"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -883,10 +1024,9 @@ class Journals(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingJournalsOneResponse(
                 get_journal_response=unmarshal_json_response(
-                    Optional[models.GetJournalResponse], http_res
+                    Optional[models.GetJournalResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -927,10 +1067,9 @@ class Journals(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingJournalsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1003,6 +1142,7 @@ class Journals(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1027,9 +1167,11 @@ class Journals(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={"x-apideck-api": "accounting"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1037,10 +1179,9 @@ class Journals(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingJournalsOneResponse(
                 get_journal_response=unmarshal_json_response(
-                    Optional[models.GetJournalResponse], http_res
+                    Optional[models.GetJournalResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1081,10 +1222,9 @@ class Journals(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingJournalsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1136,7 +1276,7 @@ class Journals(BaseSDK):
         :param code: Code used to select this journal when posting entries. For Exact Online, pass this code as journal_symbol, not the journal id.
         :param name: Name of the journal.
         :param description: Description of the journal.
-        :param type: Normalized journal classification.
+        :param type_: Normalized journal classification.
         :param allow_vat: Whether the journal permits VAT on entries. Null or absent means unknown. Exact Online exposes this setting for general journals; it must not be treated as a universal VAT capability flag for other journal types.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param iban: International Bank Account Number
@@ -1205,6 +1345,7 @@ class Journals(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.journal, False, False, "json", models.JournalInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1229,9 +1370,23 @@ class Journals(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "minox",
+                            "description": "The journal's code cannot be changed (it is the journal's id); sending a different `code` is\nrejected with a `400`. `currency` must be the administration's own, or the journal's current\ncurrency, which is then left unchanged; any other currency is rejected with a `400`, since a\njournal has no field for the exchange rate Minox requires.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "`currency` cannot be changed on update — it is returned when reading a journal but is not accepted as an input field.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1239,10 +1394,9 @@ class Journals(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingJournalsUpdateResponse(
                 update_journal_response=unmarshal_json_response(
-                    Optional[models.UpdateJournalResponse], http_res
+                    Optional[models.UpdateJournalResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1283,10 +1437,9 @@ class Journals(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingJournalsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1338,7 +1491,7 @@ class Journals(BaseSDK):
         :param code: Code used to select this journal when posting entries. For Exact Online, pass this code as journal_symbol, not the journal id.
         :param name: Name of the journal.
         :param description: Description of the journal.
-        :param type: Normalized journal classification.
+        :param type_: Normalized journal classification.
         :param allow_vat: Whether the journal permits VAT on entries. Null or absent means unknown. Exact Online exposes this setting for general journals; it must not be treated as a universal VAT capability flag for other journal types.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param iban: International Bank Account Number
@@ -1407,6 +1560,7 @@ class Journals(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.journal, False, False, "json", models.JournalInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1431,9 +1585,23 @@ class Journals(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "minox",
+                            "description": "The journal's code cannot be changed (it is the journal's id); sending a different `code` is\nrejected with a `400`. `currency` must be the administration's own, or the journal's current\ncurrency, which is then left unchanged; any other currency is rejected with a `400`, since a\njournal has no field for the exchange rate Minox requires.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "`currency` cannot be changed on update — it is returned when reading a journal but is not accepted as an input field.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1441,10 +1609,9 @@ class Journals(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingJournalsUpdateResponse(
                 update_journal_response=unmarshal_json_response(
-                    Optional[models.UpdateJournalResponse], http_res
+                    Optional[models.UpdateJournalResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1485,10 +1652,9 @@ class Journals(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingJournalsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1558,6 +1724,7 @@ class Journals(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1582,9 +1749,11 @@ class Journals(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={"x-apideck-api": "accounting"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1592,10 +1761,9 @@ class Journals(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingJournalsDeleteResponse(
                 delete_journal_response=unmarshal_json_response(
-                    Optional[models.DeleteJournalResponse], http_res
+                    Optional[models.DeleteJournalResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1636,10 +1804,9 @@ class Journals(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingJournalsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1709,6 +1876,7 @@ class Journals(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1733,9 +1901,11 @@ class Journals(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={"x-apideck-api": "accounting"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1743,10 +1913,9 @@ class Journals(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingJournalsDeleteResponse(
                 delete_journal_response=unmarshal_json_response(
-                    Optional[models.DeleteJournalResponse], http_res
+                    Optional[models.DeleteJournalResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1787,10 +1956,9 @@ class Journals(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingJournalsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

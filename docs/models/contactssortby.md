@@ -2,6 +2,16 @@
 
 The field on which to sort the Contacts
 
+## Example Usage
+
+```python
+from apideck_unify.models import ContactsSortBy
+
+value = ContactsSortBy.CREATED_AT
+
+# Open enum: unrecognized values are captured as UnrecognizedStr
+```
+
 
 ## Values
 

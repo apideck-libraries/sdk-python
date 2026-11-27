@@ -85,8 +85,8 @@ class Proxy(BaseSDK):
         follow_redirects: Optional[bool] = True,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
         accept_header_override: Optional[GetAcceptEnum] = None,
+        timeout_ms: Optional[int] = None,
         http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.ProxyGetProxyResponse:
         r"""GET
@@ -149,6 +149,7 @@ class Proxy(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -173,9 +174,11 @@ class Proxy(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["proxy"],
+                extensions={"x-apideck-api": "proxy"},
             ),
             request=req,
-            error_status_codes=["401", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             stream=True,
             retry_config=retry_config,
         )
@@ -185,43 +188,37 @@ class Proxy(BaseSDK):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyGetProxyResponse(
                 response_json=unmarshal_json_response(
-                    Optional[Dict[str, Any]], http_res, http_res_text
+                    Optional[Dict[str, Any]], http_res, http_res_text, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "application/octet-stream"):
             return models.ProxyGetProxyResponse(
                 response_binary=http_res,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "application/pdf"):
             return models.ProxyGetProxyResponse(
                 response_pdf=http_res,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "application/xml"):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyGetProxyResponse(
                 response_xml=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "text/csv"):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyGetProxyResponse(
                 response_csv=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "text/plain"):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyGetProxyResponse(
                 response_text=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "401", "application/json"):
             http_res_text = utils.stream_to_text(http_res)
@@ -239,31 +236,27 @@ class Proxy(BaseSDK):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyGetProxyResponse(
                 error_json=unmarshal_json_response(
-                    Optional[Dict[str, Any]], http_res, http_res_text
+                    Optional[Dict[str, Any]], http_res, http_res_text, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "default", "application/xml"):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyGetProxyResponse(
                 error_xml=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "default", "text/html"):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyGetProxyResponse(
                 error_html=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "default", "text/plain"):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyGetProxyResponse(
                 error_text=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         http_res_text = utils.stream_to_text(http_res)
@@ -282,8 +275,8 @@ class Proxy(BaseSDK):
         follow_redirects: Optional[bool] = True,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
         accept_header_override: Optional[GetAcceptEnum] = None,
+        timeout_ms: Optional[int] = None,
         http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.ProxyGetProxyResponse:
         r"""GET
@@ -346,6 +339,7 @@ class Proxy(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -370,9 +364,11 @@ class Proxy(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["proxy"],
+                extensions={"x-apideck-api": "proxy"},
             ),
             request=req,
-            error_status_codes=["401", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             stream=True,
             retry_config=retry_config,
         )
@@ -382,43 +378,37 @@ class Proxy(BaseSDK):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyGetProxyResponse(
                 response_json=unmarshal_json_response(
-                    Optional[Dict[str, Any]], http_res, http_res_text
+                    Optional[Dict[str, Any]], http_res, http_res_text, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "application/octet-stream"):
             return models.ProxyGetProxyResponse(
                 response_binary=http_res,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "application/pdf"):
             return models.ProxyGetProxyResponse(
                 response_pdf=http_res,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "application/xml"):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyGetProxyResponse(
                 response_xml=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "text/csv"):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyGetProxyResponse(
                 response_csv=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "text/plain"):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyGetProxyResponse(
                 response_text=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "401", "application/json"):
             http_res_text = await utils.stream_to_text_async(http_res)
@@ -436,31 +426,27 @@ class Proxy(BaseSDK):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyGetProxyResponse(
                 error_json=unmarshal_json_response(
-                    Optional[Dict[str, Any]], http_res, http_res_text
+                    Optional[Dict[str, Any]], http_res, http_res_text, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "default", "application/xml"):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyGetProxyResponse(
                 error_xml=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "default", "text/html"):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyGetProxyResponse(
                 error_html=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "default", "text/plain"):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyGetProxyResponse(
                 error_text=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -479,8 +465,8 @@ class Proxy(BaseSDK):
         follow_redirects: Optional[bool] = True,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
         accept_header_override: Optional[OptionsAcceptEnum] = None,
+        timeout_ms: Optional[int] = None,
         http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.ProxyOptionsProxyResponse:
         r"""OPTIONS
@@ -543,6 +529,7 @@ class Proxy(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -567,9 +554,11 @@ class Proxy(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["proxy"],
+                extensions={"x-apideck-api": "proxy"},
             ),
             request=req,
-            error_status_codes=["401", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             stream=True,
             retry_config=retry_config,
         )
@@ -579,43 +568,37 @@ class Proxy(BaseSDK):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyOptionsProxyResponse(
                 response_json=unmarshal_json_response(
-                    Optional[Dict[str, Any]], http_res, http_res_text
+                    Optional[Dict[str, Any]], http_res, http_res_text, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "application/octet-stream"):
             return models.ProxyOptionsProxyResponse(
                 response_binary=http_res,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "application/pdf"):
             return models.ProxyOptionsProxyResponse(
                 response_pdf=http_res,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "application/xml"):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyOptionsProxyResponse(
                 response_xml=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "text/csv"):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyOptionsProxyResponse(
                 response_csv=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "text/plain"):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyOptionsProxyResponse(
                 response_text=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "401", "application/json"):
             http_res_text = utils.stream_to_text(http_res)
@@ -633,31 +616,27 @@ class Proxy(BaseSDK):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyOptionsProxyResponse(
                 error_json=unmarshal_json_response(
-                    Optional[Dict[str, Any]], http_res, http_res_text
+                    Optional[Dict[str, Any]], http_res, http_res_text, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "default", "application/xml"):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyOptionsProxyResponse(
                 error_xml=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "default", "text/html"):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyOptionsProxyResponse(
                 error_html=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "default", "text/plain"):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyOptionsProxyResponse(
                 error_text=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         http_res_text = utils.stream_to_text(http_res)
@@ -676,8 +655,8 @@ class Proxy(BaseSDK):
         follow_redirects: Optional[bool] = True,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
         accept_header_override: Optional[OptionsAcceptEnum] = None,
+        timeout_ms: Optional[int] = None,
         http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.ProxyOptionsProxyResponse:
         r"""OPTIONS
@@ -740,6 +719,7 @@ class Proxy(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -764,9 +744,11 @@ class Proxy(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["proxy"],
+                extensions={"x-apideck-api": "proxy"},
             ),
             request=req,
-            error_status_codes=["401", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             stream=True,
             retry_config=retry_config,
         )
@@ -776,43 +758,37 @@ class Proxy(BaseSDK):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyOptionsProxyResponse(
                 response_json=unmarshal_json_response(
-                    Optional[Dict[str, Any]], http_res, http_res_text
+                    Optional[Dict[str, Any]], http_res, http_res_text, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "application/octet-stream"):
             return models.ProxyOptionsProxyResponse(
                 response_binary=http_res,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "application/pdf"):
             return models.ProxyOptionsProxyResponse(
                 response_pdf=http_res,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "application/xml"):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyOptionsProxyResponse(
                 response_xml=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "text/csv"):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyOptionsProxyResponse(
                 response_csv=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "text/plain"):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyOptionsProxyResponse(
                 response_text=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "401", "application/json"):
             http_res_text = await utils.stream_to_text_async(http_res)
@@ -830,31 +806,27 @@ class Proxy(BaseSDK):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyOptionsProxyResponse(
                 error_json=unmarshal_json_response(
-                    Optional[Dict[str, Any]], http_res, http_res_text
+                    Optional[Dict[str, Any]], http_res, http_res_text, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "default", "application/xml"):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyOptionsProxyResponse(
                 error_xml=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "default", "text/html"):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyOptionsProxyResponse(
                 error_html=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "default", "text/plain"):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyOptionsProxyResponse(
                 error_text=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -871,11 +843,11 @@ class Proxy(BaseSDK):
         downstream_authorization: Optional[str] = None,
         timeout: Optional[int] = 28000,
         follow_redirects: Optional[bool] = True,
-        request_body: Optional[Union[bytes, IO[bytes], io.BufferedReader]] = None,
+        request_body: Optional[Union[bytes, IO[bytes], io.IOBase]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
         accept_header_override: Optional[PostAcceptEnum] = None,
+        timeout_ms: Optional[int] = None,
         http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.ProxyPostProxyResponse:
         r"""POST
@@ -941,12 +913,13 @@ class Proxy(BaseSDK):
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request.request_body,
+                request.request_body if request is not None else None,
                 False,
                 True,
                 "raw",
-                Optional[Union[bytes, IO[bytes], io.BufferedReader]],
+                Optional[Union[bytes, IO[bytes], io.IOBase]],
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -971,9 +944,11 @@ class Proxy(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["proxy"],
+                extensions={"x-apideck-api": "proxy"},
             ),
             request=req,
-            error_status_codes=["401", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             stream=True,
             retry_config=retry_config,
         )
@@ -983,43 +958,37 @@ class Proxy(BaseSDK):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyPostProxyResponse(
                 response_json=unmarshal_json_response(
-                    Optional[Dict[str, Any]], http_res, http_res_text
+                    Optional[Dict[str, Any]], http_res, http_res_text, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "application/octet-stream"):
             return models.ProxyPostProxyResponse(
                 response_binary=http_res,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "application/pdf"):
             return models.ProxyPostProxyResponse(
                 response_pdf=http_res,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "application/xml"):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyPostProxyResponse(
                 response_xml=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "text/csv"):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyPostProxyResponse(
                 response_csv=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "text/plain"):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyPostProxyResponse(
                 response_text=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "401", "application/json"):
             http_res_text = utils.stream_to_text(http_res)
@@ -1037,31 +1006,27 @@ class Proxy(BaseSDK):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyPostProxyResponse(
                 error_json=unmarshal_json_response(
-                    Optional[Dict[str, Any]], http_res, http_res_text
+                    Optional[Dict[str, Any]], http_res, http_res_text, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "default", "application/xml"):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyPostProxyResponse(
                 error_xml=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "default", "text/html"):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyPostProxyResponse(
                 error_html=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "default", "text/plain"):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyPostProxyResponse(
                 error_text=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         http_res_text = utils.stream_to_text(http_res)
@@ -1078,11 +1043,11 @@ class Proxy(BaseSDK):
         downstream_authorization: Optional[str] = None,
         timeout: Optional[int] = 28000,
         follow_redirects: Optional[bool] = True,
-        request_body: Optional[Union[bytes, IO[bytes], io.BufferedReader]] = None,
+        request_body: Optional[Union[bytes, IO[bytes], io.IOBase]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
         accept_header_override: Optional[PostAcceptEnum] = None,
+        timeout_ms: Optional[int] = None,
         http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.ProxyPostProxyResponse:
         r"""POST
@@ -1148,12 +1113,13 @@ class Proxy(BaseSDK):
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request.request_body,
+                request.request_body if request is not None else None,
                 False,
                 True,
                 "raw",
-                Optional[Union[bytes, IO[bytes], io.BufferedReader]],
+                Optional[Union[bytes, IO[bytes], io.IOBase]],
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1178,9 +1144,11 @@ class Proxy(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["proxy"],
+                extensions={"x-apideck-api": "proxy"},
             ),
             request=req,
-            error_status_codes=["401", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             stream=True,
             retry_config=retry_config,
         )
@@ -1190,43 +1158,37 @@ class Proxy(BaseSDK):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyPostProxyResponse(
                 response_json=unmarshal_json_response(
-                    Optional[Dict[str, Any]], http_res, http_res_text
+                    Optional[Dict[str, Any]], http_res, http_res_text, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "application/octet-stream"):
             return models.ProxyPostProxyResponse(
                 response_binary=http_res,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "application/pdf"):
             return models.ProxyPostProxyResponse(
                 response_pdf=http_res,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "application/xml"):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyPostProxyResponse(
                 response_xml=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "text/csv"):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyPostProxyResponse(
                 response_csv=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "text/plain"):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyPostProxyResponse(
                 response_text=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "401", "application/json"):
             http_res_text = await utils.stream_to_text_async(http_res)
@@ -1244,31 +1206,27 @@ class Proxy(BaseSDK):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyPostProxyResponse(
                 error_json=unmarshal_json_response(
-                    Optional[Dict[str, Any]], http_res, http_res_text
+                    Optional[Dict[str, Any]], http_res, http_res_text, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "default", "application/xml"):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyPostProxyResponse(
                 error_xml=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "default", "text/html"):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyPostProxyResponse(
                 error_html=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "default", "text/plain"):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyPostProxyResponse(
                 error_text=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -1285,11 +1243,11 @@ class Proxy(BaseSDK):
         downstream_authorization: Optional[str] = None,
         timeout: Optional[int] = 28000,
         follow_redirects: Optional[bool] = True,
-        request_body: Optional[Union[bytes, IO[bytes], io.BufferedReader]] = None,
+        request_body: Optional[Union[bytes, IO[bytes], io.IOBase]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
         accept_header_override: Optional[PutAcceptEnum] = None,
+        timeout_ms: Optional[int] = None,
         http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.ProxyPutProxyResponse:
         r"""PUT
@@ -1355,12 +1313,13 @@ class Proxy(BaseSDK):
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request.request_body,
+                request.request_body if request is not None else None,
                 False,
                 True,
                 "raw",
-                Optional[Union[bytes, IO[bytes], io.BufferedReader]],
+                Optional[Union[bytes, IO[bytes], io.IOBase]],
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1385,9 +1344,11 @@ class Proxy(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["proxy"],
+                extensions={"x-apideck-api": "proxy"},
             ),
             request=req,
-            error_status_codes=["401", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             stream=True,
             retry_config=retry_config,
         )
@@ -1397,43 +1358,37 @@ class Proxy(BaseSDK):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyPutProxyResponse(
                 response_json=unmarshal_json_response(
-                    Optional[Dict[str, Any]], http_res, http_res_text
+                    Optional[Dict[str, Any]], http_res, http_res_text, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "application/octet-stream"):
             return models.ProxyPutProxyResponse(
                 response_binary=http_res,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "application/pdf"):
             return models.ProxyPutProxyResponse(
                 response_pdf=http_res,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "application/xml"):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyPutProxyResponse(
                 response_xml=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "text/csv"):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyPutProxyResponse(
                 response_csv=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "text/plain"):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyPutProxyResponse(
                 response_text=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "401", "application/json"):
             http_res_text = utils.stream_to_text(http_res)
@@ -1451,31 +1406,27 @@ class Proxy(BaseSDK):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyPutProxyResponse(
                 error_json=unmarshal_json_response(
-                    Optional[Dict[str, Any]], http_res, http_res_text
+                    Optional[Dict[str, Any]], http_res, http_res_text, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "default", "application/xml"):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyPutProxyResponse(
                 error_xml=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "default", "text/html"):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyPutProxyResponse(
                 error_html=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "default", "text/plain"):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyPutProxyResponse(
                 error_text=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         http_res_text = utils.stream_to_text(http_res)
@@ -1492,11 +1443,11 @@ class Proxy(BaseSDK):
         downstream_authorization: Optional[str] = None,
         timeout: Optional[int] = 28000,
         follow_redirects: Optional[bool] = True,
-        request_body: Optional[Union[bytes, IO[bytes], io.BufferedReader]] = None,
+        request_body: Optional[Union[bytes, IO[bytes], io.IOBase]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
         accept_header_override: Optional[PutAcceptEnum] = None,
+        timeout_ms: Optional[int] = None,
         http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.ProxyPutProxyResponse:
         r"""PUT
@@ -1562,12 +1513,13 @@ class Proxy(BaseSDK):
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request.request_body,
+                request.request_body if request is not None else None,
                 False,
                 True,
                 "raw",
-                Optional[Union[bytes, IO[bytes], io.BufferedReader]],
+                Optional[Union[bytes, IO[bytes], io.IOBase]],
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1592,9 +1544,11 @@ class Proxy(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["proxy"],
+                extensions={"x-apideck-api": "proxy"},
             ),
             request=req,
-            error_status_codes=["401", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             stream=True,
             retry_config=retry_config,
         )
@@ -1604,43 +1558,37 @@ class Proxy(BaseSDK):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyPutProxyResponse(
                 response_json=unmarshal_json_response(
-                    Optional[Dict[str, Any]], http_res, http_res_text
+                    Optional[Dict[str, Any]], http_res, http_res_text, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "application/octet-stream"):
             return models.ProxyPutProxyResponse(
                 response_binary=http_res,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "application/pdf"):
             return models.ProxyPutProxyResponse(
                 response_pdf=http_res,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "application/xml"):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyPutProxyResponse(
                 response_xml=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "text/csv"):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyPutProxyResponse(
                 response_csv=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "text/plain"):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyPutProxyResponse(
                 response_text=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "401", "application/json"):
             http_res_text = await utils.stream_to_text_async(http_res)
@@ -1658,31 +1606,27 @@ class Proxy(BaseSDK):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyPutProxyResponse(
                 error_json=unmarshal_json_response(
-                    Optional[Dict[str, Any]], http_res, http_res_text
+                    Optional[Dict[str, Any]], http_res, http_res_text, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "default", "application/xml"):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyPutProxyResponse(
                 error_xml=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "default", "text/html"):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyPutProxyResponse(
                 error_html=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "default", "text/plain"):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyPutProxyResponse(
                 error_text=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -1699,11 +1643,11 @@ class Proxy(BaseSDK):
         downstream_authorization: Optional[str] = None,
         timeout: Optional[int] = 28000,
         follow_redirects: Optional[bool] = True,
-        request_body: Optional[Union[bytes, IO[bytes], io.BufferedReader]] = None,
+        request_body: Optional[Union[bytes, IO[bytes], io.IOBase]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
         accept_header_override: Optional[PatchAcceptEnum] = None,
+        timeout_ms: Optional[int] = None,
         http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.ProxyPatchProxyResponse:
         r"""PATCH
@@ -1769,12 +1713,13 @@ class Proxy(BaseSDK):
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request.request_body,
+                request.request_body if request is not None else None,
                 False,
                 True,
                 "raw",
-                Optional[Union[bytes, IO[bytes], io.BufferedReader]],
+                Optional[Union[bytes, IO[bytes], io.IOBase]],
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1799,9 +1744,11 @@ class Proxy(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["proxy"],
+                extensions={"x-apideck-api": "proxy"},
             ),
             request=req,
-            error_status_codes=["401", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             stream=True,
             retry_config=retry_config,
         )
@@ -1811,43 +1758,37 @@ class Proxy(BaseSDK):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyPatchProxyResponse(
                 response_json=unmarshal_json_response(
-                    Optional[Dict[str, Any]], http_res, http_res_text
+                    Optional[Dict[str, Any]], http_res, http_res_text, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "application/octet-stream"):
             return models.ProxyPatchProxyResponse(
                 response_binary=http_res,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "application/pdf"):
             return models.ProxyPatchProxyResponse(
                 response_pdf=http_res,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "application/xml"):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyPatchProxyResponse(
                 response_xml=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "text/csv"):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyPatchProxyResponse(
                 response_csv=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "text/plain"):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyPatchProxyResponse(
                 response_text=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "401", "application/json"):
             http_res_text = utils.stream_to_text(http_res)
@@ -1865,31 +1806,27 @@ class Proxy(BaseSDK):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyPatchProxyResponse(
                 error_json=unmarshal_json_response(
-                    Optional[Dict[str, Any]], http_res, http_res_text
+                    Optional[Dict[str, Any]], http_res, http_res_text, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "default", "application/xml"):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyPatchProxyResponse(
                 error_xml=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "default", "text/html"):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyPatchProxyResponse(
                 error_html=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "default", "text/plain"):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyPatchProxyResponse(
                 error_text=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         http_res_text = utils.stream_to_text(http_res)
@@ -1906,11 +1843,11 @@ class Proxy(BaseSDK):
         downstream_authorization: Optional[str] = None,
         timeout: Optional[int] = 28000,
         follow_redirects: Optional[bool] = True,
-        request_body: Optional[Union[bytes, IO[bytes], io.BufferedReader]] = None,
+        request_body: Optional[Union[bytes, IO[bytes], io.IOBase]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
         accept_header_override: Optional[PatchAcceptEnum] = None,
+        timeout_ms: Optional[int] = None,
         http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.ProxyPatchProxyResponse:
         r"""PATCH
@@ -1976,12 +1913,13 @@ class Proxy(BaseSDK):
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request.request_body,
+                request.request_body if request is not None else None,
                 False,
                 True,
                 "raw",
-                Optional[Union[bytes, IO[bytes], io.BufferedReader]],
+                Optional[Union[bytes, IO[bytes], io.IOBase]],
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2006,9 +1944,11 @@ class Proxy(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["proxy"],
+                extensions={"x-apideck-api": "proxy"},
             ),
             request=req,
-            error_status_codes=["401", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             stream=True,
             retry_config=retry_config,
         )
@@ -2018,43 +1958,37 @@ class Proxy(BaseSDK):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyPatchProxyResponse(
                 response_json=unmarshal_json_response(
-                    Optional[Dict[str, Any]], http_res, http_res_text
+                    Optional[Dict[str, Any]], http_res, http_res_text, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "application/octet-stream"):
             return models.ProxyPatchProxyResponse(
                 response_binary=http_res,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "application/pdf"):
             return models.ProxyPatchProxyResponse(
                 response_pdf=http_res,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "application/xml"):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyPatchProxyResponse(
                 response_xml=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "text/csv"):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyPatchProxyResponse(
                 response_csv=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "text/plain"):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyPatchProxyResponse(
                 response_text=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "401", "application/json"):
             http_res_text = await utils.stream_to_text_async(http_res)
@@ -2072,31 +2006,27 @@ class Proxy(BaseSDK):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyPatchProxyResponse(
                 error_json=unmarshal_json_response(
-                    Optional[Dict[str, Any]], http_res, http_res_text
+                    Optional[Dict[str, Any]], http_res, http_res_text, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "default", "application/xml"):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyPatchProxyResponse(
                 error_xml=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "default", "text/html"):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyPatchProxyResponse(
                 error_html=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "default", "text/plain"):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyPatchProxyResponse(
                 error_text=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -2115,8 +2045,8 @@ class Proxy(BaseSDK):
         follow_redirects: Optional[bool] = True,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
         accept_header_override: Optional[DeleteAcceptEnum] = None,
+        timeout_ms: Optional[int] = None,
         http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.ProxyDeleteProxyResponse:
         r"""DELETE
@@ -2179,6 +2109,7 @@ class Proxy(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2203,9 +2134,11 @@ class Proxy(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["proxy"],
+                extensions={"x-apideck-api": "proxy"},
             ),
             request=req,
-            error_status_codes=["401", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             stream=True,
             retry_config=retry_config,
         )
@@ -2215,43 +2148,37 @@ class Proxy(BaseSDK):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyDeleteProxyResponse(
                 response_json=unmarshal_json_response(
-                    Optional[Dict[str, Any]], http_res, http_res_text
+                    Optional[Dict[str, Any]], http_res, http_res_text, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "application/octet-stream"):
             return models.ProxyDeleteProxyResponse(
                 response_binary=http_res,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "application/pdf"):
             return models.ProxyDeleteProxyResponse(
                 response_pdf=http_res,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "application/xml"):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyDeleteProxyResponse(
                 response_xml=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "text/csv"):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyDeleteProxyResponse(
                 response_csv=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "text/plain"):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyDeleteProxyResponse(
                 response_text=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "401", "application/json"):
             http_res_text = utils.stream_to_text(http_res)
@@ -2269,31 +2196,27 @@ class Proxy(BaseSDK):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyDeleteProxyResponse(
                 error_json=unmarshal_json_response(
-                    Optional[Dict[str, Any]], http_res, http_res_text
+                    Optional[Dict[str, Any]], http_res, http_res_text, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "default", "application/xml"):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyDeleteProxyResponse(
                 error_xml=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "default", "text/html"):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyDeleteProxyResponse(
                 error_html=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "default", "text/plain"):
             http_res_text = utils.stream_to_text(http_res)
             return models.ProxyDeleteProxyResponse(
                 error_text=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         http_res_text = utils.stream_to_text(http_res)
@@ -2312,8 +2235,8 @@ class Proxy(BaseSDK):
         follow_redirects: Optional[bool] = True,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
         accept_header_override: Optional[DeleteAcceptEnum] = None,
+        timeout_ms: Optional[int] = None,
         http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.ProxyDeleteProxyResponse:
         r"""DELETE
@@ -2376,6 +2299,7 @@ class Proxy(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2400,9 +2324,11 @@ class Proxy(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["proxy"],
+                extensions={"x-apideck-api": "proxy"},
             ),
             request=req,
-            error_status_codes=["401", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             stream=True,
             retry_config=retry_config,
         )
@@ -2412,43 +2338,37 @@ class Proxy(BaseSDK):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyDeleteProxyResponse(
                 response_json=unmarshal_json_response(
-                    Optional[Dict[str, Any]], http_res, http_res_text
+                    Optional[Dict[str, Any]], http_res, http_res_text, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "application/octet-stream"):
             return models.ProxyDeleteProxyResponse(
                 response_binary=http_res,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "application/pdf"):
             return models.ProxyDeleteProxyResponse(
                 response_pdf=http_res,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "application/xml"):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyDeleteProxyResponse(
                 response_xml=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "text/csv"):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyDeleteProxyResponse(
                 response_csv=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "200", "text/plain"):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyDeleteProxyResponse(
                 response_text=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "401", "application/json"):
             http_res_text = await utils.stream_to_text_async(http_res)
@@ -2466,31 +2386,27 @@ class Proxy(BaseSDK):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyDeleteProxyResponse(
                 error_json=unmarshal_json_response(
-                    Optional[Dict[str, Any]], http_res, http_res_text
+                    Optional[Dict[str, Any]], http_res, http_res_text, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "default", "application/xml"):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyDeleteProxyResponse(
                 error_xml=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "default", "text/html"):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyDeleteProxyResponse(
                 error_html=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "default", "text/plain"):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.ProxyDeleteProxyResponse(
                 error_text=http_res_text,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         http_res_text = await utils.stream_to_text_async(http_res)

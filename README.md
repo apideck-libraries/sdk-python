@@ -88,7 +88,7 @@ It's also possible to write a standalone Python script without needing to set up
 ```python
 #!/usr/bin/env -S uv run --script
 # /// script
-# requires-python = ">=3.9"
+# requires-python = ">=3.10"
 # dependencies = [
 #     "apideck-unify",
 # ]
@@ -131,7 +131,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.tax_rates.list(raw=False, service_id="salesforce", company_id="12345", limit=20, filter_={
@@ -165,7 +165,7 @@ async def main():
     async with Apideck(
         consumer_id="test-consumer",
         app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-        api_key=os.getenv("APIDECK_API_KEY", ""),
+        api_key=os.getenv("APIDECK_API_KEY"),
     ) as apideck:
 
         res = await apideck.accounting.tax_rates.list_async(raw=False, service_id="salesforce", company_id="12345", limit=20, filter_={
@@ -205,7 +205,7 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
@@ -234,15 +234,15 @@ with Apideck(
 <details open>
 <summary>Available methods</summary>
 
-#### [accounting.aged_creditors](docs/sdks/agedcreditorssdk/README.md)
+### [Accounting.AgedCreditors](docs/sdks/agedcreditorssdk/README.md)
 
 * [get](docs/sdks/agedcreditorssdk/README.md#get) - Get Aged Creditors
 
-#### [accounting.aged_debtors](docs/sdks/ageddebtorssdk/README.md)
+### [Accounting.AgedDebtors](docs/sdks/ageddebtorssdk/README.md)
 
 * [get](docs/sdks/ageddebtorssdk/README.md#get) - Get Aged Debtors
 
-#### [accounting.attachments](docs/sdks/attachments/README.md)
+### [Accounting.Attachments](docs/sdks/attachments/README.md)
 
 * [list](docs/sdks/attachments/README.md#list) - List Attachments
 * [upload](docs/sdks/attachments/README.md#upload) - Upload attachment
@@ -250,11 +250,11 @@ with Apideck(
 * [delete](docs/sdks/attachments/README.md#delete) - Delete Attachment
 * [download](docs/sdks/attachments/README.md#download) - Download Attachment
 
-#### [accounting.balance_sheet](docs/sdks/balancesheetsdk/README.md)
+### [Accounting.BalanceSheet](docs/sdks/balancesheetsdk/README.md)
 
 * [get](docs/sdks/balancesheetsdk/README.md#get) - Get BalanceSheet
 
-#### [accounting.bank_accounts](docs/sdks/bankaccounts/README.md)
+### [Accounting.BankAccounts](docs/sdks/bankaccounts/README.md)
 
 * [list](docs/sdks/bankaccounts/README.md#list) - List Bank Accounts
 * [create](docs/sdks/bankaccounts/README.md#create) - Create Bank Account
@@ -262,7 +262,7 @@ with Apideck(
 * [update](docs/sdks/bankaccounts/README.md#update) - Update Bank Account
 * [delete](docs/sdks/bankaccounts/README.md#delete) - Delete Bank Account
 
-#### [accounting.bank_feed_accounts](docs/sdks/bankfeedaccounts/README.md)
+### [Accounting.BankFeedAccounts](docs/sdks/bankfeedaccounts/README.md)
 
 * [list](docs/sdks/bankfeedaccounts/README.md#list) - List Bank Feed Accounts
 * [create](docs/sdks/bankfeedaccounts/README.md#create) - Create Bank Feed Account
@@ -270,7 +270,7 @@ with Apideck(
 * [update](docs/sdks/bankfeedaccounts/README.md#update) - Update Bank Feed Account
 * [delete](docs/sdks/bankfeedaccounts/README.md#delete) - Delete Bank Feed Account
 
-#### [accounting.bank_feed_statements](docs/sdks/bankfeedstatements/README.md)
+### [Accounting.BankFeedStatements](docs/sdks/bankfeedstatements/README.md)
 
 * [list](docs/sdks/bankfeedstatements/README.md#list) - List Bank Feed Statements
 * [create](docs/sdks/bankfeedstatements/README.md#create) - Create Bank Feed Statement
@@ -278,7 +278,7 @@ with Apideck(
 * [update](docs/sdks/bankfeedstatements/README.md#update) - Update Bank Feed Statement
 * [delete](docs/sdks/bankfeedstatements/README.md#delete) - Delete Bank Feed Statement
 
-#### [accounting.bill_credit_notes](docs/sdks/billcreditnotes/README.md)
+### [Accounting.BillCreditNotes](docs/sdks/billcreditnotes/README.md)
 
 * [list](docs/sdks/billcreditnotes/README.md#list) - List Bill Credit Notes
 * [create](docs/sdks/billcreditnotes/README.md#create) - Create Bill Credit Note
@@ -287,7 +287,7 @@ with Apideck(
 * [delete](docs/sdks/billcreditnotes/README.md#delete) - Delete Bill Credit Note
 * [create_batch](docs/sdks/billcreditnotes/README.md#create_batch) - Create Bill Credit Notes in batch
 
-#### [accounting.bill_payments](docs/sdks/billpayments/README.md)
+### [Accounting.BillPayments](docs/sdks/billpayments/README.md)
 
 * [list](docs/sdks/billpayments/README.md#list) - List Bill Payments
 * [create](docs/sdks/billpayments/README.md#create) - Create Bill Payment
@@ -296,7 +296,7 @@ with Apideck(
 * [delete](docs/sdks/billpayments/README.md#delete) - Delete Bill Payment
 * [create_batch](docs/sdks/billpayments/README.md#create_batch) - Create Bill Payments in batch
 
-#### [accounting.bills](docs/sdks/bills/README.md)
+### [Accounting.Bills](docs/sdks/bills/README.md)
 
 * [list](docs/sdks/bills/README.md#list) - List Bills
 * [create](docs/sdks/bills/README.md#create) - Create Bill
@@ -305,20 +305,20 @@ with Apideck(
 * [delete](docs/sdks/bills/README.md#delete) - Delete Bill
 * [create_batch](docs/sdks/bills/README.md#create_batch) - Create Bills in batch
 
-#### [accounting.categories](docs/sdks/categories/README.md)
+### [Accounting.Categories](docs/sdks/categories/README.md)
 
 * [list](docs/sdks/categories/README.md#list) - List Categories
 * [get](docs/sdks/categories/README.md#get) - Get Category
 
-#### [accounting.companies](docs/sdks/companies/README.md)
+### [Accounting.Companies](docs/sdks/companies/README.md)
 
 * [list](docs/sdks/companies/README.md#list) - List companies
 
-#### [accounting.company_info](docs/sdks/companyinfosdk/README.md)
+### [Accounting.CompanyInfo](docs/sdks/companyinfosdk/README.md)
 
 * [get](docs/sdks/companyinfosdk/README.md#get) - Get company info
 
-#### [accounting.credit_notes](docs/sdks/creditnotes/README.md)
+### [Accounting.CreditNotes](docs/sdks/creditnotes/README.md)
 
 * [list](docs/sdks/creditnotes/README.md#list) - List Credit Notes
 * [create](docs/sdks/creditnotes/README.md#create) - Create Credit Note
@@ -327,7 +327,7 @@ with Apideck(
 * [delete](docs/sdks/creditnotes/README.md#delete) - Delete Credit Note
 * [create_batch](docs/sdks/creditnotes/README.md#create_batch) - Create Credit Notes in batch
 
-#### [accounting.customers](docs/sdks/customers/README.md)
+### [Accounting.Customers](docs/sdks/customers/README.md)
 
 * [list](docs/sdks/customers/README.md#list) - List Customers
 * [create](docs/sdks/customers/README.md#create) - Create Customer
@@ -336,7 +336,7 @@ with Apideck(
 * [delete](docs/sdks/customers/README.md#delete) - Delete Customer
 * [create_batch](docs/sdks/customers/README.md#create_batch) - Create Customers in batch
 
-#### [accounting.departments](docs/sdks/departments/README.md)
+### [Accounting.Departments](docs/sdks/departments/README.md)
 
 * [list](docs/sdks/departments/README.md#list) - List Departments
 * [create](docs/sdks/departments/README.md#create) - Create Department
@@ -344,7 +344,7 @@ with Apideck(
 * [update](docs/sdks/departments/README.md#update) - Update Department
 * [delete](docs/sdks/departments/README.md#delete) - Delete Department
 
-#### [accounting.employees](docs/sdks/employees/README.md)
+### [Accounting.Employees](docs/sdks/employees/README.md)
 
 * [list](docs/sdks/employees/README.md#list) - List Employees
 * [create](docs/sdks/employees/README.md#create) - Create Employee
@@ -352,7 +352,7 @@ with Apideck(
 * [update](docs/sdks/employees/README.md#update) - Update Employee
 * [delete](docs/sdks/employees/README.md#delete) - Delete Employee
 
-#### [accounting.expense_categories](docs/sdks/expensecategories/README.md)
+### [Accounting.ExpenseCategories](docs/sdks/expensecategories/README.md)
 
 * [list](docs/sdks/expensecategories/README.md#list) - List Expense Categories
 * [create](docs/sdks/expensecategories/README.md#create) - Create Expense Category
@@ -360,7 +360,7 @@ with Apideck(
 * [update](docs/sdks/expensecategories/README.md#update) - Update Expense Category
 * [delete](docs/sdks/expensecategories/README.md#delete) - Delete Expense Category
 
-#### [accounting.expense_reports](docs/sdks/expensereports/README.md)
+### [Accounting.ExpenseReports](docs/sdks/expensereports/README.md)
 
 * [list](docs/sdks/expensereports/README.md#list) - List Expense Reports
 * [create](docs/sdks/expensereports/README.md#create) - Create Expense Report
@@ -368,7 +368,7 @@ with Apideck(
 * [update](docs/sdks/expensereports/README.md#update) - Update Expense Report
 * [delete](docs/sdks/expensereports/README.md#delete) - Delete Expense Report
 
-#### [accounting.expenses](docs/sdks/expenses/README.md)
+### [Accounting.Expenses](docs/sdks/expenses/README.md)
 
 * [list](docs/sdks/expenses/README.md#list) - List Expenses
 * [create](docs/sdks/expenses/README.md#create) - Create Expense
@@ -376,23 +376,23 @@ with Apideck(
 * [update](docs/sdks/expenses/README.md#update) - Update Expense
 * [delete](docs/sdks/expenses/README.md#delete) - Delete Expense
 
-#### [accounting.fiscal_periods](docs/sdks/fiscalperiods/README.md)
+### [Accounting.FiscalPeriods](docs/sdks/fiscalperiods/README.md)
 
 * [list](docs/sdks/fiscalperiods/README.md#list) - List Fiscal Periods
 * [get](docs/sdks/fiscalperiods/README.md#get) - Get Fiscal Period
 
-#### [accounting.general_ledger_transactions](docs/sdks/generalledgertransactions/README.md)
+### [Accounting.GeneralLedgerTransactions](docs/sdks/generalledgertransactions/README.md)
 
 * [list](docs/sdks/generalledgertransactions/README.md#list) - List General Ledger Transactions
 * [get](docs/sdks/generalledgertransactions/README.md#get) - Get General Ledger Transaction
 
-#### [accounting.goods_receipts](docs/sdks/goodsreceipts/README.md)
+### [Accounting.GoodsReceipts](docs/sdks/goodsreceipts/README.md)
 
 * [list](docs/sdks/goodsreceipts/README.md#list) - List Goods Receipts
 * [create](docs/sdks/goodsreceipts/README.md#create) - Create Goods Receipt
 * [get](docs/sdks/goodsreceipts/README.md#get) - Get Goods Receipt
 
-#### [accounting.invoice_items](docs/sdks/invoiceitems/README.md)
+### [Accounting.InvoiceItems](docs/sdks/invoiceitems/README.md)
 
 * [list](docs/sdks/invoiceitems/README.md#list) - List Invoice Items
 * [create](docs/sdks/invoiceitems/README.md#create) - Create Invoice Item
@@ -400,7 +400,7 @@ with Apideck(
 * [update](docs/sdks/invoiceitems/README.md#update) - Update Invoice Item
 * [delete](docs/sdks/invoiceitems/README.md#delete) - Delete Invoice Item
 
-#### [accounting.invoices](docs/sdks/invoices/README.md)
+### [Accounting.Invoices](docs/sdks/invoices/README.md)
 
 * [list](docs/sdks/invoices/README.md#list) - List Invoices
 * [create](docs/sdks/invoices/README.md#create) - Create Invoice
@@ -409,7 +409,7 @@ with Apideck(
 * [delete](docs/sdks/invoices/README.md#delete) - Delete Invoice
 * [create_batch](docs/sdks/invoices/README.md#create_batch) - Create Invoices in batch
 
-#### [accounting.journal_entries](docs/sdks/journalentries/README.md)
+### [Accounting.JournalEntries](docs/sdks/journalentries/README.md)
 
 * [list](docs/sdks/journalentries/README.md#list) - List Journal Entries
 * [create](docs/sdks/journalentries/README.md#create) - Create Journal Entry
@@ -418,7 +418,7 @@ with Apideck(
 * [delete](docs/sdks/journalentries/README.md#delete) - Delete Journal Entry
 * [create_batch](docs/sdks/journalentries/README.md#create_batch) - Create Journal Entries in batch
 
-#### [accounting.journals](docs/sdks/journals/README.md)
+### [Accounting.Journals](docs/sdks/journals/README.md)
 
 * [list](docs/sdks/journals/README.md#list) - List Journals
 * [create](docs/sdks/journals/README.md#create) - Create Journal
@@ -426,7 +426,7 @@ with Apideck(
 * [update](docs/sdks/journals/README.md#update) - Update Journal
 * [delete](docs/sdks/journals/README.md#delete) - Delete Journal
 
-#### [accounting.ledger_accounts](docs/sdks/ledgeraccounts/README.md)
+### [Accounting.LedgerAccounts](docs/sdks/ledgeraccounts/README.md)
 
 * [list](docs/sdks/ledgeraccounts/README.md#list) - List Ledger Accounts
 * [create](docs/sdks/ledgeraccounts/README.md#create) - Create Ledger Account
@@ -435,7 +435,7 @@ with Apideck(
 * [delete](docs/sdks/ledgeraccounts/README.md#delete) - Delete Ledger Account
 * [create_batch](docs/sdks/ledgeraccounts/README.md#create_batch) - Create Ledger Accounts in batch
 
-#### [accounting.locations](docs/sdks/locations/README.md)
+### [Accounting.Locations](docs/sdks/locations/README.md)
 
 * [list](docs/sdks/locations/README.md#list) - List Locations
 * [create](docs/sdks/locations/README.md#create) - Create Location
@@ -443,7 +443,7 @@ with Apideck(
 * [update](docs/sdks/locations/README.md#update) - Update Location
 * [delete](docs/sdks/locations/README.md#delete) - Delete Location
 
-#### [accounting.payment_methods](docs/sdks/paymentmethods/README.md)
+### [Accounting.PaymentMethods](docs/sdks/paymentmethods/README.md)
 
 * [list](docs/sdks/paymentmethods/README.md#list) - List Payment Methods
 * [create](docs/sdks/paymentmethods/README.md#create) - Create Payment Method
@@ -451,7 +451,7 @@ with Apideck(
 * [update](docs/sdks/paymentmethods/README.md#update) - Update Payment Method
 * [delete](docs/sdks/paymentmethods/README.md#delete) - Delete Payment Method
 
-#### [accounting.payments](docs/sdks/payments/README.md)
+### [Accounting.Payments](docs/sdks/payments/README.md)
 
 * [list](docs/sdks/payments/README.md#list) - List Payments
 * [create](docs/sdks/payments/README.md#create) - Create Payment
@@ -460,11 +460,11 @@ with Apideck(
 * [delete](docs/sdks/payments/README.md#delete) - Delete Payment
 * [create_batch](docs/sdks/payments/README.md#create_batch) - Create Payments in batch
 
-#### [accounting.profit_and_loss](docs/sdks/profitandlosssdk/README.md)
+### [Accounting.ProfitAndLoss](docs/sdks/profitandlosssdk/README.md)
 
 * [get](docs/sdks/profitandlosssdk/README.md#get) - Get Profit and Loss
 
-#### [accounting.projects](docs/sdks/projects/README.md)
+### [Accounting.Projects](docs/sdks/projects/README.md)
 
 * [list](docs/sdks/projects/README.md#list) - List projects
 * [create](docs/sdks/projects/README.md#create) - Create project
@@ -472,7 +472,7 @@ with Apideck(
 * [update](docs/sdks/projects/README.md#update) - Update project
 * [delete](docs/sdks/projects/README.md#delete) - Delete project
 
-#### [accounting.purchase_orders](docs/sdks/purchaseorders/README.md)
+### [Accounting.PurchaseOrders](docs/sdks/purchaseorders/README.md)
 
 * [list](docs/sdks/purchaseorders/README.md#list) - List Purchase Orders
 * [create](docs/sdks/purchaseorders/README.md#create) - Create Purchase Order
@@ -480,7 +480,7 @@ with Apideck(
 * [update](docs/sdks/purchaseorders/README.md#update) - Update Purchase Order
 * [delete](docs/sdks/purchaseorders/README.md#delete) - Delete Purchase Order
 
-#### [accounting.quotes](docs/sdks/quotes/README.md)
+### [Accounting.Quotes](docs/sdks/quotes/README.md)
 
 * [list](docs/sdks/quotes/README.md#list) - List Quotes
 * [create](docs/sdks/quotes/README.md#create) - Create Quote
@@ -488,7 +488,7 @@ with Apideck(
 * [update](docs/sdks/quotes/README.md#update) - Update Quote
 * [delete](docs/sdks/quotes/README.md#delete) - Delete Quote
 
-#### [accounting.refunds](docs/sdks/refunds/README.md)
+### [Accounting.Refunds](docs/sdks/refunds/README.md)
 
 * [list](docs/sdks/refunds/README.md#list) - List Refunds
 * [create](docs/sdks/refunds/README.md#create) - Create Refund
@@ -496,7 +496,7 @@ with Apideck(
 * [update](docs/sdks/refunds/README.md#update) - Update Refund
 * [delete](docs/sdks/refunds/README.md#delete) - Delete Refund
 
-#### [accounting.sales_orders](docs/sdks/salesorders/README.md)
+### [Accounting.SalesOrders](docs/sdks/salesorders/README.md)
 
 * [list](docs/sdks/salesorders/README.md#list) - List Sales Orders
 * [create](docs/sdks/salesorders/README.md#create) - Create Sales Order
@@ -504,7 +504,7 @@ with Apideck(
 * [update](docs/sdks/salesorders/README.md#update) - Update Sales Order
 * [delete](docs/sdks/salesorders/README.md#delete) - Delete Sales Order
 
-#### [accounting.sales_receipts](docs/sdks/salesreceipts/README.md)
+### [Accounting.SalesReceipts](docs/sdks/salesreceipts/README.md)
 
 * [list](docs/sdks/salesreceipts/README.md#list) - List Sales Receipts
 * [create](docs/sdks/salesreceipts/README.md#create) - Create Sales Receipt
@@ -512,7 +512,7 @@ with Apideck(
 * [update](docs/sdks/salesreceipts/README.md#update) - Update Sales Receipt
 * [delete](docs/sdks/salesreceipts/README.md#delete) - Delete Sales Receipt
 
-#### [accounting.subsidiaries](docs/sdks/subsidiaries/README.md)
+### [Accounting.Subsidiaries](docs/sdks/subsidiaries/README.md)
 
 * [list](docs/sdks/subsidiaries/README.md#list) - List Subsidiaries
 * [create](docs/sdks/subsidiaries/README.md#create) - Create Subsidiary
@@ -520,7 +520,7 @@ with Apideck(
 * [update](docs/sdks/subsidiaries/README.md#update) - Update Subsidiary
 * [delete](docs/sdks/subsidiaries/README.md#delete) - Delete Subsidiary
 
-#### [accounting.suppliers](docs/sdks/suppliers/README.md)
+### [Accounting.Suppliers](docs/sdks/suppliers/README.md)
 
 * [list](docs/sdks/suppliers/README.md#list) - List Suppliers
 * [create](docs/sdks/suppliers/README.md#create) - Create Supplier
@@ -529,7 +529,7 @@ with Apideck(
 * [delete](docs/sdks/suppliers/README.md#delete) - Delete Supplier
 * [create_batch](docs/sdks/suppliers/README.md#create_batch) - Create Suppliers in batch
 
-#### [accounting.tax_rates](docs/sdks/taxrates/README.md)
+### [Accounting.TaxRates](docs/sdks/taxrates/README.md)
 
 * [list](docs/sdks/taxrates/README.md#list) - List Tax Rates
 * [create](docs/sdks/taxrates/README.md#create) - Create Tax Rate
@@ -537,7 +537,7 @@ with Apideck(
 * [update](docs/sdks/taxrates/README.md#update) - Update Tax Rate
 * [delete](docs/sdks/taxrates/README.md#delete) - Delete Tax Rate
 
-#### [accounting.tracking_categories](docs/sdks/trackingcategories/README.md)
+### [Accounting.TrackingCategories](docs/sdks/trackingcategories/README.md)
 
 * [list](docs/sdks/trackingcategories/README.md#list) - List Tracking Categories
 * [create](docs/sdks/trackingcategories/README.md#create) - Create Tracking Category
@@ -546,11 +546,11 @@ with Apideck(
 * [delete](docs/sdks/trackingcategories/README.md#delete) - Delete Tracking Category
 * [create_batch](docs/sdks/trackingcategories/README.md#create_batch) - Create Tracking Categories in batch
 
-#### [accounting.trial_balance](docs/sdks/trialbalancesdk/README.md)
+### [Accounting.TrialBalance](docs/sdks/trialbalancesdk/README.md)
 
 * [get](docs/sdks/trialbalancesdk/README.md#get) - Get Trial Balance
 
-#### [ats.applicants](docs/sdks/applicants/README.md)
+### [Ats.Applicants](docs/sdks/applicants/README.md)
 
 * [list](docs/sdks/applicants/README.md#list) - List Applicants
 * [create](docs/sdks/applicants/README.md#create) - Create Applicant
@@ -558,7 +558,7 @@ with Apideck(
 * [update](docs/sdks/applicants/README.md#update) - Update Applicant
 * [delete](docs/sdks/applicants/README.md#delete) - Delete Applicant
 
-#### [ats.applications](docs/sdks/applications/README.md)
+### [Ats.Applications](docs/sdks/applications/README.md)
 
 * [list](docs/sdks/applications/README.md#list) - List Applications
 * [create](docs/sdks/applications/README.md#create) - Create Application
@@ -566,7 +566,7 @@ with Apideck(
 * [update](docs/sdks/applications/README.md#update) - Update Application
 * [delete](docs/sdks/applications/README.md#delete) - Delete Application
 
-#### [ats.jobs](docs/sdks/jobs/README.md)
+### [Ats.Jobs](docs/sdks/jobs/README.md)
 
 * [list](docs/sdks/jobs/README.md#list) - List Jobs
 * [create](docs/sdks/jobs/README.md#create) - Create Job
@@ -574,33 +574,33 @@ with Apideck(
 * [update](docs/sdks/jobs/README.md#update) - Update Job
 * [delete](docs/sdks/jobs/README.md#delete) - Delete Job
 
-#### [connector.api_resource_coverage](docs/sdks/apiresourcecoveragesdk/README.md)
+### [Connector.ApiResourceCoverage](docs/sdks/apiresourcecoveragesdk/README.md)
 
 * [get](docs/sdks/apiresourcecoveragesdk/README.md#get) - Get API Resource Coverage
 
-#### [connector.api_resources](docs/sdks/apiresources/README.md)
+### [Connector.ApiResources](docs/sdks/apiresources/README.md)
 
 * [get](docs/sdks/apiresources/README.md#get) - Get API Resource
 
-#### [connector.apis](docs/sdks/apis/README.md)
+### [Connector.Apis](docs/sdks/apis/README.md)
 
 * [list](docs/sdks/apis/README.md#list) - List APIs
 * [get](docs/sdks/apis/README.md#get) - Get API
 
-#### [connector.connector_docs](docs/sdks/connectordocs/README.md)
+### [Connector.ConnectorDocs](docs/sdks/connectordocs/README.md)
 
 * [get](docs/sdks/connectordocs/README.md#get) - Get Connector Doc content
 
-#### [connector.connector_resources](docs/sdks/connectorresources/README.md)
+### [Connector.ConnectorResources](docs/sdks/connectorresources/README.md)
 
 * [get](docs/sdks/connectorresources/README.md#get) - Get Connector Resource
 
-#### [connector.connectors](docs/sdks/connectors/README.md)
+### [Connector.Connectors](docs/sdks/connectors/README.md)
 
 * [list](docs/sdks/connectors/README.md#list) - List Connectors
 * [get](docs/sdks/connectors/README.md#get) - Get Connector
 
-#### [crm.activities](docs/sdks/activities/README.md)
+### [Crm.Activities](docs/sdks/activities/README.md)
 
 * [list](docs/sdks/activities/README.md#list) - List activities
 * [create](docs/sdks/activities/README.md#create) - Create activity
@@ -608,7 +608,7 @@ with Apideck(
 * [update](docs/sdks/activities/README.md#update) - Update activity
 * [delete](docs/sdks/activities/README.md#delete) - Delete activity
 
-#### [crm.companies](docs/sdks/apideckcompanies/README.md)
+### [Crm.Companies](docs/sdks/apideckcompanies/README.md)
 
 * [list](docs/sdks/apideckcompanies/README.md#list) - List companies
 * [create](docs/sdks/apideckcompanies/README.md#create) - Create company
@@ -616,7 +616,7 @@ with Apideck(
 * [update](docs/sdks/apideckcompanies/README.md#update) - Update company
 * [delete](docs/sdks/apideckcompanies/README.md#delete) - Delete company
 
-#### [crm.contacts](docs/sdks/contacts/README.md)
+### [Crm.Contacts](docs/sdks/contacts/README.md)
 
 * [list](docs/sdks/contacts/README.md#list) - List contacts
 * [create](docs/sdks/contacts/README.md#create) - Create contact
@@ -624,15 +624,7 @@ with Apideck(
 * [update](docs/sdks/contacts/README.md#update) - Update contact
 * [delete](docs/sdks/contacts/README.md#delete) - Delete contact
 
-#### [crm.custom_object_schemas](docs/sdks/customobjectschemas/README.md)
-
-* [list](docs/sdks/customobjectschemas/README.md#list) - List custom object schemas
-* [create](docs/sdks/customobjectschemas/README.md#create) - Create custom object schema
-* [get](docs/sdks/customobjectschemas/README.md#get) - Get custom object schema
-* [update](docs/sdks/customobjectschemas/README.md#update) - Update custom object schema
-* [delete](docs/sdks/customobjectschemas/README.md#delete) - Delete custom object schema
-
-#### [crm.custom_objects](docs/sdks/customobjects/README.md)
+### [Crm.CustomObjects](docs/sdks/customobjects/README.md)
 
 * [list](docs/sdks/customobjects/README.md#list) - List custom objects
 * [create](docs/sdks/customobjects/README.md#create) - Create custom object
@@ -640,7 +632,15 @@ with Apideck(
 * [update](docs/sdks/customobjects/README.md#update) - Update custom object
 * [delete](docs/sdks/customobjects/README.md#delete) - Delete custom object
 
-#### [crm.leads](docs/sdks/leads/README.md)
+### [Crm.CustomObjectSchemas](docs/sdks/customobjectschemas/README.md)
+
+* [list](docs/sdks/customobjectschemas/README.md#list) - List custom object schemas
+* [create](docs/sdks/customobjectschemas/README.md#create) - Create custom object schema
+* [get](docs/sdks/customobjectschemas/README.md#get) - Get custom object schema
+* [update](docs/sdks/customobjectschemas/README.md#update) - Update custom object schema
+* [delete](docs/sdks/customobjectschemas/README.md#delete) - Delete custom object schema
+
+### [Crm.Leads](docs/sdks/leads/README.md)
 
 * [list](docs/sdks/leads/README.md#list) - List leads
 * [create](docs/sdks/leads/README.md#create) - Create lead
@@ -648,16 +648,16 @@ with Apideck(
 * [update](docs/sdks/leads/README.md#update) - Update lead
 * [delete](docs/sdks/leads/README.md#delete) - Delete lead
 
-#### [crm.list_members](docs/sdks/listmembers/README.md)
+### [Crm.ListMembers](docs/sdks/listmembers/README.md)
 
 * [list](docs/sdks/listmembers/README.md#list) - List list members
 
-#### [crm.lists](docs/sdks/lists/README.md)
+### [Crm.Lists](docs/sdks/lists/README.md)
 
 * [list](docs/sdks/lists/README.md#list) - List lists
 * [get](docs/sdks/lists/README.md#get) - Get list
 
-#### [crm.notes](docs/sdks/notes/README.md)
+### [Crm.Notes](docs/sdks/notes/README.md)
 
 * [list](docs/sdks/notes/README.md#list) - List notes
 * [create](docs/sdks/notes/README.md#create) - Create note
@@ -665,7 +665,7 @@ with Apideck(
 * [update](docs/sdks/notes/README.md#update) - Update note
 * [delete](docs/sdks/notes/README.md#delete) - Delete note
 
-#### [crm.opportunities](docs/sdks/opportunities/README.md)
+### [Crm.Opportunities](docs/sdks/opportunities/README.md)
 
 * [list](docs/sdks/opportunities/README.md#list) - List opportunities
 * [create](docs/sdks/opportunities/README.md#create) - Create opportunity
@@ -673,7 +673,7 @@ with Apideck(
 * [update](docs/sdks/opportunities/README.md#update) - Update opportunity
 * [delete](docs/sdks/opportunities/README.md#delete) - Delete opportunity
 
-#### [crm.pipelines](docs/sdks/pipelines/README.md)
+### [Crm.Pipelines](docs/sdks/pipelines/README.md)
 
 * [list](docs/sdks/pipelines/README.md#list) - List pipelines
 * [create](docs/sdks/pipelines/README.md#create) - Create pipeline
@@ -681,7 +681,7 @@ with Apideck(
 * [update](docs/sdks/pipelines/README.md#update) - Update pipeline
 * [delete](docs/sdks/pipelines/README.md#delete) - Delete pipeline
 
-#### [crm.users](docs/sdks/users/README.md)
+### [Crm.Users](docs/sdks/users/README.md)
 
 * [list](docs/sdks/users/README.md#list) - List users
 * [create](docs/sdks/users/README.md#create) - Create user
@@ -689,26 +689,26 @@ with Apideck(
 * [update](docs/sdks/users/README.md#update) - Update user
 * [delete](docs/sdks/users/README.md#delete) - Delete user
 
-#### [ecommerce.customers](docs/sdks/apideckcustomers/README.md)
+### [Ecommerce.Customers](docs/sdks/apideckcustomers/README.md)
 
 * [list](docs/sdks/apideckcustomers/README.md#list) - List Customers
 * [get](docs/sdks/apideckcustomers/README.md#get) - Get Customer
 
-#### [ecommerce.orders](docs/sdks/orders/README.md)
+### [Ecommerce.Orders](docs/sdks/orders/README.md)
 
 * [list](docs/sdks/orders/README.md#list) - List Orders
 * [get](docs/sdks/orders/README.md#get) - Get Order
 
-#### [ecommerce.products](docs/sdks/products/README.md)
+### [Ecommerce.Products](docs/sdks/products/README.md)
 
 * [list](docs/sdks/products/README.md#list) - List Products
 * [get](docs/sdks/products/README.md#get) - Get Product
 
-#### [ecommerce.stores](docs/sdks/stores/README.md)
+### [Ecommerce.Stores](docs/sdks/stores/README.md)
 
 * [get](docs/sdks/stores/README.md#get) - Get Store
 
-#### [file_storage.drive_groups](docs/sdks/drivegroups/README.md)
+### [FileStorage.DriveGroups](docs/sdks/drivegroups/README.md)
 
 * [list](docs/sdks/drivegroups/README.md#list) - List DriveGroups
 * [create](docs/sdks/drivegroups/README.md#create) - Create DriveGroup
@@ -716,7 +716,7 @@ with Apideck(
 * [update](docs/sdks/drivegroups/README.md#update) - Update DriveGroup
 * [delete](docs/sdks/drivegroups/README.md#delete) - Delete DriveGroup
 
-#### [file_storage.drives](docs/sdks/drives/README.md)
+### [FileStorage.Drives](docs/sdks/drives/README.md)
 
 * [list](docs/sdks/drives/README.md#list) - List Drives
 * [create](docs/sdks/drives/README.md#create) - Create Drive
@@ -724,7 +724,7 @@ with Apideck(
 * [update](docs/sdks/drives/README.md#update) - Update Drive
 * [delete](docs/sdks/drives/README.md#delete) - Delete Drive
 
-#### [file_storage.files](docs/sdks/files/README.md)
+### [FileStorage.Files](docs/sdks/files/README.md)
 
 * [list](docs/sdks/files/README.md#list) - List Files
 * [search](docs/sdks/files/README.md#search) - Search Files
@@ -734,7 +734,7 @@ with Apideck(
 * [download](docs/sdks/files/README.md#download) - Download File
 * [export](docs/sdks/files/README.md#export) - Export File
 
-#### [file_storage.folders](docs/sdks/folders/README.md)
+### [FileStorage.Folders](docs/sdks/folders/README.md)
 
 * [create](docs/sdks/folders/README.md#create) - Create Folder
 * [get](docs/sdks/folders/README.md#get) - Get Folder
@@ -742,7 +742,7 @@ with Apideck(
 * [delete](docs/sdks/folders/README.md#delete) - Delete Folder
 * [copy](docs/sdks/folders/README.md#copy) - Copy Folder
 
-#### [file_storage.shared_links](docs/sdks/sharedlinks/README.md)
+### [FileStorage.SharedLinks](docs/sdks/sharedlinks/README.md)
 
 * [list](docs/sdks/sharedlinks/README.md#list) - List Shared Links
 * [create](docs/sdks/sharedlinks/README.md#create) - Create Shared Link
@@ -750,7 +750,7 @@ with Apideck(
 * [update](docs/sdks/sharedlinks/README.md#update) - Update Shared Link
 * [delete](docs/sdks/sharedlinks/README.md#delete) - Delete Shared Link
 
-#### [file_storage.upload_sessions](docs/sdks/uploadsessions/README.md)
+### [FileStorage.UploadSessions](docs/sdks/uploadsessions/README.md)
 
 * [create](docs/sdks/uploadsessions/README.md#create) - Start Upload Session
 * [get](docs/sdks/uploadsessions/README.md#get) - Get Upload Session
@@ -758,7 +758,7 @@ with Apideck(
 * [delete](docs/sdks/uploadsessions/README.md#delete) - Abort Upload Session
 * [finish](docs/sdks/uploadsessions/README.md#finish) - Finish Upload Session
 
-#### [hris.companies](docs/sdks/apideckhriscompanies/README.md)
+### [Hris.Companies](docs/sdks/apideckhriscompanies/README.md)
 
 * [list](docs/sdks/apideckhriscompanies/README.md#list) - List Companies
 * [create](docs/sdks/apideckhriscompanies/README.md#create) - Create Company
@@ -766,7 +766,7 @@ with Apideck(
 * [update](docs/sdks/apideckhriscompanies/README.md#update) - Update Company
 * [delete](docs/sdks/apideckhriscompanies/README.md#delete) - Delete Company
 
-#### [hris.departments](docs/sdks/apideckdepartments/README.md)
+### [Hris.Departments](docs/sdks/apideckdepartments/README.md)
 
 * [list](docs/sdks/apideckdepartments/README.md#list) - List Departments
 * [create](docs/sdks/apideckdepartments/README.md#create) - Create Department
@@ -774,16 +774,12 @@ with Apideck(
 * [update](docs/sdks/apideckdepartments/README.md#update) - Update Department
 * [delete](docs/sdks/apideckdepartments/README.md#delete) - Delete Department
 
-#### [hris.employee_payrolls](docs/sdks/employeepayrolls/README.md)
+### [Hris.EmployeePayrolls](docs/sdks/employeepayrolls/README.md)
 
 * [list](docs/sdks/employeepayrolls/README.md#list) - List Employee Payrolls
 * [get](docs/sdks/employeepayrolls/README.md#get) - Get Employee Payroll
 
-#### [hris.employee_schedules](docs/sdks/employeeschedulessdk/README.md)
-
-* [list](docs/sdks/employeeschedulessdk/README.md#list) - List Employee Schedules
-
-#### [hris.employees](docs/sdks/apideckemployees/README.md)
+### [Hris.Employees](docs/sdks/apideckemployees/README.md)
 
 * [list](docs/sdks/apideckemployees/README.md#list) - List Employees
 * [create](docs/sdks/apideckemployees/README.md#create) - Create Employee
@@ -791,12 +787,16 @@ with Apideck(
 * [update](docs/sdks/apideckemployees/README.md#update) - Update Employee
 * [delete](docs/sdks/apideckemployees/README.md#delete) - Delete Employee
 
-#### [hris.payrolls](docs/sdks/payrolls/README.md)
+### [Hris.EmployeeSchedules](docs/sdks/employeeschedulessdk/README.md)
+
+* [list](docs/sdks/employeeschedulessdk/README.md#list) - List Employee Schedules
+
+### [Hris.Payrolls](docs/sdks/payrolls/README.md)
 
 * [list](docs/sdks/payrolls/README.md#list) - List Payroll
 * [get](docs/sdks/payrolls/README.md#get) - Get Payroll
 
-#### [hris.time_off_requests](docs/sdks/timeoffrequests/README.md)
+### [Hris.TimeOffRequests](docs/sdks/timeoffrequests/README.md)
 
 * [list](docs/sdks/timeoffrequests/README.md#list) - List Time Off Requests
 * [create](docs/sdks/timeoffrequests/README.md#create) - Create Time Off Request
@@ -804,11 +804,16 @@ with Apideck(
 * [update](docs/sdks/timeoffrequests/README.md#update) - Update Time Off Request
 * [delete](docs/sdks/timeoffrequests/README.md#delete) - Delete Time Off Request
 
-#### [issue_tracking.collection_tags](docs/sdks/collectiontags/README.md)
+### [IssueTracking.Collections](docs/sdks/collections/README.md)
+
+* [list](docs/sdks/collections/README.md#list) - List Collections
+* [get](docs/sdks/collections/README.md#get) - Get Collection
+
+### [IssueTracking.CollectionTags](docs/sdks/collectiontags/README.md)
 
 * [list](docs/sdks/collectiontags/README.md#list) - List Tags
 
-#### [issue_tracking.collection_ticket_comments](docs/sdks/collectionticketcomments/README.md)
+### [IssueTracking.CollectionTicketComments](docs/sdks/collectionticketcomments/README.md)
 
 * [list](docs/sdks/collectionticketcomments/README.md#list) - List Comments
 * [create](docs/sdks/collectionticketcomments/README.md#create) - Create Comment
@@ -816,7 +821,7 @@ with Apideck(
 * [update](docs/sdks/collectionticketcomments/README.md#update) - Update Comment
 * [delete](docs/sdks/collectionticketcomments/README.md#delete) - Delete Comment
 
-#### [issue_tracking.collection_tickets](docs/sdks/collectiontickets/README.md)
+### [IssueTracking.CollectionTickets](docs/sdks/collectiontickets/README.md)
 
 * [list](docs/sdks/collectiontickets/README.md#list) - List Tickets
 * [create](docs/sdks/collectiontickets/README.md#create) - Create Ticket
@@ -824,17 +829,12 @@ with Apideck(
 * [update](docs/sdks/collectiontickets/README.md#update) - Update Ticket
 * [delete](docs/sdks/collectiontickets/README.md#delete) - Delete Ticket
 
-#### [issue_tracking.collection_users](docs/sdks/collectionusers/README.md)
+### [IssueTracking.CollectionUsers](docs/sdks/collectionusers/README.md)
 
 * [list](docs/sdks/collectionusers/README.md#list) - List Users
 * [get](docs/sdks/collectionusers/README.md#get) - Get user
 
-#### [issue_tracking.collections](docs/sdks/collections/README.md)
-
-* [list](docs/sdks/collections/README.md#list) - List Collections
-* [get](docs/sdks/collections/README.md#get) - Get Collection
-
-### [proxy](docs/sdks/proxy/README.md)
+### [Proxy](docs/sdks/proxy/README.md)
 
 * [get](docs/sdks/proxy/README.md#get) - GET
 * [options](docs/sdks/proxy/README.md#options) - OPTIONS
@@ -843,7 +843,7 @@ with Apideck(
 * [patch](docs/sdks/proxy/README.md#patch) - PATCH
 * [delete](docs/sdks/proxy/README.md#delete) - DELETE
 
-#### [sms.messages](docs/sdks/messages/README.md)
+### [Sms.Messages](docs/sdks/messages/README.md)
 
 * [list](docs/sdks/messages/README.md#list) - List Messages
 * [create](docs/sdks/messages/README.md#create) - Create Message
@@ -851,24 +851,19 @@ with Apideck(
 * [update](docs/sdks/messages/README.md#update) - Update Message
 * [delete](docs/sdks/messages/README.md#delete) - Delete Message
 
-#### [vault.connection_consent](docs/sdks/connectionconsent/README.md)
+### [Vault.ConnectionConsent](docs/sdks/connectionconsent/README.md)
 
 * [update](docs/sdks/connectionconsent/README.md#update) - Update consent state
 
-#### [vault.connection_consents](docs/sdks/connectionconsents/README.md)
+### [Vault.ConnectionConsents](docs/sdks/connectionconsents/README.md)
 
 * [list](docs/sdks/connectionconsents/README.md#list) - Get consent records
 
-#### [vault.connection_custom_mappings](docs/sdks/connectioncustommappings/README.md)
+### [Vault.ConnectionCustomMappings](docs/sdks/connectioncustommappings/README.md)
 
 * [list](docs/sdks/connectioncustommappings/README.md#list) - List connection custom mappings
 
-#### [vault.connection_settings](docs/sdks/connectionsettings/README.md)
-
-* [list](docs/sdks/connectionsettings/README.md#list) - Get resource settings
-* [update](docs/sdks/connectionsettings/README.md#update) - Update settings
-
-#### [vault.connections](docs/sdks/connections/README.md)
+### [Vault.Connections](docs/sdks/connections/README.md)
 
 * [list](docs/sdks/connections/README.md#list) - Get all connections
 * [get](docs/sdks/connections/README.md#get) - Get connection
@@ -879,11 +874,16 @@ with Apideck(
 * [token](docs/sdks/connections/README.md#token) - Authorize Access Token
 * [confirm](docs/sdks/connections/README.md#confirm) - Confirm Connection
 
-#### [vault.consumer_request_counts](docs/sdks/consumerrequestcounts/README.md)
+### [Vault.ConnectionSettings](docs/sdks/connectionsettings/README.md)
+
+* [list](docs/sdks/connectionsettings/README.md#list) - Get resource settings
+* [update](docs/sdks/connectionsettings/README.md#update) - Update settings
+
+### [Vault.ConsumerRequestCounts](docs/sdks/consumerrequestcounts/README.md)
 
 * [list](docs/sdks/consumerrequestcounts/README.md#list) - Consumer request counts
 
-#### [vault.consumers](docs/sdks/consumers/README.md)
+### [Vault.Consumers](docs/sdks/consumers/README.md)
 
 * [create](docs/sdks/consumers/README.md#create) - Create consumer
 * [list](docs/sdks/consumers/README.md#list) - Get all consumers
@@ -891,35 +891,35 @@ with Apideck(
 * [update](docs/sdks/consumers/README.md#update) - Update consumer
 * [delete](docs/sdks/consumers/README.md#delete) - Delete consumer
 
-#### [vault.create_callback](docs/sdks/createcallback/README.md)
+### [Vault.CreateCallback](docs/sdks/createcallback/README.md)
 
 * [state](docs/sdks/createcallback/README.md#state) - Create Callback State
 
-#### [vault.custom_fields](docs/sdks/customfields/README.md)
+### [Vault.CustomFields](docs/sdks/customfields/README.md)
 
 * [list](docs/sdks/customfields/README.md#list) - Get resource custom fields
 
-#### [vault.custom_mappings](docs/sdks/custommappings/README.md)
+### [Vault.CustomMappings](docs/sdks/custommappings/README.md)
 
 * [list](docs/sdks/custommappings/README.md#list) - List custom mappings
 
-#### [vault.logs](docs/sdks/logs/README.md)
+### [Vault.Logs](docs/sdks/logs/README.md)
 
 * [list](docs/sdks/logs/README.md#list) - Get all consumer request logs
 
-#### [vault.sessions](docs/sdks/sessions/README.md)
+### [Vault.Sessions](docs/sdks/sessions/README.md)
 
 * [create](docs/sdks/sessions/README.md#create) - Create Session
 
-#### [vault.validate_connection](docs/sdks/validateconnection/README.md)
+### [Vault.ValidateConnection](docs/sdks/validateconnection/README.md)
 
 * [state](docs/sdks/validateconnection/README.md#state) - Validate Connection State
 
-#### [webhook.event_logs](docs/sdks/eventlogs/README.md)
+### [Webhook.EventLogs](docs/sdks/eventlogs/README.md)
 
 * [list](docs/sdks/eventlogs/README.md#list) - List event logs
 
-#### [webhook.webhooks](docs/sdks/webhooks/README.md)
+### [Webhook.Webhooks](docs/sdks/webhooks/README.md)
 
 * [list](docs/sdks/webhooks/README.md#list) - List webhook subscriptions
 * [create](docs/sdks/webhooks/README.md#create) - Create webhook subscription
@@ -946,7 +946,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.tax_rates.list(raw=False, service_id="salesforce", company_id="12345", limit=20, filter_={
@@ -986,7 +986,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.attachments.upload(reference_type=apideck_unify.AttachmentReferenceType.INVOICE, reference_id="123456", request_body=open("example.file", "rb"), raw=False, x_apideck_metadata="{\"name\":\"document.pdf\",\"description\":\"Invoice attachment\"}", service_id="salesforce")
@@ -1014,7 +1014,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.tax_rates.list(raw=False, service_id="salesforce", company_id="12345", limit=20, filter_={
@@ -1046,7 +1046,7 @@ with Apideck(
     retry_config=RetryConfig("backoff", BackoffStrategy(1, 50, 1.1, 100), False),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.tax_rates.list(raw=False, service_id="salesforce", company_id="12345", limit=20, filter_={
@@ -1091,7 +1091,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
     res = None
     try:
@@ -1174,7 +1174,7 @@ with Apideck(
     server_url="https://unify.apideck.com",
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.tax_rates.list(raw=False, service_id="salesforce", company_id="12345", limit=20, filter_={
@@ -1206,7 +1206,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.attachments.upload(reference_type=apideck_unify.AttachmentReferenceType.INVOICE, reference_id="123456", request_body=open("example.file", "rb"), raw=False, x_apideck_metadata="{\"name\":\"document.pdf\",\"description\":\"Invoice attachment\"}", service_id="salesforce", server_url="https://upload.apideck.com")
@@ -1298,6 +1298,20 @@ class CustomClient(AsyncHttpClient):
 
 s = Apideck(async_client=CustomClient(httpx.AsyncClient()))
 ```
+### httpx2 (Pydantic's httpx fork)
+
+[httpx2](https://httpx2.pydantic.dev/) is Pydantic's maintained fork of `httpx`. To run this SDK on httpx2, call `alias_httpx()` at your program's entry point, before importing the SDK, so every `import httpx` — including the ones inside the SDK — resolves to `httpx2`:
+```python
+import httpx2
+
+httpx2.alias_httpx()
+
+from apideck_unify import Apideck
+
+s = Apideck()
+```
+
+An SDK can also be generated against httpx2 directly, so it depends on the fork instead of `httpx`, by setting `python.httpClientLibrary: httpx2` in `gen.yaml`.
 <!-- End Custom HTTP Client [http-client] -->
 
 <!-- Start Resource Management [resource-management] -->
@@ -1315,9 +1329,10 @@ def main():
     with Apideck(
         consumer_id="test-consumer",
         app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-        api_key=os.getenv("APIDECK_API_KEY", ""),
+        api_key=os.getenv("APIDECK_API_KEY"),
     ) as apideck:
         # Rest of application here...
+        pass
 
 
 # Or when using async:
@@ -1326,9 +1341,10 @@ async def amain():
     async with Apideck(
         consumer_id="test-consumer",
         app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-        api_key=os.getenv("APIDECK_API_KEY", ""),
+        api_key=os.getenv("APIDECK_API_KEY"),
     ) as apideck:
         # Rest of application here...
+        pass
 ```
 <!-- End Resource Management [resource-management] -->
 
@@ -1346,7 +1362,7 @@ logging.basicConfig(level=logging.DEBUG)
 s = Apideck(debug_logger=logging.getLogger("apideck_unify"))
 ```
 
-You can also enable a default debug logger by setting an environment variable `APIDECK_DEBUG` to true.
+You can also enable a default debug logger by setting an environment variable `APIDECK_DEBUG` to `true`, `1`, `yes` or `on` (case-insensitive). Any other value leaves it off.
 <!-- End Debugging [debug] -->
 
 <!-- Placeholder for Future Speakeasy SDK Sections -->

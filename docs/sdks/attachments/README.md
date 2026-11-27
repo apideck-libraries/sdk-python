@@ -1,5 +1,4 @@
-# Attachments
-(*accounting.attachments*)
+# Accounting.Attachments
 
 ## Overview
 
@@ -27,7 +26,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.attachments.list(reference_type=apideck_unify.AttachmentReferenceType.INVOICE, reference_id="123456", raw=False, service_id="salesforce", company_id="12345", limit=20, fields="id,updated_at", pass_through={
@@ -80,7 +79,7 @@ Upload attachment
 
 ### Example Usage
 
-<!-- UsageSnippet language="python" operationID="accounting.attachmentsUpload" method="post" path="/accounting/attachments/{reference_type}/{reference_id}" -->
+<!-- UsageSnippet language="python" operationID="accounting.attachmentsUpload" method="post" path="/accounting/attachments/{reference_type}/{reference_id}" example="basic" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -90,10 +89,10 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
-    res = apideck.accounting.attachments.upload(reference_type=apideck_unify.AttachmentReferenceType.INVOICE, reference_id="123456", request_body=open("example.file", "rb"), raw=False, x_apideck_metadata="{\"name\":\"document.pdf\",\"description\":\"Invoice attachment\"}", service_id="salesforce")
+    res = apideck.accounting.attachments.upload(reference_type=apideck_unify.AttachmentReferenceType.INVOICE, reference_id="12345", request_body=open("example.file", "rb"), raw=False, x_apideck_metadata="{\"name\":\"document.pdf\",\"description\":\"Invoice attachment\"}", service_id="salesforce")
 
     assert res.create_attachment_response is not None
 
@@ -108,7 +107,7 @@ with Apideck(
 | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
 | `reference_type`                                                                                                                              | [models.AttachmentReferenceType](../../models/attachmentreferencetype.md)                                                                     | :heavy_check_mark:                                                                                                                            | The reference type of the document.                                                                                                           | invoice                                                                                                                                       |
 | `reference_id`                                                                                                                                | *str*                                                                                                                                         | :heavy_check_mark:                                                                                                                            | The reference id of the object to retrieve.                                                                                                   | 12345                                                                                                                                         |
-| `request_body`                                                                                                                                | *Union[bytes, IO[bytes], io.BufferedReader]*                                                                                                  | :heavy_check_mark:                                                                                                                            | N/A                                                                                                                                           |                                                                                                                                               |
+| `request_body`                                                                                                                                | *Union[bytes, IO[bytes], io.IOBase]*                                                                                                          | :heavy_check_mark:                                                                                                                            | N/A                                                                                                                                           |                                                                                                                                               |
 | `raw`                                                                                                                                         | *Optional[bool]*                                                                                                                              | :heavy_minus_sign:                                                                                                                            | Include raw response. Mostly used for debugging purposes                                                                                      |                                                                                                                                               |
 | `x_apideck_metadata`                                                                                                                          | *Optional[str]*                                                                                                                               | :heavy_minus_sign:                                                                                                                            | Metadata to attach to the attachment file (JSON string)                                                                                       |                                                                                                                                               |
 | `consumer_id`                                                                                                                                 | *Optional[str]*                                                                                                                               | :heavy_minus_sign:                                                                                                                            | ID of the consumer which you want to get or push data from                                                                                    | test-consumer                                                                                                                                 |
@@ -149,7 +148,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.attachments.get(reference_type=apideck_unify.AttachmentReferenceType.INVOICE, reference_id="123456", id="<id>", service_id="salesforce", company_id="12345", raw=False, fields="id,updated_at")
@@ -208,7 +207,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.attachments.delete(reference_type=apideck_unify.AttachmentReferenceType.INVOICE, reference_id="123456", id="<id>", service_id="salesforce", raw=False)
@@ -265,7 +264,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.attachments.download(reference_type=apideck_unify.AttachmentReferenceType.INVOICE, reference_id="123456", id="<id>", service_id="salesforce", company_id="12345", fields="id,updated_at", follow_redirects=False)

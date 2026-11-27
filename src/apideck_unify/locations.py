@@ -7,7 +7,7 @@ from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from jsonpath import JSONPath
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
 
 
 class Locations(BaseSDK):
@@ -28,7 +28,7 @@ class Locations(BaseSDK):
                 models.AccountingLocationsFilterTypedDict,
             ]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -75,7 +75,7 @@ class Locations(BaseSDK):
             filter_=utils.get_pydantic_model(
                 filter_, Optional[models.AccountingLocationsFilter]
             ),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
         )
 
         req = self._build_request(
@@ -95,6 +95,7 @@ class Locations(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -119,9 +120,51 @@ class Locations(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "restaurant365",
+                            "description": "`status` is always reported as `active`. R365's location payload does not expose an\nactive/inactive flag, so an inactive or archived location cannot currently be\ndistinguished from an active one through this connector.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": 'The minimun page size accepted for Netsuite is 5. The cursor for Netsuite expires if they have not been used within 15 minutes after its creation.\nA **Default Subsidiary** on the connection scopes this list, and this list does not follow the same rule transactions do: a record marked "include children" in NetSuite **is** returned for every descendant subsidiary, whereas filtering transactions by a parent subsidiary is **not**.\n',
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "Returns the full set of Intacct `LOCATION` records — every location, whether or not it\nis flagged as a legal entity. For only entity-flagged locations (legal sub-companies under\nthe top-level company), use `companies` or `subsidiaries`, which query Intacct's\n`LOCATIONENTITY` view.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks Online does not expose a reliable cross-page total record count. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite uses the same underlying QuickBooks API. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "If you encounter a '400 Bad Request' error indicating \"Control 'fieldName' is read-only\" it means the 'editable' property for this field in Microsoft Dynamics 365 Business Central is currently set to false. To resolve this issue and make the field writable, simply update the 'editable' property to true in Microsoft Dynamics 365 Business Central. Additionally, line item tax rates must be specified by tax rate *code* (e.g., \"G3\"), not by ID. In U.S.-regionalized Business Central tenants, the `tax_inclusive` field cannot be set to `true`.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Xero limits to 10 attachments per resource (invoices/bills) of 3.5MB each.",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "AFAS does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -148,17 +191,21 @@ class Locations(BaseSDK):
                 filter_=filter_,
                 pass_through=pass_through,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingLocationsAllResponse(
                 get_accounting_locations_response=unmarshal_json_response(
-                    Optional[models.GetAccountingLocationsResponse], http_res
+                    Optional[models.GetAccountingLocationsResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -199,11 +246,10 @@ class Locations(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingLocationsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -225,7 +271,7 @@ class Locations(BaseSDK):
                 models.AccountingLocationsFilterTypedDict,
             ]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -272,7 +318,7 @@ class Locations(BaseSDK):
             filter_=utils.get_pydantic_model(
                 filter_, Optional[models.AccountingLocationsFilter]
             ),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
         )
 
         req = self._build_request_async(
@@ -292,6 +338,7 @@ class Locations(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -316,9 +363,51 @@ class Locations(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "restaurant365",
+                            "description": "`status` is always reported as `active`. R365's location payload does not expose an\nactive/inactive flag, so an inactive or archived location cannot currently be\ndistinguished from an active one through this connector.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": 'The minimun page size accepted for Netsuite is 5. The cursor for Netsuite expires if they have not been used within 15 minutes after its creation.\nA **Default Subsidiary** on the connection scopes this list, and this list does not follow the same rule transactions do: a record marked "include children" in NetSuite **is** returned for every descendant subsidiary, whereas filtering transactions by a parent subsidiary is **not**.\n',
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "Returns the full set of Intacct `LOCATION` records — every location, whether or not it\nis flagged as a legal entity. For only entity-flagged locations (legal sub-companies under\nthe top-level company), use `companies` or `subsidiaries`, which query Intacct's\n`LOCATIONENTITY` view.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks Online does not expose a reliable cross-page total record count. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite uses the same underlying QuickBooks API. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "If you encounter a '400 Bad Request' error indicating \"Control 'fieldName' is read-only\" it means the 'editable' property for this field in Microsoft Dynamics 365 Business Central is currently set to false. To resolve this issue and make the field writable, simply update the 'editable' property to true in Microsoft Dynamics 365 Business Central. Additionally, line item tax rates must be specified by tax rate *code* (e.g., \"G3\"), not by ID. In U.S.-regionalized Business Central tenants, the `tax_inclusive` field cannot be set to `true`.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Xero limits to 10 attachments per resource (invoices/bills) of 3.5MB each.",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "AFAS does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -345,17 +434,21 @@ class Locations(BaseSDK):
                 filter_=filter_,
                 pass_through=pass_through,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingLocationsAllResponse(
                 get_accounting_locations_response=unmarshal_json_response(
-                    Optional[models.GetAccountingLocationsResponse], http_res
+                    Optional[models.GetAccountingLocationsResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -396,11 +489,10 @@ class Locations(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingLocationsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -419,17 +511,20 @@ class Locations(BaseSDK):
         display_name: OptionalNullable[str] = UNSET,
         status: Optional[models.LocationStatus] = None,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         subsidiaries: Optional[
             Union[
-                List[models.SubsidiaryReferenceInput],
-                List[models.SubsidiaryReferenceInputTypedDict],
+                Iterable[models.SubsidiaryReferenceInput],
+                Iterable[models.SubsidiaryReferenceInputTypedDict],
             ]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -518,6 +613,7 @@ class Locations(BaseSDK):
                 "json",
                 models.AccountingLocationInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -542,9 +638,11 @@ class Locations(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={"x-apideck-api": "accounting", "x-apideck-gotchas": None},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -552,10 +650,11 @@ class Locations(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingLocationsAddResponse(
                 create_accounting_location_response=unmarshal_json_response(
-                    Optional[models.CreateAccountingLocationResponse], http_res
+                    Optional[models.CreateAccountingLocationResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -596,10 +695,9 @@ class Locations(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingLocationsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -618,17 +716,20 @@ class Locations(BaseSDK):
         display_name: OptionalNullable[str] = UNSET,
         status: Optional[models.LocationStatus] = None,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         subsidiaries: Optional[
             Union[
-                List[models.SubsidiaryReferenceInput],
-                List[models.SubsidiaryReferenceInputTypedDict],
+                Iterable[models.SubsidiaryReferenceInput],
+                Iterable[models.SubsidiaryReferenceInputTypedDict],
             ]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -717,6 +818,7 @@ class Locations(BaseSDK):
                 "json",
                 models.AccountingLocationInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -741,9 +843,11 @@ class Locations(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={"x-apideck-api": "accounting", "x-apideck-gotchas": None},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -751,10 +855,11 @@ class Locations(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingLocationsAddResponse(
                 create_accounting_location_response=unmarshal_json_response(
-                    Optional[models.CreateAccountingLocationResponse], http_res
+                    Optional[models.CreateAccountingLocationResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -795,10 +900,9 @@ class Locations(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingLocationsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -871,6 +975,7 @@ class Locations(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -895,9 +1000,11 @@ class Locations(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={"x-apideck-api": "accounting"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -905,10 +1012,11 @@ class Locations(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingLocationsOneResponse(
                 get_accounting_location_response=unmarshal_json_response(
-                    Optional[models.GetAccountingLocationResponse], http_res
+                    Optional[models.GetAccountingLocationResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -949,10 +1057,9 @@ class Locations(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingLocationsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1025,6 +1132,7 @@ class Locations(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1049,9 +1157,11 @@ class Locations(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={"x-apideck-api": "accounting"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1059,10 +1169,11 @@ class Locations(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingLocationsOneResponse(
                 get_accounting_location_response=unmarshal_json_response(
-                    Optional[models.GetAccountingLocationResponse], http_res
+                    Optional[models.GetAccountingLocationResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1103,10 +1214,9 @@ class Locations(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingLocationsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1126,17 +1236,20 @@ class Locations(BaseSDK):
         display_name: OptionalNullable[str] = UNSET,
         status: Optional[models.LocationStatus] = None,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         subsidiaries: Optional[
             Union[
-                List[models.SubsidiaryReferenceInput],
-                List[models.SubsidiaryReferenceInputTypedDict],
+                Iterable[models.SubsidiaryReferenceInput],
+                Iterable[models.SubsidiaryReferenceInputTypedDict],
             ]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1227,6 +1340,7 @@ class Locations(BaseSDK):
                 "json",
                 models.AccountingLocationInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1251,9 +1365,11 @@ class Locations(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={"x-apideck-api": "accounting", "x-apideck-gotchas": None},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1261,10 +1377,11 @@ class Locations(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingLocationsUpdateResponse(
                 update_accounting_location_response=unmarshal_json_response(
-                    Optional[models.UpdateAccountingLocationResponse], http_res
+                    Optional[models.UpdateAccountingLocationResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1305,10 +1422,9 @@ class Locations(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingLocationsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1328,17 +1444,20 @@ class Locations(BaseSDK):
         display_name: OptionalNullable[str] = UNSET,
         status: Optional[models.LocationStatus] = None,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         subsidiaries: Optional[
             Union[
-                List[models.SubsidiaryReferenceInput],
-                List[models.SubsidiaryReferenceInputTypedDict],
+                Iterable[models.SubsidiaryReferenceInput],
+                Iterable[models.SubsidiaryReferenceInputTypedDict],
             ]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1429,6 +1548,7 @@ class Locations(BaseSDK):
                 "json",
                 models.AccountingLocationInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1453,9 +1573,11 @@ class Locations(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={"x-apideck-api": "accounting", "x-apideck-gotchas": None},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1463,10 +1585,11 @@ class Locations(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingLocationsUpdateResponse(
                 update_accounting_location_response=unmarshal_json_response(
-                    Optional[models.UpdateAccountingLocationResponse], http_res
+                    Optional[models.UpdateAccountingLocationResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1507,10 +1630,9 @@ class Locations(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingLocationsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1580,6 +1702,7 @@ class Locations(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1604,9 +1727,11 @@ class Locations(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={"x-apideck-api": "accounting"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1614,10 +1739,11 @@ class Locations(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingLocationsDeleteResponse(
                 delete_accounting_location_response=unmarshal_json_response(
-                    Optional[models.DeleteAccountingLocationResponse], http_res
+                    Optional[models.DeleteAccountingLocationResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1658,10 +1784,9 @@ class Locations(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingLocationsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1731,6 +1856,7 @@ class Locations(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1755,9 +1881,11 @@ class Locations(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={"x-apideck-api": "accounting"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1765,10 +1893,11 @@ class Locations(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingLocationsDeleteResponse(
                 delete_accounting_location_response=unmarshal_json_response(
-                    Optional[models.DeleteAccountingLocationResponse], http_res
+                    Optional[models.DeleteAccountingLocationResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1809,10 +1938,9 @@ class Locations(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingLocationsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

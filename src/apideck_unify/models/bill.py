@@ -31,14 +31,15 @@ from apideck_unify.types import (
     OptionalNullable,
     UNSET,
     UNSET_SENTINEL,
+    current_exclude_none,
+    serialize_with_info,
 )
-from apideck_unify.utils import validate_open_enum
+from apideck_unify.types.basemodel import current_filtered_dump
 from datetime import date, datetime
 from enum import Enum
 from pydantic import field_serializer, model_serializer
-from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
-from typing_extensions import Annotated, NotRequired, TypedDict
+from typing_extensions import NotRequired, TypedDict
 
 
 class BillStatus(str, Enum, metaclass=utils.OpenEnumMeta):
@@ -199,9 +200,7 @@ class Bill(BaseModel):
     department_id: OptionalNullable[str] = UNSET
     r"""The ID of the department"""
 
-    currency: Annotated[
-        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    currency: OptionalNullable[Currency] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     currency_rate: OptionalNullable[float] = UNSET
@@ -253,9 +252,7 @@ class Bill(BaseModel):
 
     notes: OptionalNullable[str] = UNSET
 
-    status: Annotated[
-        OptionalNullable[BillStatus], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    status: OptionalNullable[BillStatus] = UNSET
     r"""Invoice status"""
 
     payment_hold: OptionalNullable[bool] = UNSET
@@ -286,9 +283,7 @@ class Bill(BaseModel):
     approved_by: OptionalNullable[str] = UNSET
     r"""The user who approved the bill"""
 
-    amortization_type: Annotated[
-        OptionalNullable[AmortizationType], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    amortization_type: OptionalNullable[AmortizationType] = UNSET
     r"""Type of amortization"""
 
     tax_method: OptionalNullable[str] = UNSET
@@ -366,136 +361,142 @@ class Bill(BaseModel):
         return value
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = [
-            "id",
-            "downstream_id",
-            "display_id",
-            "bill_number",
-            "supplier",
-            "company_id",
-            "subsidiary",
-            "location_id",
-            "department_id",
-            "currency",
-            "currency_rate",
-            "tax_inclusive",
-            "bill_date",
-            "due_date",
-            "paid_date",
-            "po_number",
-            "reference",
-            "line_items",
-            "terms",
-            "terms_id",
-            "balance",
-            "deposit",
-            "sub_total",
-            "total_tax",
-            "total",
-            "tax_code",
-            "notes",
-            "status",
-            "payment_hold",
-            "ledger_account",
-            "payment_method",
-            "channel",
-            "language",
-            "accounting_by_row",
-            "bank_account",
-            "discount_percentage",
-            "template_id",
-            "approved_by",
-            "amortization_type",
-            "tax_method",
-            "document_received",
-            "source_document_url",
-            "payment_allocations",
-            "tracking_categories",
-            "updated_by",
-            "created_by",
-            "updated_at",
-            "created_at",
-            "row_version",
-            "custom_fields",
-            "custom_mappings",
-            "pass_through",
-            "accounting_period",
-            "attachments",
-        ]
-        nullable_fields = [
-            "downstream_id",
-            "display_id",
-            "bill_number",
-            "supplier",
-            "company_id",
-            "subsidiary",
-            "location_id",
-            "department_id",
-            "currency",
-            "currency_rate",
-            "tax_inclusive",
-            "bill_date",
-            "due_date",
-            "paid_date",
-            "po_number",
-            "reference",
-            "terms",
-            "terms_id",
-            "balance",
-            "deposit",
-            "sub_total",
-            "total_tax",
-            "total",
-            "tax_code",
-            "notes",
-            "status",
-            "payment_hold",
-            "ledger_account",
-            "payment_method",
-            "channel",
-            "language",
-            "accounting_by_row",
-            "discount_percentage",
-            "template_id",
-            "approved_by",
-            "amortization_type",
-            "tax_method",
-            "document_received",
-            "source_document_url",
-            "payment_allocations",
-            "tracking_categories",
-            "updated_by",
-            "created_by",
-            "updated_at",
-            "created_at",
-            "row_version",
-            "custom_mappings",
-            "accounting_period",
-        ]
-        null_default_fields = []
-
+        optional_fields = set(
+            [
+                "id",
+                "downstream_id",
+                "display_id",
+                "bill_number",
+                "supplier",
+                "company_id",
+                "subsidiary",
+                "location_id",
+                "department_id",
+                "currency",
+                "currency_rate",
+                "tax_inclusive",
+                "bill_date",
+                "due_date",
+                "paid_date",
+                "po_number",
+                "reference",
+                "line_items",
+                "terms",
+                "terms_id",
+                "balance",
+                "deposit",
+                "sub_total",
+                "total_tax",
+                "total",
+                "tax_code",
+                "notes",
+                "status",
+                "payment_hold",
+                "ledger_account",
+                "payment_method",
+                "channel",
+                "language",
+                "accounting_by_row",
+                "bank_account",
+                "discount_percentage",
+                "template_id",
+                "approved_by",
+                "amortization_type",
+                "tax_method",
+                "document_received",
+                "source_document_url",
+                "payment_allocations",
+                "tracking_categories",
+                "updated_by",
+                "created_by",
+                "updated_at",
+                "created_at",
+                "row_version",
+                "custom_fields",
+                "custom_mappings",
+                "pass_through",
+                "accounting_period",
+                "attachments",
+            ]
+        )
+        nullable_fields = set(
+            [
+                "downstream_id",
+                "display_id",
+                "bill_number",
+                "supplier",
+                "company_id",
+                "subsidiary",
+                "location_id",
+                "department_id",
+                "currency",
+                "currency_rate",
+                "tax_inclusive",
+                "bill_date",
+                "due_date",
+                "paid_date",
+                "po_number",
+                "reference",
+                "terms",
+                "terms_id",
+                "balance",
+                "deposit",
+                "sub_total",
+                "total_tax",
+                "total",
+                "tax_code",
+                "notes",
+                "status",
+                "payment_hold",
+                "ledger_account",
+                "payment_method",
+                "channel",
+                "language",
+                "accounting_by_row",
+                "discount_percentage",
+                "template_id",
+                "approved_by",
+                "amortization_type",
+                "tax_method",
+                "document_received",
+                "source_document_url",
+                "payment_allocations",
+                "tracking_categories",
+                "updated_by",
+                "created_by",
+                "updated_at",
+                "created_at",
+                "row_version",
+                "custom_mappings",
+                "accounting_period",
+            ]
+        )
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m
 
@@ -613,9 +614,7 @@ class BillInput(BaseModel):
     department_id: OptionalNullable[str] = UNSET
     r"""The ID of the department"""
 
-    currency: Annotated[
-        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    currency: OptionalNullable[Currency] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     currency_rate: OptionalNullable[float] = UNSET
@@ -667,9 +666,7 @@ class BillInput(BaseModel):
 
     notes: OptionalNullable[str] = UNSET
 
-    status: Annotated[
-        OptionalNullable[BillStatus], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    status: OptionalNullable[BillStatus] = UNSET
     r"""Invoice status"""
 
     ledger_account: OptionalNullable[LinkedLedgerAccount] = UNSET
@@ -697,9 +694,7 @@ class BillInput(BaseModel):
     approved_by: OptionalNullable[str] = UNSET
     r"""The user who approved the bill"""
 
-    amortization_type: Annotated[
-        OptionalNullable[AmortizationType], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    amortization_type: OptionalNullable[AmortizationType] = UNSET
     r"""Type of amortization"""
 
     tax_method: OptionalNullable[str] = UNSET
@@ -762,120 +757,126 @@ class BillInput(BaseModel):
         return value
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = [
-            "display_id",
-            "bill_number",
-            "supplier",
-            "company_id",
-            "subsidiary",
-            "location_id",
-            "department_id",
-            "currency",
-            "currency_rate",
-            "tax_inclusive",
-            "bill_date",
-            "due_date",
-            "paid_date",
-            "po_number",
-            "reference",
-            "line_items",
-            "terms",
-            "terms_id",
-            "balance",
-            "deposit",
-            "sub_total",
-            "total_tax",
-            "total",
-            "tax_code",
-            "notes",
-            "status",
-            "ledger_account",
-            "payment_method",
-            "channel",
-            "language",
-            "accounting_by_row",
-            "bank_account",
-            "discount_percentage",
-            "template_id",
-            "approved_by",
-            "amortization_type",
-            "tax_method",
-            "document_received",
-            "source_document_url",
-            "payment_allocations",
-            "tracking_categories",
-            "row_version",
-            "custom_fields",
-            "pass_through",
-            "accounting_period",
-            "attachments",
-        ]
-        nullable_fields = [
-            "display_id",
-            "bill_number",
-            "supplier",
-            "company_id",
-            "subsidiary",
-            "location_id",
-            "department_id",
-            "currency",
-            "currency_rate",
-            "tax_inclusive",
-            "bill_date",
-            "due_date",
-            "paid_date",
-            "po_number",
-            "reference",
-            "terms",
-            "terms_id",
-            "balance",
-            "deposit",
-            "sub_total",
-            "total_tax",
-            "total",
-            "tax_code",
-            "notes",
-            "status",
-            "ledger_account",
-            "payment_method",
-            "channel",
-            "language",
-            "accounting_by_row",
-            "discount_percentage",
-            "template_id",
-            "approved_by",
-            "amortization_type",
-            "tax_method",
-            "document_received",
-            "source_document_url",
-            "payment_allocations",
-            "tracking_categories",
-            "row_version",
-            "accounting_period",
-        ]
-        null_default_fields = []
-
+        optional_fields = set(
+            [
+                "display_id",
+                "bill_number",
+                "supplier",
+                "company_id",
+                "subsidiary",
+                "location_id",
+                "department_id",
+                "currency",
+                "currency_rate",
+                "tax_inclusive",
+                "bill_date",
+                "due_date",
+                "paid_date",
+                "po_number",
+                "reference",
+                "line_items",
+                "terms",
+                "terms_id",
+                "balance",
+                "deposit",
+                "sub_total",
+                "total_tax",
+                "total",
+                "tax_code",
+                "notes",
+                "status",
+                "ledger_account",
+                "payment_method",
+                "channel",
+                "language",
+                "accounting_by_row",
+                "bank_account",
+                "discount_percentage",
+                "template_id",
+                "approved_by",
+                "amortization_type",
+                "tax_method",
+                "document_received",
+                "source_document_url",
+                "payment_allocations",
+                "tracking_categories",
+                "row_version",
+                "custom_fields",
+                "pass_through",
+                "accounting_period",
+                "attachments",
+            ]
+        )
+        nullable_fields = set(
+            [
+                "display_id",
+                "bill_number",
+                "supplier",
+                "company_id",
+                "subsidiary",
+                "location_id",
+                "department_id",
+                "currency",
+                "currency_rate",
+                "tax_inclusive",
+                "bill_date",
+                "due_date",
+                "paid_date",
+                "po_number",
+                "reference",
+                "terms",
+                "terms_id",
+                "balance",
+                "deposit",
+                "sub_total",
+                "total_tax",
+                "total",
+                "tax_code",
+                "notes",
+                "status",
+                "ledger_account",
+                "payment_method",
+                "channel",
+                "language",
+                "accounting_by_row",
+                "discount_percentage",
+                "template_id",
+                "approved_by",
+                "amortization_type",
+                "tax_method",
+                "document_received",
+                "source_document_url",
+                "payment_allocations",
+                "tracking_categories",
+                "row_version",
+                "accounting_period",
+            ]
+        )
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m

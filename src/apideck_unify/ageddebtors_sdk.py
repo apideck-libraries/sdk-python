@@ -21,7 +21,7 @@ class AgedDebtorsSDK(BaseSDK):
         filter_: Optional[
             Union[models.AgedReportFilter, models.AgedReportFilterTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -64,7 +64,7 @@ class AgedDebtorsSDK(BaseSDK):
             filter_=utils.get_pydantic_model(
                 filter_, Optional[models.AgedReportFilter]
             ),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -85,6 +85,7 @@ class AgedDebtorsSDK(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -109,9 +110,35 @@ class AgedDebtorsSDK(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "e-boekhouden",
+                            "description": "`filter[period_count]`, `filter[period_length]` and `filter[report_as_of_date]` are not\nexposed as request filters on this connector, so any request that sets them is rejected\n(400, unsupported filter) before it reaches this report — the report always returns 4\nperiods of 30 days each, as of today.\n\nAging is bucketed by transaction date, since e-Boekhouden's outstanding-invoice rows carry\nno separate due date.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "Minox reports what is outstanding today: `filter[report_as_of_date]` ages today's open invoices as of that date and leaves out invoices dated after it, but cannot restore invoices that have been paid since. Items are aged by due date, and amounts in other currencies are reported per currency. Each item's `transaction_id` is Minox's own open-item id, not the invoice id; `transaction_number` is the invoice number.\n",
+                        },
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Built from QuickBooks Desktop's `ARAgingDetail` report, generated live on every request: the call\nwaits up to 25 seconds for the next Web Connector run (about once a minute, occasionally\ntwo) and returns 408 if it does not happen in time; the report job stays queued, so repeat\nthe same request shortly after and it returns the finished report.\n`filter[report_as_of_date]` is the date the report is run as of (today in UTC when left\nout): every customer transaction still open on that date is listed, including ones not yet\ndue (period 0, \"current\") and unapplied payments and credits (negative `outstanding_balance`).\nQuickBooks ages by due date (transaction date for payments and credits) and the rows are\nre-bucketed against `filter[period_count]` (default 4) and `filter[period_length]` (default\n30 days), so the periods match the request exactly. `filter[customer_id]` restricts the report to one\ncustomer. `customer_id` is the QuickBooks ListID (the id `GET /accounting/customers/{id}` takes) and `transaction_id` the\nTxnID, both resolved from the synced store by name and by type + date + number + name. The\ntwo lookups are independent: when the customer is not found `customer_id` is empty; when the\ntransaction is not found `transaction_id` is omitted and `original_amount` falls back to the\nopen balance (poll again after the next sync).\n`original_amount` is the transaction's own total (invoices and credit memos include sales tax).\n`currency` is null: QuickBooks Desktop reports in the home currency. `report_generated_at`\nis when the Web Connector returned the report.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "For customers with an exceptionally large number of open invoices, report generation\nmay take longer since Zoho returns invoices in batches of 200 and every batch is\nfetched before the report is built. Use `filter[customer_id]` to scope the report to\na single customer if this becomes noticeable.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Reading this report needs the `accounting.reports.aged.read` scope (or the legacy\n`accounting.reports.read`) on the connection's Xero grant. When the grant lacks both, the\nrequest is refused with a `403` that names the missing scope, before anything is sent to\nXero. Re-authorize the connection with `accounting.reports.aged.read` to use this endpoint.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -119,10 +146,9 @@ class AgedDebtorsSDK(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingAgedDebtorsOneResponse(
                 get_aged_debtors_response=unmarshal_json_response(
-                    Optional[models.GetAgedDebtorsResponse], http_res
+                    Optional[models.GetAgedDebtorsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -163,10 +189,9 @@ class AgedDebtorsSDK(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingAgedDebtorsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -182,7 +207,7 @@ class AgedDebtorsSDK(BaseSDK):
         filter_: Optional[
             Union[models.AgedReportFilter, models.AgedReportFilterTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -225,7 +250,7 @@ class AgedDebtorsSDK(BaseSDK):
             filter_=utils.get_pydantic_model(
                 filter_, Optional[models.AgedReportFilter]
             ),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -246,6 +271,7 @@ class AgedDebtorsSDK(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -270,9 +296,35 @@ class AgedDebtorsSDK(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "e-boekhouden",
+                            "description": "`filter[period_count]`, `filter[period_length]` and `filter[report_as_of_date]` are not\nexposed as request filters on this connector, so any request that sets them is rejected\n(400, unsupported filter) before it reaches this report — the report always returns 4\nperiods of 30 days each, as of today.\n\nAging is bucketed by transaction date, since e-Boekhouden's outstanding-invoice rows carry\nno separate due date.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "Minox reports what is outstanding today: `filter[report_as_of_date]` ages today's open invoices as of that date and leaves out invoices dated after it, but cannot restore invoices that have been paid since. Items are aged by due date, and amounts in other currencies are reported per currency. Each item's `transaction_id` is Minox's own open-item id, not the invoice id; `transaction_number` is the invoice number.\n",
+                        },
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Built from QuickBooks Desktop's `ARAgingDetail` report, generated live on every request: the call\nwaits up to 25 seconds for the next Web Connector run (about once a minute, occasionally\ntwo) and returns 408 if it does not happen in time; the report job stays queued, so repeat\nthe same request shortly after and it returns the finished report.\n`filter[report_as_of_date]` is the date the report is run as of (today in UTC when left\nout): every customer transaction still open on that date is listed, including ones not yet\ndue (period 0, \"current\") and unapplied payments and credits (negative `outstanding_balance`).\nQuickBooks ages by due date (transaction date for payments and credits) and the rows are\nre-bucketed against `filter[period_count]` (default 4) and `filter[period_length]` (default\n30 days), so the periods match the request exactly. `filter[customer_id]` restricts the report to one\ncustomer. `customer_id` is the QuickBooks ListID (the id `GET /accounting/customers/{id}` takes) and `transaction_id` the\nTxnID, both resolved from the synced store by name and by type + date + number + name. The\ntwo lookups are independent: when the customer is not found `customer_id` is empty; when the\ntransaction is not found `transaction_id` is omitted and `original_amount` falls back to the\nopen balance (poll again after the next sync).\n`original_amount` is the transaction's own total (invoices and credit memos include sales tax).\n`currency` is null: QuickBooks Desktop reports in the home currency. `report_generated_at`\nis when the Web Connector returned the report.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "For customers with an exceptionally large number of open invoices, report generation\nmay take longer since Zoho returns invoices in batches of 200 and every batch is\nfetched before the report is built. Use `filter[customer_id]` to scope the report to\na single customer if this becomes noticeable.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Reading this report needs the `accounting.reports.aged.read` scope (or the legacy\n`accounting.reports.read`) on the connection's Xero grant. When the grant lacks both, the\nrequest is refused with a `403` that names the missing scope, before anything is sent to\nXero. Re-authorize the connection with `accounting.reports.aged.read` to use this endpoint.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -280,10 +332,9 @@ class AgedDebtorsSDK(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingAgedDebtorsOneResponse(
                 get_aged_debtors_response=unmarshal_json_response(
-                    Optional[models.GetAgedDebtorsResponse], http_res
+                    Optional[models.GetAgedDebtorsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -324,10 +375,9 @@ class AgedDebtorsSDK(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingAgedDebtorsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

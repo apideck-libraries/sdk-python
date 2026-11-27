@@ -7,7 +7,7 @@ from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from jsonpath import JSONPath
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
 
 
 class Departments(BaseSDK):
@@ -28,7 +28,7 @@ class Departments(BaseSDK):
                 models.AccountingDepartmentsFilterTypedDict,
             ]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -75,7 +75,7 @@ class Departments(BaseSDK):
             filter_=utils.get_pydantic_model(
                 filter_, Optional[models.AccountingDepartmentsFilter]
             ),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
         )
 
         req = self._build_request(
@@ -95,6 +95,7 @@ class Departments(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -119,9 +120,39 @@ class Departments(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": 'The minimun page size accepted for Netsuite is 5. The cursor for Netsuite expires if they have not been used within 15 minutes after its creation.\nA **Default Subsidiary** on the connection scopes this list, and this list does not follow the same rule transactions do: a record marked "include children" in NetSuite **is** returned for every descendant subsidiary, whereas filtering transactions by a parent subsidiary is **not**.\n',
+                        },
+                        {
+                            "connector": "workday",
+                            "description": "Departments resource is not supported in Workday.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks Online does not expose a reliable cross-page total record count. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite uses the same underlying QuickBooks API. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "AFAS does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -148,17 +179,21 @@ class Departments(BaseSDK):
                 filter_=filter_,
                 pass_through=pass_through,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingDepartmentsAllResponse(
                 get_accounting_departments_response=unmarshal_json_response(
-                    Optional[models.GetAccountingDepartmentsResponse], http_res
+                    Optional[models.GetAccountingDepartmentsResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -199,11 +234,10 @@ class Departments(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingDepartmentsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -225,7 +259,7 @@ class Departments(BaseSDK):
                 models.AccountingDepartmentsFilterTypedDict,
             ]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -272,7 +306,7 @@ class Departments(BaseSDK):
             filter_=utils.get_pydantic_model(
                 filter_, Optional[models.AccountingDepartmentsFilter]
             ),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
         )
 
         req = self._build_request_async(
@@ -292,6 +326,7 @@ class Departments(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -316,9 +351,39 @@ class Departments(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": 'The minimun page size accepted for Netsuite is 5. The cursor for Netsuite expires if they have not been used within 15 minutes after its creation.\nA **Default Subsidiary** on the connection scopes this list, and this list does not follow the same rule transactions do: a record marked "include children" in NetSuite **is** returned for every descendant subsidiary, whereas filtering transactions by a parent subsidiary is **not**.\n',
+                        },
+                        {
+                            "connector": "workday",
+                            "description": "Departments resource is not supported in Workday.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks Online does not expose a reliable cross-page total record count. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite uses the same underlying QuickBooks API. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "AFAS does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -345,17 +410,21 @@ class Departments(BaseSDK):
                 filter_=filter_,
                 pass_through=pass_through,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingDepartmentsAllResponse(
                 get_accounting_departments_response=unmarshal_json_response(
-                    Optional[models.GetAccountingDepartmentsResponse], http_res
+                    Optional[models.GetAccountingDepartmentsResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -396,11 +465,10 @@ class Departments(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingDepartmentsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -419,14 +487,17 @@ class Departments(BaseSDK):
         status: Optional[models.DepartmentStatus] = None,
         subsidiaries: Optional[
             Union[
-                List[models.SubsidiaryReferenceInput],
-                List[models.SubsidiaryReferenceInputTypedDict],
+                Iterable[models.SubsidiaryReferenceInput],
+                Iterable[models.SubsidiaryReferenceInputTypedDict],
             ]
         ] = None,
         code: Optional[str] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -511,6 +582,7 @@ class Departments(BaseSDK):
                 "json",
                 models.AccountingDepartmentInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -535,9 +607,11 @@ class Departments(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={"x-apideck-api": "accounting", "x-apideck-gotchas": None},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -545,10 +619,11 @@ class Departments(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingDepartmentsAddResponse(
                 create_accounting_department_response=unmarshal_json_response(
-                    Optional[models.CreateAccountingDepartmentResponse], http_res
+                    Optional[models.CreateAccountingDepartmentResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -589,10 +664,9 @@ class Departments(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingDepartmentsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -611,14 +685,17 @@ class Departments(BaseSDK):
         status: Optional[models.DepartmentStatus] = None,
         subsidiaries: Optional[
             Union[
-                List[models.SubsidiaryReferenceInput],
-                List[models.SubsidiaryReferenceInputTypedDict],
+                Iterable[models.SubsidiaryReferenceInput],
+                Iterable[models.SubsidiaryReferenceInputTypedDict],
             ]
         ] = None,
         code: Optional[str] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -703,6 +780,7 @@ class Departments(BaseSDK):
                 "json",
                 models.AccountingDepartmentInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -727,9 +805,11 @@ class Departments(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={"x-apideck-api": "accounting", "x-apideck-gotchas": None},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -737,10 +817,11 @@ class Departments(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingDepartmentsAddResponse(
                 create_accounting_department_response=unmarshal_json_response(
-                    Optional[models.CreateAccountingDepartmentResponse], http_res
+                    Optional[models.CreateAccountingDepartmentResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -781,10 +862,9 @@ class Departments(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingDepartmentsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -857,6 +937,7 @@ class Departments(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -881,9 +962,11 @@ class Departments(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={"x-apideck-api": "accounting"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -891,10 +974,11 @@ class Departments(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingDepartmentsOneResponse(
                 get_accounting_department_response=unmarshal_json_response(
-                    Optional[models.GetAccountingDepartmentResponse], http_res
+                    Optional[models.GetAccountingDepartmentResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -935,10 +1019,9 @@ class Departments(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingDepartmentsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1011,6 +1094,7 @@ class Departments(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1035,9 +1119,11 @@ class Departments(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={"x-apideck-api": "accounting"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1045,10 +1131,11 @@ class Departments(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingDepartmentsOneResponse(
                 get_accounting_department_response=unmarshal_json_response(
-                    Optional[models.GetAccountingDepartmentResponse], http_res
+                    Optional[models.GetAccountingDepartmentResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1089,10 +1176,9 @@ class Departments(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingDepartmentsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1111,14 +1197,17 @@ class Departments(BaseSDK):
         status: Optional[models.DepartmentStatus] = None,
         subsidiaries: Optional[
             Union[
-                List[models.SubsidiaryReferenceInput],
-                List[models.SubsidiaryReferenceInputTypedDict],
+                Iterable[models.SubsidiaryReferenceInput],
+                Iterable[models.SubsidiaryReferenceInputTypedDict],
             ]
         ] = None,
         code: Optional[str] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1203,6 +1292,7 @@ class Departments(BaseSDK):
                 "json",
                 models.AccountingDepartmentInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1227,9 +1317,11 @@ class Departments(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={"x-apideck-api": "accounting", "x-apideck-gotchas": None},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1237,10 +1329,11 @@ class Departments(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingDepartmentsUpdateResponse(
                 update_accounting_department_response=unmarshal_json_response(
-                    Optional[models.UpdateAccountingDepartmentResponse], http_res
+                    Optional[models.UpdateAccountingDepartmentResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1281,10 +1374,9 @@ class Departments(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingDepartmentsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1303,14 +1395,17 @@ class Departments(BaseSDK):
         status: Optional[models.DepartmentStatus] = None,
         subsidiaries: Optional[
             Union[
-                List[models.SubsidiaryReferenceInput],
-                List[models.SubsidiaryReferenceInputTypedDict],
+                Iterable[models.SubsidiaryReferenceInput],
+                Iterable[models.SubsidiaryReferenceInputTypedDict],
             ]
         ] = None,
         code: Optional[str] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1395,6 +1490,7 @@ class Departments(BaseSDK):
                 "json",
                 models.AccountingDepartmentInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1419,9 +1515,11 @@ class Departments(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={"x-apideck-api": "accounting", "x-apideck-gotchas": None},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1429,10 +1527,11 @@ class Departments(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingDepartmentsUpdateResponse(
                 update_accounting_department_response=unmarshal_json_response(
-                    Optional[models.UpdateAccountingDepartmentResponse], http_res
+                    Optional[models.UpdateAccountingDepartmentResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1473,10 +1572,9 @@ class Departments(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingDepartmentsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1543,6 +1641,7 @@ class Departments(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1567,9 +1666,11 @@ class Departments(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={"x-apideck-api": "accounting"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1577,10 +1678,11 @@ class Departments(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingDepartmentsDeleteResponse(
                 delete_accounting_department_response=unmarshal_json_response(
-                    Optional[models.DeleteAccountingDepartmentResponse], http_res
+                    Optional[models.DeleteAccountingDepartmentResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1621,10 +1723,9 @@ class Departments(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingDepartmentsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1691,6 +1792,7 @@ class Departments(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1715,9 +1817,11 @@ class Departments(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={"x-apideck-api": "accounting"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1725,10 +1829,11 @@ class Departments(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingDepartmentsDeleteResponse(
                 delete_accounting_department_response=unmarshal_json_response(
-                    Optional[models.DeleteAccountingDepartmentResponse], http_res
+                    Optional[models.DeleteAccountingDepartmentResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1769,10 +1874,9 @@ class Departments(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingDepartmentsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

@@ -75,6 +75,7 @@ class CompanyInfoSDK(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -99,9 +100,43 @@ class CompanyInfoSDK(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "QuickBooks Desktop has no company identifier or status: `id` is not returned and `status` is always `active`. `currency`, `sales_tax_number` and the sales tax settings are not returned.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Subsidiary scoping (NetSuite OneWorld) applies to transactions, entities, reference data and the financial reports. It does **not** apply to these, which are returned in full whatever subsidiary is selected: currencies, payment-methods, accounting-periods, subsidiaries, attachments, server-time, company-info and the bank-feed resources — NetSuite keeps them at account level. `tax-rates` and `expenses` are also returned in full, but for a different reason: those records **are** subsidiary-specific in NetSuite (tax nexuses are registered per subsidiary), and the surface this connector reads them through offers no way to filter by it, so a scoped consumer still receives every tax code and every expense in the account. See their own gotchas. Two further limits. **Changing the Default Subsidiary invalidates pages you have already started**: a pagination cursor carries the scope it was created under, so continuing an older cursor after changing the setting keeps returning the previous scope's records and record count. Start the list again after changing it. And **writes are never scoped** — the subsidiary of a created or updated record comes from the request body, or is derived by NetSuite from the record's own customer or vendor when the body does not name one. Neither the setting nor the `x-apideck-company-id` header moves a write. A consequence worth planning for: a scoped connection can create a record that its own list requests will not return, because the created record belongs to the subsidiary its customer does rather than to the one selected. Two behaviours that hold for every scoped resource. A per-request override is available as the `x-apideck-company-id` header, and it wins over the connection's setting while an explicit `filter[subsidiary_id]` wins over both. And a record fetched directly by its ID is returned whatever subsidiary is selected — an id is an explicit request for one record, so it is not filtered out of scope.\n",
+                        },
+                        {
+                            "connector": "oracle-fusion",
+                            "description": "`company_name` is the name of the **general ledger** the connection is scoped to, not a\nlegal entity name. Oracle Fusion exposes no company record an accounting connection can\nread, and a ledger is the one thing guaranteed to exist and to be exactly one per\nconnection. If your ledger is named after something other than the company — a region, a\nreporting purpose — that is what you will read here.\n\nMost of this model is unavailable. A ledger carries no address, no tax registration, no\nlegal name, no contact details and no timestamps, so `addresses`, `phone_numbers`,\n`emails`, `sales_tax_number`, `legal_name`, `country`, `company_start_date`,\n`created_at` and `updated_at` are absent. `fiscal_year_start_month` is absent too: the\nledger names its accounting calendar but Oracle's calendar list of values does not\npublish a start month.\n\n`status` is always `active`. A ledger has no status attribute to derive one from, so\nthis is asserted rather than read.\n\n`id` is the ledger's own identifier, so it matches the Ledger you selected when creating\nthe connection.\n",
+                        },
+                        {
+                            "connector": "snelstart",
+                            "description": "`country` always returns `NL`. SnelStart's company-info endpoint (`/v2/companyInfo`)\nexposes no country field at all — consistent with SnelStart being a Netherlands-only\naccounting platform.\n",
+                        },
+                        {
+                            "connector": "campfire",
+                            "description": "Campfire does not have a dedicated company info endpoint. This operation returns the first\nentity (subsidiary) from the entities list. For multi-entity accounts, use the subsidiaries\nendpoint to get all entities.\n",
+                        },
+                        {
+                            "connector": "restaurant365",
+                            "description": "Restaurant365 does not have a dedicated company info endpoint. This operation returns the\nfirst legal entity from the tenant's legal entities list. For multi-entity accounts, use the\nsubsidiaries endpoint to get all legal entities.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "`country` and the address country are ISO 3166-1 alpha-2 codes. Fiken stores the country as free text, normally its Norwegian name; a stored value that is not a recognised country name is returned as stored.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -109,10 +144,9 @@ class CompanyInfoSDK(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingCompanyInfoOneResponse(
                 get_company_info_response=unmarshal_json_response(
-                    Optional[models.GetCompanyInfoResponse], http_res
+                    Optional[models.GetCompanyInfoResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -153,10 +187,9 @@ class CompanyInfoSDK(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingCompanyInfoOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -226,6 +259,7 @@ class CompanyInfoSDK(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -250,9 +284,43 @@ class CompanyInfoSDK(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "QuickBooks Desktop has no company identifier or status: `id` is not returned and `status` is always `active`. `currency`, `sales_tax_number` and the sales tax settings are not returned.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Subsidiary scoping (NetSuite OneWorld) applies to transactions, entities, reference data and the financial reports. It does **not** apply to these, which are returned in full whatever subsidiary is selected: currencies, payment-methods, accounting-periods, subsidiaries, attachments, server-time, company-info and the bank-feed resources — NetSuite keeps them at account level. `tax-rates` and `expenses` are also returned in full, but for a different reason: those records **are** subsidiary-specific in NetSuite (tax nexuses are registered per subsidiary), and the surface this connector reads them through offers no way to filter by it, so a scoped consumer still receives every tax code and every expense in the account. See their own gotchas. Two further limits. **Changing the Default Subsidiary invalidates pages you have already started**: a pagination cursor carries the scope it was created under, so continuing an older cursor after changing the setting keeps returning the previous scope's records and record count. Start the list again after changing it. And **writes are never scoped** — the subsidiary of a created or updated record comes from the request body, or is derived by NetSuite from the record's own customer or vendor when the body does not name one. Neither the setting nor the `x-apideck-company-id` header moves a write. A consequence worth planning for: a scoped connection can create a record that its own list requests will not return, because the created record belongs to the subsidiary its customer does rather than to the one selected. Two behaviours that hold for every scoped resource. A per-request override is available as the `x-apideck-company-id` header, and it wins over the connection's setting while an explicit `filter[subsidiary_id]` wins over both. And a record fetched directly by its ID is returned whatever subsidiary is selected — an id is an explicit request for one record, so it is not filtered out of scope.\n",
+                        },
+                        {
+                            "connector": "oracle-fusion",
+                            "description": "`company_name` is the name of the **general ledger** the connection is scoped to, not a\nlegal entity name. Oracle Fusion exposes no company record an accounting connection can\nread, and a ledger is the one thing guaranteed to exist and to be exactly one per\nconnection. If your ledger is named after something other than the company — a region, a\nreporting purpose — that is what you will read here.\n\nMost of this model is unavailable. A ledger carries no address, no tax registration, no\nlegal name, no contact details and no timestamps, so `addresses`, `phone_numbers`,\n`emails`, `sales_tax_number`, `legal_name`, `country`, `company_start_date`,\n`created_at` and `updated_at` are absent. `fiscal_year_start_month` is absent too: the\nledger names its accounting calendar but Oracle's calendar list of values does not\npublish a start month.\n\n`status` is always `active`. A ledger has no status attribute to derive one from, so\nthis is asserted rather than read.\n\n`id` is the ledger's own identifier, so it matches the Ledger you selected when creating\nthe connection.\n",
+                        },
+                        {
+                            "connector": "snelstart",
+                            "description": "`country` always returns `NL`. SnelStart's company-info endpoint (`/v2/companyInfo`)\nexposes no country field at all — consistent with SnelStart being a Netherlands-only\naccounting platform.\n",
+                        },
+                        {
+                            "connector": "campfire",
+                            "description": "Campfire does not have a dedicated company info endpoint. This operation returns the first\nentity (subsidiary) from the entities list. For multi-entity accounts, use the subsidiaries\nendpoint to get all entities.\n",
+                        },
+                        {
+                            "connector": "restaurant365",
+                            "description": "Restaurant365 does not have a dedicated company info endpoint. This operation returns the\nfirst legal entity from the tenant's legal entities list. For multi-entity accounts, use the\nsubsidiaries endpoint to get all legal entities.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "`country` and the address country are ISO 3166-1 alpha-2 codes. Fiken stores the country as free text, normally its Norwegian name; a stored value that is not a recognised country name is returned as stored.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -260,10 +328,9 @@ class CompanyInfoSDK(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingCompanyInfoOneResponse(
                 get_company_info_response=unmarshal_json_response(
-                    Optional[models.GetCompanyInfoResponse], http_res
+                    Optional[models.GetCompanyInfoResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -304,10 +371,9 @@ class CompanyInfoSDK(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingCompanyInfoOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

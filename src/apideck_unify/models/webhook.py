@@ -11,14 +11,15 @@ from apideck_unify.types import (
     OptionalNullable,
     UNSET,
     UNSET_SENTINEL,
+    current_exclude_none,
+    serialize_with_info,
 )
-from apideck_unify.utils import validate_open_enum
+from apideck_unify.types.basemodel import current_filtered_dump
 from datetime import datetime
 from enum import Enum
 from pydantic import field_serializer, model_serializer
-from pydantic.functional_validators import PlainValidator
 from typing import List, Optional
-from typing_extensions import Annotated, NotRequired, TypedDict
+from typing_extensions import NotRequired, TypedDict
 
 
 class DisabledReason(str, Enum, metaclass=utils.OpenEnumMeta):
@@ -53,10 +54,10 @@ class WebhookTypedDict(TypedDict):
 
 
 class Webhook(BaseModel):
-    unified_api: Annotated[UnifiedAPIID, PlainValidator(validate_open_enum(False))]
+    unified_api: UnifiedAPIID
     r"""Name of Apideck Unified API"""
 
-    status: Annotated[Status, PlainValidator(validate_open_enum(False))]
+    status: Status
     r"""The status of the webhook."""
 
     delivery_url: str
@@ -65,7 +66,7 @@ class Webhook(BaseModel):
     execute_base_url: str
     r"""The Unify Base URL events from connectors will be sent to after service id is appended."""
 
-    events: List[Annotated[WebhookEventType, PlainValidator(validate_open_enum(False))]]
+    events: List[WebhookEventType]
     r"""The list of subscribed events for this webhook. [`*`] indicates that all events are enabled."""
 
     id: Optional[str] = None
@@ -73,9 +74,7 @@ class Webhook(BaseModel):
     description: OptionalNullable[str] = UNSET
     r"""A description of the object."""
 
-    disabled_reason: Annotated[
-        Optional[DisabledReason], PlainValidator(validate_open_enum(False))
-    ] = None
+    disabled_reason: Optional[DisabledReason] = None
     r"""Indicates why the webhook has been disabled. `retry_limit`: webhook reached its retry limit. `usage_limit`: account is over its usage limit. `delivery_url_validation_failed`: delivery URL failed validation during webhook creation or update."""
 
     updated_at: OptionalNullable[datetime] = UNSET
@@ -112,37 +111,35 @@ class Webhook(BaseModel):
         return value
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = [
-            "id",
-            "description",
-            "disabled_reason",
-            "updated_at",
-            "created_at",
-        ]
-        nullable_fields = ["description", "updated_at", "created_at"]
-        null_default_fields = []
-
+        optional_fields = set(
+            ["id", "description", "disabled_reason", "updated_at", "created_at"]
+        )
+        nullable_fields = set(["description", "updated_at", "created_at"])
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m

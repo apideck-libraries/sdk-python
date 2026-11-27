@@ -2,6 +2,16 @@
 
 The type of bank account
 
+## Example Usage
+
+```python
+from apideck_unify.models import AccountingBankAccountAccountType
+
+value = AccountingBankAccountAccountType.CHECKING
+
+# Open enum: unrecognized values are captured as UnrecognizedStr
+```
+
 
 ## Values
 

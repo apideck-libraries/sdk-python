@@ -2,6 +2,16 @@
 
 Which Unified Api request was made to.
 
+## Example Usage
+
+```python
+from apideck_unify.models import LogUnifiedAPI
+
+value = LogUnifiedAPI.CRM
+
+# Open enum: unrecognized values are captured as UnrecognizedStr
+```
+
 
 ## Values
 

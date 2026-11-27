@@ -8,7 +8,7 @@ from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from datetime import datetime
 from jsonpath import JSONPath
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
 
 
 class JournalEntries(BaseSDK):
@@ -28,7 +28,7 @@ class JournalEntries(BaseSDK):
         sort: Optional[
             Union[models.JournalEntriesSort, models.JournalEntriesSortTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -77,7 +77,7 @@ class JournalEntries(BaseSDK):
                 filter_, Optional[models.JournalEntriesFilter]
             ),
             sort=utils.get_pydantic_model(sort, Optional[models.JournalEntriesSort]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -98,6 +98,7 @@ class JournalEntries(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -122,9 +123,131 @@ class JournalEntries(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "`filter[updated_since]` compares on whole days: SAP keeps only the date of the last change, so the time\npart is ignored and the filter is inclusive of the given day (in UTC). Records changed earlier that day are\nreturned again; dedupe by `id`.\n\n`limit` caps the SAP posting lines read per page, not the journal entries, so a page can\nhold fewer journal entries than `limit`. A journal entry is never split across pages: one\nwith more posting lines than `limit` is returned complete on a page of its own. Only a\njournal entry with more than 5,000 posting lines, or one whose lines cannot all be read\nwithin the request's time budget, still appears on consecutive pages with the same `id`,\neach carrying part of its lines; if SAP fails while they are read, the request returns a\nretryable error. Follow `meta.cursors.next` until it is `null`. `meta.total_count` will not\nappear and `meta.cursors.previous` is always `null`. `pass_through` cannot set `$top`,\n`$skip` or `$orderby` on this list; such a request is refused with a 400.\n\nJournal entries are the general-ledger documents of SAP document types `SA` (G/L account document) and `AB`\n(journal entry). Invoices, credit notes, payments, bills and goods receipts are read through their own\nresources and are not listed here. An `AB` document is often a clearing document that has only customer\nor only supplier lines: each of those lines is returned as a line item on the customer's or supplier's\nreconciliation account, with the SAP customer or supplier number in `line_items[].customer.id` or\n`line_items[].supplier.id`, so the entry stays balanced. Allocating a payment or bill payment through this\nAPI posts such a clearing document, so it is listed here as well.\n\nEach journal entry has a `source_type`: `manual` for a general-ledger posting (entered in SAP or posted\nthrough an API), `clearing` for a document that clears customer or supplier open items, and `reversal` for\na document that reverses another one. It is read from the entry's lines: a manual posting with a customer or\nsupplier line that references an invoice reads as `clearing`, and a reversed entry keeps its own\n`source_type` (only the reversing entry reads `reversal`). A `reversal` can therefore reverse a clearing\ndocument, and the entry does not say which document it reverses. A clearing document reset and reversed in\nSAP keeps `clearing`; so does a manual journal whose customer or supplier line was cleared, then reset and\nreversed. A clearing document whose clearing was reset without a reversal can read as `manual`. A journal entry\nreturned in parts (see above) is labelled per part. `source_type` is `null` when a\n`pass_through[$select]` leaves out the fields it is read from (`IsReversal`, `ClearingAccountingDocument`,\n`FinancialAccountType`, `InvoiceReference`, `ClearingIsReversed`, `ReverseDocument`). Every entry has\n`status` `posted`.\nNeither `filter[scope]` nor `filter[source_type]` is supported: every entry is listed, so skip the returned\nentries whose `source_type` you do not need.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "Without filters, journal entries of every fiscal year are listed. `filter[start_date]` and `filter[end_date]` narrow by posting date, apply to whole entries and may span fiscal years. Sorting is not supported: Minox entries have no created or updated timestamps.\n\nInvoices, bills and credit notes are not listed here; read and delete them through their own resources (their ids answer `404` as journal entries). Each entry has the id returned on create. On bank and cash journals Minox posts one counter line per journal page; each entry carries its own share of it, as a line on the bank's ledger account (and, for lines with VAT, its share of Minox's VAT postings), so the entry balances. Postings made outside the API that only balance as a group (such as an automatic payment run) are returned per journal page, with an id of the form `JOURNAL:fiscal_year:page` (for example `AB:2022:1`); these can be read by that id but not deleted. Opening-balance entries are returned as Minox holds them and do not always balance on their own.\n",
+                        },
+                        {
+                            "connector": "snelstart",
+                            "description": "Listing journal entries is not supported. SnelStart's B2B API has no list endpoint for\nmemoriaalboekingen — only create (POST) and get/update/delete by id are available, so there\nis no way to page through existing journal entries.\n",
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": "This connector fetches every matching journal entry in a single call — there is no\nserver-side pagination, so a large date range can be a large response. An entry with\nmultiple lines is grouped back into one record with a nested `line_items` array.\n\n`journal-entries.list` also returns records that were created through this connector's\n`expenses` resource — there is no field to tell the two apart. Treat any entry whose lines\nlook like a two-line debit/credit posting as a possible `expenses` record.\n\n`memo`, `posted_at` and `updated_at` are always null on the list. Fetch the entry by id\nfor those fields.\n\nTwinfield transaction numbers are not globally unique — the same number can also identify\na `bills`/`expenses` record, or a transaction entered directly in Twinfield, and this\nconnector has no field to disambiguate. Getting a journal entry by an id sourced from\nanother resource (or from Twinfield directly) can silently return the wrong record.\n",
+                        },
+                        {
+                            "connector": "oracle-fusion",
+                            "description": "This list is scoped to the chart of accounts of the connection's configured ledger: only\njournal batches belonging to that chart of accounts are returned, and batches belonging to\na ledger with a different chart of accounts are not, even though Oracle itself does not\nscope this list by ledger. The scope is the chart of accounts, not the ledger: when several\nledgers share one chart of accounts (a primary and its secondary ledgers, for example),\ntheir journal batches are all listed, read and deleted through the connection as if they\nwere its own. Reading one by id is scoped the same way, and a journal entry this connection\ncannot see is answered identically whether it belongs to another chart of accounts or does\nnot exist at all. A `pass_through` naming `q`, `finder` or `REST-Framework-Version` is\nrefused with a `400`, because it would replace that scope.\n\n`memo` is `null` when a journal entry created through this connector was created without\none: Oracle substitutes a placeholder of its own for an empty description, and that\nplaceholder is not returned. A journal imported into Oracle by anything else is read as\nOracle holds it, placeholder included.\n\n`line_items` is capped at 25 lines per journal on a by-id read, and on a **list** at the\nrequest's own `limit` when that is lower — asking for 5 journal entries returns at most 5\nline items per entry, and the unified `limit` defaults to 20. A capped entry's `line_items`\nis incomplete, so its lines may not balance. Oracle exposes no route to the remaining\nlines, so a journal with more lines than the cap cannot be read in full through this API.\nA response whose lines may be incomplete carries a `truncated_child_collection` entry in\n`meta.warnings` — use that rather than the line count to tell a complete entry from a\ncapped one.\n\n`filter[status]` matches the stored status exactly, including its letter case. A tenant\nwhose journals were created through different Oracle paths can hold both cases of the same\nstatus, and a journal stored in the other case is silently absent from the filtered list\nwhile still reading back with that status. Omit the filter when completeness matters.\n\n`filter[start_date]` and `filter[end_date]` select on the Oracle **posting date**, inclusive\non both ends. Journals that are not yet posted have no posting date and are never returned by\na date-range filter; list them with `filter[status]=draft` instead.\n\n`filter[end_date]` must be a date formatted `YYYY-MM-DD`; a timestamp or any other shape is\nrefused with a `400`.\n\n`filter[status]=draft` returns unposted journals that have been completed. A journal saved in\nOracle without being completed is unposted too, but carries a different Oracle status code\nand is not returned by this filter; it is still listed without a status filter and reads as\n`draft`. `voided`, `rejected` and `deleted` return no records: Oracle General Ledger has no\nsuch batch states (a posted journal can only be reversed). `pending_approval` and `approved`\nreturn no records either, for a different reason: Oracle keeps posting state and approval\nstate on two separate fields, and this connector reads only the posting one. A journal that\nOracle has selected for posting, or is posting right now, reads as `other` — it is a\ntransient state with no unified equivalent, and calling it `draft` would imply it is still\neditable when it is not.\n\n`other` returns no records too, and it is the one value in that list this connector does\nemit, so it is worth stating plainly: a journal can read back as `other` and still not be\nreachable by filtering for it. To find journals in that state, list without a status filter\nand select on the `status` field of the response.\n\n`filter[number]`, `filter[scope]` and `filter[subsidiary_id]` are not supported and are\nrefused. Sorting is supported on `created_at` and `updated_at`.\n\n`posted_at` is the journal's accounting date (the date that places it in its period), so it\nis returned for unposted journals too and round-trips into a create unchanged; the\ndate-range filters select on the separate posting date, which for a posted journal is\non or after it. `line_items[].ledger_account` carries only `code` (the account\ncombination); look the account up through the ledger-accounts resource by `code`, not\nby `id`.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "Journal entries are read from the single general journal batch configured in the required\n`journal_entries_journal_batch_name` connection setting. An unfiltered list returns only that\nbatch's draft (unposted) entries; posted entries are returned when `filter[status]` selects a\nposted status (they are read from Business Central's general ledger entries). Journal batches\nthemselves cannot be listed or selected per request through the unified API.\n\n`currency` and `currency_rate` are not returned. Business Central's API (the v2.0 `journalLine`\nentity) exposes no currency fields on journal lines, so amounts are always in the company's\nlocal currency.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": '`journal_symbol` is required when creating a journal entry, and Sage Intacct reserves\nsome journals for automated subledger posting. Posting to `ARJ` or `APJ` is rejected\nwith "Smart rule JOURNAL_CHECK was violated - this journal is reserved for automated\nposting from a subledger". Use a general journal such as `GJ` instead, or enter the\nadjustment through the relevant subledger (invoices, bills).\n\nLine items must balance and each line needs `type` (`debit` or `credit`) plus a\n`ledger_account`. In a multi-entity company each line also needs `location_id`.\n\n`accounting_period` is derived, not read from Sage. The REST journal-entry object\nexposes no period field, so the returned `MM-YY` is computed from the posting date.\nThat is the correct period for a calendar-aligned fiscal year; a company using custom\nfiscal periods (a 4-4-5 calendar, or periods that do not start on the 1st) may see a\nposting near a period boundary attributed to the adjacent month.\n\nOn write, `accounting_period` is not a substitute for a posting date — set `posted_at`.\nA full ISO date placed in `accounting_period` is still accepted as a fallback, but a\nperiod identifier such as `01-24` is ignored rather than posted as a date.\n\n`source_id` is the reference you supplied on create and can be looked up with\n`filter[source_id]`, an exact, case-sensitive match. It is not enforced as unique, so use a\nunique value per entry; this is the supported way to check whether an entry exists after a\ncreate that timed out or returned a 5xx.\n',
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "The minimun page size accepted for Netsuite is 5. The cursor for Netsuite expires if they have not been used within 15 minutes after its creation.\n`filter[subsidiary_id]` scopes results to a single subsidiary and is only supported on NetSuite OneWorld accounts; on standard (single-entity) accounts it is ignored.\n`number` is the journal number NetSuite assigns to the entry (for example `JE1493`) and is returned on every list and get. Look an entry up by it with `filter[number]`, an exact match (for example `?filter[number]=JE1493`). This is the supported way to check whether an entry exists after a create that timed out or returned a 5xx, before retrying.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Xero has two resources: `Journals` (postings from any source — invoices, bills, payments, manual journals, etc.) and `ManualJournals` (manual entries only). The default behaviour of `journal-entries` reads from `Journals`. From 2026-03-02 Xero moves the `Journals` endpoint to its Advanced tier; for the full general ledger view use `accounting/general-ledger-transactions` instead.\n\nUse `?filter[scope]=manual` to read exclusively from `ManualJournals` (free in every Xero tier, target behaviour after the upcoming default flip). Use `?filter[scope]=system` or omit the filter to keep the legacy default. The `?filter[status]=draft` shortcut continues to read drafts from `ManualJournals`.\n\nThe exposed id today depends on the journal entry status: for drafts it is the `ManualJournalID`; once posted, it is the Xero `JournalID` (different from the draft id). To track the underlying manual journal across the lifecycle, use the new `manual_journal_id` field returned in write responses (and use the pattern `manual_journal_id ?? id` for stable storage). On a draft → posted transition the `id` changes but the `manual_journal_id` remains stable.\n\nXero returns 100 items per call, so the `limit` parameter is ignored.\n",
+                        },
+                        {
+                            "connector": "exact-online",
+                            "description": "Limit parameter for pagination is not supported for this resource.\n\nThe list returns the same `line_items` as the single-record read, so no fetch by id is\nneeded for line-level data.\n\nExact's journal entry header has no date field, so `posted_at` is derived from the lines:\nit is the earliest `line_items[].date`. Only an entry with no dated line falls back to the\nfirst day of its financial period (`FinancialYear`/`FinancialPeriod`), which is month\nprecision. `created_at` is when the entry was created in Exact, not its accounting date.\n\n`title` is the journal's own description. `memo` is the first non-empty\n`line_items[].description`, or null when no line has one. `updated_by`/`created_by` are\nnot populated: Exact's header records when it was created and modified, but not by whom.\n\nExact does not distinguish a customer account from a supplier account at the line level,\nso each line's account is returned under both `line_items[].supplier` and\n`line_items[].customer`. To tell which it is, match the id against the suppliers or\ncustomers list; an account that is both appears in both.\n",
+                        },
+                        {
+                            "connector": "exact-online-nl",
+                            "description": "Limit parameter for pagination is not supported for this resource.\n\nThe list returns the same `line_items` as the single-record read, so no fetch by id is\nneeded for line-level data.\n\nExact's journal entry header has no date field, so `posted_at` is derived from the lines:\nit is the earliest `line_items[].date`. Only an entry with no dated line falls back to the\nfirst day of its financial period (`FinancialYear`/`FinancialPeriod`), which is month\nprecision. `created_at` is when the entry was created in Exact, not its accounting date.\n\n`title` is the journal's own description. `memo` is the first non-empty\n`line_items[].description`, or null when no line has one. `updated_by`/`created_by` are\nnot populated: Exact's header records when it was created and modified, but not by whom.\n\nExact does not distinguish a customer account from a supplier account at the line level,\nso each line's account is returned under both `line_items[].supplier` and\n`line_items[].customer`. To tell which it is, match the id against the suppliers or\ncustomers list; an account that is both appears in both.\n",
+                        },
+                        {
+                            "connector": "exact-online-uk",
+                            "description": "Limit parameter for pagination is not supported for this resource.\n\nThe list returns the same `line_items` as the single-record read, so no fetch by id is\nneeded for line-level data.\n\nExact's journal entry header has no date field, so `posted_at` is derived from the lines:\nit is the earliest `line_items[].date`. Only an entry with no dated line falls back to the\nfirst day of its financial period (`FinancialYear`/`FinancialPeriod`), which is month\nprecision. `created_at` is when the entry was created in Exact, not its accounting date.\n\n`title` is the journal's own description. `memo` is the first non-empty\n`line_items[].description`, or null when no line has one. `updated_by`/`created_by` are\nnot populated: Exact's header records when it was created and modified, but not by whom.\n\nExact does not distinguish a customer account from a supplier account at the line level,\nso each line's account is returned under both `line_items[].supplier` and\n`line_items[].customer`. To tell which it is, match the id against the suppliers or\ncustomers list; an account that is both appears in both.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks only returns journal entries that were explicitly created as `JournalEntry` records.\nSystem-generated GL postings from invoices, bills, payments, deposits, transfers, and other\ntransaction types post to the general ledger but are not exposed by QuickBooks as journal entries\nand will not appear in this response. To reconstruct full GL activity, fetch the underlying\ntransaction resources (invoices, bills, payments, etc.) in addition to journal entries.\n\nLook up a specific journal entry by its number with `filter[number]` (for example\n`?filter[number]=JE-0001`). The number is limited to 21 characters.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite only returns journal entries that were explicitly created as `JournalEntry` records.\nSystem-generated GL postings from invoices, bills, payments, deposits, transfers, and other\ntransaction types post to the general ledger but are not exposed by Intuit Enterprise Suite as journal entries\nand will not appear in this response. To reconstruct full GL activity, fetch the underlying\ntransaction resources (invoices, bills, payments, etc.) in addition to journal entries.\n\nLook up a specific journal entry by its number with `filter[number]` (for example\n`?filter[number]=JE-0001`). The number is limited to 21 characters.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "Sage Intacct returns journal entry headers only for this endpoint — Intacct's `GLBATCH`\nquery does not include line items. The `line_items` array is therefore omitted from each\nentry in this list. To read line-level detail (accounts, amounts, departments, locations,\ntracking categories), fetch each entry individually with the Get Journal Entry endpoint.\n\n`number` is the batch number Intacct assigns to the entry, and `source_id` is the reference\nyou supplied when creating it. Both can be looked up with an exact-match, case-sensitive\nfilter: `?filter[number]=432` or `?filter[source_id]=your-reference`. Intacct numbers batches\nper journal, so `filter[number]` can return one entry per journal (for example a general,\na sales and a receipts journal entry all numbered 435) — check `journal_symbol` on the\nresults, or combine it with `filter[source_id]`. `source_id` is not enforced as unique — if\nseveral entries were created with the same value, `filter[source_id]` returns all of them — so\nuse a unique value per entry. A non-numeric `filter[number]` is rejected by Intacct with a 400.\n",
+                        },
+                        {
+                            "connector": "alegra",
+                            "description": "Alegra does not assign a journal entry `number` (always empty), and journal entries have no created/updated timestamps — so they cannot be sorted by date.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks Online does not expose a reliable cross-page total record count. The `QueryResponse.totalCount` field in list responses reflects the count for that page only, not the full dataset. `meta.total_count` will not appear in list responses. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite uses the same underlying QuickBooks API. The `QueryResponse.totalCount` field in list responses reflects the per-page count only. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics",
+                            "description": "Microsoft Dynamics 365 does not include a total record count in default list responses. `meta.total_count` will not appear. Surfacing the total requires adding `$count=true` to the OData query or calling a separate `$count` endpoint — not currently implemented.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Zoho Books does not expose a total record count in list responses. `meta.total_count` will not appear.\n\nJournal entries are returned in Zoho's internal entry-number order, newest created first —\nnot by posting date. Zoho's own default sorts by `journal_date`, which has no unique\ntiebreaker, and paginating over it means a page boundary falling inside a group of\nsame-dated entries silently duplicates some records and skips others. Entry number is\nunique per organization, so pagination over it is stable. In practice the two orders are\nclose, because entry numbers are assigned in creation order; they diverge for back-dated\nentries, where an entry created today for an earlier period sorts first rather than by its\n`posted_at`.\n\nTo sort by posting date instead, pass\n`?pass_through[sort_column]=journal_date&pass_through[sort_order]=D` — but note this\nreinstates the duplicate-and-skip behaviour at page boundaries, so only use it for a single\npage rather than when paginating a full ledger.\n\nZoho Books omits `line_items` from the journal list endpoint, so each list request\ntriggers one additional detail fetch per journal to hydrate them. A 100-row page issues\n100 detail calls in bounded concurrent batches of 5 (to fit Zoho's 100/min per-org and\n5-concurrent Free-tier limits). Detail failures for individual journals are isolated:\nthe affected record is returned with `line_items: []` and a warning surfaced, while\nthe rest of the page returns normally. To reduce call volume, use `limit` to bound\nthe page size.\n\n`filter[updated_since]` is applied at day granularity: Zoho only supports date-level\nlast-modified filtering, and the comparison happens in the organization's local timezone.\nThe filter is widened one day back from the given timestamp so no modified record is ever\nmissed, which means results can include records last modified up to two days before the\nrequested instant. Deduplicate on `updated_at` client-side if exact cut-off matters.\n\n`filter[status]` supports only `draft` and `posted` (Zoho journals have no other states).\nAny other status value is rejected by Zoho with \"Invalid value passed for status\".\n\n`filter[start_date]` / `filter[end_date]` filter on the journal posting date and are\ninclusive on both ends.\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": "Moneybird does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "rillet",
+                            "description": "Rillet does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "pennylane",
+                            "description": "Pennylane does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "procountor-fi",
+                            "description": "Procountor does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "dualentry",
+                            "description": "DualEntry scopes journal entries by company. Pass the `x-apideck-company-id` header (or set a Default\nCompany on the connection) to return only records belonging to that company within the tenant.\nWithout it, records across all companies in the tenant are returned.\n",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "AFAS does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "freshbooks",
+                            "description": "FreshBooks does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "QuickBooks Desktop does not expose a reliable cross-page total record count. Getting `total_count` requires a separate COUNT query — an extra API call that is not currently implemented. `meta.total_count` will not appear.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -152,17 +275,19 @@ class JournalEntries(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingJournalEntriesAllResponse(
                 get_journal_entries_response=unmarshal_json_response(
-                    Optional[models.GetJournalEntriesResponse], http_res
+                    Optional[models.GetJournalEntriesResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -203,11 +328,10 @@ class JournalEntries(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingJournalEntriesAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -228,7 +352,7 @@ class JournalEntries(BaseSDK):
         sort: Optional[
             Union[models.JournalEntriesSort, models.JournalEntriesSortTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -277,7 +401,7 @@ class JournalEntries(BaseSDK):
                 filter_, Optional[models.JournalEntriesFilter]
             ),
             sort=utils.get_pydantic_model(sort, Optional[models.JournalEntriesSort]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -298,6 +422,7 @@ class JournalEntries(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -322,9 +447,131 @@ class JournalEntries(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "`filter[updated_since]` compares on whole days: SAP keeps only the date of the last change, so the time\npart is ignored and the filter is inclusive of the given day (in UTC). Records changed earlier that day are\nreturned again; dedupe by `id`.\n\n`limit` caps the SAP posting lines read per page, not the journal entries, so a page can\nhold fewer journal entries than `limit`. A journal entry is never split across pages: one\nwith more posting lines than `limit` is returned complete on a page of its own. Only a\njournal entry with more than 5,000 posting lines, or one whose lines cannot all be read\nwithin the request's time budget, still appears on consecutive pages with the same `id`,\neach carrying part of its lines; if SAP fails while they are read, the request returns a\nretryable error. Follow `meta.cursors.next` until it is `null`. `meta.total_count` will not\nappear and `meta.cursors.previous` is always `null`. `pass_through` cannot set `$top`,\n`$skip` or `$orderby` on this list; such a request is refused with a 400.\n\nJournal entries are the general-ledger documents of SAP document types `SA` (G/L account document) and `AB`\n(journal entry). Invoices, credit notes, payments, bills and goods receipts are read through their own\nresources and are not listed here. An `AB` document is often a clearing document that has only customer\nor only supplier lines: each of those lines is returned as a line item on the customer's or supplier's\nreconciliation account, with the SAP customer or supplier number in `line_items[].customer.id` or\n`line_items[].supplier.id`, so the entry stays balanced. Allocating a payment or bill payment through this\nAPI posts such a clearing document, so it is listed here as well.\n\nEach journal entry has a `source_type`: `manual` for a general-ledger posting (entered in SAP or posted\nthrough an API), `clearing` for a document that clears customer or supplier open items, and `reversal` for\na document that reverses another one. It is read from the entry's lines: a manual posting with a customer or\nsupplier line that references an invoice reads as `clearing`, and a reversed entry keeps its own\n`source_type` (only the reversing entry reads `reversal`). A `reversal` can therefore reverse a clearing\ndocument, and the entry does not say which document it reverses. A clearing document reset and reversed in\nSAP keeps `clearing`; so does a manual journal whose customer or supplier line was cleared, then reset and\nreversed. A clearing document whose clearing was reset without a reversal can read as `manual`. A journal entry\nreturned in parts (see above) is labelled per part. `source_type` is `null` when a\n`pass_through[$select]` leaves out the fields it is read from (`IsReversal`, `ClearingAccountingDocument`,\n`FinancialAccountType`, `InvoiceReference`, `ClearingIsReversed`, `ReverseDocument`). Every entry has\n`status` `posted`.\nNeither `filter[scope]` nor `filter[source_type]` is supported: every entry is listed, so skip the returned\nentries whose `source_type` you do not need.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "Without filters, journal entries of every fiscal year are listed. `filter[start_date]` and `filter[end_date]` narrow by posting date, apply to whole entries and may span fiscal years. Sorting is not supported: Minox entries have no created or updated timestamps.\n\nInvoices, bills and credit notes are not listed here; read and delete them through their own resources (their ids answer `404` as journal entries). Each entry has the id returned on create. On bank and cash journals Minox posts one counter line per journal page; each entry carries its own share of it, as a line on the bank's ledger account (and, for lines with VAT, its share of Minox's VAT postings), so the entry balances. Postings made outside the API that only balance as a group (such as an automatic payment run) are returned per journal page, with an id of the form `JOURNAL:fiscal_year:page` (for example `AB:2022:1`); these can be read by that id but not deleted. Opening-balance entries are returned as Minox holds them and do not always balance on their own.\n",
+                        },
+                        {
+                            "connector": "snelstart",
+                            "description": "Listing journal entries is not supported. SnelStart's B2B API has no list endpoint for\nmemoriaalboekingen — only create (POST) and get/update/delete by id are available, so there\nis no way to page through existing journal entries.\n",
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": "This connector fetches every matching journal entry in a single call — there is no\nserver-side pagination, so a large date range can be a large response. An entry with\nmultiple lines is grouped back into one record with a nested `line_items` array.\n\n`journal-entries.list` also returns records that were created through this connector's\n`expenses` resource — there is no field to tell the two apart. Treat any entry whose lines\nlook like a two-line debit/credit posting as a possible `expenses` record.\n\n`memo`, `posted_at` and `updated_at` are always null on the list. Fetch the entry by id\nfor those fields.\n\nTwinfield transaction numbers are not globally unique — the same number can also identify\na `bills`/`expenses` record, or a transaction entered directly in Twinfield, and this\nconnector has no field to disambiguate. Getting a journal entry by an id sourced from\nanother resource (or from Twinfield directly) can silently return the wrong record.\n",
+                        },
+                        {
+                            "connector": "oracle-fusion",
+                            "description": "This list is scoped to the chart of accounts of the connection's configured ledger: only\njournal batches belonging to that chart of accounts are returned, and batches belonging to\na ledger with a different chart of accounts are not, even though Oracle itself does not\nscope this list by ledger. The scope is the chart of accounts, not the ledger: when several\nledgers share one chart of accounts (a primary and its secondary ledgers, for example),\ntheir journal batches are all listed, read and deleted through the connection as if they\nwere its own. Reading one by id is scoped the same way, and a journal entry this connection\ncannot see is answered identically whether it belongs to another chart of accounts or does\nnot exist at all. A `pass_through` naming `q`, `finder` or `REST-Framework-Version` is\nrefused with a `400`, because it would replace that scope.\n\n`memo` is `null` when a journal entry created through this connector was created without\none: Oracle substitutes a placeholder of its own for an empty description, and that\nplaceholder is not returned. A journal imported into Oracle by anything else is read as\nOracle holds it, placeholder included.\n\n`line_items` is capped at 25 lines per journal on a by-id read, and on a **list** at the\nrequest's own `limit` when that is lower — asking for 5 journal entries returns at most 5\nline items per entry, and the unified `limit` defaults to 20. A capped entry's `line_items`\nis incomplete, so its lines may not balance. Oracle exposes no route to the remaining\nlines, so a journal with more lines than the cap cannot be read in full through this API.\nA response whose lines may be incomplete carries a `truncated_child_collection` entry in\n`meta.warnings` — use that rather than the line count to tell a complete entry from a\ncapped one.\n\n`filter[status]` matches the stored status exactly, including its letter case. A tenant\nwhose journals were created through different Oracle paths can hold both cases of the same\nstatus, and a journal stored in the other case is silently absent from the filtered list\nwhile still reading back with that status. Omit the filter when completeness matters.\n\n`filter[start_date]` and `filter[end_date]` select on the Oracle **posting date**, inclusive\non both ends. Journals that are not yet posted have no posting date and are never returned by\na date-range filter; list them with `filter[status]=draft` instead.\n\n`filter[end_date]` must be a date formatted `YYYY-MM-DD`; a timestamp or any other shape is\nrefused with a `400`.\n\n`filter[status]=draft` returns unposted journals that have been completed. A journal saved in\nOracle without being completed is unposted too, but carries a different Oracle status code\nand is not returned by this filter; it is still listed without a status filter and reads as\n`draft`. `voided`, `rejected` and `deleted` return no records: Oracle General Ledger has no\nsuch batch states (a posted journal can only be reversed). `pending_approval` and `approved`\nreturn no records either, for a different reason: Oracle keeps posting state and approval\nstate on two separate fields, and this connector reads only the posting one. A journal that\nOracle has selected for posting, or is posting right now, reads as `other` — it is a\ntransient state with no unified equivalent, and calling it `draft` would imply it is still\neditable when it is not.\n\n`other` returns no records too, and it is the one value in that list this connector does\nemit, so it is worth stating plainly: a journal can read back as `other` and still not be\nreachable by filtering for it. To find journals in that state, list without a status filter\nand select on the `status` field of the response.\n\n`filter[number]`, `filter[scope]` and `filter[subsidiary_id]` are not supported and are\nrefused. Sorting is supported on `created_at` and `updated_at`.\n\n`posted_at` is the journal's accounting date (the date that places it in its period), so it\nis returned for unposted journals too and round-trips into a create unchanged; the\ndate-range filters select on the separate posting date, which for a posted journal is\non or after it. `line_items[].ledger_account` carries only `code` (the account\ncombination); look the account up through the ledger-accounts resource by `code`, not\nby `id`.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "Journal entries are read from the single general journal batch configured in the required\n`journal_entries_journal_batch_name` connection setting. An unfiltered list returns only that\nbatch's draft (unposted) entries; posted entries are returned when `filter[status]` selects a\nposted status (they are read from Business Central's general ledger entries). Journal batches\nthemselves cannot be listed or selected per request through the unified API.\n\n`currency` and `currency_rate` are not returned. Business Central's API (the v2.0 `journalLine`\nentity) exposes no currency fields on journal lines, so amounts are always in the company's\nlocal currency.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": '`journal_symbol` is required when creating a journal entry, and Sage Intacct reserves\nsome journals for automated subledger posting. Posting to `ARJ` or `APJ` is rejected\nwith "Smart rule JOURNAL_CHECK was violated - this journal is reserved for automated\nposting from a subledger". Use a general journal such as `GJ` instead, or enter the\nadjustment through the relevant subledger (invoices, bills).\n\nLine items must balance and each line needs `type` (`debit` or `credit`) plus a\n`ledger_account`. In a multi-entity company each line also needs `location_id`.\n\n`accounting_period` is derived, not read from Sage. The REST journal-entry object\nexposes no period field, so the returned `MM-YY` is computed from the posting date.\nThat is the correct period for a calendar-aligned fiscal year; a company using custom\nfiscal periods (a 4-4-5 calendar, or periods that do not start on the 1st) may see a\nposting near a period boundary attributed to the adjacent month.\n\nOn write, `accounting_period` is not a substitute for a posting date — set `posted_at`.\nA full ISO date placed in `accounting_period` is still accepted as a fallback, but a\nperiod identifier such as `01-24` is ignored rather than posted as a date.\n\n`source_id` is the reference you supplied on create and can be looked up with\n`filter[source_id]`, an exact, case-sensitive match. It is not enforced as unique, so use a\nunique value per entry; this is the supported way to check whether an entry exists after a\ncreate that timed out or returned a 5xx.\n',
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "The minimun page size accepted for Netsuite is 5. The cursor for Netsuite expires if they have not been used within 15 minutes after its creation.\n`filter[subsidiary_id]` scopes results to a single subsidiary and is only supported on NetSuite OneWorld accounts; on standard (single-entity) accounts it is ignored.\n`number` is the journal number NetSuite assigns to the entry (for example `JE1493`) and is returned on every list and get. Look an entry up by it with `filter[number]`, an exact match (for example `?filter[number]=JE1493`). This is the supported way to check whether an entry exists after a create that timed out or returned a 5xx, before retrying.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Xero has two resources: `Journals` (postings from any source — invoices, bills, payments, manual journals, etc.) and `ManualJournals` (manual entries only). The default behaviour of `journal-entries` reads from `Journals`. From 2026-03-02 Xero moves the `Journals` endpoint to its Advanced tier; for the full general ledger view use `accounting/general-ledger-transactions` instead.\n\nUse `?filter[scope]=manual` to read exclusively from `ManualJournals` (free in every Xero tier, target behaviour after the upcoming default flip). Use `?filter[scope]=system` or omit the filter to keep the legacy default. The `?filter[status]=draft` shortcut continues to read drafts from `ManualJournals`.\n\nThe exposed id today depends on the journal entry status: for drafts it is the `ManualJournalID`; once posted, it is the Xero `JournalID` (different from the draft id). To track the underlying manual journal across the lifecycle, use the new `manual_journal_id` field returned in write responses (and use the pattern `manual_journal_id ?? id` for stable storage). On a draft → posted transition the `id` changes but the `manual_journal_id` remains stable.\n\nXero returns 100 items per call, so the `limit` parameter is ignored.\n",
+                        },
+                        {
+                            "connector": "exact-online",
+                            "description": "Limit parameter for pagination is not supported for this resource.\n\nThe list returns the same `line_items` as the single-record read, so no fetch by id is\nneeded for line-level data.\n\nExact's journal entry header has no date field, so `posted_at` is derived from the lines:\nit is the earliest `line_items[].date`. Only an entry with no dated line falls back to the\nfirst day of its financial period (`FinancialYear`/`FinancialPeriod`), which is month\nprecision. `created_at` is when the entry was created in Exact, not its accounting date.\n\n`title` is the journal's own description. `memo` is the first non-empty\n`line_items[].description`, or null when no line has one. `updated_by`/`created_by` are\nnot populated: Exact's header records when it was created and modified, but not by whom.\n\nExact does not distinguish a customer account from a supplier account at the line level,\nso each line's account is returned under both `line_items[].supplier` and\n`line_items[].customer`. To tell which it is, match the id against the suppliers or\ncustomers list; an account that is both appears in both.\n",
+                        },
+                        {
+                            "connector": "exact-online-nl",
+                            "description": "Limit parameter for pagination is not supported for this resource.\n\nThe list returns the same `line_items` as the single-record read, so no fetch by id is\nneeded for line-level data.\n\nExact's journal entry header has no date field, so `posted_at` is derived from the lines:\nit is the earliest `line_items[].date`. Only an entry with no dated line falls back to the\nfirst day of its financial period (`FinancialYear`/`FinancialPeriod`), which is month\nprecision. `created_at` is when the entry was created in Exact, not its accounting date.\n\n`title` is the journal's own description. `memo` is the first non-empty\n`line_items[].description`, or null when no line has one. `updated_by`/`created_by` are\nnot populated: Exact's header records when it was created and modified, but not by whom.\n\nExact does not distinguish a customer account from a supplier account at the line level,\nso each line's account is returned under both `line_items[].supplier` and\n`line_items[].customer`. To tell which it is, match the id against the suppliers or\ncustomers list; an account that is both appears in both.\n",
+                        },
+                        {
+                            "connector": "exact-online-uk",
+                            "description": "Limit parameter for pagination is not supported for this resource.\n\nThe list returns the same `line_items` as the single-record read, so no fetch by id is\nneeded for line-level data.\n\nExact's journal entry header has no date field, so `posted_at` is derived from the lines:\nit is the earliest `line_items[].date`. Only an entry with no dated line falls back to the\nfirst day of its financial period (`FinancialYear`/`FinancialPeriod`), which is month\nprecision. `created_at` is when the entry was created in Exact, not its accounting date.\n\n`title` is the journal's own description. `memo` is the first non-empty\n`line_items[].description`, or null when no line has one. `updated_by`/`created_by` are\nnot populated: Exact's header records when it was created and modified, but not by whom.\n\nExact does not distinguish a customer account from a supplier account at the line level,\nso each line's account is returned under both `line_items[].supplier` and\n`line_items[].customer`. To tell which it is, match the id against the suppliers or\ncustomers list; an account that is both appears in both.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks only returns journal entries that were explicitly created as `JournalEntry` records.\nSystem-generated GL postings from invoices, bills, payments, deposits, transfers, and other\ntransaction types post to the general ledger but are not exposed by QuickBooks as journal entries\nand will not appear in this response. To reconstruct full GL activity, fetch the underlying\ntransaction resources (invoices, bills, payments, etc.) in addition to journal entries.\n\nLook up a specific journal entry by its number with `filter[number]` (for example\n`?filter[number]=JE-0001`). The number is limited to 21 characters.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite only returns journal entries that were explicitly created as `JournalEntry` records.\nSystem-generated GL postings from invoices, bills, payments, deposits, transfers, and other\ntransaction types post to the general ledger but are not exposed by Intuit Enterprise Suite as journal entries\nand will not appear in this response. To reconstruct full GL activity, fetch the underlying\ntransaction resources (invoices, bills, payments, etc.) in addition to journal entries.\n\nLook up a specific journal entry by its number with `filter[number]` (for example\n`?filter[number]=JE-0001`). The number is limited to 21 characters.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "Sage Intacct returns journal entry headers only for this endpoint — Intacct's `GLBATCH`\nquery does not include line items. The `line_items` array is therefore omitted from each\nentry in this list. To read line-level detail (accounts, amounts, departments, locations,\ntracking categories), fetch each entry individually with the Get Journal Entry endpoint.\n\n`number` is the batch number Intacct assigns to the entry, and `source_id` is the reference\nyou supplied when creating it. Both can be looked up with an exact-match, case-sensitive\nfilter: `?filter[number]=432` or `?filter[source_id]=your-reference`. Intacct numbers batches\nper journal, so `filter[number]` can return one entry per journal (for example a general,\na sales and a receipts journal entry all numbered 435) — check `journal_symbol` on the\nresults, or combine it with `filter[source_id]`. `source_id` is not enforced as unique — if\nseveral entries were created with the same value, `filter[source_id]` returns all of them — so\nuse a unique value per entry. A non-numeric `filter[number]` is rejected by Intacct with a 400.\n",
+                        },
+                        {
+                            "connector": "alegra",
+                            "description": "Alegra does not assign a journal entry `number` (always empty), and journal entries have no created/updated timestamps — so they cannot be sorted by date.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks Online does not expose a reliable cross-page total record count. The `QueryResponse.totalCount` field in list responses reflects the count for that page only, not the full dataset. `meta.total_count` will not appear in list responses. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite uses the same underlying QuickBooks API. The `QueryResponse.totalCount` field in list responses reflects the per-page count only. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics",
+                            "description": "Microsoft Dynamics 365 does not include a total record count in default list responses. `meta.total_count` will not appear. Surfacing the total requires adding `$count=true` to the OData query or calling a separate `$count` endpoint — not currently implemented.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Zoho Books does not expose a total record count in list responses. `meta.total_count` will not appear.\n\nJournal entries are returned in Zoho's internal entry-number order, newest created first —\nnot by posting date. Zoho's own default sorts by `journal_date`, which has no unique\ntiebreaker, and paginating over it means a page boundary falling inside a group of\nsame-dated entries silently duplicates some records and skips others. Entry number is\nunique per organization, so pagination over it is stable. In practice the two orders are\nclose, because entry numbers are assigned in creation order; they diverge for back-dated\nentries, where an entry created today for an earlier period sorts first rather than by its\n`posted_at`.\n\nTo sort by posting date instead, pass\n`?pass_through[sort_column]=journal_date&pass_through[sort_order]=D` — but note this\nreinstates the duplicate-and-skip behaviour at page boundaries, so only use it for a single\npage rather than when paginating a full ledger.\n\nZoho Books omits `line_items` from the journal list endpoint, so each list request\ntriggers one additional detail fetch per journal to hydrate them. A 100-row page issues\n100 detail calls in bounded concurrent batches of 5 (to fit Zoho's 100/min per-org and\n5-concurrent Free-tier limits). Detail failures for individual journals are isolated:\nthe affected record is returned with `line_items: []` and a warning surfaced, while\nthe rest of the page returns normally. To reduce call volume, use `limit` to bound\nthe page size.\n\n`filter[updated_since]` is applied at day granularity: Zoho only supports date-level\nlast-modified filtering, and the comparison happens in the organization's local timezone.\nThe filter is widened one day back from the given timestamp so no modified record is ever\nmissed, which means results can include records last modified up to two days before the\nrequested instant. Deduplicate on `updated_at` client-side if exact cut-off matters.\n\n`filter[status]` supports only `draft` and `posted` (Zoho journals have no other states).\nAny other status value is rejected by Zoho with \"Invalid value passed for status\".\n\n`filter[start_date]` / `filter[end_date]` filter on the journal posting date and are\ninclusive on both ends.\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": "Moneybird does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "rillet",
+                            "description": "Rillet does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "pennylane",
+                            "description": "Pennylane does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "procountor-fi",
+                            "description": "Procountor does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "dualentry",
+                            "description": "DualEntry scopes journal entries by company. Pass the `x-apideck-company-id` header (or set a Default\nCompany on the connection) to return only records belonging to that company within the tenant.\nWithout it, records across all companies in the tenant are returned.\n",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "AFAS does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "freshbooks",
+                            "description": "FreshBooks does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "QuickBooks Desktop does not expose a reliable cross-page total record count. Getting `total_count` requires a separate COUNT query — an extra API call that is not currently implemented. `meta.total_count` will not appear.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -352,17 +599,19 @@ class JournalEntries(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingJournalEntriesAllResponse(
                 get_journal_entries_response=unmarshal_json_response(
-                    Optional[models.GetJournalEntriesResponse], http_res
+                    Optional[models.GetJournalEntriesResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -403,11 +652,10 @@ class JournalEntries(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingJournalEntriesAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -431,8 +679,8 @@ class JournalEntries(BaseSDK):
         ] = UNSET,
         line_items: Optional[
             Union[
-                List[models.JournalEntryLineItemInput],
-                List[models.JournalEntryLineItemInputTypedDict],
+                Iterable[models.JournalEntryLineItemInput],
+                Iterable[models.JournalEntryLineItemInputTypedDict],
             ]
         ] = None,
         status: OptionalNullable[models.JournalEntryStatus] = UNSET,
@@ -444,26 +692,29 @@ class JournalEntries(BaseSDK):
         number: OptionalNullable[str] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         accounting_period: OptionalNullable[str] = UNSET,
         tax_inclusive: OptionalNullable[bool] = UNSET,
         attachments: Optional[
             Union[
-                List[Nullable[models.LinkedAttachment]],
-                List[Nullable[models.LinkedAttachmentTypedDict]],
+                Iterable[Nullable[models.LinkedAttachment]],
+                Iterable[Nullable[models.LinkedAttachmentTypedDict]],
             ]
         ] = None,
         source_type: OptionalNullable[str] = UNSET,
         source_id: OptionalNullable[str] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -585,6 +836,7 @@ class JournalEntries(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.journal_entry, False, False, "json", models.JournalEntryInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -609,9 +861,115 @@ class JournalEntries(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Each line needs its account by name: send `line_items[].ledger_account.name` (the QuickBooks account name); an account `id` alone is not resolved and the entry is rejected. Only the date part of `posted_at` is stored. `memo` is not stored: QuickBooks keeps a memo per line (`line_items[].description`), not on the entry.\n\nWrites are applied on the Web Connector's next run, so a create can return a `504` timeout after 28 seconds while QuickBooks still creates the entry. List journal entries before retrying.\n",
+                        },
+                        {
+                            "connector": "e-conomic",
+                            "description": "Journal entries are created as unbooked vouchers in an e-conomic journal: `status` is always `draft`: once the journal is booked in e-conomic the voucher leaves the journal, and the entry can no longer be read through its `id`. `journal_symbol` is the journal number (list them with `/accounting/journals`); it defaults to journal 1. Each line needs `ledger_account.id` (the account number), `type` (`debit` or `credit`) and `total_amount`, and debits and credits must balance. `posted_at` must fall in an accounting year set up in e-conomic. The returned `id` has the form `{journal}-{accounting year}-{voucher number}`; a split accounting year such as `2025/2026` is written `2025_6_2026`. Listing, updating and deleting journal entries are not supported. `currency_rate` and `number` are not stored: e-conomic applies its own exchange rate and numbers the voucher itself. `title` (or `memo`) becomes the text of lines without a `description` and is not returned as a separate field.\nA `status` other than `draft` is rejected with a 400, because e-conomic journal entries are written as drafts only.\nSend an `Idempotency-Key` to make retrying a create safe: Unify sends e-conomic a 32-character key derived from it as e-conomic's own `Idempotency-Key` header, and e-conomic answers a repeat with the original journal entry instead of creating a second one. e-conomic keeps a key for one hour, and Unify remembers it for the same hour. Reusing a key with a different body returns 422, from Unify within its hour and from e-conomic while e-conomic still remembers the key; after both have forgotten it, the same key is treated as a new request. Use a new key for every journal entry. Unify builds the e-conomic request again on a retry, from what it reads from e-conomic and from today's date in Copenhagen when you leave the date out. If either changed between the attempts, e-conomic refuses the retry as a reused key and Unify returns 422 instead of creating a second journal entry. The first attempt may have created the journal entry: look it up before resending with a new key. Send the date to keep a retry identical across midnight.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "Line items must balance to zero — FreeAgent rejects the whole entry otherwise, rather than\naccepting it and leaving the books unbalanced. Only `ledger_account`, `total_amount`,\n`type` and `description` are supported per line; a category that requires an associated\nuser, stock item, capital asset, property, or contact (used for opening balances and a\nhandful of specialised ledger accounts) cannot be targeted through this connector.\n",
+                        },
+                        {
+                            "connector": "e-boekhouden",
+                            "description": "The first line item becomes the entry's own ledger account; every other line item becomes\nan additional row. There is no separate field for the first line's amount — it is derived\nfrom the remaining lines so that the whole entry balances to zero, so `line_items` must\nalready balance (positive debit amounts, negative credit amounts) before it is sent. Each\nline beyond the first also needs a VAT code; lines with no tax rate are sent with the \"no\nVAT\" code.\n\nA per-line `description` is not preserved for lines beyond the first — e-Boekhouden always\nreturns the entry's own top-level memo for every line, regardless of what was sent for that\nspecific line. Use the entry-level `memo` for anything you need to\nfind the entry by; don't rely on distinguishing lines by their own description text.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "`journal_symbol` is required and must be the code of an existing Minox journal (for example `MEMO`), and an entry needs at least two lines. `currency` must be the administration's own currency: Minox needs an exchange rate with any other, which a journal entry has no field for, so another currency is rejected with a `400`. On bank and cash journals Minox books line amounts including VAT: amounts sent with a `tax_rate` and `tax_amount` are stored as sent (net, plus VAT; a `tax_amount` of `0` stays `0`), a `tax_rate` without a `tax_amount` gets the VAT code's percentage and is booked as net plus that VAT, as on invoices, and a line without a `tax_rate` on such a journal gets the ledger account's default VAT code, which Minox takes out of the amount. A customer line on a sales journal, or a supplier line on a purchase journal, is rejected: that books an invoice or bill, which is created through its own resource. A line with a `customer` or `supplier` is posted to that customer or supplier, which Minox books on the matching control account, and its `ledger_account` is ignored. Other lines post to `line_items[].ledger_account`. `number`, when given, must be a whole number of at most 8 digits. The accounting period follows from `posted_at`. The entry is booked as a whole: if any line is rejected, nothing is booked.\n\nMinox does not store `memo` or `title` (a line without a `description` takes the memo as its description), `currency_rate`, or any tracking category after the first on a line. VAT codes (`tax_rate`) can only be used on journals and accounts set up for VAT in Minox; anywhere else the entry is rejected with a `400`. `pass_through` is not supported. Updating an entry is not supported; delete it and create it again.\n",
+                        },
+                        {
+                            "connector": "snelstart",
+                            "description": "At least two lines are required, and the debit and credit sides must balance to zero —\nboth are rejected outright rather than silently accepted. A booking date that falls in a\nperiod your accountant has locked for review, or one already checked and closed, is also\nrejected; this can make a write that succeeded last month start failing later with no\nchange on your side. The same booking-date restriction applies to `invoices`, `bills`,\n`payments` and `bill-payments`, since they all post through the same underlying booking\nmodel.\n",
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": "Twinfield caps a line's description at 40 characters. A longer value is rejected outright\nrather than truncated, and this connector does not pre-truncate\n`line_items[].description` before sending.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "`number` cannot be set on create. Sage's `general-ledger/journal-entry` object has no writable number field\n— the number you read back is `txnNumber`, which Sage assigns on post. The only client-supplied identifier\nit accepts is a reference, exposed as `source_id`, so use that as the idempotency/recovery key and expect\n`number` to be server-assigned. After an uncertain create, look the entry up with `filter[source_id]`\non the list endpoint before retrying.\n\nSend an `Idempotency-Key` to make retrying a create safe: Unify sends Sage Intacct a\n32-character key derived from it as Sage's own `Idempotency-Key` header, and Sage answers a\nrepeat with the original journal entry instead of creating a second one. Sage does not publish\nhow long it keeps a key; it still replayed the original after an hour, so Unify remembers\na key for one hour, after which the same key is treated as a new request. Reusing a key\nwith a different body returns 422, within that hour from Unify and after it from Sage\nwhile Sage still remembers the key (`REST-6005`). Use a new key for every journal entry.\n",
+                        },
+                        {
+                            "connector": "procountor-fi",
+                            "description": "Procountor only accepts the following values for the tax_code field: SALES, PURCHASE.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Writes go to Xero `ManualJournals` (free in every Xero tier).\n\nWhen the resulting status is `draft`, the response `id` is the `ManualJournalID`. When the status is `posted` (either created posted directly, or transitioned from draft), the response `id` is the Xero `JournalID` for backwards compatibility — note that this is **not** the same value as the underlying `ManualJournalID`.\n\nThe response also returns `manual_journal_id` — the underlying `ManualJournalID`, which is stable across the entire lifecycle (draft → posted → voided). When persisting an id from this response, use the pattern `manual_journal_id ?? id` so your stored reference does not change on a draft → posted transition.\n\nXero only supports `draft` and `posted` for the status field. For ledger accounts in journal lines, you can use either `ledger_account.id` (UUID) or `ledger_account.code`; if only the ID is provided, the code will be resolved automatically.\n\nJournal entries in xero can be tax inclusive, tax exclusive or no tax. The `tax_inclusive` field should be set to true, false or null if the journal entry is tax inclusive, tax exclusive or no tax.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Netsuite only supports one tracking category at a time so only the first item in the tracking_categories list will be used.\n\nDate-only fields need no configuration: NetSuite converts the datetime it receives into the\nSOAP/integration user's time zone before storing the date part, and these fields are anchored so\nthey store on the intended calendar day for any integration user between UTC-10 and UTC+13.\n\nFour zones fall outside that range and need the optional `timezone` connection setting:\n`Pacific/Pago_Pago`, `Pacific/Niue` and `Pacific/Midway` (UTC-11) store one day early without it,\nand `Pacific/Kiritimati` (UTC+14) stores one day late. Set it to the IANA zone of the NetSuite user\nthis connection authenticates as, read from that user's Home > Set Preferences > Time Zone — Setup >\nCompany > Company Information only supplies the default, so a user who overrode it needs their own\nzone.\n\nWhen the setting is used its value must be within 12 hours of that user's real zone in either\ndirection: more than ~12h east stores dates one day early, more than ~12h west stores them one day\nlate.\n\nThis applies to every NetSuite date-only write field across the accounting resources.\n\n`number` cannot be set on create: NetSuite assigns the journal number itself and any value\nsent is ignored. Read `number` back from the response and use it with `filter[number]` on\nthe list endpoint to find the entry again — for example after a create that timed out or\nreturned a 5xx, before retrying.\n\nSend an `Idempotency-Key` to make retrying a create safe: it reaches NetSuite as the journal entry's `externalId`. A retry of a create that already landed, or of one that timed out after NetSuite saved it, returns the original journal entry's id instead of NetSuite's `DUP_RCRD` error. NetSuite never forgets an `externalId`, so after the 24-hour window a key reused for a different journal entry gets the original journal entry back, with the new body ignored. Use a new key for every journal entry. A `pass_through` that sets `externalId` replaces the key, and a duplicate of that value stays a `DUP_RCRD` error.\n",
+                        },
+                        {
+                            "connector": "mrisoftware",
+                            "description": 'MRI Software does not provide a proper ID for journal line items. Instead, each journal line item is identified by a combination of GLREFERENCE, PERIOD, and ITEM. These fields are mapped to unify with the properties number, accounting_period, and line_number, respectively. Every journal entry created through Unify is sent with GLSOURCE statically set to "TS", so entries originating from Unify can be identified in MRI by that source code. MRI treats the GL source as a free-form two-character code configured per installation, so it is not validated against a fixed list — if your MRI installation reserves "TS" for another purpose, raise a support request.\n',
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "Quickbooks only supports one tracking category at a time so only the first item in the tracking_categories list will be used.\nLine-level tax fields (tax_rate, tax_amount, tax_type) on journal entries are only supported for non-US QuickBooks companies (UK, CA, AU, etc.). US-based QuickBooks companies silently discard all tax fields — the request succeeds but no tax data is persisted.\nFor US companies that need to reflect tax in journal entries, add a separate line item posting the tax amount to a tax liability ledger account (e.g., \"Sales Tax Payable\"). This keeps the journal entry balanced in the general ledger, but will not populate QuickBooks Sales Tax reports — for that, use invoices or sales receipts instead.\nWhen line_items[].tax_type is not set, QuickBooks requires knowing whether the tax applies to a sales or purchase transaction. Unify infers this from line_items[].type: credit lines are treated as sales (TaxApplicableOn: Sales) and debit lines as purchases (TaxApplicableOn: Purchase). This covers the common case of sales summary journal entries. For atypical entries (e.g. a credit to an AP account, or a debit for a sales return), set tax_type explicitly on each line to override the default.\nWhen a line item has `tax_rate` but no `tax_amount`, Unify calculates `tax_amount` as the line's `total_amount` multiplied by the tax rate's percentage, rounded to the cent. For tax rates made up of several components (for example Québec GST + QST), send the combined tax for the line in `tax_amount`, or omit it; Unify splits the line's tax across the components.\nCreating a journal entry with a `number` that already exists is accepted and produces a second, separate entry — the number is not enforced as unique. Use a unique `number`, and if a create's result never arrives (a timeout or a 5xx), look the entry up with `filter[number]` before retrying so you do not create a duplicate.\nSend an `Idempotency-Key` to make retrying a create safe: it reaches QuickBooks as its `requestid`. QuickBooks keeps a `requestid` for at least 24 hours and can keep it longer, so after the 24-hour window a key reused for a different journal entry may get the original journal entry back, with the new body ignored. Use a new key for every journal entry. Your key can be 1-255 characters: Unify sends QuickBooks a 32-character `requestid` derived from it, so QuickBooks' 50-character `requestid` limit never applies.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite only supports one tracking category at a time so only the first item in the tracking_categories list will be used.\nLine-level tax fields (tax_rate, tax_amount, tax_type) on journal entries are only supported for non-US Intuit Enterprise Suite companies (UK, CA, AU, etc.). US-based Intuit Enterprise Suite companies silently discard all tax fields — the request succeeds but no tax data is persisted.\nFor US companies that need to reflect tax in journal entries, add a separate line item posting the tax amount to a tax liability ledger account (e.g., \"Sales Tax Payable\"). This keeps the journal entry balanced in the general ledger, but will not populate Intuit Enterprise Suite Sales Tax reports — for that, use invoices or sales receipts instead.\nWhen line_items[].tax_type is not set, Intuit Enterprise Suite requires knowing whether the tax applies to a sales or purchase transaction. Unify infers this from line_items[].type: credit lines are treated as sales (TaxApplicableOn: Sales) and debit lines as purchases (TaxApplicableOn: Purchase). This covers the common case of sales summary journal entries. For atypical entries (e.g. a credit to an AP account, or a debit for a sales return), set tax_type explicitly on each line to override the default.\nWhen a line item has `tax_rate` but no `tax_amount`, Unify calculates `tax_amount` as the line's `total_amount` multiplied by the tax rate's percentage, rounded to the cent. For tax rates made up of several components (for example Québec GST + QST), send the combined tax for the line in `tax_amount`, or omit it; Unify splits the line's tax across the components.\nCreating a journal entry with a `number` that already exists is accepted and produces a second, separate entry — the number is not enforced as unique. Use a unique `number`, and if a create's result never arrives (a timeout or a 5xx), look the entry up with `filter[number]` before retrying so you do not create a duplicate.\nSend an `Idempotency-Key` to make retrying a create safe: it reaches Intuit Enterprise Suite as its `requestid`. Intuit Enterprise Suite keeps a `requestid` for at least 24 hours and can keep it longer, so after the 24-hour window a key reused for a different journal entry may get the original journal entry back, with the new body ignored. Use a new key for every journal entry. Your key can be 1-255 characters: Unify sends Intuit Enterprise Suite a 32-character `requestid` derived from it, so Intuit Enterprise Suite's 50-character `requestid` limit never applies.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "Sage Intacct only supports `draft` and `posted` status fields when updating a journal entry.\nIf no status is provided then the default status is \"draft\".\nOnly Journal Entries with `draft` status can be updated.\nOnly the first tracking category is used (`tracking_categories[0]`). On both create and\nupdate, the connector sends both `CLASSID` (from `tracking_categories[0].code`) and\n`CLASSDIMKEY` (from `tracking_categories[0].id`), so a class may be referenced by its `id`\n(as returned by `GET /accounting/tracking-categories`) or by its `code` on either verb;\nsupplying just one of the two is sufficient.\nEach line's `location_id` falls back to the connection's configured default entity. When\nthe connection operates at the top level (no specific entity), set `location_id` explicitly\non lines whose ledger account requires a location dimension.\n\nSend an `Idempotency-Key` to make retrying a create safe: Unify sends Sage Intacct a\n32-character control id derived from it, and Intacct rejects a second create with the same\ncontrol id as already recorded. When you sent a `source_id`, Unify then finds the journal\nentry by it and returns the original journal entry's id. Without a `source_id` there is\nnothing to find it by, so the retry returns Sage Intacct's \"already recorded\" error: no\nsecond journal entry is created. If several journal entries share your `source_id`, the\noriginal cannot be identified and the error is returned as well, so use a unique\n`source_id` per journal entry. A create Sage Intacct rejected can be retried with the same\nkey and the same body; a corrected body needs a new key. Use a new key for every journal\nentry. A `pass_through` that changes the control id replaces the key, and a repeat of that\nvalue stays an error.\n\n`number` cannot be set on create: Intacct assigns the batch number itself (a sequence per\njournal, so it is only unique together with `journal_symbol`) and any value sent is ignored.\n`memo` is not written — put the text in `title`, which is returned as both\n`title` and `memo`. `source_id` is stored and returned, and is the recommended recovery key\nafter a create that timed out or returned a 5xx: look the entry up with `filter[source_id]`\non the list endpoint before retrying. It is not a duplicate guard — Intacct accepts the same\n`source_id` on several entries — so use a unique value per entry.\n",
+                        },
+                        {
+                            "connector": "workday",
+                            "description": 'Status should be set to "draft" or "posted". Default status is "draft".\nOnly Journal Entries with `draft` status can be updated.\nIt is required to provide Cost_Center_Reference_ID as worktag in the line items, otherwise the status will automatically be set to "draft".\nA journal entry saved as `draft` returns no `line_items` on Get Journal Entry or List Journal Entries: Workday does not\nreturn the lines of a journal that has not been submitted. The lines are stored, and are returned once the journal is posted.\n`source_type` is the Workday journal source; when it is not sent the journal is created with the `Manual_Journal` source.\n',
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "Employee account type: journal entry lines can reference employees via the `employee` field (use `display_id` for the employee number, or `id` with a GUID which will be resolved automatically). Note: reading back the journal entry will NOT return the employee reference — employee lines are invisible in BC's API for draft entries, and resolve to a GL payable account when posted. Send `ledger_account: {}` alongside the `employee` field to satisfy schema validation.\n\nJournal entries are created in the general journal batch configured in the required `journal_entries_journal_batch_name` connection setting — a different journal/batch cannot be selected per entry or per request.\n\n`currency` and `currency_rate` are not supported: Business Central's API (the v2.0 `journalLine` entity) has no currency fields on journal lines and rejects unknown properties, so amounts are always posted in the company's local currency.\n",
+                        },
+                        {
+                            "connector": "acumatica",
+                            "description": 'Acumatica requires a separate Release action to transition a journal entry from Balanced to Posted.\nWhen `status: "posted"` is sent, Unify automatically calls the ReleaseJournalTransaction action after creating or updating the entry.\nOnly `status: "posted"` is supported for state transitions. Other values (`draft`, `voided`, etc.) are not supported — the entry will be created or updated but will remain in Balanced state.\nUpdating a posted journal entry returns an error — only `memo` can be updated on a posted entry. To correct a posted entry, use Reverse or Reclassify in Acumatica.\nIf the release step fails after a successful create or update, the entry will exist in Acumatica in Balanced state and the API will return an error. The entry is not rolled back.\n',
+                        },
+                        {
+                            "connector": "myob-acumatica",
+                            "description": 'MYOB Advanced (Acumatica) requires a separate Release action to transition a journal entry from Balanced to Posted.\nWhen `status: "posted"` is sent, Unify automatically calls the ReleaseJournalTransaction action after creating or updating the entry.\nOnly `status: "posted"` is supported for state transitions. Other values (`draft`, `voided`, etc.) are not supported — the entry will be created or updated but will remain in Balanced state.\nUpdating a posted journal entry returns an error — only `memo` can be updated on a posted entry. To correct a posted entry, use Reverse or Reclassify in MYOB Advanced.\nIf the release step fails after a successful create or update, the entry will exist in MYOB Advanced in Balanced state and the API will return an error. The entry is not rolled back.\n',
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "`company_id` (the SAP company code) is required. Journal entries are posted as standard G/L postings of\ndocument type `SA`; the SAP document type cannot be changed. If SAP rejects the posting (for example an unknown company code or ledger\naccount, or an unbalanced entry), the request fails with a `400` and nothing is posted.\n\n`memo` (up to 25 characters) and `line_items[].description` (up to 50 characters) are stored on the posting\nand returned when the journal entry is read; longer values are cut to these lengths. `number` is assigned by\nSAP and cannot be set.\n\nTax: SAP does not calculate tax on this posting and does not check a tax amount against the rate, so you\nsend the amounts. A taxed line has `line_items[].tax_rate.code` (the SAP tax code, for example `V1`) and\n`line_items[].tax_amount`; both are required together, and the request fails with a `400` before anything is\nsent when a taxed line has no `tax_amount`, when a non-zero `tax_amount` has no `tax_rate.code`, or when a taxed line's\n`total_amount` or `tax_amount` has more decimals than the currency allows. `total_amount` of a taxed line is the amount without tax. Amounts\nare taken without their sign, as on an untaxed line: `type` gives the side, so a credit line of `-100` with\n`tax_amount` `-20` posts a credit of 100 and a tax of 20. Unify adds one tax line per tax code, on the same side (debit or credit) as the lines it taxes,\nso the entry must balance with those tax lines included. A taxed debit line is posted as input tax\n(purchases) and a taxed credit line as output tax (sales); if SAP does not know the tax code under that kind,\nthe request fails with a `400` that says to use a tax code of the other kind on that line. One tax code on both\na debit and a credit line of the same entry is rejected with a `400`: split the entry or use different tax\ncodes. Tax is supported for company codes where SAP calculates tax per document and uses time-dependent taxes;\ncompany codes that require tax per item (such as US jurisdiction tax) or that take no tax date are refused by\nSAP, and the request fails with a `400`.\n\nSome accounts, revenue accounts among them, require an account assignment: send `line_items[].department_id`\n(cost center) or `line_items[].tracking_categories[0].id` (profit center) as SAP requires. Unify does not add\nan assignment to a journal entry for you: when one is missing, the request fails with a `400` and nothing is\nposted. A profitability assignment (which some revenue accounts need besides the profit center) is not\nsent on a journal entry line by this API; post to such an account with an invoice or credit note.\n\nA taxed journal entry read from this API can't be posted back as it is: the tax SAP posted comes back as a\nline of its own on the tax account, and the taxed line comes back with its tax code but without\n`tax_amount`. Remove the tax line and set `tax_amount` on the taxed line before posting it again.\n\nCreating journal entries is not yet available on SAP S/4HANA On-Premise and Private Cloud connections\n(connections whose SAP System URL is your own gateway rather than an SAP-hosted Public Edition tenant on `*.s4hana.cloud.sap` or `*.s4hana.ondemand.com`):\nthe request returns `501` and nothing is posted. Reading journal entries works on those connections.\n",
+                        },
+                        {
+                            "connector": "exact-online",
+                            "description": "A validation refusal — an unbalanced entry, an unknown or inactive reference (ledger\naccount, journal, VAT code, currency), or a missing required field — returns `422` with\nthe specific reason named. Any other `500` is a genuine unexpected downstream failure,\nnot a refusal the request itself caused.\n\nVAT on a line is selected by `tax_rate.code`, not `tax_rate.rate` — the rate is not sent\nand has no effect. Omitting the code does not mean \"no VAT\": Exact substitutes the ledger\naccount's own default VAT code, which changes the line's tax amount and can then reject\nthe whole entry as unbalanced with an error naming the balance mismatch rather than VAT.\nAlways send `tax_rate.code` explicitly rather than relying on a specific ledger account's\ndefault.\n\n`line_items[].date` maps to Exact's per-line `Date` (a real field, distinct from the\nheader, which has no date field at all — see the list-operation gotcha above). Historical\nor backdated bookings should set this per line rather than relying on `posted_at`.\n`line_items[].source_id` maps to Exact's per-line `Notes`, useful for carrying your own\nreconciliation identifier since `description` is typically a human-readable label.\n",
+                        },
+                        {
+                            "connector": "exact-online-nl",
+                            "description": "A validation refusal — an unbalanced entry, an unknown or inactive reference (ledger\naccount, journal, VAT code, currency), or a missing required field — returns `422` with\nthe specific reason named. Any other `500` is a genuine unexpected downstream failure,\nnot a refusal the request itself caused.\n\nVAT on a line is selected by `tax_rate.code`, not `tax_rate.rate` — the rate is not sent\nand has no effect. Omitting the code does not mean \"no VAT\": Exact substitutes the ledger\naccount's own default VAT code, which changes the line's tax amount and can then reject\nthe whole entry as unbalanced with an error naming the balance mismatch rather than VAT.\nAlways send `tax_rate.code` explicitly rather than relying on a specific ledger account's\ndefault.\n\n`line_items[].date` maps to Exact's per-line `Date` (a real field, distinct from the\nheader, which has no date field at all — see the list-operation gotcha above). Historical\nor backdated bookings should set this per line rather than relying on `posted_at`.\n`line_items[].source_id` maps to Exact's per-line `Notes`, useful for carrying your own\nreconciliation identifier since `description` is typically a human-readable label.\n",
+                        },
+                        {
+                            "connector": "exact-online-uk",
+                            "description": "A validation refusal — an unbalanced entry, an unknown or inactive reference (ledger\naccount, journal, VAT code, currency), or a missing required field — returns `422` with\nthe specific reason named. Any other `500` is a genuine unexpected downstream failure,\nnot a refusal the request itself caused.\n\nVAT on a line is selected by `tax_rate.code`, not `tax_rate.rate` — the rate is not sent\nand has no effect. Omitting the code does not mean \"no VAT\": Exact substitutes the ledger\naccount's own default VAT code, which changes the line's tax amount and can then reject\nthe whole entry as unbalanced with an error naming the balance mismatch rather than VAT.\nAlways send `tax_rate.code` explicitly rather than relying on a specific ledger account's\ndefault.\n\n`line_items[].date` maps to Exact's per-line `Date` (a real field, distinct from the\nheader, which has no date field at all — see the list-operation gotcha above). Historical\nor backdated bookings should set this per line rather than relying on `posted_at`.\n`line_items[].source_id` maps to Exact's per-line `Notes`, useful for carrying your own\nreconciliation identifier since `description` is typically a human-readable label.\n",
+                        },
+                        {
+                            "connector": "oracle-fusion",
+                            "description": "Oracle Fusion journal entries are created asynchronously: this call submits an import request to Oracle's scheduler and returns immediately, before the import job runs. The `id` in the response is a **submission receipt**, not a journal id: a value prefixed with `ess-group:` (e.g. `ess-group:238151661897615`), and it never becomes a journal id — journals have their own ids in a different space. The prefix is there so the value cannot be mistaken for one.\n\nThe receipt is usable straight away, on the same endpoints as a journal id. `journalEntriesOne` and `journalEntriesDelete` accept it: while the import is still running they answer `404`, and once the journal exists they answer for that journal exactly as they would for its own id — the `id` in that response is the real journal id, which you can keep instead of the receipt if you prefer. Expect the wait to be seconds to minutes, depending on the batch and Oracle's job queue. The receipt does not expire; it keeps resolving for as long as the journal exists. A submission Oracle will not accept is reported as a `503` (the scheduler is refusing the connection's credentials, retry later), a `403` (Oracle gives no reason; most likely the integration user lacks the privilege to submit the Journal Import process, but the check behind it cannot rule out a submission Oracle would not accept) or a `502` (undetermined, retry); no journal is created in any of those cases.\n\nEvery refusal this connector makes before submitting — an unbalanced journal, fewer than two line items, a currency that is not the ledger's, an unrecognised period name, a `posted_at` that disagrees with `accounting_period` — is answered with a `4xx`, and nothing reaches Oracle: no import is queued, no rows are written, and there is nothing to clean up. Only a `201` means Oracle accepted the submission.\n\nRetrying is safe where this gotcha tells you to retry: a `503`, `502` or `403` means the import never started, and resubmitting the same journal does not merge with, duplicate or amend the earlier attempt — each submission stands on its own. What you cannot assume is that a request whose outcome you never saw — a client timeout, a dropped connection — created nothing: if that submission did reach Oracle, retrying produces a second journal. List journal entries and match on your own `memo` before retrying in that case.\n\nJournal entries are immutable once posted. `journalEntriesUpdate` is not supported; `journalEntriesDelete` is supported only while the journal is still unposted (journals import unposted, so a not-yet-posted journal can be cleaned up by id). Correct a posted journal with a reversal instead.\n\nMulti-currency journal entries are not supported: a journal is posted in the ledger's functional currency. `currency` may be omitted or name that same currency; any other currency, or a `currency_rate`, is refused with a 400.\n\nAccount and period validation errors (invalid code combination, closed period, etc.) are not returned synchronously by this call — they only surface in Oracle's asynchronous ESS import log, which is not currently exposed through this API.\n\n`posted_at` selects the accounting date the journal is imported with, and therefore its period; the journal is still created Unposted and `posted_at` reads back as that accounting date. Only the calendar date of `posted_at` is used, as written — `2026-09-01T00:00:00+02:00` lands on 1 September, not on 31 August. `accounting_period` on its own selects the period directly (and the accounting date with it, the first day of that period's month) — send it alone to target a period without also sending `posted_at`. Oracle period names are tenant-defined, but this connector accepts only the Mon-YY calendar naming (e.g. `Jul-26`, matched case-insensitively); a name in another shape is refused with a 400. If both `posted_at` and `accounting_period` are sent and disagree, the request is refused with a 400 naming both values rather than silently picking one.\n\nA journal needs at least **two** line items — a debit and a credit. A create with fewer,\nor with no `line_items` at all, is refused rather than submitted: an import with no rows is\naccepted by Oracle and simply never becomes a journal.\n\n`posted_at` must be an ISO 8601 calendar date (`YYYY-MM-DD`, optionally with a time) and a\nreal one. A value that is not ISO (`09/15/2026`), that cannot be read as a date, or that\ndoes not exist (`2026-02-30`), is refused naming the value. A non-ISO date is refused\nrather than interpreted because its meaning depends on the writer's locale — `09/15` is\nSeptember 15th to one reader and May 9th to another — and the guess selects the accounting\nperiod the journal lands in.\n\nLine amounts are always **positive**, whatever the line's direction: `line_items[].type`\n(`debit` / `credit`) carries the direction on its own, and a zero or negative\n`total_amount` is refused. Note this differs from the field's own description in the\nunified schema, which describes credits as negative; send the absolute amount here.\n\nEvery line needs a `ledger_account.code` — the account combination as a\nperiod-delimited string, e.g. `01.000.4000`. It is the only part of `ledger_account` that\nis read: `id`, `name` and `nominal_code` are ignored, and a line without a non-empty\n`code` is refused. A code with more than 30 segments is refused rather than truncated.\n\nTax is not carried on a journal entry through this connector: `tax_code`, `tax_type` and a\nline's `tax_amount`, `tax_rate` or `tax_type` are refused if present, rather than accepted\nand dropped. Record the tax through the resource that owns it. (`tax_inclusive` is the one\nexception — it is currently ignored rather than refused.)\n\nJournals are always imported **Unposted**; a caller-supplied `status` is ignored. Posting\nis a separate step in Oracle that this connector does not perform.\n\nFields accepted by the unified schema and **not** written to Oracle: `number`,\n`display_id`, `company_id`, `subsidiary`, `journal_symbol`, `tracking_categories`,\n`tax_inclusive`, `custom_fields`, `custom_mappings`, `attachments`, `source_type`,\n`source_id`, and per line `base_currency_amount`, `tracking_category`,\n`tracking_categories`, `customer`, `supplier`, `employee`, `department_id`, `location_id`\nand `worktags`. Oracle's journal import takes a fixed set of columns; anything outside it\nhas nowhere to land. Cost centres, departments and similar dimensions are segments of the\naccount combination, so they are set through `ledger_account.code`, not through the\ntracking fields. The journal's source and category come from the connection's **Default\nJournal Source** and **Default Journal Category** settings and cannot be chosen per\nrequest.\n\nA carriage return or line feed inside `title`, `memo` or a line's `description` is\nreplaced with a single space before the value reaches Oracle. Other control characters are\nreplaced the same way.\n\nEmoji and other characters outside the Basic Multilingual Plane count as **four**\ncharacters against the length limits for `title`, `memo` and a line's `description`, and a\nvalue that exceeds its limit once counted that way is refused with a `400` naming both\ncounts. The four is the width such a character occupies on a tenant whose database cannot\nhold it, where it also reads back as replacement characters; the limit is applied that way\nfor every tenant, so a value is never accepted that some tenant would silently mangle.\n\nA connection missing any of **Ledger**, **Data Access Set**, **Default Journal Source** or\n**Default Journal Category** is refused with a `422` naming the missing setting, before\nOracle is contacted. The currency the `currency` check above compares against is the\nledger's own functional currency, read from Oracle per request — there is nothing to\nconfigure, and nothing to get wrong. If Oracle cannot be asked for it the create is refused\nwith a `502` rather than submitted with a guessed currency, since an import carrying the\nwrong currency is discarded silently after the create has already returned.\n\nThe **Default Journal Source** must be a journal source your General Ledger accepts for\nimport. Oracle does not validate it when the request is submitted: a source it cannot use\nis answered with the same `201` and `ess-group:` receipt as a good one, and no journal is\never created. If creates return an id but no journal appears, check this setting first.\n\n`memo` holds at most 214 characters, each line's `description` at most 240, and `title` at\nmost 87 —\nit becomes the journal batch's name, a narrower field, and Oracle appends its own reference\nto that name and then trims the result from the title end. A longer value is refused up\nfront, naming the field and its own limit, because neither thing Oracle does with one is\nsomething you would want silently: past roughly 91 characters it keeps the journal and\nquietly drops the tail of your title, and past 100 it discards the whole import. The 87 is\ndeliberately a little under the measured boundary, which moves as Oracle's own reference\ngrows.\n\n`pass_through` is not supported on this operation and is refused up front: Oracle refuses\nthe whole submission outright — without saying why — when anything is added to or changed\nin it, so a `pass_through` value would produce a submission that quietly never becomes a\njournal. Send what you need through the journal entry's own fields.\n\nLine amounts are rounded to the ledger currency's precision before the entry is balanced\nand submitted — two decimals for most currencies, none for JPY, three for KWD. A payload\nthat balances only at full floating-point precision is refused up front, naming the\nresidue, rather than accepted and then discarded by Oracle's import: Oracle stores each\namount at that precision, so three lines of `33.333333333333336` against a credit of `100`\nbecome `33.33` each and leave the journal a cent out.\n\n**Creates are not deduplicated.** Each create is a separate submission, so\nsending the same journal entry twice creates two journals — deliberately: a caller may\nlegitimately post an identical entry twice, and merging them would lose one silently with\na `201` for both. There is no idempotency key on this operation, so a client that retries\nafter a timeout — and therefore never saw a receipt — should first list journal entries and\nmatch on its own `memo` before resending. The `memo` reads back normalised, not always\nbyte for byte: control characters become spaces, trailing whitespace is dropped, and\ncharacters outside the Basic Multilingual Plane can come back as replacement characters on\nsome tenants — compare against your memo normalised the same way, or put a plain-ASCII\nunique token in it to match on. Both journals import Unposted and either can be deleted while it stays\nthat way.\n\nAn Oracle journal **batch** is a container of journals, and this connector surfaces one\nbatch as one journal entry. Journal Import writes a separate journal inside the batch for\neach accounting date, category and currency, so a batch created in Oracle or by another\nintegration can hold several — every batch this connector creates holds exactly one. When a\nbatch does hold several, `line_items` carries the lines of all of them, and any entry-level\nfield the journals disagree on (`currency`, `posted_at`, `accounting_period`, `memo`) is\nreported as **absent** rather than taking one journal's value and stating it over\nanother's lines. `number` is not one of them: it names the batch, not a journal inside it,\nso it is always present. `line_items[].id` is qualified so it stays unique within the entry;\n`line_items[].line_number` is Oracle's own per-journal number and therefore repeats across\na multi-journal batch.\n\nLine order is not preserved: Oracle numbers the imported lines itself, so `line_items` can come back in a different order than sent, and `line_items[].line_number` is ignored on create.\n\n`title` and `number` do not come back as sent. Oracle names the imported journal after the title you send followed by the journal source, the balance type, a group id, the import request id and a reversal flag, so the values read back are longer than the values written and differ for every import. `memo` round-trips, normalised as described above. To find the journal, use the receipt the create returned — it reads and deletes like a journal id once the import has run.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Fiken creates a posting (transaction) and returns its id, not the id of a journal entry. Apideck reads the posting back and returns the `id` of the first journal entry in it, which you can use with Get Journal Entry. Lines must use accounts that exist in the company's chart of accounts; bank and customer or supplier accounts use their sub-ledger code, for example `1920:10001`. Journal entries cannot be updated or deleted.\n\nWith a tax rate on a line, Fiken reads a debit line's amount as net (the VAT is added to it) and a credit line's amount as gross (the VAT is taken out of it): Apideck sends `sub_total` (or `total_amount` minus `tax_amount`) for debit lines and `total_amount` for credit lines. A negative amount reverses its line: a debit line of `-100` credits the account.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -619,10 +977,11 @@ class JournalEntries(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingJournalEntriesAddResponse(
                 create_journal_entry_response=unmarshal_json_response(
-                    Optional[models.CreateJournalEntryResponse], http_res
+                    Optional[models.CreateJournalEntryResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -663,10 +1022,9 @@ class JournalEntries(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingJournalEntriesAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -690,8 +1048,8 @@ class JournalEntries(BaseSDK):
         ] = UNSET,
         line_items: Optional[
             Union[
-                List[models.JournalEntryLineItemInput],
-                List[models.JournalEntryLineItemInputTypedDict],
+                Iterable[models.JournalEntryLineItemInput],
+                Iterable[models.JournalEntryLineItemInputTypedDict],
             ]
         ] = None,
         status: OptionalNullable[models.JournalEntryStatus] = UNSET,
@@ -703,26 +1061,29 @@ class JournalEntries(BaseSDK):
         number: OptionalNullable[str] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         accounting_period: OptionalNullable[str] = UNSET,
         tax_inclusive: OptionalNullable[bool] = UNSET,
         attachments: Optional[
             Union[
-                List[Nullable[models.LinkedAttachment]],
-                List[Nullable[models.LinkedAttachmentTypedDict]],
+                Iterable[Nullable[models.LinkedAttachment]],
+                Iterable[Nullable[models.LinkedAttachmentTypedDict]],
             ]
         ] = None,
         source_type: OptionalNullable[str] = UNSET,
         source_id: OptionalNullable[str] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -844,6 +1205,7 @@ class JournalEntries(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.journal_entry, False, False, "json", models.JournalEntryInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -868,9 +1230,115 @@ class JournalEntries(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Each line needs its account by name: send `line_items[].ledger_account.name` (the QuickBooks account name); an account `id` alone is not resolved and the entry is rejected. Only the date part of `posted_at` is stored. `memo` is not stored: QuickBooks keeps a memo per line (`line_items[].description`), not on the entry.\n\nWrites are applied on the Web Connector's next run, so a create can return a `504` timeout after 28 seconds while QuickBooks still creates the entry. List journal entries before retrying.\n",
+                        },
+                        {
+                            "connector": "e-conomic",
+                            "description": "Journal entries are created as unbooked vouchers in an e-conomic journal: `status` is always `draft`: once the journal is booked in e-conomic the voucher leaves the journal, and the entry can no longer be read through its `id`. `journal_symbol` is the journal number (list them with `/accounting/journals`); it defaults to journal 1. Each line needs `ledger_account.id` (the account number), `type` (`debit` or `credit`) and `total_amount`, and debits and credits must balance. `posted_at` must fall in an accounting year set up in e-conomic. The returned `id` has the form `{journal}-{accounting year}-{voucher number}`; a split accounting year such as `2025/2026` is written `2025_6_2026`. Listing, updating and deleting journal entries are not supported. `currency_rate` and `number` are not stored: e-conomic applies its own exchange rate and numbers the voucher itself. `title` (or `memo`) becomes the text of lines without a `description` and is not returned as a separate field.\nA `status` other than `draft` is rejected with a 400, because e-conomic journal entries are written as drafts only.\nSend an `Idempotency-Key` to make retrying a create safe: Unify sends e-conomic a 32-character key derived from it as e-conomic's own `Idempotency-Key` header, and e-conomic answers a repeat with the original journal entry instead of creating a second one. e-conomic keeps a key for one hour, and Unify remembers it for the same hour. Reusing a key with a different body returns 422, from Unify within its hour and from e-conomic while e-conomic still remembers the key; after both have forgotten it, the same key is treated as a new request. Use a new key for every journal entry. Unify builds the e-conomic request again on a retry, from what it reads from e-conomic and from today's date in Copenhagen when you leave the date out. If either changed between the attempts, e-conomic refuses the retry as a reused key and Unify returns 422 instead of creating a second journal entry. The first attempt may have created the journal entry: look it up before resending with a new key. Send the date to keep a retry identical across midnight.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "Line items must balance to zero — FreeAgent rejects the whole entry otherwise, rather than\naccepting it and leaving the books unbalanced. Only `ledger_account`, `total_amount`,\n`type` and `description` are supported per line; a category that requires an associated\nuser, stock item, capital asset, property, or contact (used for opening balances and a\nhandful of specialised ledger accounts) cannot be targeted through this connector.\n",
+                        },
+                        {
+                            "connector": "e-boekhouden",
+                            "description": "The first line item becomes the entry's own ledger account; every other line item becomes\nan additional row. There is no separate field for the first line's amount — it is derived\nfrom the remaining lines so that the whole entry balances to zero, so `line_items` must\nalready balance (positive debit amounts, negative credit amounts) before it is sent. Each\nline beyond the first also needs a VAT code; lines with no tax rate are sent with the \"no\nVAT\" code.\n\nA per-line `description` is not preserved for lines beyond the first — e-Boekhouden always\nreturns the entry's own top-level memo for every line, regardless of what was sent for that\nspecific line. Use the entry-level `memo` for anything you need to\nfind the entry by; don't rely on distinguishing lines by their own description text.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "`journal_symbol` is required and must be the code of an existing Minox journal (for example `MEMO`), and an entry needs at least two lines. `currency` must be the administration's own currency: Minox needs an exchange rate with any other, which a journal entry has no field for, so another currency is rejected with a `400`. On bank and cash journals Minox books line amounts including VAT: amounts sent with a `tax_rate` and `tax_amount` are stored as sent (net, plus VAT; a `tax_amount` of `0` stays `0`), a `tax_rate` without a `tax_amount` gets the VAT code's percentage and is booked as net plus that VAT, as on invoices, and a line without a `tax_rate` on such a journal gets the ledger account's default VAT code, which Minox takes out of the amount. A customer line on a sales journal, or a supplier line on a purchase journal, is rejected: that books an invoice or bill, which is created through its own resource. A line with a `customer` or `supplier` is posted to that customer or supplier, which Minox books on the matching control account, and its `ledger_account` is ignored. Other lines post to `line_items[].ledger_account`. `number`, when given, must be a whole number of at most 8 digits. The accounting period follows from `posted_at`. The entry is booked as a whole: if any line is rejected, nothing is booked.\n\nMinox does not store `memo` or `title` (a line without a `description` takes the memo as its description), `currency_rate`, or any tracking category after the first on a line. VAT codes (`tax_rate`) can only be used on journals and accounts set up for VAT in Minox; anywhere else the entry is rejected with a `400`. `pass_through` is not supported. Updating an entry is not supported; delete it and create it again.\n",
+                        },
+                        {
+                            "connector": "snelstart",
+                            "description": "At least two lines are required, and the debit and credit sides must balance to zero —\nboth are rejected outright rather than silently accepted. A booking date that falls in a\nperiod your accountant has locked for review, or one already checked and closed, is also\nrejected; this can make a write that succeeded last month start failing later with no\nchange on your side. The same booking-date restriction applies to `invoices`, `bills`,\n`payments` and `bill-payments`, since they all post through the same underlying booking\nmodel.\n",
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": "Twinfield caps a line's description at 40 characters. A longer value is rejected outright\nrather than truncated, and this connector does not pre-truncate\n`line_items[].description` before sending.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "`number` cannot be set on create. Sage's `general-ledger/journal-entry` object has no writable number field\n— the number you read back is `txnNumber`, which Sage assigns on post. The only client-supplied identifier\nit accepts is a reference, exposed as `source_id`, so use that as the idempotency/recovery key and expect\n`number` to be server-assigned. After an uncertain create, look the entry up with `filter[source_id]`\non the list endpoint before retrying.\n\nSend an `Idempotency-Key` to make retrying a create safe: Unify sends Sage Intacct a\n32-character key derived from it as Sage's own `Idempotency-Key` header, and Sage answers a\nrepeat with the original journal entry instead of creating a second one. Sage does not publish\nhow long it keeps a key; it still replayed the original after an hour, so Unify remembers\na key for one hour, after which the same key is treated as a new request. Reusing a key\nwith a different body returns 422, within that hour from Unify and after it from Sage\nwhile Sage still remembers the key (`REST-6005`). Use a new key for every journal entry.\n",
+                        },
+                        {
+                            "connector": "procountor-fi",
+                            "description": "Procountor only accepts the following values for the tax_code field: SALES, PURCHASE.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Writes go to Xero `ManualJournals` (free in every Xero tier).\n\nWhen the resulting status is `draft`, the response `id` is the `ManualJournalID`. When the status is `posted` (either created posted directly, or transitioned from draft), the response `id` is the Xero `JournalID` for backwards compatibility — note that this is **not** the same value as the underlying `ManualJournalID`.\n\nThe response also returns `manual_journal_id` — the underlying `ManualJournalID`, which is stable across the entire lifecycle (draft → posted → voided). When persisting an id from this response, use the pattern `manual_journal_id ?? id` so your stored reference does not change on a draft → posted transition.\n\nXero only supports `draft` and `posted` for the status field. For ledger accounts in journal lines, you can use either `ledger_account.id` (UUID) or `ledger_account.code`; if only the ID is provided, the code will be resolved automatically.\n\nJournal entries in xero can be tax inclusive, tax exclusive or no tax. The `tax_inclusive` field should be set to true, false or null if the journal entry is tax inclusive, tax exclusive or no tax.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Netsuite only supports one tracking category at a time so only the first item in the tracking_categories list will be used.\n\nDate-only fields need no configuration: NetSuite converts the datetime it receives into the\nSOAP/integration user's time zone before storing the date part, and these fields are anchored so\nthey store on the intended calendar day for any integration user between UTC-10 and UTC+13.\n\nFour zones fall outside that range and need the optional `timezone` connection setting:\n`Pacific/Pago_Pago`, `Pacific/Niue` and `Pacific/Midway` (UTC-11) store one day early without it,\nand `Pacific/Kiritimati` (UTC+14) stores one day late. Set it to the IANA zone of the NetSuite user\nthis connection authenticates as, read from that user's Home > Set Preferences > Time Zone — Setup >\nCompany > Company Information only supplies the default, so a user who overrode it needs their own\nzone.\n\nWhen the setting is used its value must be within 12 hours of that user's real zone in either\ndirection: more than ~12h east stores dates one day early, more than ~12h west stores them one day\nlate.\n\nThis applies to every NetSuite date-only write field across the accounting resources.\n\n`number` cannot be set on create: NetSuite assigns the journal number itself and any value\nsent is ignored. Read `number` back from the response and use it with `filter[number]` on\nthe list endpoint to find the entry again — for example after a create that timed out or\nreturned a 5xx, before retrying.\n\nSend an `Idempotency-Key` to make retrying a create safe: it reaches NetSuite as the journal entry's `externalId`. A retry of a create that already landed, or of one that timed out after NetSuite saved it, returns the original journal entry's id instead of NetSuite's `DUP_RCRD` error. NetSuite never forgets an `externalId`, so after the 24-hour window a key reused for a different journal entry gets the original journal entry back, with the new body ignored. Use a new key for every journal entry. A `pass_through` that sets `externalId` replaces the key, and a duplicate of that value stays a `DUP_RCRD` error.\n",
+                        },
+                        {
+                            "connector": "mrisoftware",
+                            "description": 'MRI Software does not provide a proper ID for journal line items. Instead, each journal line item is identified by a combination of GLREFERENCE, PERIOD, and ITEM. These fields are mapped to unify with the properties number, accounting_period, and line_number, respectively. Every journal entry created through Unify is sent with GLSOURCE statically set to "TS", so entries originating from Unify can be identified in MRI by that source code. MRI treats the GL source as a free-form two-character code configured per installation, so it is not validated against a fixed list — if your MRI installation reserves "TS" for another purpose, raise a support request.\n',
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "Quickbooks only supports one tracking category at a time so only the first item in the tracking_categories list will be used.\nLine-level tax fields (tax_rate, tax_amount, tax_type) on journal entries are only supported for non-US QuickBooks companies (UK, CA, AU, etc.). US-based QuickBooks companies silently discard all tax fields — the request succeeds but no tax data is persisted.\nFor US companies that need to reflect tax in journal entries, add a separate line item posting the tax amount to a tax liability ledger account (e.g., \"Sales Tax Payable\"). This keeps the journal entry balanced in the general ledger, but will not populate QuickBooks Sales Tax reports — for that, use invoices or sales receipts instead.\nWhen line_items[].tax_type is not set, QuickBooks requires knowing whether the tax applies to a sales or purchase transaction. Unify infers this from line_items[].type: credit lines are treated as sales (TaxApplicableOn: Sales) and debit lines as purchases (TaxApplicableOn: Purchase). This covers the common case of sales summary journal entries. For atypical entries (e.g. a credit to an AP account, or a debit for a sales return), set tax_type explicitly on each line to override the default.\nWhen a line item has `tax_rate` but no `tax_amount`, Unify calculates `tax_amount` as the line's `total_amount` multiplied by the tax rate's percentage, rounded to the cent. For tax rates made up of several components (for example Québec GST + QST), send the combined tax for the line in `tax_amount`, or omit it; Unify splits the line's tax across the components.\nCreating a journal entry with a `number` that already exists is accepted and produces a second, separate entry — the number is not enforced as unique. Use a unique `number`, and if a create's result never arrives (a timeout or a 5xx), look the entry up with `filter[number]` before retrying so you do not create a duplicate.\nSend an `Idempotency-Key` to make retrying a create safe: it reaches QuickBooks as its `requestid`. QuickBooks keeps a `requestid` for at least 24 hours and can keep it longer, so after the 24-hour window a key reused for a different journal entry may get the original journal entry back, with the new body ignored. Use a new key for every journal entry. Your key can be 1-255 characters: Unify sends QuickBooks a 32-character `requestid` derived from it, so QuickBooks' 50-character `requestid` limit never applies.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite only supports one tracking category at a time so only the first item in the tracking_categories list will be used.\nLine-level tax fields (tax_rate, tax_amount, tax_type) on journal entries are only supported for non-US Intuit Enterprise Suite companies (UK, CA, AU, etc.). US-based Intuit Enterprise Suite companies silently discard all tax fields — the request succeeds but no tax data is persisted.\nFor US companies that need to reflect tax in journal entries, add a separate line item posting the tax amount to a tax liability ledger account (e.g., \"Sales Tax Payable\"). This keeps the journal entry balanced in the general ledger, but will not populate Intuit Enterprise Suite Sales Tax reports — for that, use invoices or sales receipts instead.\nWhen line_items[].tax_type is not set, Intuit Enterprise Suite requires knowing whether the tax applies to a sales or purchase transaction. Unify infers this from line_items[].type: credit lines are treated as sales (TaxApplicableOn: Sales) and debit lines as purchases (TaxApplicableOn: Purchase). This covers the common case of sales summary journal entries. For atypical entries (e.g. a credit to an AP account, or a debit for a sales return), set tax_type explicitly on each line to override the default.\nWhen a line item has `tax_rate` but no `tax_amount`, Unify calculates `tax_amount` as the line's `total_amount` multiplied by the tax rate's percentage, rounded to the cent. For tax rates made up of several components (for example Québec GST + QST), send the combined tax for the line in `tax_amount`, or omit it; Unify splits the line's tax across the components.\nCreating a journal entry with a `number` that already exists is accepted and produces a second, separate entry — the number is not enforced as unique. Use a unique `number`, and if a create's result never arrives (a timeout or a 5xx), look the entry up with `filter[number]` before retrying so you do not create a duplicate.\nSend an `Idempotency-Key` to make retrying a create safe: it reaches Intuit Enterprise Suite as its `requestid`. Intuit Enterprise Suite keeps a `requestid` for at least 24 hours and can keep it longer, so after the 24-hour window a key reused for a different journal entry may get the original journal entry back, with the new body ignored. Use a new key for every journal entry. Your key can be 1-255 characters: Unify sends Intuit Enterprise Suite a 32-character `requestid` derived from it, so Intuit Enterprise Suite's 50-character `requestid` limit never applies.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "Sage Intacct only supports `draft` and `posted` status fields when updating a journal entry.\nIf no status is provided then the default status is \"draft\".\nOnly Journal Entries with `draft` status can be updated.\nOnly the first tracking category is used (`tracking_categories[0]`). On both create and\nupdate, the connector sends both `CLASSID` (from `tracking_categories[0].code`) and\n`CLASSDIMKEY` (from `tracking_categories[0].id`), so a class may be referenced by its `id`\n(as returned by `GET /accounting/tracking-categories`) or by its `code` on either verb;\nsupplying just one of the two is sufficient.\nEach line's `location_id` falls back to the connection's configured default entity. When\nthe connection operates at the top level (no specific entity), set `location_id` explicitly\non lines whose ledger account requires a location dimension.\n\nSend an `Idempotency-Key` to make retrying a create safe: Unify sends Sage Intacct a\n32-character control id derived from it, and Intacct rejects a second create with the same\ncontrol id as already recorded. When you sent a `source_id`, Unify then finds the journal\nentry by it and returns the original journal entry's id. Without a `source_id` there is\nnothing to find it by, so the retry returns Sage Intacct's \"already recorded\" error: no\nsecond journal entry is created. If several journal entries share your `source_id`, the\noriginal cannot be identified and the error is returned as well, so use a unique\n`source_id` per journal entry. A create Sage Intacct rejected can be retried with the same\nkey and the same body; a corrected body needs a new key. Use a new key for every journal\nentry. A `pass_through` that changes the control id replaces the key, and a repeat of that\nvalue stays an error.\n\n`number` cannot be set on create: Intacct assigns the batch number itself (a sequence per\njournal, so it is only unique together with `journal_symbol`) and any value sent is ignored.\n`memo` is not written — put the text in `title`, which is returned as both\n`title` and `memo`. `source_id` is stored and returned, and is the recommended recovery key\nafter a create that timed out or returned a 5xx: look the entry up with `filter[source_id]`\non the list endpoint before retrying. It is not a duplicate guard — Intacct accepts the same\n`source_id` on several entries — so use a unique value per entry.\n",
+                        },
+                        {
+                            "connector": "workday",
+                            "description": 'Status should be set to "draft" or "posted". Default status is "draft".\nOnly Journal Entries with `draft` status can be updated.\nIt is required to provide Cost_Center_Reference_ID as worktag in the line items, otherwise the status will automatically be set to "draft".\nA journal entry saved as `draft` returns no `line_items` on Get Journal Entry or List Journal Entries: Workday does not\nreturn the lines of a journal that has not been submitted. The lines are stored, and are returned once the journal is posted.\n`source_type` is the Workday journal source; when it is not sent the journal is created with the `Manual_Journal` source.\n',
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "Employee account type: journal entry lines can reference employees via the `employee` field (use `display_id` for the employee number, or `id` with a GUID which will be resolved automatically). Note: reading back the journal entry will NOT return the employee reference — employee lines are invisible in BC's API for draft entries, and resolve to a GL payable account when posted. Send `ledger_account: {}` alongside the `employee` field to satisfy schema validation.\n\nJournal entries are created in the general journal batch configured in the required `journal_entries_journal_batch_name` connection setting — a different journal/batch cannot be selected per entry or per request.\n\n`currency` and `currency_rate` are not supported: Business Central's API (the v2.0 `journalLine` entity) has no currency fields on journal lines and rejects unknown properties, so amounts are always posted in the company's local currency.\n",
+                        },
+                        {
+                            "connector": "acumatica",
+                            "description": 'Acumatica requires a separate Release action to transition a journal entry from Balanced to Posted.\nWhen `status: "posted"` is sent, Unify automatically calls the ReleaseJournalTransaction action after creating or updating the entry.\nOnly `status: "posted"` is supported for state transitions. Other values (`draft`, `voided`, etc.) are not supported — the entry will be created or updated but will remain in Balanced state.\nUpdating a posted journal entry returns an error — only `memo` can be updated on a posted entry. To correct a posted entry, use Reverse or Reclassify in Acumatica.\nIf the release step fails after a successful create or update, the entry will exist in Acumatica in Balanced state and the API will return an error. The entry is not rolled back.\n',
+                        },
+                        {
+                            "connector": "myob-acumatica",
+                            "description": 'MYOB Advanced (Acumatica) requires a separate Release action to transition a journal entry from Balanced to Posted.\nWhen `status: "posted"` is sent, Unify automatically calls the ReleaseJournalTransaction action after creating or updating the entry.\nOnly `status: "posted"` is supported for state transitions. Other values (`draft`, `voided`, etc.) are not supported — the entry will be created or updated but will remain in Balanced state.\nUpdating a posted journal entry returns an error — only `memo` can be updated on a posted entry. To correct a posted entry, use Reverse or Reclassify in MYOB Advanced.\nIf the release step fails after a successful create or update, the entry will exist in MYOB Advanced in Balanced state and the API will return an error. The entry is not rolled back.\n',
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "`company_id` (the SAP company code) is required. Journal entries are posted as standard G/L postings of\ndocument type `SA`; the SAP document type cannot be changed. If SAP rejects the posting (for example an unknown company code or ledger\naccount, or an unbalanced entry), the request fails with a `400` and nothing is posted.\n\n`memo` (up to 25 characters) and `line_items[].description` (up to 50 characters) are stored on the posting\nand returned when the journal entry is read; longer values are cut to these lengths. `number` is assigned by\nSAP and cannot be set.\n\nTax: SAP does not calculate tax on this posting and does not check a tax amount against the rate, so you\nsend the amounts. A taxed line has `line_items[].tax_rate.code` (the SAP tax code, for example `V1`) and\n`line_items[].tax_amount`; both are required together, and the request fails with a `400` before anything is\nsent when a taxed line has no `tax_amount`, when a non-zero `tax_amount` has no `tax_rate.code`, or when a taxed line's\n`total_amount` or `tax_amount` has more decimals than the currency allows. `total_amount` of a taxed line is the amount without tax. Amounts\nare taken without their sign, as on an untaxed line: `type` gives the side, so a credit line of `-100` with\n`tax_amount` `-20` posts a credit of 100 and a tax of 20. Unify adds one tax line per tax code, on the same side (debit or credit) as the lines it taxes,\nso the entry must balance with those tax lines included. A taxed debit line is posted as input tax\n(purchases) and a taxed credit line as output tax (sales); if SAP does not know the tax code under that kind,\nthe request fails with a `400` that says to use a tax code of the other kind on that line. One tax code on both\na debit and a credit line of the same entry is rejected with a `400`: split the entry or use different tax\ncodes. Tax is supported for company codes where SAP calculates tax per document and uses time-dependent taxes;\ncompany codes that require tax per item (such as US jurisdiction tax) or that take no tax date are refused by\nSAP, and the request fails with a `400`.\n\nSome accounts, revenue accounts among them, require an account assignment: send `line_items[].department_id`\n(cost center) or `line_items[].tracking_categories[0].id` (profit center) as SAP requires. Unify does not add\nan assignment to a journal entry for you: when one is missing, the request fails with a `400` and nothing is\nposted. A profitability assignment (which some revenue accounts need besides the profit center) is not\nsent on a journal entry line by this API; post to such an account with an invoice or credit note.\n\nA taxed journal entry read from this API can't be posted back as it is: the tax SAP posted comes back as a\nline of its own on the tax account, and the taxed line comes back with its tax code but without\n`tax_amount`. Remove the tax line and set `tax_amount` on the taxed line before posting it again.\n\nCreating journal entries is not yet available on SAP S/4HANA On-Premise and Private Cloud connections\n(connections whose SAP System URL is your own gateway rather than an SAP-hosted Public Edition tenant on `*.s4hana.cloud.sap` or `*.s4hana.ondemand.com`):\nthe request returns `501` and nothing is posted. Reading journal entries works on those connections.\n",
+                        },
+                        {
+                            "connector": "exact-online",
+                            "description": "A validation refusal — an unbalanced entry, an unknown or inactive reference (ledger\naccount, journal, VAT code, currency), or a missing required field — returns `422` with\nthe specific reason named. Any other `500` is a genuine unexpected downstream failure,\nnot a refusal the request itself caused.\n\nVAT on a line is selected by `tax_rate.code`, not `tax_rate.rate` — the rate is not sent\nand has no effect. Omitting the code does not mean \"no VAT\": Exact substitutes the ledger\naccount's own default VAT code, which changes the line's tax amount and can then reject\nthe whole entry as unbalanced with an error naming the balance mismatch rather than VAT.\nAlways send `tax_rate.code` explicitly rather than relying on a specific ledger account's\ndefault.\n\n`line_items[].date` maps to Exact's per-line `Date` (a real field, distinct from the\nheader, which has no date field at all — see the list-operation gotcha above). Historical\nor backdated bookings should set this per line rather than relying on `posted_at`.\n`line_items[].source_id` maps to Exact's per-line `Notes`, useful for carrying your own\nreconciliation identifier since `description` is typically a human-readable label.\n",
+                        },
+                        {
+                            "connector": "exact-online-nl",
+                            "description": "A validation refusal — an unbalanced entry, an unknown or inactive reference (ledger\naccount, journal, VAT code, currency), or a missing required field — returns `422` with\nthe specific reason named. Any other `500` is a genuine unexpected downstream failure,\nnot a refusal the request itself caused.\n\nVAT on a line is selected by `tax_rate.code`, not `tax_rate.rate` — the rate is not sent\nand has no effect. Omitting the code does not mean \"no VAT\": Exact substitutes the ledger\naccount's own default VAT code, which changes the line's tax amount and can then reject\nthe whole entry as unbalanced with an error naming the balance mismatch rather than VAT.\nAlways send `tax_rate.code` explicitly rather than relying on a specific ledger account's\ndefault.\n\n`line_items[].date` maps to Exact's per-line `Date` (a real field, distinct from the\nheader, which has no date field at all — see the list-operation gotcha above). Historical\nor backdated bookings should set this per line rather than relying on `posted_at`.\n`line_items[].source_id` maps to Exact's per-line `Notes`, useful for carrying your own\nreconciliation identifier since `description` is typically a human-readable label.\n",
+                        },
+                        {
+                            "connector": "exact-online-uk",
+                            "description": "A validation refusal — an unbalanced entry, an unknown or inactive reference (ledger\naccount, journal, VAT code, currency), or a missing required field — returns `422` with\nthe specific reason named. Any other `500` is a genuine unexpected downstream failure,\nnot a refusal the request itself caused.\n\nVAT on a line is selected by `tax_rate.code`, not `tax_rate.rate` — the rate is not sent\nand has no effect. Omitting the code does not mean \"no VAT\": Exact substitutes the ledger\naccount's own default VAT code, which changes the line's tax amount and can then reject\nthe whole entry as unbalanced with an error naming the balance mismatch rather than VAT.\nAlways send `tax_rate.code` explicitly rather than relying on a specific ledger account's\ndefault.\n\n`line_items[].date` maps to Exact's per-line `Date` (a real field, distinct from the\nheader, which has no date field at all — see the list-operation gotcha above). Historical\nor backdated bookings should set this per line rather than relying on `posted_at`.\n`line_items[].source_id` maps to Exact's per-line `Notes`, useful for carrying your own\nreconciliation identifier since `description` is typically a human-readable label.\n",
+                        },
+                        {
+                            "connector": "oracle-fusion",
+                            "description": "Oracle Fusion journal entries are created asynchronously: this call submits an import request to Oracle's scheduler and returns immediately, before the import job runs. The `id` in the response is a **submission receipt**, not a journal id: a value prefixed with `ess-group:` (e.g. `ess-group:238151661897615`), and it never becomes a journal id — journals have their own ids in a different space. The prefix is there so the value cannot be mistaken for one.\n\nThe receipt is usable straight away, on the same endpoints as a journal id. `journalEntriesOne` and `journalEntriesDelete` accept it: while the import is still running they answer `404`, and once the journal exists they answer for that journal exactly as they would for its own id — the `id` in that response is the real journal id, which you can keep instead of the receipt if you prefer. Expect the wait to be seconds to minutes, depending on the batch and Oracle's job queue. The receipt does not expire; it keeps resolving for as long as the journal exists. A submission Oracle will not accept is reported as a `503` (the scheduler is refusing the connection's credentials, retry later), a `403` (Oracle gives no reason; most likely the integration user lacks the privilege to submit the Journal Import process, but the check behind it cannot rule out a submission Oracle would not accept) or a `502` (undetermined, retry); no journal is created in any of those cases.\n\nEvery refusal this connector makes before submitting — an unbalanced journal, fewer than two line items, a currency that is not the ledger's, an unrecognised period name, a `posted_at` that disagrees with `accounting_period` — is answered with a `4xx`, and nothing reaches Oracle: no import is queued, no rows are written, and there is nothing to clean up. Only a `201` means Oracle accepted the submission.\n\nRetrying is safe where this gotcha tells you to retry: a `503`, `502` or `403` means the import never started, and resubmitting the same journal does not merge with, duplicate or amend the earlier attempt — each submission stands on its own. What you cannot assume is that a request whose outcome you never saw — a client timeout, a dropped connection — created nothing: if that submission did reach Oracle, retrying produces a second journal. List journal entries and match on your own `memo` before retrying in that case.\n\nJournal entries are immutable once posted. `journalEntriesUpdate` is not supported; `journalEntriesDelete` is supported only while the journal is still unposted (journals import unposted, so a not-yet-posted journal can be cleaned up by id). Correct a posted journal with a reversal instead.\n\nMulti-currency journal entries are not supported: a journal is posted in the ledger's functional currency. `currency` may be omitted or name that same currency; any other currency, or a `currency_rate`, is refused with a 400.\n\nAccount and period validation errors (invalid code combination, closed period, etc.) are not returned synchronously by this call — they only surface in Oracle's asynchronous ESS import log, which is not currently exposed through this API.\n\n`posted_at` selects the accounting date the journal is imported with, and therefore its period; the journal is still created Unposted and `posted_at` reads back as that accounting date. Only the calendar date of `posted_at` is used, as written — `2026-09-01T00:00:00+02:00` lands on 1 September, not on 31 August. `accounting_period` on its own selects the period directly (and the accounting date with it, the first day of that period's month) — send it alone to target a period without also sending `posted_at`. Oracle period names are tenant-defined, but this connector accepts only the Mon-YY calendar naming (e.g. `Jul-26`, matched case-insensitively); a name in another shape is refused with a 400. If both `posted_at` and `accounting_period` are sent and disagree, the request is refused with a 400 naming both values rather than silently picking one.\n\nA journal needs at least **two** line items — a debit and a credit. A create with fewer,\nor with no `line_items` at all, is refused rather than submitted: an import with no rows is\naccepted by Oracle and simply never becomes a journal.\n\n`posted_at` must be an ISO 8601 calendar date (`YYYY-MM-DD`, optionally with a time) and a\nreal one. A value that is not ISO (`09/15/2026`), that cannot be read as a date, or that\ndoes not exist (`2026-02-30`), is refused naming the value. A non-ISO date is refused\nrather than interpreted because its meaning depends on the writer's locale — `09/15` is\nSeptember 15th to one reader and May 9th to another — and the guess selects the accounting\nperiod the journal lands in.\n\nLine amounts are always **positive**, whatever the line's direction: `line_items[].type`\n(`debit` / `credit`) carries the direction on its own, and a zero or negative\n`total_amount` is refused. Note this differs from the field's own description in the\nunified schema, which describes credits as negative; send the absolute amount here.\n\nEvery line needs a `ledger_account.code` — the account combination as a\nperiod-delimited string, e.g. `01.000.4000`. It is the only part of `ledger_account` that\nis read: `id`, `name` and `nominal_code` are ignored, and a line without a non-empty\n`code` is refused. A code with more than 30 segments is refused rather than truncated.\n\nTax is not carried on a journal entry through this connector: `tax_code`, `tax_type` and a\nline's `tax_amount`, `tax_rate` or `tax_type` are refused if present, rather than accepted\nand dropped. Record the tax through the resource that owns it. (`tax_inclusive` is the one\nexception — it is currently ignored rather than refused.)\n\nJournals are always imported **Unposted**; a caller-supplied `status` is ignored. Posting\nis a separate step in Oracle that this connector does not perform.\n\nFields accepted by the unified schema and **not** written to Oracle: `number`,\n`display_id`, `company_id`, `subsidiary`, `journal_symbol`, `tracking_categories`,\n`tax_inclusive`, `custom_fields`, `custom_mappings`, `attachments`, `source_type`,\n`source_id`, and per line `base_currency_amount`, `tracking_category`,\n`tracking_categories`, `customer`, `supplier`, `employee`, `department_id`, `location_id`\nand `worktags`. Oracle's journal import takes a fixed set of columns; anything outside it\nhas nowhere to land. Cost centres, departments and similar dimensions are segments of the\naccount combination, so they are set through `ledger_account.code`, not through the\ntracking fields. The journal's source and category come from the connection's **Default\nJournal Source** and **Default Journal Category** settings and cannot be chosen per\nrequest.\n\nA carriage return or line feed inside `title`, `memo` or a line's `description` is\nreplaced with a single space before the value reaches Oracle. Other control characters are\nreplaced the same way.\n\nEmoji and other characters outside the Basic Multilingual Plane count as **four**\ncharacters against the length limits for `title`, `memo` and a line's `description`, and a\nvalue that exceeds its limit once counted that way is refused with a `400` naming both\ncounts. The four is the width such a character occupies on a tenant whose database cannot\nhold it, where it also reads back as replacement characters; the limit is applied that way\nfor every tenant, so a value is never accepted that some tenant would silently mangle.\n\nA connection missing any of **Ledger**, **Data Access Set**, **Default Journal Source** or\n**Default Journal Category** is refused with a `422` naming the missing setting, before\nOracle is contacted. The currency the `currency` check above compares against is the\nledger's own functional currency, read from Oracle per request — there is nothing to\nconfigure, and nothing to get wrong. If Oracle cannot be asked for it the create is refused\nwith a `502` rather than submitted with a guessed currency, since an import carrying the\nwrong currency is discarded silently after the create has already returned.\n\nThe **Default Journal Source** must be a journal source your General Ledger accepts for\nimport. Oracle does not validate it when the request is submitted: a source it cannot use\nis answered with the same `201` and `ess-group:` receipt as a good one, and no journal is\never created. If creates return an id but no journal appears, check this setting first.\n\n`memo` holds at most 214 characters, each line's `description` at most 240, and `title` at\nmost 87 —\nit becomes the journal batch's name, a narrower field, and Oracle appends its own reference\nto that name and then trims the result from the title end. A longer value is refused up\nfront, naming the field and its own limit, because neither thing Oracle does with one is\nsomething you would want silently: past roughly 91 characters it keeps the journal and\nquietly drops the tail of your title, and past 100 it discards the whole import. The 87 is\ndeliberately a little under the measured boundary, which moves as Oracle's own reference\ngrows.\n\n`pass_through` is not supported on this operation and is refused up front: Oracle refuses\nthe whole submission outright — without saying why — when anything is added to or changed\nin it, so a `pass_through` value would produce a submission that quietly never becomes a\njournal. Send what you need through the journal entry's own fields.\n\nLine amounts are rounded to the ledger currency's precision before the entry is balanced\nand submitted — two decimals for most currencies, none for JPY, three for KWD. A payload\nthat balances only at full floating-point precision is refused up front, naming the\nresidue, rather than accepted and then discarded by Oracle's import: Oracle stores each\namount at that precision, so three lines of `33.333333333333336` against a credit of `100`\nbecome `33.33` each and leave the journal a cent out.\n\n**Creates are not deduplicated.** Each create is a separate submission, so\nsending the same journal entry twice creates two journals — deliberately: a caller may\nlegitimately post an identical entry twice, and merging them would lose one silently with\na `201` for both. There is no idempotency key on this operation, so a client that retries\nafter a timeout — and therefore never saw a receipt — should first list journal entries and\nmatch on its own `memo` before resending. The `memo` reads back normalised, not always\nbyte for byte: control characters become spaces, trailing whitespace is dropped, and\ncharacters outside the Basic Multilingual Plane can come back as replacement characters on\nsome tenants — compare against your memo normalised the same way, or put a plain-ASCII\nunique token in it to match on. Both journals import Unposted and either can be deleted while it stays\nthat way.\n\nAn Oracle journal **batch** is a container of journals, and this connector surfaces one\nbatch as one journal entry. Journal Import writes a separate journal inside the batch for\neach accounting date, category and currency, so a batch created in Oracle or by another\nintegration can hold several — every batch this connector creates holds exactly one. When a\nbatch does hold several, `line_items` carries the lines of all of them, and any entry-level\nfield the journals disagree on (`currency`, `posted_at`, `accounting_period`, `memo`) is\nreported as **absent** rather than taking one journal's value and stating it over\nanother's lines. `number` is not one of them: it names the batch, not a journal inside it,\nso it is always present. `line_items[].id` is qualified so it stays unique within the entry;\n`line_items[].line_number` is Oracle's own per-journal number and therefore repeats across\na multi-journal batch.\n\nLine order is not preserved: Oracle numbers the imported lines itself, so `line_items` can come back in a different order than sent, and `line_items[].line_number` is ignored on create.\n\n`title` and `number` do not come back as sent. Oracle names the imported journal after the title you send followed by the journal source, the balance type, a group id, the import request id and a reversal flag, so the values read back are longer than the values written and differ for every import. `memo` round-trips, normalised as described above. To find the journal, use the receipt the create returned — it reads and deletes like a journal id once the import has run.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Fiken creates a posting (transaction) and returns its id, not the id of a journal entry. Apideck reads the posting back and returns the `id` of the first journal entry in it, which you can use with Get Journal Entry. Lines must use accounts that exist in the company's chart of accounts; bank and customer or supplier accounts use their sub-ledger code, for example `1920:10001`. Journal entries cannot be updated or deleted.\n\nWith a tax rate on a line, Fiken reads a debit line's amount as net (the VAT is added to it) and a credit line's amount as gross (the VAT is taken out of it): Apideck sends `sub_total` (or `total_amount` minus `tax_amount`) for debit lines and `total_amount` for credit lines. A negative amount reverses its line: a debit line of `-100` credits the account.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -878,10 +1346,11 @@ class JournalEntries(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingJournalEntriesAddResponse(
                 create_journal_entry_response=unmarshal_json_response(
-                    Optional[models.CreateJournalEntryResponse], http_res
+                    Optional[models.CreateJournalEntryResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -922,10 +1391,9 @@ class JournalEntries(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingJournalEntriesAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -998,6 +1466,7 @@ class JournalEntries(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1022,9 +1491,31 @@ class JournalEntries(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "minox",
+                            "description": "Accepts the id returned on create, or a journal page id (`JOURNAL:fiscal_year:page`) from the list. It returns the same lines as the list, including an entry's share of the counter line Minox adds on bank and cash journals. Invoices, bills and credit notes, and postings that only exist inside a journal page entry, answer `404` by their own id.\n",
+                        },
+                        {
+                            "connector": "oracle-fusion",
+                            "description": "Because journal entries are imported asynchronously (see the `journalEntriesAdd` gotcha), the `id` returned by `journalEntriesAdd` is a submission receipt prefixed with `ess-group:`, not a journal id. This operation accepts it: while the import is still running it answers `404`, and once the journal exists it answers for that journal exactly as it would for the journal's own id — which is what the `id` in that response is. The receipt does not expire.\n",
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "The `id` is the one returned by List Journal Entries (company code, fiscal year and document number). Only\ngeneral-ledger documents of SAP types `SA` and `AB` are journal entries; the id of an invoice, credit note,\npayment, bill or goods receipt answers `404` here, so read it through its own resource. An `AB` document\nthat clears customer or supplier items has customer or supplier lines, and can have ordinary\ngeneral-ledger lines beside them: each customer or supplier line is returned as a line item on the\nreconciliation account, with the SAP customer or supplier number in `line_items[].customer.id` or\n`line_items[].supplier.id`. Every journal entry, including a clearing document, is returned here with its\n`source_type` (`manual`, `clearing` or `reversal`; see List Journal Entries).\n",
+                        },
+                        {
+                            "connector": "workday",
+                            "description": "A journal entry saved as `draft` returns no `line_items` on Get Journal Entry or List Journal Entries: Workday does not\nreturn the lines of a journal that has not been submitted. The lines are stored, and are returned once the journal is posted.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1032,10 +1523,9 @@ class JournalEntries(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingJournalEntriesOneResponse(
                 get_journal_entry_response=unmarshal_json_response(
-                    Optional[models.GetJournalEntryResponse], http_res
+                    Optional[models.GetJournalEntryResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1076,10 +1566,9 @@ class JournalEntries(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingJournalEntriesOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1152,6 +1641,7 @@ class JournalEntries(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1176,9 +1666,31 @@ class JournalEntries(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "minox",
+                            "description": "Accepts the id returned on create, or a journal page id (`JOURNAL:fiscal_year:page`) from the list. It returns the same lines as the list, including an entry's share of the counter line Minox adds on bank and cash journals. Invoices, bills and credit notes, and postings that only exist inside a journal page entry, answer `404` by their own id.\n",
+                        },
+                        {
+                            "connector": "oracle-fusion",
+                            "description": "Because journal entries are imported asynchronously (see the `journalEntriesAdd` gotcha), the `id` returned by `journalEntriesAdd` is a submission receipt prefixed with `ess-group:`, not a journal id. This operation accepts it: while the import is still running it answers `404`, and once the journal exists it answers for that journal exactly as it would for the journal's own id — which is what the `id` in that response is. The receipt does not expire.\n",
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "The `id` is the one returned by List Journal Entries (company code, fiscal year and document number). Only\ngeneral-ledger documents of SAP types `SA` and `AB` are journal entries; the id of an invoice, credit note,\npayment, bill or goods receipt answers `404` here, so read it through its own resource. An `AB` document\nthat clears customer or supplier items has customer or supplier lines, and can have ordinary\ngeneral-ledger lines beside them: each customer or supplier line is returned as a line item on the\nreconciliation account, with the SAP customer or supplier number in `line_items[].customer.id` or\n`line_items[].supplier.id`. Every journal entry, including a clearing document, is returned here with its\n`source_type` (`manual`, `clearing` or `reversal`; see List Journal Entries).\n",
+                        },
+                        {
+                            "connector": "workday",
+                            "description": "A journal entry saved as `draft` returns no `line_items` on Get Journal Entry or List Journal Entries: Workday does not\nreturn the lines of a journal that has not been submitted. The lines are stored, and are returned once the journal is posted.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1186,10 +1698,9 @@ class JournalEntries(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingJournalEntriesOneResponse(
                 get_journal_entry_response=unmarshal_json_response(
-                    Optional[models.GetJournalEntryResponse], http_res
+                    Optional[models.GetJournalEntryResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1230,10 +1741,9 @@ class JournalEntries(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingJournalEntriesOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1257,8 +1767,8 @@ class JournalEntries(BaseSDK):
         ] = UNSET,
         line_items: Optional[
             Union[
-                List[models.JournalEntryLineItemInput],
-                List[models.JournalEntryLineItemInputTypedDict],
+                Iterable[models.JournalEntryLineItemInput],
+                Iterable[models.JournalEntryLineItemInputTypedDict],
             ]
         ] = None,
         status: OptionalNullable[models.JournalEntryStatus] = UNSET,
@@ -1270,26 +1780,29 @@ class JournalEntries(BaseSDK):
         number: OptionalNullable[str] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         accounting_period: OptionalNullable[str] = UNSET,
         tax_inclusive: OptionalNullable[bool] = UNSET,
         attachments: Optional[
             Union[
-                List[Nullable[models.LinkedAttachment]],
-                List[Nullable[models.LinkedAttachmentTypedDict]],
+                Iterable[Nullable[models.LinkedAttachment]],
+                Iterable[Nullable[models.LinkedAttachmentTypedDict]],
             ]
         ] = None,
         source_type: OptionalNullable[str] = UNSET,
         source_id: OptionalNullable[str] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1411,6 +1924,7 @@ class JournalEntries(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.journal_entry, False, False, "json", models.JournalEntryInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1435,9 +1949,67 @@ class JournalEntries(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Updates need `row_version` from a prior read of the record: without it the update is rejected with `Missing required field: data.editSequence`.\n\nWrites are applied on the Web Connector's next run, so an update can return a `504` timeout after 28 seconds while QuickBooks still applies it. Read the record back before retrying.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "Line items must balance to zero. Only `ledger_account`, `total_amount`, `type` and\n`description` are supported per line; a category that requires an associated user, stock\nitem, capital asset, property, or contact cannot be targeted through this connector. A\nline included in the update is modified in place; lines from the existing entry that are\nleft out of the request are not removed.\n",
+                        },
+                        {
+                            "connector": "procountor-fi",
+                            "description": "Procountor only accepts the following values for the tax_code field: SALES, PURCHASE.\nProcountor requires row_version to be set when updating a journal entry. The row_version should be equivalent to the current row_version of the resource\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Netsuite only supports one tracking category at a time so only the first item in the tracking_categories list will be used.\n\nDate-only fields need no configuration: NetSuite converts the datetime it receives into the\nSOAP/integration user's time zone before storing the date part, and these fields are anchored so\nthey store on the intended calendar day for any integration user between UTC-10 and UTC+13.\n\nFour zones fall outside that range and need the optional `timezone` connection setting:\n`Pacific/Pago_Pago`, `Pacific/Niue` and `Pacific/Midway` (UTC-11) store one day early without it,\nand `Pacific/Kiritimati` (UTC+14) stores one day late. Set it to the IANA zone of the NetSuite user\nthis connection authenticates as, read from that user's Home > Set Preferences > Time Zone — Setup >\nCompany > Company Information only supplies the default, so a user who overrode it needs their own\nzone.\n\nWhen the setting is used its value must be within 12 hours of that user's real zone in either\ndirection: more than ~12h east stores dates one day early, more than ~12h west stores them one day\nlate.\n\nThis applies to every NetSuite date-only write field across the accounting resources.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "Quickbooks only supports one tracking category at a time so only the first item in the tracking_categories list will be used.\nWhen line_items[].tax_type is not set, QuickBooks requires knowing whether the tax applies to a sales or purchase transaction. Unify infers this from line_items[].type: credit lines are treated as sales (TaxApplicableOn: Sales) and debit lines as purchases (TaxApplicableOn: Purchase). This covers the common case of sales summary journal entries. For atypical entries (e.g. a credit to an AP account, or a debit for a sales return), set tax_type explicitly on each line to override the default.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite only supports one tracking category at a time so only the first item in the tracking_categories list will be used.\nWhen line_items[].tax_type is not set, Intuit Enterprise Suite requires knowing whether the tax applies to a sales or purchase transaction. Unify infers this from line_items[].type: credit lines are treated as sales (TaxApplicableOn: Sales) and debit lines as purchases (TaxApplicableOn: Purchase). This covers the common case of sales summary journal entries. For atypical entries (e.g. a credit to an AP account, or a debit for a sales return), set tax_type explicitly on each line to override the default.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Xero has two resources: journals (entries from transactions like invoices, payments, or manual journals) and manual journals (user-created entries).\nDraft entries are manual journals. When posted, they become journals and the ID changes. Updating a posted entry creates a reverse journal and a new one, so the ID also changes.\nXero only supports `draft` and `posted` for the status field.\nFor ledger accounts in journal lines, you can use either `ledger_account.id` (UUID) or `ledger_account.code`. If only the ID is provided, the code will be resolved automatically.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": 'Sage Intacct only supports `draft` and `posted` status fields when updating a journal entry.\nIf no status is provided then the default status is "draft".\nOnly Journal Entries with `draft` status can be updated.\n',
+                        },
+                        {
+                            "connector": "workday",
+                            "description": 'Status should be set to "draft" or "posted". Default status is "draft".\nOnly Journal Entries with `draft` status can be updated.\n',
+                        },
+                        {
+                            "connector": "acumatica",
+                            "description": 'Acumatica requires a separate Release action to transition a journal entry from Balanced to Posted.\nWhen `status: "posted"` is sent, Unify automatically calls the ReleaseJournalTransaction action after updating the entry.\nOnly `status: "posted"` is supported for state transitions. Other values (`draft`, `voided`, etc.) are not supported — the entry will be updated but will remain in Balanced state.\nUpdating a posted journal entry returns an error — only `memo` can be updated on a posted entry. To correct a posted entry, use Reverse or Reclassify in Acumatica.\nIf the release step fails after a successful update, the entry will exist in Acumatica in Balanced state and the API will return an error. The update is not rolled back.\n',
+                        },
+                        {
+                            "connector": "myob-acumatica",
+                            "description": 'MYOB Advanced (Acumatica) requires a separate Release action to transition a journal entry from Balanced to Posted.\nWhen `status: "posted"` is sent, Unify automatically calls the ReleaseJournalTransaction action after updating the entry.\nOnly `status: "posted"` is supported for state transitions. Other values (`draft`, `voided`, etc.) are not supported — the entry will be updated but will remain in Balanced state.\nUpdating a posted journal entry returns an error — only `memo` can be updated on a posted entry. To correct a posted entry, use Reverse or Reclassify in MYOB Advanced.\nIf the release step fails after a successful update, the entry will exist in MYOB Advanced in Balanced state and the API will return an error. The update is not rolled back.\n',
+                        },
+                        {
+                            "connector": "myob",
+                            "description": "MYOB has no draft or pending-approval workflow for journal entries — every entry posts immediately\non create, so `status` is always `posted`.\n\nUpdates replace the whole record rather than patching individual fields: `posted_at`, `line_items`\nand `row_version` must all be sent on every update, even to change only `memo`. `row_version` must\nbe the value most recently returned for that entry — a stale or missing value is rejected.\n",
+                        },
+                        {
+                            "connector": "oracle-fusion",
+                            "description": "Oracle Fusion has no API to edit journal content (amounts, accounts, lines). `journalEntriesUpdate` is not supported — to change a journal, delete it while unposted (`journalEntriesDelete`) and recreate it, or reverse it once posted.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1445,10 +2017,11 @@ class JournalEntries(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingJournalEntriesUpdateResponse(
                 update_journal_entry_response=unmarshal_json_response(
-                    Optional[models.UpdateJournalEntryResponse], http_res
+                    Optional[models.UpdateJournalEntryResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1489,10 +2062,9 @@ class JournalEntries(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingJournalEntriesUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1516,8 +2088,8 @@ class JournalEntries(BaseSDK):
         ] = UNSET,
         line_items: Optional[
             Union[
-                List[models.JournalEntryLineItemInput],
-                List[models.JournalEntryLineItemInputTypedDict],
+                Iterable[models.JournalEntryLineItemInput],
+                Iterable[models.JournalEntryLineItemInputTypedDict],
             ]
         ] = None,
         status: OptionalNullable[models.JournalEntryStatus] = UNSET,
@@ -1529,26 +2101,29 @@ class JournalEntries(BaseSDK):
         number: OptionalNullable[str] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         accounting_period: OptionalNullable[str] = UNSET,
         tax_inclusive: OptionalNullable[bool] = UNSET,
         attachments: Optional[
             Union[
-                List[Nullable[models.LinkedAttachment]],
-                List[Nullable[models.LinkedAttachmentTypedDict]],
+                Iterable[Nullable[models.LinkedAttachment]],
+                Iterable[Nullable[models.LinkedAttachmentTypedDict]],
             ]
         ] = None,
         source_type: OptionalNullable[str] = UNSET,
         source_id: OptionalNullable[str] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1670,6 +2245,7 @@ class JournalEntries(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.journal_entry, False, False, "json", models.JournalEntryInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1694,9 +2270,67 @@ class JournalEntries(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Updates need `row_version` from a prior read of the record: without it the update is rejected with `Missing required field: data.editSequence`.\n\nWrites are applied on the Web Connector's next run, so an update can return a `504` timeout after 28 seconds while QuickBooks still applies it. Read the record back before retrying.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "Line items must balance to zero. Only `ledger_account`, `total_amount`, `type` and\n`description` are supported per line; a category that requires an associated user, stock\nitem, capital asset, property, or contact cannot be targeted through this connector. A\nline included in the update is modified in place; lines from the existing entry that are\nleft out of the request are not removed.\n",
+                        },
+                        {
+                            "connector": "procountor-fi",
+                            "description": "Procountor only accepts the following values for the tax_code field: SALES, PURCHASE.\nProcountor requires row_version to be set when updating a journal entry. The row_version should be equivalent to the current row_version of the resource\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Netsuite only supports one tracking category at a time so only the first item in the tracking_categories list will be used.\n\nDate-only fields need no configuration: NetSuite converts the datetime it receives into the\nSOAP/integration user's time zone before storing the date part, and these fields are anchored so\nthey store on the intended calendar day for any integration user between UTC-10 and UTC+13.\n\nFour zones fall outside that range and need the optional `timezone` connection setting:\n`Pacific/Pago_Pago`, `Pacific/Niue` and `Pacific/Midway` (UTC-11) store one day early without it,\nand `Pacific/Kiritimati` (UTC+14) stores one day late. Set it to the IANA zone of the NetSuite user\nthis connection authenticates as, read from that user's Home > Set Preferences > Time Zone — Setup >\nCompany > Company Information only supplies the default, so a user who overrode it needs their own\nzone.\n\nWhen the setting is used its value must be within 12 hours of that user's real zone in either\ndirection: more than ~12h east stores dates one day early, more than ~12h west stores them one day\nlate.\n\nThis applies to every NetSuite date-only write field across the accounting resources.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "Quickbooks only supports one tracking category at a time so only the first item in the tracking_categories list will be used.\nWhen line_items[].tax_type is not set, QuickBooks requires knowing whether the tax applies to a sales or purchase transaction. Unify infers this from line_items[].type: credit lines are treated as sales (TaxApplicableOn: Sales) and debit lines as purchases (TaxApplicableOn: Purchase). This covers the common case of sales summary journal entries. For atypical entries (e.g. a credit to an AP account, or a debit for a sales return), set tax_type explicitly on each line to override the default.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite only supports one tracking category at a time so only the first item in the tracking_categories list will be used.\nWhen line_items[].tax_type is not set, Intuit Enterprise Suite requires knowing whether the tax applies to a sales or purchase transaction. Unify infers this from line_items[].type: credit lines are treated as sales (TaxApplicableOn: Sales) and debit lines as purchases (TaxApplicableOn: Purchase). This covers the common case of sales summary journal entries. For atypical entries (e.g. a credit to an AP account, or a debit for a sales return), set tax_type explicitly on each line to override the default.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Xero has two resources: journals (entries from transactions like invoices, payments, or manual journals) and manual journals (user-created entries).\nDraft entries are manual journals. When posted, they become journals and the ID changes. Updating a posted entry creates a reverse journal and a new one, so the ID also changes.\nXero only supports `draft` and `posted` for the status field.\nFor ledger accounts in journal lines, you can use either `ledger_account.id` (UUID) or `ledger_account.code`. If only the ID is provided, the code will be resolved automatically.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": 'Sage Intacct only supports `draft` and `posted` status fields when updating a journal entry.\nIf no status is provided then the default status is "draft".\nOnly Journal Entries with `draft` status can be updated.\n',
+                        },
+                        {
+                            "connector": "workday",
+                            "description": 'Status should be set to "draft" or "posted". Default status is "draft".\nOnly Journal Entries with `draft` status can be updated.\n',
+                        },
+                        {
+                            "connector": "acumatica",
+                            "description": 'Acumatica requires a separate Release action to transition a journal entry from Balanced to Posted.\nWhen `status: "posted"` is sent, Unify automatically calls the ReleaseJournalTransaction action after updating the entry.\nOnly `status: "posted"` is supported for state transitions. Other values (`draft`, `voided`, etc.) are not supported — the entry will be updated but will remain in Balanced state.\nUpdating a posted journal entry returns an error — only `memo` can be updated on a posted entry. To correct a posted entry, use Reverse or Reclassify in Acumatica.\nIf the release step fails after a successful update, the entry will exist in Acumatica in Balanced state and the API will return an error. The update is not rolled back.\n',
+                        },
+                        {
+                            "connector": "myob-acumatica",
+                            "description": 'MYOB Advanced (Acumatica) requires a separate Release action to transition a journal entry from Balanced to Posted.\nWhen `status: "posted"` is sent, Unify automatically calls the ReleaseJournalTransaction action after updating the entry.\nOnly `status: "posted"` is supported for state transitions. Other values (`draft`, `voided`, etc.) are not supported — the entry will be updated but will remain in Balanced state.\nUpdating a posted journal entry returns an error — only `memo` can be updated on a posted entry. To correct a posted entry, use Reverse or Reclassify in MYOB Advanced.\nIf the release step fails after a successful update, the entry will exist in MYOB Advanced in Balanced state and the API will return an error. The update is not rolled back.\n',
+                        },
+                        {
+                            "connector": "myob",
+                            "description": "MYOB has no draft or pending-approval workflow for journal entries — every entry posts immediately\non create, so `status` is always `posted`.\n\nUpdates replace the whole record rather than patching individual fields: `posted_at`, `line_items`\nand `row_version` must all be sent on every update, even to change only `memo`. `row_version` must\nbe the value most recently returned for that entry — a stale or missing value is rejected.\n",
+                        },
+                        {
+                            "connector": "oracle-fusion",
+                            "description": "Oracle Fusion has no API to edit journal content (amounts, accounts, lines). `journalEntriesUpdate` is not supported — to change a journal, delete it while unposted (`journalEntriesDelete`) and recreate it, or reverse it once posted.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1704,10 +2338,11 @@ class JournalEntries(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingJournalEntriesUpdateResponse(
                 update_journal_entry_response=unmarshal_json_response(
-                    Optional[models.UpdateJournalEntryResponse], http_res
+                    Optional[models.UpdateJournalEntryResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1748,10 +2383,9 @@ class JournalEntries(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingJournalEntriesUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1821,6 +2455,7 @@ class JournalEntries(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1845,9 +2480,23 @@ class JournalEntries(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "minox",
+                            "description": "Only entries identified by the id returned on create can be deleted. Journal page ids (`JOURNAL:fiscal_year:page`) are rejected with a `400`, and an unknown id with a `404`.\n",
+                        },
+                        {
+                            "connector": "oracle-fusion",
+                            "description": "Oracle Fusion only allows deleting **unposted** journals. Because this connector imports journals unposted, `journalEntriesDelete` deletes the underlying journal batch by its id (Oracle deletes at batch level). Once a journal has been posted it can no longer be deleted — reverse it instead.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1855,10 +2504,11 @@ class JournalEntries(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingJournalEntriesDeleteResponse(
                 delete_journal_entry_response=unmarshal_json_response(
-                    Optional[models.DeleteJournalEntryResponse], http_res
+                    Optional[models.DeleteJournalEntryResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1899,10 +2549,9 @@ class JournalEntries(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingJournalEntriesDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1972,6 +2621,7 @@ class JournalEntries(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1996,9 +2646,23 @@ class JournalEntries(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "minox",
+                            "description": "Only entries identified by the id returned on create can be deleted. Journal page ids (`JOURNAL:fiscal_year:page`) are rejected with a `400`, and an unknown id with a `404`.\n",
+                        },
+                        {
+                            "connector": "oracle-fusion",
+                            "description": "Oracle Fusion only allows deleting **unposted** journals. Because this connector imports journals unposted, `journalEntriesDelete` deletes the underlying journal batch by its id (Oracle deletes at batch level). Once a journal has been posted it can no longer be deleted — reverse it instead.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2006,10 +2670,11 @@ class JournalEntries(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingJournalEntriesDeleteResponse(
                 delete_journal_entry_response=unmarshal_json_response(
-                    Optional[models.DeleteJournalEntryResponse], http_res
+                    Optional[models.DeleteJournalEntryResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2050,10 +2715,9 @@ class JournalEntries(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingJournalEntriesDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2062,8 +2726,8 @@ class JournalEntries(BaseSDK):
         self,
         *,
         items: Union[
-            List[models.BatchJournalEntriesRequestItems],
-            List[models.BatchJournalEntriesRequestItemsTypedDict],
+            Iterable[models.BatchJournalEntriesRequestItems],
+            Iterable[models.BatchJournalEntriesRequestItemsTypedDict],
         ],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
@@ -2137,6 +2801,7 @@ class JournalEntries(BaseSDK):
                 "json",
                 models.BatchJournalEntriesRequest,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2161,9 +2826,31 @@ class JournalEntries(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "xero",
+                            "description": "Records are written one at a time, so the request counts as **one request per\nrecord** against your plan — batching saves you round trips, not quota.\n\nRecords are written one at a time rather than in a single batched call, because\nthis resource runs a per-record step after the write and that step has to see\nits own record. A journal created with `status: posted` takes two calls to Xero\n(create, then look up the posted journal's id); a draft takes one. A request of N\nposted journals therefore counts as about 2N calls against your Xero rate limit.\n\nAt most 20 records per request. A full request of 20 posted journals takes about\n18 seconds and makes about 40 Xero calls, two thirds of Xero's 60-calls-per-minute\nlimit, so space consecutive full requests at least a minute apart or expect `429`\nresponses on the later ones. Set client timeouts accordingly.\n\nEach record succeeds or fails on its own; read the per-item `status` to see which\nwere written. If the request times out, the items it could not confirm come back\nwith `status: uncertain` rather than `failed` — some of them may well have been\nwritten, and no ids are returned for those. Verify before retrying an `uncertain`\nitem: list the resource to find what exists, or a retry will duplicate it.\n\nResults come back in the order the items were sent. Supply `_ref` on every item if\nyou need to tie an outcome back to your own record — it is echoed on every result,\nincluding failures, and is never sent to the connector.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Records are written one at a time, so the request counts as **one request per\nrecord** against your plan — batching saves you round trips, not quota.\n\nAt most 10 records per request.\n\nRecords are written one at a time, so a request of N journal entries takes about N times as\nlong as a single write and counts as N requests against your plan. Each record\nsucceeds or fails on its own; read the per-item `status` to see which were written.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "The whole request is one call to the provider, so it counts as **one request**\nagainst your plan however many records it carries.\n\nAt most 20 journal entries per request. A request carrying more is rejected before any\nrecord is written.\n\nResponse time scales with the number of records rather than being a fixed cost,\nso set client timeouts for the size of request you send.\n\nA request that times out may still have written some or all of its records. When\nthat happens no ids are returned for them, so treat a timed-out batch as uncertain\nrather than failed: list the records to find what was written before retrying, or a\nretry will duplicate them.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "The whole request is one call to the provider, so it counts as **one request**\nagainst your plan however many records it carries.\n\nAt most 20 journal entries per request. A request carrying more is rejected before any\nrecord is written.\n\nResponse time scales with the number of records rather than being a fixed cost,\nso set client timeouts for the size of request you send.\n\nA request that times out may still have written some or all of its records. When\nthat happens no ids are returned for them, so treat a timed-out batch as uncertain\nrather than failed: list the records to find what was written before retrying, or a\nretry will duplicate them.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2171,10 +2858,11 @@ class JournalEntries(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingJournalEntriesBatchAddResponse(
                 batch_journal_entries_response=unmarshal_json_response(
-                    Optional[models.BatchJournalEntriesResponse], http_res
+                    Optional[models.BatchJournalEntriesResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2215,10 +2903,9 @@ class JournalEntries(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingJournalEntriesBatchAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2227,8 +2914,8 @@ class JournalEntries(BaseSDK):
         self,
         *,
         items: Union[
-            List[models.BatchJournalEntriesRequestItems],
-            List[models.BatchJournalEntriesRequestItemsTypedDict],
+            Iterable[models.BatchJournalEntriesRequestItems],
+            Iterable[models.BatchJournalEntriesRequestItemsTypedDict],
         ],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
@@ -2302,6 +2989,7 @@ class JournalEntries(BaseSDK):
                 "json",
                 models.BatchJournalEntriesRequest,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2326,9 +3014,31 @@ class JournalEntries(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "xero",
+                            "description": "Records are written one at a time, so the request counts as **one request per\nrecord** against your plan — batching saves you round trips, not quota.\n\nRecords are written one at a time rather than in a single batched call, because\nthis resource runs a per-record step after the write and that step has to see\nits own record. A journal created with `status: posted` takes two calls to Xero\n(create, then look up the posted journal's id); a draft takes one. A request of N\nposted journals therefore counts as about 2N calls against your Xero rate limit.\n\nAt most 20 records per request. A full request of 20 posted journals takes about\n18 seconds and makes about 40 Xero calls, two thirds of Xero's 60-calls-per-minute\nlimit, so space consecutive full requests at least a minute apart or expect `429`\nresponses on the later ones. Set client timeouts accordingly.\n\nEach record succeeds or fails on its own; read the per-item `status` to see which\nwere written. If the request times out, the items it could not confirm come back\nwith `status: uncertain` rather than `failed` — some of them may well have been\nwritten, and no ids are returned for those. Verify before retrying an `uncertain`\nitem: list the resource to find what exists, or a retry will duplicate it.\n\nResults come back in the order the items were sent. Supply `_ref` on every item if\nyou need to tie an outcome back to your own record — it is echoed on every result,\nincluding failures, and is never sent to the connector.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Records are written one at a time, so the request counts as **one request per\nrecord** against your plan — batching saves you round trips, not quota.\n\nAt most 10 records per request.\n\nRecords are written one at a time, so a request of N journal entries takes about N times as\nlong as a single write and counts as N requests against your plan. Each record\nsucceeds or fails on its own; read the per-item `status` to see which were written.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "The whole request is one call to the provider, so it counts as **one request**\nagainst your plan however many records it carries.\n\nAt most 20 journal entries per request. A request carrying more is rejected before any\nrecord is written.\n\nResponse time scales with the number of records rather than being a fixed cost,\nso set client timeouts for the size of request you send.\n\nA request that times out may still have written some or all of its records. When\nthat happens no ids are returned for them, so treat a timed-out batch as uncertain\nrather than failed: list the records to find what was written before retrying, or a\nretry will duplicate them.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "The whole request is one call to the provider, so it counts as **one request**\nagainst your plan however many records it carries.\n\nAt most 20 journal entries per request. A request carrying more is rejected before any\nrecord is written.\n\nResponse time scales with the number of records rather than being a fixed cost,\nso set client timeouts for the size of request you send.\n\nA request that times out may still have written some or all of its records. When\nthat happens no ids are returned for them, so treat a timed-out batch as uncertain\nrather than failed: list the records to find what was written before retrying, or a\nretry will duplicate them.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2336,10 +3046,11 @@ class JournalEntries(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingJournalEntriesBatchAddResponse(
                 batch_journal_entries_response=unmarshal_json_response(
-                    Optional[models.BatchJournalEntriesResponse], http_res
+                    Optional[models.BatchJournalEntriesResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2380,10 +3091,9 @@ class JournalEntries(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingJournalEntriesBatchAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

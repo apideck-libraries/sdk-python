@@ -1,5 +1,4 @@
-# Leads
-(*crm.leads*)
+# Crm.Leads
 
 ## Overview
 
@@ -27,7 +26,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.crm.leads.list(raw=False, service_id="salesforce", limit=20, filter_={
@@ -97,10 +96,10 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
-    res = apideck.crm.leads.create(name="Elon Musk", raw=False, service_id="salesforce", company_name="Spacex", owner_id="54321", owner_name="John Doe", company_id="2", contact_id="3", lead_id="2", lead_source="Cold Call", first_name="Elon", last_name="Musk", description="A thinker", prefix="Sir", title="CEO", language="EN", status="New", monetary_amount=75000, currency=apideck_unify.Currency.USD, fax="+12129876543", websites=[
+    res = apideck.crm.leads.create(name="Elon Musk", raw=False, service_id="salesforce", company_name="Spacex", owner_id="54321", owner_name="John Doe", company_id="2", contact_id="3", lead_id="2", lead_source="Cold Call", first_name="Elon", last_name="Musk", description="A thinker", prefix="Sir", title="CEO", language="EN", status="New", monetary_amount=75000.0, currency=apideck_unify.Currency.USD, fax="+12129876543", websites=[
         {
             "id": "12345",
             "url": "http://example.com",
@@ -417,7 +416,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.crm.leads.get(id="<id>", service_id="salesforce", raw=False, fields="id,updated_at")
@@ -473,10 +472,10 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
-    res = apideck.crm.leads.update(id="<id>", name="Elon Musk", service_id="salesforce", raw=False, company_name="Spacex", owner_id="54321", owner_name="John Doe", company_id="2", contact_id="3", lead_id="2", lead_source="Cold Call", first_name="Elon", last_name="Musk", description="A thinker", prefix="Sir", title="CEO", language="EN", status="New", monetary_amount=75000, currency=apideck_unify.Currency.USD, fax="+12129876543", websites=[
+    res = apideck.crm.leads.update(id="<id>", name="Elon Musk", service_id="salesforce", raw=False, company_name="Spacex", owner_id="54321", owner_name="John Doe", company_id="2", contact_id="3", lead_id="2", lead_source="Cold Call", first_name="Elon", last_name="Musk", description="A thinker", prefix="Sir", title="CEO", language="EN", status="New", monetary_amount=75000.0, currency=apideck_unify.Currency.USD, fax="+12129876543", websites=[
         {
             "id": "12345",
             "url": "http://example.com",
@@ -728,7 +727,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.crm.leads.delete(id="<id>", service_id="salesforce", raw=False)

@@ -8,7 +8,7 @@ from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from datetime import datetime
 from jsonpath import JSONPath
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
 
 
 class Expenses(BaseSDK):
@@ -25,7 +25,7 @@ class Expenses(BaseSDK):
         filter_: Optional[
             Union[models.ExpensesFilter, models.ExpensesFilterTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -68,7 +68,7 @@ class Expenses(BaseSDK):
             cursor=cursor,
             limit=limit,
             filter_=utils.get_pydantic_model(filter_, Optional[models.ExpensesFilter]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
         )
 
         req = self._build_request(
@@ -88,6 +88,7 @@ class Expenses(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -112,9 +113,71 @@ class Expenses(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Expenses are QuickBooks checks, credit card charges and credit card credits, listed in that order. While a connection is synced for the first time the list can already hold the checks and not yet the credit card records. `payment_type` is `check` for a check and `credit_card` for the other two; `type` is `refund` for a credit card credit and `expense` otherwise. `account` is the bank or credit card account of the record: the one a check or a credit card charge was paid from, and the card a credit card credit was refunded to. QuickBooks does not say whether the payee is a supplier, a customer or an employee, so `supplier` is not returned. `status` is `voided` for a voided check, credit card charge or credit card credit (QuickBooks sets its amount to zero and starts its memo with `VOID:`) and `posted` otherwise. `currency` is not returned. Only `filter[updated_since]` is supported.\n\nQuickBooks Desktop does not expose a reliable cross-page total record count. Getting `total_count` requires a separate COUNT query — an extra API call that is not currently implemented. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "A FreeAgent expense is a single claim, so each expense has exactly one entry in `line_items`.\n`total_amount` is always positive; `type` is `expense` for money spent and `refund` for money\npaid back to the claimant. `line_items[0].account.id` is the expense category, using the same ids\nas Ledger Accounts.\n\n`account` and `supplier` are not returned: FreeAgent records who claimed the expense, not the\naccount it was paid from or the supplier. `status` is always `posted`.\n",
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": "This connector fetches every matching expense in a single call — there is no server-side\npagination, so a large date range can be a large response.\n\n`transaction_date` is approximated as the first day of the expense's accounting month, not\nthe actual transaction date. `sub_total`, `total_tax` and `updated_at` are not available on\nthe list.\n\nThis list also returns records created through this connector's `journal-entries` resource\n— there is no field to tell the two apart. Treat any entry whose lines look like a\nmulti-line journal posting as a possible `journal-entries` record.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Listing expenses returns Credit Card Charges and Checks, ordered by id. Each expense carries its header fields only: `line_items` are not included, so fetch an expense by id to read its line items. `payment_type` is `credit_card` for a card charge and `check` for a check, and `account.type` is `ledger_account` for a card charge and `bank_account` for a check. This list never includes Credit Card Refund records (the reversal of a corporate card charge, created via a negative-amount `expensesAdd` — see the create operation's gotcha). The maximum `limit` is 200; a higher value returns a `400`.\nExpenses are **not** scoped by subsidiary — neither the connection's Default Subsidiary setting nor the `x-apideck-company-id` header narrows this list, so every subsidiary's expenses are returned. The records do carry a subsidiary in NetSuite, but this list cannot be separated by entity.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "In Xero, both suppliers (also used for employees) and customers are identified using the same contact ID, which maps to both `supplier_id` and `customer_id`. To accurately determine the contact type, use the suppliers and customers endpoints.",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks Online does not expose a reliable cross-page total record count. The `QueryResponse.totalCount` field in list responses reflects the count for that page only, not the full dataset. `meta.total_count` will not appear in list responses. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite uses the same underlying QuickBooks API. The `QueryResponse.totalCount` field in list responses reflects the per-page count only. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Zoho Books does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "stripe",
+                            "description": "Stripe removed `total_count` from list responses in March 2025 (API version 2025-03-31.basil). `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": "Moneybird does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "rillet",
+                            "description": "Rillet does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "dualentry",
+                            "description": "DualEntry scopes expenses by company. Pass the `x-apideck-company-id` header (or set a Default\nCompany on the connection) to return only records belonging to that company within the tenant.\nWithout it, records across all companies in the tenant are returned.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "`supplier_id` and `supplier.id` are read from Sage's `payee` field on the underlying\ncredit-card transaction, which has no other vendor reference. This connector writes the\nreal vendor key into `payee` on create/update, so an expense round-tripped through this\nconnector returns a resolvable id — but `payee` is free text, and an expense created\ndirectly in Sage (or by another integration) can have it set to the vendor's display\nname instead. Verify the value against `suppliers.list` before using it as a lookup key.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -140,17 +203,19 @@ class Expenses(BaseSDK):
                 filter_=filter_,
                 pass_through=pass_through,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingExpensesAllResponse(
                 get_expenses_response=unmarshal_json_response(
-                    Optional[models.GetExpensesResponse], http_res
+                    Optional[models.GetExpensesResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -191,11 +256,10 @@ class Expenses(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingExpensesAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -213,7 +277,7 @@ class Expenses(BaseSDK):
         filter_: Optional[
             Union[models.ExpensesFilter, models.ExpensesFilterTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -256,7 +320,7 @@ class Expenses(BaseSDK):
             cursor=cursor,
             limit=limit,
             filter_=utils.get_pydantic_model(filter_, Optional[models.ExpensesFilter]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
         )
 
         req = self._build_request_async(
@@ -276,6 +340,7 @@ class Expenses(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -300,9 +365,71 @@ class Expenses(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Expenses are QuickBooks checks, credit card charges and credit card credits, listed in that order. While a connection is synced for the first time the list can already hold the checks and not yet the credit card records. `payment_type` is `check` for a check and `credit_card` for the other two; `type` is `refund` for a credit card credit and `expense` otherwise. `account` is the bank or credit card account of the record: the one a check or a credit card charge was paid from, and the card a credit card credit was refunded to. QuickBooks does not say whether the payee is a supplier, a customer or an employee, so `supplier` is not returned. `status` is `voided` for a voided check, credit card charge or credit card credit (QuickBooks sets its amount to zero and starts its memo with `VOID:`) and `posted` otherwise. `currency` is not returned. Only `filter[updated_since]` is supported.\n\nQuickBooks Desktop does not expose a reliable cross-page total record count. Getting `total_count` requires a separate COUNT query — an extra API call that is not currently implemented. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "A FreeAgent expense is a single claim, so each expense has exactly one entry in `line_items`.\n`total_amount` is always positive; `type` is `expense` for money spent and `refund` for money\npaid back to the claimant. `line_items[0].account.id` is the expense category, using the same ids\nas Ledger Accounts.\n\n`account` and `supplier` are not returned: FreeAgent records who claimed the expense, not the\naccount it was paid from or the supplier. `status` is always `posted`.\n",
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": "This connector fetches every matching expense in a single call — there is no server-side\npagination, so a large date range can be a large response.\n\n`transaction_date` is approximated as the first day of the expense's accounting month, not\nthe actual transaction date. `sub_total`, `total_tax` and `updated_at` are not available on\nthe list.\n\nThis list also returns records created through this connector's `journal-entries` resource\n— there is no field to tell the two apart. Treat any entry whose lines look like a\nmulti-line journal posting as a possible `journal-entries` record.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Listing expenses returns Credit Card Charges and Checks, ordered by id. Each expense carries its header fields only: `line_items` are not included, so fetch an expense by id to read its line items. `payment_type` is `credit_card` for a card charge and `check` for a check, and `account.type` is `ledger_account` for a card charge and `bank_account` for a check. This list never includes Credit Card Refund records (the reversal of a corporate card charge, created via a negative-amount `expensesAdd` — see the create operation's gotcha). The maximum `limit` is 200; a higher value returns a `400`.\nExpenses are **not** scoped by subsidiary — neither the connection's Default Subsidiary setting nor the `x-apideck-company-id` header narrows this list, so every subsidiary's expenses are returned. The records do carry a subsidiary in NetSuite, but this list cannot be separated by entity.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "In Xero, both suppliers (also used for employees) and customers are identified using the same contact ID, which maps to both `supplier_id` and `customer_id`. To accurately determine the contact type, use the suppliers and customers endpoints.",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks Online does not expose a reliable cross-page total record count. The `QueryResponse.totalCount` field in list responses reflects the count for that page only, not the full dataset. `meta.total_count` will not appear in list responses. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite uses the same underlying QuickBooks API. The `QueryResponse.totalCount` field in list responses reflects the per-page count only. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Zoho Books does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "stripe",
+                            "description": "Stripe removed `total_count` from list responses in March 2025 (API version 2025-03-31.basil). `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": "Moneybird does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "rillet",
+                            "description": "Rillet does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "dualentry",
+                            "description": "DualEntry scopes expenses by company. Pass the `x-apideck-company-id` header (or set a Default\nCompany on the connection) to return only records belonging to that company within the tenant.\nWithout it, records across all companies in the tenant are returned.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "`supplier_id` and `supplier.id` are read from Sage's `payee` field on the underlying\ncredit-card transaction, which has no other vendor reference. This connector writes the\nreal vendor key into `payee` on create/update, so an expense round-tripped through this\nconnector returns a resolvable id — but `payee` is free text, and an expense created\ndirectly in Sage (or by another integration) can have it set to the vendor's display\nname instead. Verify the value against `suppliers.list` before using it as a lookup key.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -328,17 +455,19 @@ class Expenses(BaseSDK):
                 filter_=filter_,
                 pass_through=pass_through,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingExpensesAllResponse(
                 get_expenses_response=unmarshal_json_response(
-                    Optional[models.GetExpensesResponse], http_res
+                    Optional[models.GetExpensesResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -379,11 +508,10 @@ class Expenses(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingExpensesAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -393,8 +521,8 @@ class Expenses(BaseSDK):
         *,
         transaction_date: Nullable[datetime],
         line_items: Union[
-            List[models.ExpenseLineItemInput],
-            List[models.ExpenseLineItemInputTypedDict],
+            Iterable[models.ExpenseLineItemInput],
+            Iterable[models.ExpenseLineItemInputTypedDict],
         ],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
@@ -436,19 +564,22 @@ class Expenses(BaseSDK):
         total_amount: OptionalNullable[float] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         reference: OptionalNullable[str] = UNSET,
         source_document_url: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         status: OptionalNullable[models.ExpenseStatus] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -479,7 +610,7 @@ class Expenses(BaseSDK):
         :param payment_type: The type of payment for the expense.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
-        :param type: The type of expense.
+        :param type_: The type of expense.
         :param memo: The memo of the expense.
         :param tax_rate:
         :param tax_inclusive: Amounts are including tax
@@ -586,6 +717,7 @@ class Expenses(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.expense, False, False, "json", models.ExpenseInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -610,9 +742,67 @@ class Expenses(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Creates a check, a credit card charge or a credit card credit. The `account`, sent as an object with `id` or `name` (`account_id` is not read), decides which: a credit card account makes a credit card charge, a bank account a check. An account QuickBooks knows to be of another type answers `400`; one that is not synced yet is left to QuickBooks. `type: refund` makes a credit card credit and needs a credit card account (a refund on any other account answers `400`); `payment_type` is not read for a refund. For an expense, a `payment_type` of `check` or `credit_card` must agree with the account, otherwise the create answers `400`; `cash`, `other` or none leave the choice to the account. `supplier` is sent as the payee. A `line_items[]` entry with an `item` becomes an item line (`quantity` and `unit_price`, or `total_amount` when no unit price is given); an entry without one becomes an expense line (`account`, `total_amount`, `description`, `customer` and the first of its `tracking_categories`). An item line's `description`, `customer` and first `tracking_categories` entry are written too, by qbd-connect builds that include apideck-io/qbd-connect#110; an older build takes the item, quantity and price only and QuickBooks fills the description from the item.\n\nWrites are applied on the Web Connector's next run, so a create can return a `504` timeout after 28 seconds while QuickBooks still creates the expense. List expenses to find it before retrying: sending the create again adds a second expense.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "Send exactly one `line_items` entry with `total_amount` and `account.id` (a ledger account id);\nmore than one line is rejected. `transaction_date` and a description (`memo` or the line's\n`description`) are required by FreeAgent.\n\nThe expense is claimed by the FreeAgent user who authorized the connection. To claim it for\nanother user, send their FreeAgent user URL as `user` through `pass_through`.\n\nSend `total_amount` as a positive number and set `type: refund` for a refund; anything else is\nrecorded as money spent.\n",
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": "`account_id` (or `account.id`) is required for this connector even though the unified\nschema only requires one of them via `x-apideck-strict-any-of` — Twinfield has no implicit\ndefault for the credited side.\n\nNot every ledger account works as `account_id` — Twinfield rejects some accounts with an\nerror naming a conflicting bank/cash book or control account rather than the field itself.\nA plain, general-purpose ledger account works; a bank, cash-book-linked, or control\naccount does not. There is no way to predict which accounts qualify from the unified\nrequest alone.\n\nAn expense posted through this connector is indistinguishable from a journal entry on the\nTwinfield side; there is no `payment_type`/cash-vs-card distinction preserved.\n\nThe write always creates a draft transaction; this connector has no way to post it\ndirectly.\n\n`delete` is disabled as of 2026-08-18. Transaction numbers are only unique within the\nspecific ledger they belong to, and this operation has no way to confirm the id it is given\nactually belongs to an expense rather than a `journal-entries` record or a transaction\nentered directly in Twinfield's own UI — deleting one by id risks voiding an unrelated\nrecord that happens to share its number. `get` has the same collision on the read side —\nit is non-destructive but can silently return a hand-entered journal entry reshaped as an\nexpense (dropping any line beyond the first debit/credit pair). Do not rely on an id\nobtained from `journal-entries` or Twinfield's own UI being safe to pass to this resource,\nor vice versa.\n\n`memo` becomes the credited line's description, and Twinfield caps a transaction line's\ndescription at 40 characters (\"De omschrijving mag maximaal 40 tekens bevatten\") — a\nlonger value is rejected outright rather than truncated. This connector does not truncate\n`memo` or `line_items[].description` before sending; a value over 40 characters fails the\nwhole write.\n\n`update` is not implemented, and not just for lack of time: Twinfield's transaction API has no\nin-place update verb, only `add` (always assigns a new transaction number) and `delete`. Faking an\nupdate as delete-then-recreate would return a different `id` than the one being updated, breaking\nthe update contract, so it is left unsupported rather than built as a lossy workaround.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": 'Xero expenses map to Spend Money bank transactions and are created with status AUTHORISED — there is no draft state. Both a bank/credit-card account (`account.id`) and a supplier (`supplier.id`) are required, even though they are optional in the unified schema; omitting either returns a Xero validation error ("A Contact must be specified" / "The BankAccount must be specified"). The `account.id` must correspond to a \'bank\' or \'credit_card\' account type — other account types may result in errors or unexpected behavior. Xero\'s Expenses (expense-claims) module, where contact-less drafts can be saved in the UI, has no public write API. For a draft, payable-style expense without a bank account, use the Bills resource (Xero ACCPAY invoices) with `status: "draft"` instead.\n`reference` and `memo` both map to the single Xero `Reference` field on the underlying bank transaction, and `reference` wins — when both are sent, `memo` is silently discarded. On read both are populated from `Reference` and are always identical, so a caller cannot tell which field a value came from. Send only one of the two.\n',
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": 'The top-level `account` must be a bank or credit-card account — the payment source the money left from — not an expense account; the expense account goes on `line_items[].account`. Sending an expense account at the top level fails with `400 "Invalid account type used"` (code `6430`), an error that names neither the field nor the type it expected.\n\n`reference` and `memo` both map to the single `PrivateNote` field: only one survives a write (the other is dropped with no error), and on read both are populated from it and are always identical. Send only one. Which of the two wins on write is currently under review — do not rely on it.\n',
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": 'The top-level `account` must be a bank or credit-card account — the payment source the money left from — not an expense account; the expense account goes on `line_items[].account`. Sending an expense account at the top level fails with `400 "Invalid account type used"` (code `6430`), an error that names neither the field nor the type it expected.\n\n`reference` and `memo` both map to the single `PrivateNote` field: only one survives a write (the other is dropped with no error), and on read both are populated from it and are always identical. Send only one. Which of the two wins on write is currently under review — do not rely on it.\n',
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "When creating an expense for Sage Intacct, the account_id must refer to a credit card account, not a ledger account. You can find the correct credit card account ID in Sage Intacct under the Credit Cards section.",
+                        },
+                        {
+                            "connector": "dualentry",
+                            "description": "DualEntry requires `company_id`, `supplier` (vendor_id), `account` (account_number), and `currency` (currency_iso_4217_code) when creating a direct expense, even though these fields are optional in the unified schema.",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": 'Employee account type: set `account.type` to `"employee"` and `account.id` to the employee number (or GUID, which will be resolved automatically). Note: reading back the expense will NOT return the employee reference — employee payment lines are invisible in BC\'s API for draft entries, and resolve to a GL payable account when posted.\n\nBank account type: when an expense is created with `account.type: "bank_account"` and posted (`status: "posted"`), reading it back returns `account.type: "ledger_account"` with a **different** `account.id`. Business Central records posted transactions against the bank\'s associated G/L posting account, so the bank account identity is not preserved in the resulting ledger entries. Only `account.type: "ledger_account"` round-trips its `account.id` unchanged. `line_items[].account` is unaffected — expense lines are always G/L accounts and their `account.id` round-trips.\n',
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Zoho Books supports only one customer and one rebilling (`rebillable`) flag per expense at the header level. Only provide these in the first line_item — they will be mapped to the header-level fields and applied to all lines. If differentiated treatment is required, create separate expenses.",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "NetSuite expenses are either Credit Card Charges or Checks. Set `payment_type: \"check\"` to\ncreate a NetSuite Check: `account` must then reference a **bank account** and `supplier` is\nthe payee. Any other `payment_type` (or none) creates a Credit Card Charge (or, when the\nrequest has a negative amount, a Credit Card Refund — see below), so the top-level `account`\nmust reference a **credit-card–type** ledger account. A bank account (or any non–credit-card\naccount) is rejected with `Invalid Field Value … for the following field: account`.\nEmployee reimbursements are not modelled here (use expense-reports).\n\nNetSuite Checks expose no tax fields through the API. A check whose `line_items` carry\na `tax_rate` (an id, a code or a non-zero rate) or a non-zero `tax_amount` is rejected with a `400`, and a check's `total_tax` is empty:\n`total_amount` and `sub_total` both equal the check total. Checks cannot be voided through\nthe API.\n\nA negative overall total (or a negative `line_items[].total_amount` sum) creates a NetSuite\nCredit Card Refund instead — NetSuite's transaction type for reversing a corporate/company\ncard charge, entered against a Vendor — unless `payment_type` is `check`, which takes\nprecedence (NetSuite then rejects the negative check). This is distinct from the unified\n`refunds` resource, which models customer-facing (AR) refunds. NetSuite itself never stores a\nnegative amount on either record type (a negative total is rejected outright); this connector\nsends the absolute value automatically, so the sign only decides which record type gets\ncreated, not what NetSuite stores. `expensesOne`, `expensesUpdate` and `expensesDelete`\nlook the id up as a Credit Card Charge first and, if no card charge exists with that id, as\na Check, then read, update or delete that record. Reading a Credit Card Charge takes one\nNetSuite request as before; reading a Check, and every update or delete, takes one more. An\nid that exists as neither returns NetSuite's `404`; a Credit Card Refund id (or any other\ntransaction type) returns NetSuite's `400` \"Transaction type specified is incorrect\", and the\nlist never includes Credit Card Refunds, so capture the `id` from the `expensesAdd` response\nif you need to reference the reversal elsewhere. `payment_type` in an\nupdate body is ignored for routing, because a record's type cannot change. `expensesUpdate`\non a Credit Card Refund only routes correctly when the update body itself carries a negative\namount (a negative `total_amount`, or a negative `line_items[].total_amount` sum) — the\nrouter only sees the body of the request in front of it. A field-only update that omits the\namount (e.g. changing just `memo` or the transaction date) evaluates to a total of `0`, and a\npositive amount does too; both route to the Credit Card Charge/Check lookup instead and are\nrejected with NetSuite's `400` \"Transaction type specified is incorrect\", since the id only\nexists as a Credit Card Refund. Re-send the negative amount on every\nupdate to one of these records, even when only a non-amount field is changing. A negative-total\nupdate on a Check is also routed to Credit Card Refund update and fails at NetSuite.\n\n`line_items[].tracking_categories` maps to the NetSuite per-line `class` (Classification), which accepts only one value — entries at index 1 or beyond are dropped silently.\n\nWhen `line_items[].customer` is set without an explicit `line_items[].rebilling.rebillable`, NetSuite defaults `rebillable` to `true`. Pass `rebilling: { rebillable: false }` explicitly if you want a customer-linked line that is not rebillable.\n\n`line_items[].tax_rate.id` is applied on create when the connection has SuiteTax enabled (the `suitetax_enabled` setting), so mixed-rate expenses post the correct per-line tax. Without a per-line tax code, NetSuite applies the account's default tax code to every line (a 0% line under a 20%-default account posts at 20%). Every tax-rated line must resolve a tax type and rate; if any cannot, the request fails with a `400` naming the line rather than silently posting at the account default. Some third-party tax-engine configurations (e.g. Vertex/Avalara) may reject the override — use `pass_through` for tenant-specific tax fields if needed.\n\n`tax_rate.id` alone is sufficient: when a tax-rated line omits `tax_rate.rate`, the connector resolves the rate server-side from the tax code (no extra call is needed on a warm per-connection cache). If a tax-rated line's tax type or rate genuinely cannot be resolved (e.g. an unknown tax code), the request now fails fast with a `400` naming the offending line rather than silently posting at the account default. A caller-supplied `tax_rate.rate` still takes precedence when present.\n\nApplying per-line tax on a Credit Card Charge also requires the NetSuite role to hold the `Lists → Tax Details Tab` permission at **Full**, because the connector writes a tax-details block on the record. Without it the create fails as a tax-engine error rather than a permission error: `Unable to save the transaction due to an error being reported by the tax calculation engine: … Permission Violation: You need the 'Lists -> Tax Details Tab' permission`. Reading an expense's per-line `tax_rate` does not require it.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": '`source_document_url` has no destination on Sage\'s underlying credit-card transaction object — the API exposes no user-facing web link for this object at all (only internal API resource paths). The field is declared unsupported rather than mapped to anything.\n\n`line_items[].tax_rate` is not supported on write. Sage accepts a `taxDetail` value on the line with no validation error, but it is silently discarded — verified live by creating a transaction with `taxDetail.key` set and reading it back as null. The correct write path for per-line tax on this object has not been found; treat this as an open gap, not a working feature.\n\n`reference` and `number` are the same field downstream — Sage\'s credit-card transaction has one `referenceNumber`. Whichever you send is written to it and read back on **both** `reference` and `number`, so a round trip never loses the value but also cannot tell the two apart. When both are supplied, `number` wins (matching the `bill-payments` resource\'s existing precedence) — send only one if you need predictable behaviour.\n\n`account.id` is Sage\'s credit-card account key — a different key space from the ids `bank_accounts.list` returns, and the two do not cross-reference by `display_id`. Verified live: an expense on card `TestCCId` reads back `account: { id: "9", code: "TestCCId" }`, while `bank_accounts.list` returns that same card as `id: "6"` and an unrelated savings account as `id: "9"`. Sending a `bank_accounts.list` id fails with `422 "A credit card is required"`. Take the value from an existing expense\'s `account.id`, or resolve the card through the Proxy API.\n',
+                        },
+                        {
+                            "connector": "wave",
+                            "description": "Creates a Wave money transaction through Wave's `moneyTransactionCreate`, which Wave marks as **beta** and only allows on businesses that are not on classic accounting. The connection needs the `transaction:write` scope; connections authorized before it was added must re-authorize. Wave cannot read, update or delete these transactions through its API, so only create is supported and the response carries only the new `id`.\n\n`account` is the bank or credit card account the money leaves (or returns to, for `type: refund`), and each line's `account` is the expense account. Wave requires the payment amount to equal the sum of the lines, so the connector computes it from `line_items` and ignores `total_amount`. A line amount includes its tax: send `tax_rate.id` with `tax_amount`, and the line's `total_amount` tax-inclusive (or set `tax_inclusive: false` to have `tax_amount` added). A line tax without `tax_amount` is not sent. With a non-recoverable sales tax, Wave books the whole line, tax included, to the expense account. Recoverable and non-recoverable sales taxes are both accepted. Wave sets up a new sales tax's account a few seconds after the tax is created; until then a line using that tax is rejected with `Account was not found` (400), and the same request succeeds when retried a few seconds later.\n\n`reference` becomes Wave's `externalId`, which Wave keeps unique: resending the same `reference` is rejected with `400` (`A transaction with the same externalId already exists`) instead of creating a duplicate. Without a `reference`, a random id is used, so a retry creates a second transaction.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -620,10 +810,9 @@ class Expenses(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingExpensesAddResponse(
                 create_expense_response=unmarshal_json_response(
-                    Optional[models.CreateExpenseResponse], http_res
+                    Optional[models.CreateExpenseResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -664,10 +853,9 @@ class Expenses(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingExpensesAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -677,8 +865,8 @@ class Expenses(BaseSDK):
         *,
         transaction_date: Nullable[datetime],
         line_items: Union[
-            List[models.ExpenseLineItemInput],
-            List[models.ExpenseLineItemInputTypedDict],
+            Iterable[models.ExpenseLineItemInput],
+            Iterable[models.ExpenseLineItemInputTypedDict],
         ],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
@@ -720,19 +908,22 @@ class Expenses(BaseSDK):
         total_amount: OptionalNullable[float] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         reference: OptionalNullable[str] = UNSET,
         source_document_url: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         status: OptionalNullable[models.ExpenseStatus] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -763,7 +954,7 @@ class Expenses(BaseSDK):
         :param payment_type: The type of payment for the expense.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
-        :param type: The type of expense.
+        :param type_: The type of expense.
         :param memo: The memo of the expense.
         :param tax_rate:
         :param tax_inclusive: Amounts are including tax
@@ -870,6 +1061,7 @@ class Expenses(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.expense, False, False, "json", models.ExpenseInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -894,9 +1086,67 @@ class Expenses(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Creates a check, a credit card charge or a credit card credit. The `account`, sent as an object with `id` or `name` (`account_id` is not read), decides which: a credit card account makes a credit card charge, a bank account a check. An account QuickBooks knows to be of another type answers `400`; one that is not synced yet is left to QuickBooks. `type: refund` makes a credit card credit and needs a credit card account (a refund on any other account answers `400`); `payment_type` is not read for a refund. For an expense, a `payment_type` of `check` or `credit_card` must agree with the account, otherwise the create answers `400`; `cash`, `other` or none leave the choice to the account. `supplier` is sent as the payee. A `line_items[]` entry with an `item` becomes an item line (`quantity` and `unit_price`, or `total_amount` when no unit price is given); an entry without one becomes an expense line (`account`, `total_amount`, `description`, `customer` and the first of its `tracking_categories`). An item line's `description`, `customer` and first `tracking_categories` entry are written too, by qbd-connect builds that include apideck-io/qbd-connect#110; an older build takes the item, quantity and price only and QuickBooks fills the description from the item.\n\nWrites are applied on the Web Connector's next run, so a create can return a `504` timeout after 28 seconds while QuickBooks still creates the expense. List expenses to find it before retrying: sending the create again adds a second expense.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "Send exactly one `line_items` entry with `total_amount` and `account.id` (a ledger account id);\nmore than one line is rejected. `transaction_date` and a description (`memo` or the line's\n`description`) are required by FreeAgent.\n\nThe expense is claimed by the FreeAgent user who authorized the connection. To claim it for\nanother user, send their FreeAgent user URL as `user` through `pass_through`.\n\nSend `total_amount` as a positive number and set `type: refund` for a refund; anything else is\nrecorded as money spent.\n",
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": "`account_id` (or `account.id`) is required for this connector even though the unified\nschema only requires one of them via `x-apideck-strict-any-of` — Twinfield has no implicit\ndefault for the credited side.\n\nNot every ledger account works as `account_id` — Twinfield rejects some accounts with an\nerror naming a conflicting bank/cash book or control account rather than the field itself.\nA plain, general-purpose ledger account works; a bank, cash-book-linked, or control\naccount does not. There is no way to predict which accounts qualify from the unified\nrequest alone.\n\nAn expense posted through this connector is indistinguishable from a journal entry on the\nTwinfield side; there is no `payment_type`/cash-vs-card distinction preserved.\n\nThe write always creates a draft transaction; this connector has no way to post it\ndirectly.\n\n`delete` is disabled as of 2026-08-18. Transaction numbers are only unique within the\nspecific ledger they belong to, and this operation has no way to confirm the id it is given\nactually belongs to an expense rather than a `journal-entries` record or a transaction\nentered directly in Twinfield's own UI — deleting one by id risks voiding an unrelated\nrecord that happens to share its number. `get` has the same collision on the read side —\nit is non-destructive but can silently return a hand-entered journal entry reshaped as an\nexpense (dropping any line beyond the first debit/credit pair). Do not rely on an id\nobtained from `journal-entries` or Twinfield's own UI being safe to pass to this resource,\nor vice versa.\n\n`memo` becomes the credited line's description, and Twinfield caps a transaction line's\ndescription at 40 characters (\"De omschrijving mag maximaal 40 tekens bevatten\") — a\nlonger value is rejected outright rather than truncated. This connector does not truncate\n`memo` or `line_items[].description` before sending; a value over 40 characters fails the\nwhole write.\n\n`update` is not implemented, and not just for lack of time: Twinfield's transaction API has no\nin-place update verb, only `add` (always assigns a new transaction number) and `delete`. Faking an\nupdate as delete-then-recreate would return a different `id` than the one being updated, breaking\nthe update contract, so it is left unsupported rather than built as a lossy workaround.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": 'Xero expenses map to Spend Money bank transactions and are created with status AUTHORISED — there is no draft state. Both a bank/credit-card account (`account.id`) and a supplier (`supplier.id`) are required, even though they are optional in the unified schema; omitting either returns a Xero validation error ("A Contact must be specified" / "The BankAccount must be specified"). The `account.id` must correspond to a \'bank\' or \'credit_card\' account type — other account types may result in errors or unexpected behavior. Xero\'s Expenses (expense-claims) module, where contact-less drafts can be saved in the UI, has no public write API. For a draft, payable-style expense without a bank account, use the Bills resource (Xero ACCPAY invoices) with `status: "draft"` instead.\n`reference` and `memo` both map to the single Xero `Reference` field on the underlying bank transaction, and `reference` wins — when both are sent, `memo` is silently discarded. On read both are populated from `Reference` and are always identical, so a caller cannot tell which field a value came from. Send only one of the two.\n',
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": 'The top-level `account` must be a bank or credit-card account — the payment source the money left from — not an expense account; the expense account goes on `line_items[].account`. Sending an expense account at the top level fails with `400 "Invalid account type used"` (code `6430`), an error that names neither the field nor the type it expected.\n\n`reference` and `memo` both map to the single `PrivateNote` field: only one survives a write (the other is dropped with no error), and on read both are populated from it and are always identical. Send only one. Which of the two wins on write is currently under review — do not rely on it.\n',
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": 'The top-level `account` must be a bank or credit-card account — the payment source the money left from — not an expense account; the expense account goes on `line_items[].account`. Sending an expense account at the top level fails with `400 "Invalid account type used"` (code `6430`), an error that names neither the field nor the type it expected.\n\n`reference` and `memo` both map to the single `PrivateNote` field: only one survives a write (the other is dropped with no error), and on read both are populated from it and are always identical. Send only one. Which of the two wins on write is currently under review — do not rely on it.\n',
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "When creating an expense for Sage Intacct, the account_id must refer to a credit card account, not a ledger account. You can find the correct credit card account ID in Sage Intacct under the Credit Cards section.",
+                        },
+                        {
+                            "connector": "dualentry",
+                            "description": "DualEntry requires `company_id`, `supplier` (vendor_id), `account` (account_number), and `currency` (currency_iso_4217_code) when creating a direct expense, even though these fields are optional in the unified schema.",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": 'Employee account type: set `account.type` to `"employee"` and `account.id` to the employee number (or GUID, which will be resolved automatically). Note: reading back the expense will NOT return the employee reference — employee payment lines are invisible in BC\'s API for draft entries, and resolve to a GL payable account when posted.\n\nBank account type: when an expense is created with `account.type: "bank_account"` and posted (`status: "posted"`), reading it back returns `account.type: "ledger_account"` with a **different** `account.id`. Business Central records posted transactions against the bank\'s associated G/L posting account, so the bank account identity is not preserved in the resulting ledger entries. Only `account.type: "ledger_account"` round-trips its `account.id` unchanged. `line_items[].account` is unaffected — expense lines are always G/L accounts and their `account.id` round-trips.\n',
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Zoho Books supports only one customer and one rebilling (`rebillable`) flag per expense at the header level. Only provide these in the first line_item — they will be mapped to the header-level fields and applied to all lines. If differentiated treatment is required, create separate expenses.",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "NetSuite expenses are either Credit Card Charges or Checks. Set `payment_type: \"check\"` to\ncreate a NetSuite Check: `account` must then reference a **bank account** and `supplier` is\nthe payee. Any other `payment_type` (or none) creates a Credit Card Charge (or, when the\nrequest has a negative amount, a Credit Card Refund — see below), so the top-level `account`\nmust reference a **credit-card–type** ledger account. A bank account (or any non–credit-card\naccount) is rejected with `Invalid Field Value … for the following field: account`.\nEmployee reimbursements are not modelled here (use expense-reports).\n\nNetSuite Checks expose no tax fields through the API. A check whose `line_items` carry\na `tax_rate` (an id, a code or a non-zero rate) or a non-zero `tax_amount` is rejected with a `400`, and a check's `total_tax` is empty:\n`total_amount` and `sub_total` both equal the check total. Checks cannot be voided through\nthe API.\n\nA negative overall total (or a negative `line_items[].total_amount` sum) creates a NetSuite\nCredit Card Refund instead — NetSuite's transaction type for reversing a corporate/company\ncard charge, entered against a Vendor — unless `payment_type` is `check`, which takes\nprecedence (NetSuite then rejects the negative check). This is distinct from the unified\n`refunds` resource, which models customer-facing (AR) refunds. NetSuite itself never stores a\nnegative amount on either record type (a negative total is rejected outright); this connector\nsends the absolute value automatically, so the sign only decides which record type gets\ncreated, not what NetSuite stores. `expensesOne`, `expensesUpdate` and `expensesDelete`\nlook the id up as a Credit Card Charge first and, if no card charge exists with that id, as\na Check, then read, update or delete that record. Reading a Credit Card Charge takes one\nNetSuite request as before; reading a Check, and every update or delete, takes one more. An\nid that exists as neither returns NetSuite's `404`; a Credit Card Refund id (or any other\ntransaction type) returns NetSuite's `400` \"Transaction type specified is incorrect\", and the\nlist never includes Credit Card Refunds, so capture the `id` from the `expensesAdd` response\nif you need to reference the reversal elsewhere. `payment_type` in an\nupdate body is ignored for routing, because a record's type cannot change. `expensesUpdate`\non a Credit Card Refund only routes correctly when the update body itself carries a negative\namount (a negative `total_amount`, or a negative `line_items[].total_amount` sum) — the\nrouter only sees the body of the request in front of it. A field-only update that omits the\namount (e.g. changing just `memo` or the transaction date) evaluates to a total of `0`, and a\npositive amount does too; both route to the Credit Card Charge/Check lookup instead and are\nrejected with NetSuite's `400` \"Transaction type specified is incorrect\", since the id only\nexists as a Credit Card Refund. Re-send the negative amount on every\nupdate to one of these records, even when only a non-amount field is changing. A negative-total\nupdate on a Check is also routed to Credit Card Refund update and fails at NetSuite.\n\n`line_items[].tracking_categories` maps to the NetSuite per-line `class` (Classification), which accepts only one value — entries at index 1 or beyond are dropped silently.\n\nWhen `line_items[].customer` is set without an explicit `line_items[].rebilling.rebillable`, NetSuite defaults `rebillable` to `true`. Pass `rebilling: { rebillable: false }` explicitly if you want a customer-linked line that is not rebillable.\n\n`line_items[].tax_rate.id` is applied on create when the connection has SuiteTax enabled (the `suitetax_enabled` setting), so mixed-rate expenses post the correct per-line tax. Without a per-line tax code, NetSuite applies the account's default tax code to every line (a 0% line under a 20%-default account posts at 20%). Every tax-rated line must resolve a tax type and rate; if any cannot, the request fails with a `400` naming the line rather than silently posting at the account default. Some third-party tax-engine configurations (e.g. Vertex/Avalara) may reject the override — use `pass_through` for tenant-specific tax fields if needed.\n\n`tax_rate.id` alone is sufficient: when a tax-rated line omits `tax_rate.rate`, the connector resolves the rate server-side from the tax code (no extra call is needed on a warm per-connection cache). If a tax-rated line's tax type or rate genuinely cannot be resolved (e.g. an unknown tax code), the request now fails fast with a `400` naming the offending line rather than silently posting at the account default. A caller-supplied `tax_rate.rate` still takes precedence when present.\n\nApplying per-line tax on a Credit Card Charge also requires the NetSuite role to hold the `Lists → Tax Details Tab` permission at **Full**, because the connector writes a tax-details block on the record. Without it the create fails as a tax-engine error rather than a permission error: `Unable to save the transaction due to an error being reported by the tax calculation engine: … Permission Violation: You need the 'Lists -> Tax Details Tab' permission`. Reading an expense's per-line `tax_rate` does not require it.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": '`source_document_url` has no destination on Sage\'s underlying credit-card transaction object — the API exposes no user-facing web link for this object at all (only internal API resource paths). The field is declared unsupported rather than mapped to anything.\n\n`line_items[].tax_rate` is not supported on write. Sage accepts a `taxDetail` value on the line with no validation error, but it is silently discarded — verified live by creating a transaction with `taxDetail.key` set and reading it back as null. The correct write path for per-line tax on this object has not been found; treat this as an open gap, not a working feature.\n\n`reference` and `number` are the same field downstream — Sage\'s credit-card transaction has one `referenceNumber`. Whichever you send is written to it and read back on **both** `reference` and `number`, so a round trip never loses the value but also cannot tell the two apart. When both are supplied, `number` wins (matching the `bill-payments` resource\'s existing precedence) — send only one if you need predictable behaviour.\n\n`account.id` is Sage\'s credit-card account key — a different key space from the ids `bank_accounts.list` returns, and the two do not cross-reference by `display_id`. Verified live: an expense on card `TestCCId` reads back `account: { id: "9", code: "TestCCId" }`, while `bank_accounts.list` returns that same card as `id: "6"` and an unrelated savings account as `id: "9"`. Sending a `bank_accounts.list` id fails with `422 "A credit card is required"`. Take the value from an existing expense\'s `account.id`, or resolve the card through the Proxy API.\n',
+                        },
+                        {
+                            "connector": "wave",
+                            "description": "Creates a Wave money transaction through Wave's `moneyTransactionCreate`, which Wave marks as **beta** and only allows on businesses that are not on classic accounting. The connection needs the `transaction:write` scope; connections authorized before it was added must re-authorize. Wave cannot read, update or delete these transactions through its API, so only create is supported and the response carries only the new `id`.\n\n`account` is the bank or credit card account the money leaves (or returns to, for `type: refund`), and each line's `account` is the expense account. Wave requires the payment amount to equal the sum of the lines, so the connector computes it from `line_items` and ignores `total_amount`. A line amount includes its tax: send `tax_rate.id` with `tax_amount`, and the line's `total_amount` tax-inclusive (or set `tax_inclusive: false` to have `tax_amount` added). A line tax without `tax_amount` is not sent. With a non-recoverable sales tax, Wave books the whole line, tax included, to the expense account. Recoverable and non-recoverable sales taxes are both accepted. Wave sets up a new sales tax's account a few seconds after the tax is created; until then a line using that tax is rejected with `Account was not found` (400), and the same request succeeds when retried a few seconds later.\n\n`reference` becomes Wave's `externalId`, which Wave keeps unique: resending the same `reference` is rejected with `400` (`A transaction with the same externalId already exists`) instead of creating a duplicate. Without a `reference`, a random id is used, so a retry creates a second transaction.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -904,10 +1154,9 @@ class Expenses(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingExpensesAddResponse(
                 create_expense_response=unmarshal_json_response(
-                    Optional[models.CreateExpenseResponse], http_res
+                    Optional[models.CreateExpenseResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -948,10 +1197,9 @@ class Expenses(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingExpensesAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1021,6 +1269,7 @@ class Expenses(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1045,9 +1294,35 @@ class Expenses(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "xero",
+                            "description": "In Xero, both suppliers (also used for employees) and customers are identified using the same contact ID, which maps to both `supplier_id` and `customer_id`. To accurately determine the contact type, use the suppliers and customers endpoints.",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Zoho Books supports only one customer and one rebilling (`rebillable`) flag per expense at the header level. When reading, all line_items will return the same customer and rebilling values.",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": 'Line-item `tracking_categories[].name` is normalized to the leaf class name: a NetSuite hierarchical class path such as `"Fruit : Apple"` returns `name: "Apple"` and `parent_name: "Fruit"` (deeper paths return the deepest leaf as `name` and its immediate parent as `parent_name`). Line-item `department.name` and `location.name` are likewise normalized to the leaf segment.\n\n`expensesOne` reads the id as a Credit Card Charge first and, if no card charge exists with that id, as a Check (one extra NetSuite request for a check). `payment_type` is `credit_card` for a card charge and `check` for a check, and `account.type` is `ledger_account` or `bank_account` respectively. NetSuite Checks expose no tax fields through the API, so a check\'s `total_tax` is empty and `total_amount` and `sub_total` both equal the check total. An id that exists as neither returns NetSuite\'s `404`; a Credit Card Refund id or any other transaction type returns NetSuite\'s `400` "Transaction type specified is incorrect". A Credit Card Refund (the reversal of a corporate card charge, created via a negative-amount `expensesAdd` — see that operation\'s gotcha) cannot be read by id today.\n',
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": 'A posted expense (`status: "posted"`) is read from Business Central\'s general ledger entries, which carry no bank-account discriminator. Its header `account` is therefore always returned as `account.type: "ledger_account"` — even when the expense was created with `account.type: "bank_account"` — and `account.id` is the bank\'s associated G/L posting account, not the bank account that was sent on create. `line_items[].account.id` is unaffected. See the create operation\'s gotcha for the full round-trip behaviour.\n',
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "`supplier_id` and `supplier.id` are read from Sage's `payee` field on the underlying\ncredit-card transaction, which has no other vendor reference. This connector writes the\nreal vendor key into `payee` on create/update, so an expense round-tripped through this\nconnector returns a resolvable id — but `payee` is free text, and an expense created\ndirectly in Sage (or by another integration) can have it set to the vendor's display\nname instead. Verify the value against `suppliers.list` before using it as a lookup key.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1055,10 +1330,9 @@ class Expenses(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingExpensesOneResponse(
                 get_expense_response=unmarshal_json_response(
-                    Optional[models.GetExpenseResponse], http_res
+                    Optional[models.GetExpenseResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1099,10 +1373,9 @@ class Expenses(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingExpensesOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1172,6 +1445,7 @@ class Expenses(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1196,9 +1470,35 @@ class Expenses(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "xero",
+                            "description": "In Xero, both suppliers (also used for employees) and customers are identified using the same contact ID, which maps to both `supplier_id` and `customer_id`. To accurately determine the contact type, use the suppliers and customers endpoints.",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Zoho Books supports only one customer and one rebilling (`rebillable`) flag per expense at the header level. When reading, all line_items will return the same customer and rebilling values.",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": 'Line-item `tracking_categories[].name` is normalized to the leaf class name: a NetSuite hierarchical class path such as `"Fruit : Apple"` returns `name: "Apple"` and `parent_name: "Fruit"` (deeper paths return the deepest leaf as `name` and its immediate parent as `parent_name`). Line-item `department.name` and `location.name` are likewise normalized to the leaf segment.\n\n`expensesOne` reads the id as a Credit Card Charge first and, if no card charge exists with that id, as a Check (one extra NetSuite request for a check). `payment_type` is `credit_card` for a card charge and `check` for a check, and `account.type` is `ledger_account` or `bank_account` respectively. NetSuite Checks expose no tax fields through the API, so a check\'s `total_tax` is empty and `total_amount` and `sub_total` both equal the check total. An id that exists as neither returns NetSuite\'s `404`; a Credit Card Refund id or any other transaction type returns NetSuite\'s `400` "Transaction type specified is incorrect". A Credit Card Refund (the reversal of a corporate card charge, created via a negative-amount `expensesAdd` — see that operation\'s gotcha) cannot be read by id today.\n',
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": 'A posted expense (`status: "posted"`) is read from Business Central\'s general ledger entries, which carry no bank-account discriminator. Its header `account` is therefore always returned as `account.type: "ledger_account"` — even when the expense was created with `account.type: "bank_account"` — and `account.id` is the bank\'s associated G/L posting account, not the bank account that was sent on create. `line_items[].account.id` is unaffected. See the create operation\'s gotcha for the full round-trip behaviour.\n',
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "`supplier_id` and `supplier.id` are read from Sage's `payee` field on the underlying\ncredit-card transaction, which has no other vendor reference. This connector writes the\nreal vendor key into `payee` on create/update, so an expense round-tripped through this\nconnector returns a resolvable id — but `payee` is free text, and an expense created\ndirectly in Sage (or by another integration) can have it set to the vendor's display\nname instead. Verify the value against `suppliers.list` before using it as a lookup key.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1206,10 +1506,9 @@ class Expenses(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingExpensesOneResponse(
                 get_expense_response=unmarshal_json_response(
-                    Optional[models.GetExpenseResponse], http_res
+                    Optional[models.GetExpenseResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1250,10 +1549,9 @@ class Expenses(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingExpensesOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1302,25 +1600,28 @@ class Expenses(BaseSDK):
         total_amount: OptionalNullable[float] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         line_items: Optional[
             Union[
-                List[models.ExpenseLineItemInput],
-                List[models.ExpenseLineItemInputTypedDict],
+                Iterable[models.ExpenseLineItemInput],
+                Iterable[models.ExpenseLineItemInputTypedDict],
             ]
         ] = None,
         reference: OptionalNullable[str] = UNSET,
         source_document_url: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         status: OptionalNullable[models.ExpenseUpdateInputStatus] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1350,7 +1651,7 @@ class Expenses(BaseSDK):
         :param payment_type: The type of payment for the expense.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
-        :param type: The type of expense.
+        :param type_: The type of expense.
         :param memo: The memo of the expense.
         :param tax_rate:
         :param tax_inclusive: Amounts are including tax
@@ -1462,6 +1763,7 @@ class Expenses(BaseSDK):
                 "json",
                 models.ExpenseUpdateInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1486,9 +1788,39 @@ class Expenses(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Only `number`, `transaction_date` and `memo` change. `line_items`, `account` and `supplier` sent on update are ignored; delete and recreate the expense to change them.\n\nUpdates need `row_version` from a prior read of the record. Writes are applied on the Web Connector's next run, so an update can return a `504` timeout after 28 seconds while QuickBooks still applies it, and the change can take a few minutes to show when the record is read back.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "On update, `line_items` may hold at most one entry. Without `type`, the expense keeps its\ndirection (spent or refund).\n",
+                        },
+                        {
+                            "connector": "dualentry",
+                            "description": "DualEntry requires `company_id`, `supplier` (vendor_id), `account` (account_number), and `currency` (currency_iso_4217_code) when updating a direct expense, even though these fields are optional in the unified schema.",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Zoho Books supports only one customer and one rebilling (`rebillable`) flag per expense at the header level. Only provide these in the first line_item — they will be mapped to the header-level fields and applied to all lines. If differentiated treatment is required, create separate expenses.",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "NetSuite expenses are either Credit Card Charges or Checks, and an update first reads the id as a Credit Card Charge, then as a Check if no card charge exists, and writes to the record it found (one extra NetSuite request per update). A Credit Card Charge's top-level `account` must reference a **credit-card–type** ledger account, and a Check's must reference a **bank account**; anything else is rejected with `Invalid Field Value … for the following field: account`. `payment_type` in the update body is ignored for routing: a record's type cannot change. An id that exists as neither returns NetSuite's `404`; a Credit Card Refund id that is not routed by amount (see below) returns NetSuite's `400` \"Transaction type specified is incorrect\". NetSuite Checks expose no tax fields through the API, so an update to a check whose `line_items` carry a `tax_rate` (an id, a code or a non-zero rate) or a non-zero `tax_amount` is rejected with a `400`. Employee reimbursements are not modelled here (use expense-reports).\n\n`line_items[].tracking_categories` maps to the NetSuite per-line `class` (Classification), which accepts only one value — entries at index 1 or beyond are dropped silently.\n\n`line_items[].tax_rate.id` is applied on update when the connection has SuiteTax enabled (the `suitetax_enabled` setting), so mixed-rate expenses post the correct per-line tax. Without it, NetSuite applies the account's default tax code to every line (a 0% line under a 20%-default account posts at 20%). Every tax-rated line must resolve a tax type; if any cannot, the override is skipped for the whole expense and the account default applies. Some third-party tax-engine configurations (e.g. Vertex/Avalara) may reject the override — use `pass_through` for tenant-specific tax fields if needed.\n\nUpdating a Credit Card Refund (created via a negative-amount `expensesAdd` — see that operation's gotcha) requires re-sending a negative amount in the update body every time, even when only a non-amount field (e.g. `memo`) is changing — the router only sees the body in front of it, not the record's existing type. Omitting the amount, or sending a positive one, routes this connector to the Credit Card Charge/Check lookup instead, which NetSuite rejects with `400` \"Transaction type specified is incorrect\" since the id only exists as a Credit Card Refund. A negative-total update on a Check is routed the same way, to Credit Card Refund update, and fails at NetSuite.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "`source_document_url` has no destination on Sage's underlying credit-card transaction object and is declared unsupported. `line_items[].tax_rate` is accepted with no validation error but silently discarded on write — verified live, treat as an open gap rather than a working feature. When both `reference` and `number` are supplied, `number` wins.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1496,10 +1828,9 @@ class Expenses(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingExpensesUpdateResponse(
                 update_expense_response=unmarshal_json_response(
-                    Optional[models.UpdateExpenseResponse], http_res
+                    Optional[models.UpdateExpenseResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1540,10 +1871,9 @@ class Expenses(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingExpensesUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1592,25 +1922,28 @@ class Expenses(BaseSDK):
         total_amount: OptionalNullable[float] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         line_items: Optional[
             Union[
-                List[models.ExpenseLineItemInput],
-                List[models.ExpenseLineItemInputTypedDict],
+                Iterable[models.ExpenseLineItemInput],
+                Iterable[models.ExpenseLineItemInputTypedDict],
             ]
         ] = None,
         reference: OptionalNullable[str] = UNSET,
         source_document_url: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         status: OptionalNullable[models.ExpenseUpdateInputStatus] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1640,7 +1973,7 @@ class Expenses(BaseSDK):
         :param payment_type: The type of payment for the expense.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
-        :param type: The type of expense.
+        :param type_: The type of expense.
         :param memo: The memo of the expense.
         :param tax_rate:
         :param tax_inclusive: Amounts are including tax
@@ -1752,6 +2085,7 @@ class Expenses(BaseSDK):
                 "json",
                 models.ExpenseUpdateInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1776,9 +2110,39 @@ class Expenses(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Only `number`, `transaction_date` and `memo` change. `line_items`, `account` and `supplier` sent on update are ignored; delete and recreate the expense to change them.\n\nUpdates need `row_version` from a prior read of the record. Writes are applied on the Web Connector's next run, so an update can return a `504` timeout after 28 seconds while QuickBooks still applies it, and the change can take a few minutes to show when the record is read back.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "On update, `line_items` may hold at most one entry. Without `type`, the expense keeps its\ndirection (spent or refund).\n",
+                        },
+                        {
+                            "connector": "dualentry",
+                            "description": "DualEntry requires `company_id`, `supplier` (vendor_id), `account` (account_number), and `currency` (currency_iso_4217_code) when updating a direct expense, even though these fields are optional in the unified schema.",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Zoho Books supports only one customer and one rebilling (`rebillable`) flag per expense at the header level. Only provide these in the first line_item — they will be mapped to the header-level fields and applied to all lines. If differentiated treatment is required, create separate expenses.",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "NetSuite expenses are either Credit Card Charges or Checks, and an update first reads the id as a Credit Card Charge, then as a Check if no card charge exists, and writes to the record it found (one extra NetSuite request per update). A Credit Card Charge's top-level `account` must reference a **credit-card–type** ledger account, and a Check's must reference a **bank account**; anything else is rejected with `Invalid Field Value … for the following field: account`. `payment_type` in the update body is ignored for routing: a record's type cannot change. An id that exists as neither returns NetSuite's `404`; a Credit Card Refund id that is not routed by amount (see below) returns NetSuite's `400` \"Transaction type specified is incorrect\". NetSuite Checks expose no tax fields through the API, so an update to a check whose `line_items` carry a `tax_rate` (an id, a code or a non-zero rate) or a non-zero `tax_amount` is rejected with a `400`. Employee reimbursements are not modelled here (use expense-reports).\n\n`line_items[].tracking_categories` maps to the NetSuite per-line `class` (Classification), which accepts only one value — entries at index 1 or beyond are dropped silently.\n\n`line_items[].tax_rate.id` is applied on update when the connection has SuiteTax enabled (the `suitetax_enabled` setting), so mixed-rate expenses post the correct per-line tax. Without it, NetSuite applies the account's default tax code to every line (a 0% line under a 20%-default account posts at 20%). Every tax-rated line must resolve a tax type; if any cannot, the override is skipped for the whole expense and the account default applies. Some third-party tax-engine configurations (e.g. Vertex/Avalara) may reject the override — use `pass_through` for tenant-specific tax fields if needed.\n\nUpdating a Credit Card Refund (created via a negative-amount `expensesAdd` — see that operation's gotcha) requires re-sending a negative amount in the update body every time, even when only a non-amount field (e.g. `memo`) is changing — the router only sees the body in front of it, not the record's existing type. Omitting the amount, or sending a positive one, routes this connector to the Credit Card Charge/Check lookup instead, which NetSuite rejects with `400` \"Transaction type specified is incorrect\" since the id only exists as a Credit Card Refund. A negative-total update on a Check is routed the same way, to Credit Card Refund update, and fails at NetSuite.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "`source_document_url` has no destination on Sage's underlying credit-card transaction object and is declared unsupported. `line_items[].tax_rate` is accepted with no validation error but silently discarded on write — verified live, treat as an open gap rather than a working feature. When both `reference` and `number` are supplied, `number` wins.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1786,10 +2150,9 @@ class Expenses(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingExpensesUpdateResponse(
                 update_expense_response=unmarshal_json_response(
-                    Optional[models.UpdateExpenseResponse], http_res
+                    Optional[models.UpdateExpenseResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1830,10 +2193,9 @@ class Expenses(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingExpensesUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1900,6 +2262,7 @@ class Expenses(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1924,9 +2287,23 @@ class Expenses(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "A delete can return a `504` timeout after 28 seconds while QuickBooks still deletes the expense. Read it back before retrying: a `404` means it is gone.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "The delete operation for credit card transactions in Sage Intacct is not a true deletion. Instead, it performs a reversal using the reverse_cctransaction function.",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1934,10 +2311,9 @@ class Expenses(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingExpensesDeleteResponse(
                 delete_expense_response=unmarshal_json_response(
-                    Optional[models.DeleteExpenseResponse], http_res
+                    Optional[models.DeleteExpenseResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1978,10 +2354,9 @@ class Expenses(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingExpensesDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2048,6 +2423,7 @@ class Expenses(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2072,9 +2448,23 @@ class Expenses(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "A delete can return a `504` timeout after 28 seconds while QuickBooks still deletes the expense. Read it back before retrying: a `404` means it is gone.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "The delete operation for credit card transactions in Sage Intacct is not a true deletion. Instead, it performs a reversal using the reverse_cctransaction function.",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2082,10 +2472,9 @@ class Expenses(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingExpensesDeleteResponse(
                 delete_expense_response=unmarshal_json_response(
-                    Optional[models.DeleteExpenseResponse], http_res
+                    Optional[models.DeleteExpenseResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2126,10 +2515,9 @@ class Expenses(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingExpensesDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

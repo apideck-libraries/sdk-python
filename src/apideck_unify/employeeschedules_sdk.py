@@ -18,7 +18,7 @@ class EmployeeSchedulesSDK(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -57,7 +57,7 @@ class EmployeeSchedulesSDK(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -78,6 +78,7 @@ class EmployeeSchedulesSDK(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -102,9 +103,51 @@ class EmployeeSchedulesSDK(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["hris"],
+                extensions={
+                    "x-apideck-api": "hris",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "adp-workforce-now",
+                            "description": "Employee schedules are not supported by the ADP Workforce Now connector: the resource is not mapped, so this operation is unavailable. ADP itself does expose time and attendance APIs to ADP API Central subscribers whose ADP account has the Time and Attendance module enabled, so this is a gap in Apideck's coverage rather than an ADP limitation. Use the Proxy API to reach ADP's time endpoints directly in the meantime.\n",
+                        },
+                        {
+                            "connector": "azure-active-directory",
+                            "description": "Microsoft Azure Active Directory does not include a total count in default list responses. `meta.total_count` will not appear. Surfacing the total requires adding `$count=true` with a `ConsistencyLevel: eventual` header — an extra requirement not currently implemented.\n",
+                        },
+                        {
+                            "connector": "bamboohr",
+                            "description": 'The employment role field will return "other" for list calls when the employee is terminated. To fetch the correct employment role data, you need to call the employee detail endpoint.',
+                        },
+                        {
+                            "connector": "hibob",
+                            "description": "HiBob does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "rippling",
+                            "description": "Rippling does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "ceridian-dayforce",
+                            "description": "Ceridian Dayforce does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "google-workspace",
+                            "description": "Google Workspace does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "zoho-people",
+                            "description": "Zoho People does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the total requires a separate count endpoint with a date context — not currently implemented.\n",
+                        },
+                        {
+                            "connector": "lucca-hr",
+                            "description": "`total_count` is available in Lucca HR but requires `?include=totalCount` query parameter. Currently not wired — `meta.total_count` will not appear.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -112,10 +155,11 @@ class EmployeeSchedulesSDK(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.HrisEmployeeSchedulesAllResponse(
                 get_employee_schedules_response=unmarshal_json_response(
-                    Optional[models.GetEmployeeSchedulesResponse], http_res
+                    Optional[models.GetEmployeeSchedulesResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -156,10 +200,9 @@ class EmployeeSchedulesSDK(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.HrisEmployeeSchedulesAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -172,7 +215,7 @@ class EmployeeSchedulesSDK(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -211,7 +254,7 @@ class EmployeeSchedulesSDK(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -232,6 +275,7 @@ class EmployeeSchedulesSDK(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -256,9 +300,51 @@ class EmployeeSchedulesSDK(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["hris"],
+                extensions={
+                    "x-apideck-api": "hris",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "adp-workforce-now",
+                            "description": "Employee schedules are not supported by the ADP Workforce Now connector: the resource is not mapped, so this operation is unavailable. ADP itself does expose time and attendance APIs to ADP API Central subscribers whose ADP account has the Time and Attendance module enabled, so this is a gap in Apideck's coverage rather than an ADP limitation. Use the Proxy API to reach ADP's time endpoints directly in the meantime.\n",
+                        },
+                        {
+                            "connector": "azure-active-directory",
+                            "description": "Microsoft Azure Active Directory does not include a total count in default list responses. `meta.total_count` will not appear. Surfacing the total requires adding `$count=true` with a `ConsistencyLevel: eventual` header — an extra requirement not currently implemented.\n",
+                        },
+                        {
+                            "connector": "bamboohr",
+                            "description": 'The employment role field will return "other" for list calls when the employee is terminated. To fetch the correct employment role data, you need to call the employee detail endpoint.',
+                        },
+                        {
+                            "connector": "hibob",
+                            "description": "HiBob does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "rippling",
+                            "description": "Rippling does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "ceridian-dayforce",
+                            "description": "Ceridian Dayforce does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "google-workspace",
+                            "description": "Google Workspace does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "zoho-people",
+                            "description": "Zoho People does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the total requires a separate count endpoint with a date context — not currently implemented.\n",
+                        },
+                        {
+                            "connector": "lucca-hr",
+                            "description": "`total_count` is available in Lucca HR but requires `?include=totalCount` query parameter. Currently not wired — `meta.total_count` will not appear.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -266,10 +352,11 @@ class EmployeeSchedulesSDK(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.HrisEmployeeSchedulesAllResponse(
                 get_employee_schedules_response=unmarshal_json_response(
-                    Optional[models.GetEmployeeSchedulesResponse], http_res
+                    Optional[models.GetEmployeeSchedulesResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -310,10 +397,9 @@ class EmployeeSchedulesSDK(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.HrisEmployeeSchedulesAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

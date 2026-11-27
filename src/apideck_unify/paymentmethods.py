@@ -7,7 +7,7 @@ from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from jsonpath import JSONPath
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
 
 
 class PaymentMethods(BaseSDK):
@@ -21,7 +21,7 @@ class PaymentMethods(BaseSDK):
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
         fields: OptionalNullable[str] = UNSET,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -62,7 +62,7 @@ class PaymentMethods(BaseSDK):
             cursor=cursor,
             limit=limit,
             fields=fields,
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
         )
 
         req = self._build_request(
@@ -82,6 +82,7 @@ class PaymentMethods(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -106,9 +107,27 @@ class PaymentMethods(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "`type` is `credit_card` for every QuickBooks card type (Visa, MasterCard, American Express, Discover) and `electronic` for an e-check.\n\nQuickBooks Desktop does not expose a reliable cross-page total record count. Getting `total_count` requires a separate COUNT query — an extra API call that is not currently implemented. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Fiken has no payment-method list: a payment is booked against the bank account it was paid\nto or from. Payment methods are therefore the company's Fiken bank accounts. `id` is the bank\naccount id and `downstream_id` its ledger code (e.g. `1920:10001`); either can be sent as\n`account.id` on `POST /accounting/payments` and `POST /accounting/bill-payments`. `type` is\n`bank_transfer` for normal and foreign accounts, `credit_card` for credit-card accounts and\n`other` for tax-deduction accounts. Read-only: create bank accounts via `/accounting/bank-accounts`.\n",
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": "The only source for payment types returns just `code` and `name` — there is no field for\nthe payment method's type (cash/check/bank_transfer/etc.) or its active/inactive status.\nBoth are always `null`.\n\n`name` is read from a Dutch-language field key. Verified only against a Dutch-language\noffice; a non-Dutch office may return this field empty.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -133,17 +152,19 @@ class PaymentMethods(BaseSDK):
                 fields=fields,
                 pass_through=pass_through,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingPaymentMethodsAllResponse(
                 get_payment_methods_response=unmarshal_json_response(
-                    Optional[models.GetPaymentMethodsResponse], http_res
+                    Optional[models.GetPaymentMethodsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -184,11 +205,10 @@ class PaymentMethods(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingPaymentMethodsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -203,7 +223,7 @@ class PaymentMethods(BaseSDK):
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
         fields: OptionalNullable[str] = UNSET,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -244,7 +264,7 @@ class PaymentMethods(BaseSDK):
             cursor=cursor,
             limit=limit,
             fields=fields,
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
         )
 
         req = self._build_request_async(
@@ -264,6 +284,7 @@ class PaymentMethods(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -288,9 +309,27 @@ class PaymentMethods(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "`type` is `credit_card` for every QuickBooks card type (Visa, MasterCard, American Express, Discover) and `electronic` for an e-check.\n\nQuickBooks Desktop does not expose a reliable cross-page total record count. Getting `total_count` requires a separate COUNT query — an extra API call that is not currently implemented. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Fiken has no payment-method list: a payment is booked against the bank account it was paid\nto or from. Payment methods are therefore the company's Fiken bank accounts. `id` is the bank\naccount id and `downstream_id` its ledger code (e.g. `1920:10001`); either can be sent as\n`account.id` on `POST /accounting/payments` and `POST /accounting/bill-payments`. `type` is\n`bank_transfer` for normal and foreign accounts, `credit_card` for credit-card accounts and\n`other` for tax-deduction accounts. Read-only: create bank accounts via `/accounting/bank-accounts`.\n",
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": "The only source for payment types returns just `code` and `name` — there is no field for\nthe payment method's type (cash/check/bank_transfer/etc.) or its active/inactive status.\nBoth are always `null`.\n\n`name` is read from a Dutch-language field key. Verified only against a Dutch-language\noffice; a non-Dutch office may return this field empty.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -315,17 +354,19 @@ class PaymentMethods(BaseSDK):
                 fields=fields,
                 pass_through=pass_through,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingPaymentMethodsAllResponse(
                 get_payment_methods_response=unmarshal_json_response(
-                    Optional[models.GetPaymentMethodsResponse], http_res
+                    Optional[models.GetPaymentMethodsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -366,11 +407,10 @@ class PaymentMethods(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingPaymentMethodsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -387,7 +427,10 @@ class PaymentMethods(BaseSDK):
         status: OptionalNullable[models.AccountingPaymentMethodStatus] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -403,7 +446,7 @@ class PaymentMethods(BaseSDK):
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param name: The name of the payment method.
-        :param type: The type of payment method.
+        :param type_: The type of payment method.
         :param status: The status of the payment method.
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
@@ -462,6 +505,7 @@ class PaymentMethods(BaseSDK):
                 "json",
                 models.AccountingPaymentMethodInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -486,9 +530,23 @@ class PaymentMethods(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "`name` is required. `type` `bank_transfer` has no QuickBooks equivalent and is left unset.\n\nWrites are applied on the Web Connector's next run, so a create can return a `504` timeout after 28 seconds while QuickBooks still creates the payment method. List payment methods to find it before retrying: sending the create again adds a second payment method.\n",
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": "Payment methods cannot be created through this connector — the vendor operation for\nmaintaining payment types is not publicly documented in enough detail to implement\nreliably, unlike the read path this connector uses.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -496,10 +554,11 @@ class PaymentMethods(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingPaymentMethodsAddResponse(
                 create_payment_method_response=unmarshal_json_response(
-                    Optional[models.CreatePaymentMethodResponse], http_res
+                    Optional[models.CreatePaymentMethodResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -540,10 +599,9 @@ class PaymentMethods(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingPaymentMethodsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -560,7 +618,10 @@ class PaymentMethods(BaseSDK):
         status: OptionalNullable[models.AccountingPaymentMethodStatus] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -576,7 +637,7 @@ class PaymentMethods(BaseSDK):
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param name: The name of the payment method.
-        :param type: The type of payment method.
+        :param type_: The type of payment method.
         :param status: The status of the payment method.
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
@@ -635,6 +696,7 @@ class PaymentMethods(BaseSDK):
                 "json",
                 models.AccountingPaymentMethodInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -659,9 +721,23 @@ class PaymentMethods(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "`name` is required. `type` `bank_transfer` has no QuickBooks equivalent and is left unset.\n\nWrites are applied on the Web Connector's next run, so a create can return a `504` timeout after 28 seconds while QuickBooks still creates the payment method. List payment methods to find it before retrying: sending the create again adds a second payment method.\n",
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": "Payment methods cannot be created through this connector — the vendor operation for\nmaintaining payment types is not publicly documented in enough detail to implement\nreliably, unlike the read path this connector uses.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -669,10 +745,11 @@ class PaymentMethods(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingPaymentMethodsAddResponse(
                 create_payment_method_response=unmarshal_json_response(
-                    Optional[models.CreatePaymentMethodResponse], http_res
+                    Optional[models.CreatePaymentMethodResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -713,10 +790,9 @@ class PaymentMethods(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingPaymentMethodsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -786,6 +862,7 @@ class PaymentMethods(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -810,9 +887,19 @@ class PaymentMethods(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "twinfield",
+                            "description": "The only source for payment types returns just `code` and `name` — there is no field for\nthe payment method's type (cash/check/bank_transfer/etc.) or its active/inactive status.\nBoth are always `null`.\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -820,10 +907,9 @@ class PaymentMethods(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingPaymentMethodsOneResponse(
                 get_payment_method_response=unmarshal_json_response(
-                    Optional[models.GetPaymentMethodResponse], http_res
+                    Optional[models.GetPaymentMethodResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -864,10 +950,9 @@ class PaymentMethods(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingPaymentMethodsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -937,6 +1022,7 @@ class PaymentMethods(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -961,9 +1047,19 @@ class PaymentMethods(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "twinfield",
+                            "description": "The only source for payment types returns just `code` and `name` — there is no field for\nthe payment method's type (cash/check/bank_transfer/etc.) or its active/inactive status.\nBoth are always `null`.\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -971,10 +1067,9 @@ class PaymentMethods(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingPaymentMethodsOneResponse(
                 get_payment_method_response=unmarshal_json_response(
-                    Optional[models.GetPaymentMethodResponse], http_res
+                    Optional[models.GetPaymentMethodResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1015,10 +1110,9 @@ class PaymentMethods(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingPaymentMethodsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1036,7 +1130,10 @@ class PaymentMethods(BaseSDK):
         status: OptionalNullable[models.AccountingPaymentMethodStatus] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1053,7 +1150,7 @@ class PaymentMethods(BaseSDK):
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param name: The name of the payment method.
-        :param type: The type of payment method.
+        :param type_: The type of payment method.
         :param status: The status of the payment method.
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
@@ -1113,6 +1210,7 @@ class PaymentMethods(BaseSDK):
                 "json",
                 models.AccountingPaymentMethodInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1137,9 +1235,19 @@ class PaymentMethods(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "twinfield",
+                            "description": "Payment methods cannot be updated through this connector — the vendor operation for\nmaintaining payment types is not publicly documented in enough detail to implement\nreliably, unlike the read path this connector uses.\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1147,10 +1255,11 @@ class PaymentMethods(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingPaymentMethodsUpdateResponse(
                 update_payment_method_response=unmarshal_json_response(
-                    Optional[models.UpdatePaymentMethodResponse], http_res
+                    Optional[models.UpdatePaymentMethodResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1191,10 +1300,9 @@ class PaymentMethods(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingPaymentMethodsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1212,7 +1320,10 @@ class PaymentMethods(BaseSDK):
         status: OptionalNullable[models.AccountingPaymentMethodStatus] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1229,7 +1340,7 @@ class PaymentMethods(BaseSDK):
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param name: The name of the payment method.
-        :param type: The type of payment method.
+        :param type_: The type of payment method.
         :param status: The status of the payment method.
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
@@ -1289,6 +1400,7 @@ class PaymentMethods(BaseSDK):
                 "json",
                 models.AccountingPaymentMethodInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1313,9 +1425,19 @@ class PaymentMethods(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "twinfield",
+                            "description": "Payment methods cannot be updated through this connector — the vendor operation for\nmaintaining payment types is not publicly documented in enough detail to implement\nreliably, unlike the read path this connector uses.\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1323,10 +1445,11 @@ class PaymentMethods(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingPaymentMethodsUpdateResponse(
                 update_payment_method_response=unmarshal_json_response(
-                    Optional[models.UpdatePaymentMethodResponse], http_res
+                    Optional[models.UpdatePaymentMethodResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1367,10 +1490,9 @@ class PaymentMethods(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingPaymentMethodsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1437,6 +1559,7 @@ class PaymentMethods(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1461,9 +1584,23 @@ class PaymentMethods(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "A delete can return a `504` timeout after 28 seconds while QuickBooks still deletes the payment method. Read it back before retrying: a `404` means it is gone.\n",
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": "Payment methods cannot be deleted through this connector — no documented delete\nmechanism exists for this data.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1471,10 +1608,11 @@ class PaymentMethods(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingPaymentMethodsDeleteResponse(
                 delete_payment_method_response=unmarshal_json_response(
-                    Optional[models.DeletePaymentMethodResponse], http_res
+                    Optional[models.DeletePaymentMethodResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1515,10 +1653,9 @@ class PaymentMethods(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingPaymentMethodsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1585,6 +1722,7 @@ class PaymentMethods(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1609,9 +1747,23 @@ class PaymentMethods(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "A delete can return a `504` timeout after 28 seconds while QuickBooks still deletes the payment method. Read it back before retrying: a `404` means it is gone.\n",
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": "Payment methods cannot be deleted through this connector — no documented delete\nmechanism exists for this data.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1619,10 +1771,11 @@ class PaymentMethods(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingPaymentMethodsDeleteResponse(
                 delete_payment_method_response=unmarshal_json_response(
-                    Optional[models.DeletePaymentMethodResponse], http_res
+                    Optional[models.DeletePaymentMethodResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1663,10 +1816,9 @@ class PaymentMethods(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingPaymentMethodsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

@@ -4,7 +4,7 @@ from decimal import Decimal
 import functools
 import json
 import typing
-from typing import Any, Dict, List, Tuple, Union, get_args
+from typing import Any, Dict, Iterable, List, Mapping, Tuple, Union, get_args
 import typing_extensions
 from typing_extensions import get_origin
 
@@ -17,8 +17,7 @@ from ..types.basemodel import BaseModel, Nullable, OptionalNullable, Unset
 
 def serialize_decimal(as_str: bool):
     def serialize(d):
-        # Optional[T] is a Union[T, None]
-        if is_union(type(d)) and type(None) in get_args(type(d)) and d is None:
+        if d is None:
             return None
         if isinstance(d, Unset):
             return d
@@ -46,8 +45,7 @@ def validate_decimal(d):
 
 def serialize_float(as_str: bool):
     def serialize(f):
-        # Optional[T] is a Union[T, None]
-        if is_union(type(f)) and type(None) in get_args(type(f)) and f is None:
+        if f is None:
             return None
         if isinstance(f, Unset):
             return f
@@ -75,8 +73,7 @@ def validate_float(f):
 
 def serialize_int(as_str: bool):
     def serialize(i):
-        # Optional[T] is a Union[T, None]
-        if is_union(type(i)) and type(None) in get_args(type(i)) and i is None:
+        if i is None:
             return None
         if isinstance(i, Unset):
             return i
@@ -102,30 +99,9 @@ def validate_int(b):
     return int(b)
 
 
-def validate_open_enum(is_int: bool):
-    def validate(e):
-        if e is None:
-            return None
-
-        if isinstance(e, Unset):
-            return e
-
-        if is_int:
-            if not isinstance(e, int):
-                raise ValueError("Expected int")
-        else:
-            if not isinstance(e, str):
-                raise ValueError("Expected string")
-
-        return e
-
-    return validate
-
-
 def validate_const(v):
     def validate(c):
-        # Optional[T] is a Union[T, None]
-        if is_union(type(c)) and type(None) in get_args(type(c)) and c is None:
+        if c is None:
             return None
 
         if v != c:
@@ -136,21 +112,158 @@ def validate_const(v):
     return validate
 
 
+ALLOW_UNKNOWN_UNION_VARIANTS = "speakeasy_allow_unknown_union_variants"
+"""Validation-context key enabling the Unknown fallback on open discriminated
+unions. The SDK sets it when deserializing server responses; validation
+without it (e.g. of user-constructed request payloads) stays strict. Pass
+``context={ALLOW_UNKNOWN_UNION_VARIANTS: True}`` to ``model_validate`` to
+opt in when parsing response payloads manually."""
+
+
 def unmarshal_json(raw, typ: Any) -> Any:
-    return unmarshal(from_json(raw), typ)
+    return unmarshal(
+        from_json(raw), typ, coerce_iterables=False, allow_unknown_union_variants=True
+    )
 
 
-def unmarshal(val, typ: Any) -> Any:
+def unmarshal(
+    val,
+    typ: Any,
+    coerce_iterables: bool = True,
+    allow_unknown_union_variants: bool = False,
+) -> Any:
+    if coerce_iterables:
+        val = _coerce_iterables_for_type(val, typ)
     unmarshaller = create_model(
         "Unmarshaller",
         body=(typ, ...),
         __config__=ConfigDict(populate_by_name=True, arbitrary_types_allowed=True),
     )
 
-    m = unmarshaller(body=val)
+    if allow_unknown_union_variants:
+        m = unmarshaller.model_validate(
+            {"body": val}, context={ALLOW_UNKNOWN_UNION_VARIANTS: True}
+        )
+    else:
+        m = unmarshaller(body=val)
 
     # pyright: ignore[reportAttributeAccessIssue]
     return m.body  # type: ignore
+
+
+_CONSTRUCT_UNVALIDATED_MAX_DEPTH = 64
+
+
+def construct_unvalidated(value: Any, typ: Any, _depth: int = 0) -> Any:
+    try:
+        return unmarshal(
+            value, typ, coerce_iterables=True, allow_unknown_union_variants=True
+        )
+    except Exception:
+        try:
+            return _construct_lenient(value, typ, _depth)
+        except Exception:
+            return value
+
+
+def _construct_lenient(value: Any, typ: Any, depth: int) -> Any:
+    if depth > _CONSTRUCT_UNVALIDATED_MAX_DEPTH:
+        return value
+
+    if value is None:
+        return None
+
+    typ = _resolve_type_alias(typ)
+    origin = get_origin(typ)
+
+    if _is_annotated_type(origin):
+        args = get_args(typ)
+        return _construct_lenient(value, args[0], depth) if args else value
+
+    if is_union(origin):
+        variants = [arg for arg in get_args(typ) if arg is not type(None)]
+        last_err = None
+        for variant in variants:
+            try:
+                return _construct_lenient(value, variant, depth)
+            except Exception as e:  # noqa: BLE001
+                last_err = e
+                continue
+        if last_err is not None:
+            raise last_err
+        return value
+
+    if _is_list_type(typ):
+        if not isinstance(value, list):
+            raise TypeError(f"expected list for {typ!r}, got {type(value)!r}")
+        item_type = get_args(typ)[0] if get_args(typ) else Any
+        return [construct_unvalidated(item, item_type, depth + 1) for item in value]
+
+    if _is_mapping_type(typ):
+        if not isinstance(value, Mapping):
+            raise TypeError(f"expected mapping for {typ!r}, got {type(value)!r}")
+        value_type = get_args(typ)[1] if len(get_args(typ)) > 1 else Any
+        return {
+            key: construct_unvalidated(item, value_type, depth + 1)
+            for key, item in value.items()
+        }
+
+    if _is_pydantic_model_type(typ):
+        if not isinstance(value, Mapping):
+            raise TypeError(f"expected mapping for {typ!r}, got {type(value)!r}")
+        return _construct_model_lenient(value, typ, depth)
+
+    return value
+
+
+def _construct_model_lenient(value: Mapping, typ: Any, depth: int) -> Any:
+    fields: Dict[str, Any] = {}
+    consumed = set()
+    for name, field in typ.model_fields.items():
+        wire_key = None
+        if field.alias is not None and field.alias in value:
+            wire_key = field.alias
+        elif name in value:
+            wire_key = name
+
+        annotation = field.rebuild_annotation()
+        if wire_key is not None:
+            consumed.add(wire_key)
+            fields[name] = construct_unvalidated(value[wire_key], annotation, depth + 1)
+        elif field.is_required():
+            fields[name] = _default_for_required(annotation, depth)
+        else:
+            fields[name] = field.get_default(call_default_factory=True)
+
+    for key, item in value.items():
+        if key not in consumed and key not in fields:
+            fields[key] = item
+
+    return typ.model_construct(**fields)
+
+
+def _default_for_required(typ: Any, depth: int) -> Any:
+    typ = _resolve_type_alias(typ)
+    origin = get_origin(typ)
+
+    if _is_annotated_type(origin):
+        args = get_args(typ)
+        return _default_for_required(args[0], depth) if args else None
+
+    if is_union(origin):
+        if type(None) in get_args(typ):
+            return None
+        for variant in get_args(typ):
+            try:
+                return _default_for_required(variant, depth)
+            except Exception:  # noqa: BLE001
+                continue
+        return None
+
+    if depth <= _CONSTRUCT_UNVALIDATED_MAX_DEPTH and _is_pydantic_model_type(typ):
+        return _construct_model_lenient({}, typ, depth + 1)
+
+    return None
 
 
 def marshal_json(val, typ):
@@ -217,7 +330,86 @@ def get_pydantic_model(data: Any, typ: Any) -> Any:
     if not _contains_pydantic_model(data):
         return unmarshal(data, typ)
 
+    return _coerce_iterables_for_type(data, typ)
+
+
+def _coerce_iterables_for_type(data: Any, typ: Any) -> Any:
+    if data is None or isinstance(data, (BaseModel, Unset)):
+        return data
+
+    typ = _resolve_type_alias(typ)
+    origin = get_origin(typ)
+
+    if _is_annotated_type(origin):
+        args = get_args(typ)
+        return _coerce_iterables_for_type(data, args[0]) if args else data
+
+    if is_union(origin):
+        for arg in (arg for arg in get_args(typ) if arg is not type(None)):
+            coerced = _coerce_iterables_for_type(data, arg)
+            if coerced is not data:
+                return coerced
+        return data
+
+    if _is_list_type(typ):
+        item_type = get_args(typ)[0] if get_args(typ) else Any
+        if isinstance(data, (str, bytes, bytearray, Mapping)):
+            return data
+        if isinstance(data, Iterable):
+            return [_coerce_iterables_for_type(item, item_type) for item in data]
+        return data
+
+    if _is_mapping_type(typ):
+        value_type = get_args(typ)[1] if len(get_args(typ)) > 1 else Any
+        if isinstance(data, Mapping):
+            return {
+                key: _coerce_iterables_for_type(value, value_type)
+                for key, value in data.items()
+            }
+        return data
+
+    if _is_pydantic_model_type(typ) and isinstance(data, Mapping):
+        coerced = None
+        for field_name, field in typ.model_fields.items():
+            field_type = field.annotation
+            for key in (field_name, field.alias):
+                if key is not None and key in data:
+                    value = data[key] if coerced is None else coerced[key]
+                    coerced_value = _coerce_iterables_for_type(value, field_type)
+                    if coerced_value is not value:
+                        if coerced is None:
+                            coerced = dict(data)
+                        coerced[key] = coerced_value
+        return coerced if coerced is not None else data
+
     return data
+
+
+def _resolve_type_alias(typ: Any) -> Any:
+    return getattr(typ, "__value__", typ)
+
+
+def _is_annotated_type(origin: Any) -> bool:
+    return any(
+        origin is typing_obj
+        for typing_obj in _get_typing_objects_by_name_of("Annotated")
+    )
+
+
+def _is_list_type(typ: Any) -> bool:
+    typ = _resolve_type_alias(typ)
+    return typ is list or get_origin(typ) is list
+
+
+def _is_mapping_type(typ: Any) -> bool:
+    typ = _resolve_type_alias(typ)
+    origin = get_origin(typ)
+    mapping_origin = get_origin(Mapping[Any, Any])
+    return typ in (dict, Dict, Mapping) or origin in (dict, Mapping, mapping_origin)
+
+
+def _is_pydantic_model_type(typ: Any) -> bool:
+    return isinstance(typ, type) and issubclass(typ, BaseModel)
 
 
 def _contains_pydantic_model(data: Any) -> bool:

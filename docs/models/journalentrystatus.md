@@ -2,6 +2,16 @@
 
 Journal entry status
 
+## Example Usage
+
+```python
+from apideck_unify.models import JournalEntryStatus
+
+value = JournalEntryStatus.DRAFT
+
+# Open enum: unrecognized values are captured as UnrecognizedStr
+```
+
 
 ## Values
 

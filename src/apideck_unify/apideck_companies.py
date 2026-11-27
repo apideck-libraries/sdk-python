@@ -8,7 +8,7 @@ from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from datetime import date
 from jsonpath import JSONPath
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
 
 
 class ApideckCompanies(BaseSDK):
@@ -27,7 +27,7 @@ class ApideckCompanies(BaseSDK):
         sort: Optional[
             Union[models.CompaniesSort, models.CompaniesSortTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -72,7 +72,7 @@ class ApideckCompanies(BaseSDK):
             limit=limit,
             filter_=utils.get_pydantic_model(filter_, Optional[models.CompaniesFilter]),
             sort=utils.get_pydantic_model(sort, Optional[models.CompaniesSort]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -93,6 +93,7 @@ class ApideckCompanies(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -117,9 +118,55 @@ class ApideckCompanies(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "hubspot",
+                            "description": "When using a filter or sorting for companies, Hubspot will only return a maximum of 10.000 companies.",
+                        },
+                        {
+                            "connector": "salesforce",
+                            "description": "Salesforce imposes a maximum offset limit of 2000. Exceeding this offset will result in an error from Salesforce. For result sets larger than 2000 items, it is necessary to set the pagination limit to 200, as this will enforce the use of batchSize for pagination. Note that setting a limit lower than 200 will not reduce the batchSize due to Salesforce's minimum batch size policy of 200, as detailed in their documentation [here](https://developer.salesforce.com/docs/atlas.en-us.250.0.api_rest.meta/api_rest/headers_queryoptions.htm) and will have no effect.",
+                        },
+                        {
+                            "connector": "blackbaud",
+                            "description": "Blackbaud does not support contacts and companies as separate entities. Both are managed under the **Constituent** model in Blackbaud's API.\nPlease use the **List Contacts** endpoint to retrieve this data. Use [custom mappings](https://developers.apideck.com/apis/crm/reference#tag/Contacts/operation/contactsAll) to retrieve the `type` field to distinguish between contacts and companies.\n",
+                        },
+                        {
+                            "connector": "pipedrive",
+                            "description": "Pipedrive does not expose a cross-page total record count in list responses. `meta.total_count` will not appear.\n\nCompanies are paginated with an opaque cursor. A cursor obtained before the move to cursor pagination is rejected with `InvalidCursorError`; restart the listing from the first page instead of resuming it.\n\nSorting is limited to `created_at` and `updated_at`; `sort[by]=name` returns an unsupported-sort error.\n\n`filter[name]` is served by Pipedrive's search: it is a partial, case-insensitive match and needs at least 2 characters. Filtered results contain only `id`, `name`, `owner_id` and the address as a single `addresses[0].string`; they omit `created_at`, `updated_at`, `deleted`, `websites`, `social_links`, `industry`, `annual_revenue`, `number_of_employees` and `custom_fields`. A supported `sort` (`created_at` / `updated_at`) combined with the filter is ignored; `sort[by]=name` still returns the unsupported-sort error. Pipedrive's search index can keep returning deleted companies for a while, without a `deleted` value; confirm with `GET /crm/companies/{id}` (`deleted: true`).\n\nThe built-in Pipedrive organization fields are mapped to `websites[0]`, `social_links[]` (type `linkedin`), `industry`, `annual_revenue` and `number_of_employees`. `industry` and `annual_revenue` are Pipedrive option ids, not labels. The same values are also available in `custom_fields` under the ids `website`, `linkedin`, `industry`, `annual_revenue`, `employee_count`, `label_ids` (only when labels are set) and `visible_to`, so readers of those ids keep working. Custom-field option values are returned as numeric option ids; monetary and date-range fields are split into `<key>` plus `<key>_currency` / `<key>_until` entries.\n\nA deleted company disappears from the list but `GET /crm/companies/{id}` keeps returning it with `deleted: true`. A non-numeric id such as `/crm/companies/abc` is answered with a 403 by Pipedrive.\n",
+                        },
+                        {
+                            "connector": "zendesk-sell",
+                            "description": "Zendesk Sell does not expose a native cross-page total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate request to the Zendesk Sell `GET /v2/{resource}/count` endpoint — an extra API call not currently implemented.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics",
+                            "description": "Microsoft Dynamics 365 does not include a total record count in default list responses. `meta.total_count` will not appear. Surfacing the total requires adding `$count=true` to the OData query or calling a separate `$count` endpoint — not currently implemented.\n",
+                        },
+                        {
+                            "connector": "zoho-crm",
+                            "description": "Zoho CRM's `info.count` in list responses is a per-page count only, not a cross-page total. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "attio",
+                            "description": "Attio does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "salesflare",
+                            "description": "Salesflare does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -146,17 +193,19 @@ class ApideckCompanies(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmCompaniesAllResponse(
                 get_companies_response1=unmarshal_json_response(
-                    Optional[models.GetCompaniesResponse1], http_res
+                    Optional[models.GetCompaniesResponse1], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -197,11 +246,10 @@ class ApideckCompanies(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmCompaniesAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -221,7 +269,7 @@ class ApideckCompanies(BaseSDK):
         sort: Optional[
             Union[models.CompaniesSort, models.CompaniesSortTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -266,7 +314,7 @@ class ApideckCompanies(BaseSDK):
             limit=limit,
             filter_=utils.get_pydantic_model(filter_, Optional[models.CompaniesFilter]),
             sort=utils.get_pydantic_model(sort, Optional[models.CompaniesSort]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -287,6 +335,7 @@ class ApideckCompanies(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -311,9 +360,55 @@ class ApideckCompanies(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "hubspot",
+                            "description": "When using a filter or sorting for companies, Hubspot will only return a maximum of 10.000 companies.",
+                        },
+                        {
+                            "connector": "salesforce",
+                            "description": "Salesforce imposes a maximum offset limit of 2000. Exceeding this offset will result in an error from Salesforce. For result sets larger than 2000 items, it is necessary to set the pagination limit to 200, as this will enforce the use of batchSize for pagination. Note that setting a limit lower than 200 will not reduce the batchSize due to Salesforce's minimum batch size policy of 200, as detailed in their documentation [here](https://developer.salesforce.com/docs/atlas.en-us.250.0.api_rest.meta/api_rest/headers_queryoptions.htm) and will have no effect.",
+                        },
+                        {
+                            "connector": "blackbaud",
+                            "description": "Blackbaud does not support contacts and companies as separate entities. Both are managed under the **Constituent** model in Blackbaud's API.\nPlease use the **List Contacts** endpoint to retrieve this data. Use [custom mappings](https://developers.apideck.com/apis/crm/reference#tag/Contacts/operation/contactsAll) to retrieve the `type` field to distinguish between contacts and companies.\n",
+                        },
+                        {
+                            "connector": "pipedrive",
+                            "description": "Pipedrive does not expose a cross-page total record count in list responses. `meta.total_count` will not appear.\n\nCompanies are paginated with an opaque cursor. A cursor obtained before the move to cursor pagination is rejected with `InvalidCursorError`; restart the listing from the first page instead of resuming it.\n\nSorting is limited to `created_at` and `updated_at`; `sort[by]=name` returns an unsupported-sort error.\n\n`filter[name]` is served by Pipedrive's search: it is a partial, case-insensitive match and needs at least 2 characters. Filtered results contain only `id`, `name`, `owner_id` and the address as a single `addresses[0].string`; they omit `created_at`, `updated_at`, `deleted`, `websites`, `social_links`, `industry`, `annual_revenue`, `number_of_employees` and `custom_fields`. A supported `sort` (`created_at` / `updated_at`) combined with the filter is ignored; `sort[by]=name` still returns the unsupported-sort error. Pipedrive's search index can keep returning deleted companies for a while, without a `deleted` value; confirm with `GET /crm/companies/{id}` (`deleted: true`).\n\nThe built-in Pipedrive organization fields are mapped to `websites[0]`, `social_links[]` (type `linkedin`), `industry`, `annual_revenue` and `number_of_employees`. `industry` and `annual_revenue` are Pipedrive option ids, not labels. The same values are also available in `custom_fields` under the ids `website`, `linkedin`, `industry`, `annual_revenue`, `employee_count`, `label_ids` (only when labels are set) and `visible_to`, so readers of those ids keep working. Custom-field option values are returned as numeric option ids; monetary and date-range fields are split into `<key>` plus `<key>_currency` / `<key>_until` entries.\n\nA deleted company disappears from the list but `GET /crm/companies/{id}` keeps returning it with `deleted: true`. A non-numeric id such as `/crm/companies/abc` is answered with a 403 by Pipedrive.\n",
+                        },
+                        {
+                            "connector": "zendesk-sell",
+                            "description": "Zendesk Sell does not expose a native cross-page total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate request to the Zendesk Sell `GET /v2/{resource}/count` endpoint — an extra API call not currently implemented.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics",
+                            "description": "Microsoft Dynamics 365 does not include a total record count in default list responses. `meta.total_count` will not appear. Surfacing the total requires adding `$count=true` to the OData query or calling a separate `$count` endpoint — not currently implemented.\n",
+                        },
+                        {
+                            "connector": "zoho-crm",
+                            "description": "Zoho CRM's `info.count` in list responses is a per-page count only, not a cross-page total. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "attio",
+                            "description": "Attio does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "salesflare",
+                            "description": "Salesflare does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -340,17 +435,19 @@ class ApideckCompanies(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmCompaniesAllResponse(
                 get_companies_response1=unmarshal_json_response(
-                    Optional[models.GetCompaniesResponse1], http_res
+                    Optional[models.GetCompaniesResponse1], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -391,11 +488,10 @@ class ApideckCompanies(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmCompaniesAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -428,33 +524,38 @@ class ApideckCompanies(BaseSDK):
         last_name: OptionalNullable[str] = UNSET,
         parent_id: OptionalNullable[str] = UNSET,
         bank_accounts: Optional[
-            Union[List[models.BankAccount1], List[models.BankAccount1TypedDict]]
+            Union[Iterable[models.BankAccount1], Iterable[models.BankAccount1TypedDict]]
         ] = None,
         websites: Optional[
-            Union[List[models.Website], List[models.WebsiteTypedDict]]
+            Union[Iterable[models.Website], Iterable[models.WebsiteTypedDict]]
         ] = None,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         social_links: Optional[
-            Union[List[models.SocialLink], List[models.SocialLinkTypedDict]]
+            Union[Iterable[models.SocialLink], Iterable[models.SocialLinkTypedDict]]
         ] = None,
         phone_numbers: Optional[
-            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+            Union[Iterable[models.PhoneNumber], Iterable[models.PhoneNumberTypedDict]]
         ] = None,
-        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        emails: Optional[
+            Union[Iterable[models.Email], Iterable[models.EmailTypedDict]]
+        ] = None,
         row_type: Optional[
             Union[models.CompanyRowType, models.CompanyRowTypeTypedDict]
         ] = None,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
-        tags: OptionalNullable[List[str]] = UNSET,
+        tags: OptionalNullable[Iterable[str]] = UNSET,
         read_only: OptionalNullable[bool] = UNSET,
         salutation: OptionalNullable[str] = UNSET,
         birthday: OptionalNullable[date] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -565,7 +666,7 @@ class ApideckCompanies(BaseSDK):
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
                 ),
-                tags=tags,
+                tags=utils.unmarshal(tags, OptionalNullable[List[str]]),
                 read_only=read_only,
                 salutation=salutation,
                 birthday=birthday,
@@ -595,6 +696,7 @@ class ApideckCompanies(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.company1, False, False, "json", models.Company1Input
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -619,9 +721,39 @@ class ApideckCompanies(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "hubspot",
+                            "description": "`parent_id` sets the company's parent at creation. In HubSpot the parent is a\nrelationship between two companies rather than a stored field, so it is set by\nsupplying the parent company's id here.\n\nIf `parent_id` names a company that does not exist, the entire create is rejected and\nno company is created — you will not get a company back with the parent silently\ndropped.\n\nA company cannot be made its own ancestor. HubSpot rejects a `parent_id` that would\nclose a loop, at any depth, not just a direct self-reference.\n\nAfter a successful create, reading the company straight back may briefly return\n`parent_id: null`. HubSpot derives the field from the underlying relationship and\nupdates it a few seconds later; re-read the company if you need to confirm the parent.\nBe careful not to feed that early read into a follow-up update — on the update endpoint\nan explicit `parent_id` is an instruction, so echoing a stale value back will apply it.\n",
+                        },
+                        {
+                            "connector": "zoho-crm",
+                            "description": "`parent_id` sets the account's Parent Account at creation. An empty string is treated\nas omitted, and the account is created without a parent.\n\nIf `parent_id` names an account that does not exist, Zoho rejects the entire create\nand no company is created.\n",
+                        },
+                        {
+                            "connector": "pipedrive",
+                            "description": '`owner_id` must be a numeric Pipedrive user id; `industry` and `annual_revenue` must be Pipedrive option ids and `number_of_employees` a whole number (thousands separators are accepted, decimals are rounded). Any other value is forwarded and rejected by Pipedrive with a 400.\n\nOnly `addresses[0]` is stored: `string` becomes the full address (composed from the parts when omitted), `line1` the street, `line2` the suite/apartment, plus `street_number`, `city`, `state`, `county`, `postal_code` and `country` (stored as sent, not geocoded). Further entries are ignored. `websites[0].url` and the first `social_links` entry of type `linkedin` are stored; other websites and social types are ignored, as are `phone_numbers`, `emails`, `description`, `tags`, `status` and `parent_id`.\n\n`custom_fields[].id` must be the Pipedrive custom field key and the value must match the field type: text fields take a string, single-option fields the numeric option id (a label or a quoted id is rejected), monetary fields `{"value": 2300, "currency": "EUR"}` or the flat entries `<key>` plus `<key>_currency`, date-range fields `{"value", "until"}` or `<key>` plus `<key>_until`. A bare number for a monetary field, a `<key>_currency` entry without its base entry, or an unknown key is rejected with a 400. The ids `name`, `owner_id`, `address` (a string or a Pipedrive address object, plus the v1 `address_*` part keys), `label` (one or more label ids), `website`, `linkedin`, `industry`, `annual_revenue`, `employee_count`, `label_ids` and `visible_to` inside `custom_fields` write the corresponding built-in field; the unified field wins when both are sent, and a null or empty value for `name`, `owner_id`, `address` or `label` is ignored (clear through the unified field). Any other non-custom key inside `custom_fields` (for example `cc_email`) is rejected by Pipedrive with a 400.\n',
+                        },
+                        {
+                            "connector": "planhat",
+                            "description": "The status values mentioned by planhat are prospect,coming,customer,canceled,lost.\n\n`parent_id` is ignored on create and is never sent to Planhat. Planhat keeps its company\nhierarchy in `orgPath`, but writing that field through the API does not update the rest of\nthe hierarchy (the company's level and the parent's child count stay unchanged), so the\nconnector does not write it.\n\nWhen reading companies, `parent_id` returns the id of the company's direct parent in\nPlanhat's organization hierarchy.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics",
+                            "description": "Entity Reference (lookup) custom fields are written using Dataverse navigation-property\nsyntax automatically: supply the custom field id as either the read-side `_<attribute>_value`\nform or the bare attribute logical name, with the target row GUID as the value, and the\nconnector emits `<navigationProperty>@odata.bind` for you.\n\nTwo limitations: polymorphic multi-target lookup columns (e.g. Customer-type columns\ntargeting both accounts and contacts) cannot be auto-resolved from a bare GUID — the request\nfails with an actionable error; write those via pass_through with an explicit\n`<navigationProperty>@odata.bind` key. Clearing a lookup custom field by sending a null\nvalue is not supported.\n\n`parent_id` sets the account's Parent Account at creation. An empty string or `null` is\ntreated as omitted, and the account is created without a parent. If `parent_id` names an\naccount that does not exist, Dynamics rejects the entire create and no company is created.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "`parent_id` is ignored on create and is never sent to Odoo. On current Odoo Online versions,\ngiving a company a parent company turns it into a contact of that parent: it takes on the\nparent's VAT number and is no longer returned by the Companies endpoints. The connector\ntherefore does not write the parent, so the company stays available through this API.\n\nWhen reading companies, `parent_id` returns the id of the parent company where one is set.\nOn Odoo Online a company with a parent is not returned by the Companies endpoints, so in\npractice `parent_id` is only populated on release versions (Odoo.sh or self-hosted).\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -629,10 +761,9 @@ class ApideckCompanies(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.CrmCompaniesAddResponse(
                 create_company_response=unmarshal_json_response(
-                    Optional[models.CreateCompanyResponse], http_res
+                    Optional[models.CreateCompanyResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -673,10 +804,9 @@ class ApideckCompanies(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmCompaniesAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -709,33 +839,38 @@ class ApideckCompanies(BaseSDK):
         last_name: OptionalNullable[str] = UNSET,
         parent_id: OptionalNullable[str] = UNSET,
         bank_accounts: Optional[
-            Union[List[models.BankAccount1], List[models.BankAccount1TypedDict]]
+            Union[Iterable[models.BankAccount1], Iterable[models.BankAccount1TypedDict]]
         ] = None,
         websites: Optional[
-            Union[List[models.Website], List[models.WebsiteTypedDict]]
+            Union[Iterable[models.Website], Iterable[models.WebsiteTypedDict]]
         ] = None,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         social_links: Optional[
-            Union[List[models.SocialLink], List[models.SocialLinkTypedDict]]
+            Union[Iterable[models.SocialLink], Iterable[models.SocialLinkTypedDict]]
         ] = None,
         phone_numbers: Optional[
-            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+            Union[Iterable[models.PhoneNumber], Iterable[models.PhoneNumberTypedDict]]
         ] = None,
-        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        emails: Optional[
+            Union[Iterable[models.Email], Iterable[models.EmailTypedDict]]
+        ] = None,
         row_type: Optional[
             Union[models.CompanyRowType, models.CompanyRowTypeTypedDict]
         ] = None,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
-        tags: OptionalNullable[List[str]] = UNSET,
+        tags: OptionalNullable[Iterable[str]] = UNSET,
         read_only: OptionalNullable[bool] = UNSET,
         salutation: OptionalNullable[str] = UNSET,
         birthday: OptionalNullable[date] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -846,7 +981,7 @@ class ApideckCompanies(BaseSDK):
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
                 ),
-                tags=tags,
+                tags=utils.unmarshal(tags, OptionalNullable[List[str]]),
                 read_only=read_only,
                 salutation=salutation,
                 birthday=birthday,
@@ -876,6 +1011,7 @@ class ApideckCompanies(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.company1, False, False, "json", models.Company1Input
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -900,9 +1036,39 @@ class ApideckCompanies(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "hubspot",
+                            "description": "`parent_id` sets the company's parent at creation. In HubSpot the parent is a\nrelationship between two companies rather than a stored field, so it is set by\nsupplying the parent company's id here.\n\nIf `parent_id` names a company that does not exist, the entire create is rejected and\nno company is created — you will not get a company back with the parent silently\ndropped.\n\nA company cannot be made its own ancestor. HubSpot rejects a `parent_id` that would\nclose a loop, at any depth, not just a direct self-reference.\n\nAfter a successful create, reading the company straight back may briefly return\n`parent_id: null`. HubSpot derives the field from the underlying relationship and\nupdates it a few seconds later; re-read the company if you need to confirm the parent.\nBe careful not to feed that early read into a follow-up update — on the update endpoint\nan explicit `parent_id` is an instruction, so echoing a stale value back will apply it.\n",
+                        },
+                        {
+                            "connector": "zoho-crm",
+                            "description": "`parent_id` sets the account's Parent Account at creation. An empty string is treated\nas omitted, and the account is created without a parent.\n\nIf `parent_id` names an account that does not exist, Zoho rejects the entire create\nand no company is created.\n",
+                        },
+                        {
+                            "connector": "pipedrive",
+                            "description": '`owner_id` must be a numeric Pipedrive user id; `industry` and `annual_revenue` must be Pipedrive option ids and `number_of_employees` a whole number (thousands separators are accepted, decimals are rounded). Any other value is forwarded and rejected by Pipedrive with a 400.\n\nOnly `addresses[0]` is stored: `string` becomes the full address (composed from the parts when omitted), `line1` the street, `line2` the suite/apartment, plus `street_number`, `city`, `state`, `county`, `postal_code` and `country` (stored as sent, not geocoded). Further entries are ignored. `websites[0].url` and the first `social_links` entry of type `linkedin` are stored; other websites and social types are ignored, as are `phone_numbers`, `emails`, `description`, `tags`, `status` and `parent_id`.\n\n`custom_fields[].id` must be the Pipedrive custom field key and the value must match the field type: text fields take a string, single-option fields the numeric option id (a label or a quoted id is rejected), monetary fields `{"value": 2300, "currency": "EUR"}` or the flat entries `<key>` plus `<key>_currency`, date-range fields `{"value", "until"}` or `<key>` plus `<key>_until`. A bare number for a monetary field, a `<key>_currency` entry without its base entry, or an unknown key is rejected with a 400. The ids `name`, `owner_id`, `address` (a string or a Pipedrive address object, plus the v1 `address_*` part keys), `label` (one or more label ids), `website`, `linkedin`, `industry`, `annual_revenue`, `employee_count`, `label_ids` and `visible_to` inside `custom_fields` write the corresponding built-in field; the unified field wins when both are sent, and a null or empty value for `name`, `owner_id`, `address` or `label` is ignored (clear through the unified field). Any other non-custom key inside `custom_fields` (for example `cc_email`) is rejected by Pipedrive with a 400.\n',
+                        },
+                        {
+                            "connector": "planhat",
+                            "description": "The status values mentioned by planhat are prospect,coming,customer,canceled,lost.\n\n`parent_id` is ignored on create and is never sent to Planhat. Planhat keeps its company\nhierarchy in `orgPath`, but writing that field through the API does not update the rest of\nthe hierarchy (the company's level and the parent's child count stay unchanged), so the\nconnector does not write it.\n\nWhen reading companies, `parent_id` returns the id of the company's direct parent in\nPlanhat's organization hierarchy.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics",
+                            "description": "Entity Reference (lookup) custom fields are written using Dataverse navigation-property\nsyntax automatically: supply the custom field id as either the read-side `_<attribute>_value`\nform or the bare attribute logical name, with the target row GUID as the value, and the\nconnector emits `<navigationProperty>@odata.bind` for you.\n\nTwo limitations: polymorphic multi-target lookup columns (e.g. Customer-type columns\ntargeting both accounts and contacts) cannot be auto-resolved from a bare GUID — the request\nfails with an actionable error; write those via pass_through with an explicit\n`<navigationProperty>@odata.bind` key. Clearing a lookup custom field by sending a null\nvalue is not supported.\n\n`parent_id` sets the account's Parent Account at creation. An empty string or `null` is\ntreated as omitted, and the account is created without a parent. If `parent_id` names an\naccount that does not exist, Dynamics rejects the entire create and no company is created.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "`parent_id` is ignored on create and is never sent to Odoo. On current Odoo Online versions,\ngiving a company a parent company turns it into a contact of that parent: it takes on the\nparent's VAT number and is no longer returned by the Companies endpoints. The connector\ntherefore does not write the parent, so the company stays available through this API.\n\nWhen reading companies, `parent_id` returns the id of the parent company where one is set.\nOn Odoo Online a company with a parent is not returned by the Companies endpoints, so in\npractice `parent_id` is only populated on release versions (Odoo.sh or self-hosted).\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -910,10 +1076,9 @@ class ApideckCompanies(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.CrmCompaniesAddResponse(
                 create_company_response=unmarshal_json_response(
-                    Optional[models.CreateCompanyResponse], http_res
+                    Optional[models.CreateCompanyResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -954,10 +1119,9 @@ class ApideckCompanies(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmCompaniesAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1027,6 +1191,7 @@ class ApideckCompanies(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1051,9 +1216,11 @@ class ApideckCompanies(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={"x-apideck-api": "crm"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1061,10 +1228,9 @@ class ApideckCompanies(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmCompaniesOneResponse(
                 get_company_response=unmarshal_json_response(
-                    Optional[models.GetCompanyResponse], http_res
+                    Optional[models.GetCompanyResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1105,10 +1271,9 @@ class ApideckCompanies(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmCompaniesOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1178,6 +1343,7 @@ class ApideckCompanies(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1202,9 +1368,11 @@ class ApideckCompanies(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={"x-apideck-api": "crm"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1212,10 +1380,9 @@ class ApideckCompanies(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmCompaniesOneResponse(
                 get_company_response=unmarshal_json_response(
-                    Optional[models.GetCompanyResponse], http_res
+                    Optional[models.GetCompanyResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1256,10 +1423,9 @@ class ApideckCompanies(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmCompaniesOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1293,33 +1459,38 @@ class ApideckCompanies(BaseSDK):
         last_name: OptionalNullable[str] = UNSET,
         parent_id: OptionalNullable[str] = UNSET,
         bank_accounts: Optional[
-            Union[List[models.BankAccount1], List[models.BankAccount1TypedDict]]
+            Union[Iterable[models.BankAccount1], Iterable[models.BankAccount1TypedDict]]
         ] = None,
         websites: Optional[
-            Union[List[models.Website], List[models.WebsiteTypedDict]]
+            Union[Iterable[models.Website], Iterable[models.WebsiteTypedDict]]
         ] = None,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         social_links: Optional[
-            Union[List[models.SocialLink], List[models.SocialLinkTypedDict]]
+            Union[Iterable[models.SocialLink], Iterable[models.SocialLinkTypedDict]]
         ] = None,
         phone_numbers: Optional[
-            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+            Union[Iterable[models.PhoneNumber], Iterable[models.PhoneNumberTypedDict]]
         ] = None,
-        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        emails: Optional[
+            Union[Iterable[models.Email], Iterable[models.EmailTypedDict]]
+        ] = None,
         row_type: Optional[
             Union[models.CompanyRowType, models.CompanyRowTypeTypedDict]
         ] = None,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
-        tags: OptionalNullable[List[str]] = UNSET,
+        tags: OptionalNullable[Iterable[str]] = UNSET,
         read_only: OptionalNullable[bool] = UNSET,
         salutation: OptionalNullable[str] = UNSET,
         birthday: OptionalNullable[date] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1432,7 +1603,7 @@ class ApideckCompanies(BaseSDK):
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
                 ),
-                tags=tags,
+                tags=utils.unmarshal(tags, OptionalNullable[List[str]]),
                 read_only=read_only,
                 salutation=salutation,
                 birthday=birthday,
@@ -1462,6 +1633,7 @@ class ApideckCompanies(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.company1, False, False, "json", models.Company1Input
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1486,9 +1658,39 @@ class ApideckCompanies(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "pipedrive",
+                            "description": 'Updates are partial: only the fields you send change. The value rules of create apply (numeric `owner_id`, option ids for `industry` and `annual_revenue`, whole `number_of_employees`, typed `custom_fields` values).\n\nClearing: `websites: []` or `social_links: []` clears the website or LinkedIn URL; `custom_fields: [{"id": "<key>", "value": null}]` clears a custom field and `{"id": "label_ids", "value": null}` removes all labels. `industry`, `annual_revenue`, `number_of_employees` and `owner_id` cannot be cleared with `null` (Pipedrive rejects it with a 400); Pipedrive accepts `0` for the three numeric fields, which then reads back as `"0"`. The address cannot be cleared, and `addresses[0]` replaces the whole stored address: send every part you want to keep, or the other parts are wiped. A date-range custom field sent as `{"value": ...}` without `until` clears the end date.\n\n`visible_to` in `custom_fields` is applied only for values the Pipedrive plan allows; other values are accepted but ignored. A deleted company cannot be updated (403) or deleted again (400).\n',
+                        },
+                        {
+                            "connector": "hubspot",
+                            "description": "`parent_id` sets, changes or removes the company's parent. In HubSpot the parent is a\nrelationship between two companies rather than a stored field.\n\nSend a company id to set or change the parent, `null` to remove it, and omit the field\nto leave the current parent untouched. An empty string is treated as omitted, not as a\nrequest to remove the parent.\n\nChanging a parent replaces the hierarchy relationship, but the two companies stay\nassociated in HubSpot under a plain, unlabelled relationship. The previous parent will\ntherefore still appear as a related company in the HubSpot UI, without being the parent.\nRemoving a parent likewise leaves any other relationship between the same two companies\nintact.\n\nA company cannot be made its own ancestor. HubSpot rejects a `parent_id` that would\nclose a loop, at any depth, not just a direct self-reference.\n\nIf the parent itself cannot be applied — for example `parent_id` names a company that\ndoes not exist — the whole update is rejected and none of the other fields in the\nrequest are written.\n\n**The reverse is not true, and matters.** The parent is applied before the rest of the\nupdate. If the request then fails for an unrelated reason — most commonly an unknown or\nmistyped `custom_fields` key — the parent change has already taken effect and is kept,\neven though you receive an error. Do not treat a failed company update as \"nothing\nhappened\" when the request also carried `parent_id`: re-read the company to see the\ncurrent parent. Sending `parent_id` on its own, in a request that changes nothing else,\navoids this entirely.\n\n**Reading a company back immediately after any parent change returns the previous\n`parent_id`, not the new one.** HubSpot derives the field from the underlying\nrelationship and updates it a few seconds later. This is a trap for read-modify-write\ncode: if you read a company during that window and send the record back, you will be\nsending the *old* parent as an explicit instruction, and it will be applied — silently\nundoing the change you just made. Wait for the value to settle before echoing a company\nback, or omit `parent_id` from updates that are not meant to change the parent.\n\nAn update that changes only `parent_id` still moves the company's `updated_at`, and so\ndoes clearing a parent on a company that has none — even though no field changed. Two\nconsequences worth planning for: such a company will be returned again by a later\n`filter[updated_since]` poll, with nothing visibly different from your previous copy;\nand because this registers as a modification on HubSpot's side, it can trigger any of\nyour own HubSpot workflows that key on company property changes or last-modified date.\n",
+                        },
+                        {
+                            "connector": "zoho-crm",
+                            "description": "`parent_id` sets, changes or removes the account's Parent Account. Send an account id\nto set or change the parent, `null` to remove it, and omit the field to leave the\ncurrent parent untouched. An empty string is treated as omitted, not as a request to\nremove the parent.\n\nAn update that sends only `parent_id: null` returns an error, because no fields reach\nZoho. Send `parent_id: null` together with another field to remove the parent.\n\nIf `parent_id` names an account that does not exist, Zoho rejects the entire update.\n\nZoho does not guard the hierarchy: it accepts an account as its own parent, and two\naccounts as each other's parent. Check the target before setting a parent if loops\nmatter to you.\n",
+                        },
+                        {
+                            "connector": "planhat",
+                            "description": "The status values mentioned by planhat are prospect,coming,customer,canceled,lost.\n\n`parent_id` is ignored on update and is never sent to Planhat. Planhat keeps its company\nhierarchy in `orgPath`, but writing that field through the API does not update the rest of\nthe hierarchy (the company's level and the parent's child count stay unchanged), so the\nconnector does not write it.\n\nWhen reading companies, `parent_id` returns the id of the company's direct parent in\nPlanhat's organization hierarchy.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics",
+                            "description": "Entity Reference (lookup) custom fields are written using Dataverse navigation-property\nsyntax automatically: supply the custom field id as either the read-side `_<attribute>_value`\nform or the bare attribute logical name, with the target row GUID as the value, and the\nconnector emits `<navigationProperty>@odata.bind` for you.\n\nTwo limitations: polymorphic multi-target lookup columns (e.g. Customer-type columns\ntargeting both accounts and contacts) cannot be auto-resolved from a bare GUID — the request\nfails with an actionable error; write those via pass_through with an explicit\n`<navigationProperty>@odata.bind` key. Clearing a lookup custom field by sending a null\nvalue is not supported.\n\n`parent_id` sets, changes or removes the account's Parent Account. Send an account id to\nset or change the parent, `null` to remove it, and omit the field to leave the current\nparent untouched. An empty string is treated as omitted, not as a request to remove the\nparent. Unlike lookup custom fields, `parent_id` can be cleared with `null`.\n\nIf `parent_id` names an account that does not exist, or would make an account its own\nparent or ancestor, Dynamics rejects the entire update.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "`parent_id` is ignored on update and is never sent to Odoo. On current Odoo Online versions,\ngiving a company a parent company turns it into a contact of that parent: it takes on the\nparent's VAT number and is no longer returned by the Companies endpoints. The connector\ntherefore does not write the parent, so the company stays available through this API.\nSending `null` does not remove an existing parent either.\n\nWhen reading companies, `parent_id` returns the id of the parent company where one is set.\nOn Odoo Online a company with a parent is not returned by the Companies endpoints, so in\npractice `parent_id` is only populated on release versions (Odoo.sh or self-hosted).\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1496,10 +1698,9 @@ class ApideckCompanies(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmCompaniesUpdateResponse(
                 update_company_response=unmarshal_json_response(
-                    Optional[models.UpdateCompanyResponse], http_res
+                    Optional[models.UpdateCompanyResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1540,10 +1741,9 @@ class ApideckCompanies(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmCompaniesUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1577,33 +1777,38 @@ class ApideckCompanies(BaseSDK):
         last_name: OptionalNullable[str] = UNSET,
         parent_id: OptionalNullable[str] = UNSET,
         bank_accounts: Optional[
-            Union[List[models.BankAccount1], List[models.BankAccount1TypedDict]]
+            Union[Iterable[models.BankAccount1], Iterable[models.BankAccount1TypedDict]]
         ] = None,
         websites: Optional[
-            Union[List[models.Website], List[models.WebsiteTypedDict]]
+            Union[Iterable[models.Website], Iterable[models.WebsiteTypedDict]]
         ] = None,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         social_links: Optional[
-            Union[List[models.SocialLink], List[models.SocialLinkTypedDict]]
+            Union[Iterable[models.SocialLink], Iterable[models.SocialLinkTypedDict]]
         ] = None,
         phone_numbers: Optional[
-            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+            Union[Iterable[models.PhoneNumber], Iterable[models.PhoneNumberTypedDict]]
         ] = None,
-        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        emails: Optional[
+            Union[Iterable[models.Email], Iterable[models.EmailTypedDict]]
+        ] = None,
         row_type: Optional[
             Union[models.CompanyRowType, models.CompanyRowTypeTypedDict]
         ] = None,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
-        tags: OptionalNullable[List[str]] = UNSET,
+        tags: OptionalNullable[Iterable[str]] = UNSET,
         read_only: OptionalNullable[bool] = UNSET,
         salutation: OptionalNullable[str] = UNSET,
         birthday: OptionalNullable[date] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1716,7 +1921,7 @@ class ApideckCompanies(BaseSDK):
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
                 ),
-                tags=tags,
+                tags=utils.unmarshal(tags, OptionalNullable[List[str]]),
                 read_only=read_only,
                 salutation=salutation,
                 birthday=birthday,
@@ -1746,6 +1951,7 @@ class ApideckCompanies(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.company1, False, False, "json", models.Company1Input
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1770,9 +1976,39 @@ class ApideckCompanies(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "pipedrive",
+                            "description": 'Updates are partial: only the fields you send change. The value rules of create apply (numeric `owner_id`, option ids for `industry` and `annual_revenue`, whole `number_of_employees`, typed `custom_fields` values).\n\nClearing: `websites: []` or `social_links: []` clears the website or LinkedIn URL; `custom_fields: [{"id": "<key>", "value": null}]` clears a custom field and `{"id": "label_ids", "value": null}` removes all labels. `industry`, `annual_revenue`, `number_of_employees` and `owner_id` cannot be cleared with `null` (Pipedrive rejects it with a 400); Pipedrive accepts `0` for the three numeric fields, which then reads back as `"0"`. The address cannot be cleared, and `addresses[0]` replaces the whole stored address: send every part you want to keep, or the other parts are wiped. A date-range custom field sent as `{"value": ...}` without `until` clears the end date.\n\n`visible_to` in `custom_fields` is applied only for values the Pipedrive plan allows; other values are accepted but ignored. A deleted company cannot be updated (403) or deleted again (400).\n',
+                        },
+                        {
+                            "connector": "hubspot",
+                            "description": "`parent_id` sets, changes or removes the company's parent. In HubSpot the parent is a\nrelationship between two companies rather than a stored field.\n\nSend a company id to set or change the parent, `null` to remove it, and omit the field\nto leave the current parent untouched. An empty string is treated as omitted, not as a\nrequest to remove the parent.\n\nChanging a parent replaces the hierarchy relationship, but the two companies stay\nassociated in HubSpot under a plain, unlabelled relationship. The previous parent will\ntherefore still appear as a related company in the HubSpot UI, without being the parent.\nRemoving a parent likewise leaves any other relationship between the same two companies\nintact.\n\nA company cannot be made its own ancestor. HubSpot rejects a `parent_id` that would\nclose a loop, at any depth, not just a direct self-reference.\n\nIf the parent itself cannot be applied — for example `parent_id` names a company that\ndoes not exist — the whole update is rejected and none of the other fields in the\nrequest are written.\n\n**The reverse is not true, and matters.** The parent is applied before the rest of the\nupdate. If the request then fails for an unrelated reason — most commonly an unknown or\nmistyped `custom_fields` key — the parent change has already taken effect and is kept,\neven though you receive an error. Do not treat a failed company update as \"nothing\nhappened\" when the request also carried `parent_id`: re-read the company to see the\ncurrent parent. Sending `parent_id` on its own, in a request that changes nothing else,\navoids this entirely.\n\n**Reading a company back immediately after any parent change returns the previous\n`parent_id`, not the new one.** HubSpot derives the field from the underlying\nrelationship and updates it a few seconds later. This is a trap for read-modify-write\ncode: if you read a company during that window and send the record back, you will be\nsending the *old* parent as an explicit instruction, and it will be applied — silently\nundoing the change you just made. Wait for the value to settle before echoing a company\nback, or omit `parent_id` from updates that are not meant to change the parent.\n\nAn update that changes only `parent_id` still moves the company's `updated_at`, and so\ndoes clearing a parent on a company that has none — even though no field changed. Two\nconsequences worth planning for: such a company will be returned again by a later\n`filter[updated_since]` poll, with nothing visibly different from your previous copy;\nand because this registers as a modification on HubSpot's side, it can trigger any of\nyour own HubSpot workflows that key on company property changes or last-modified date.\n",
+                        },
+                        {
+                            "connector": "zoho-crm",
+                            "description": "`parent_id` sets, changes or removes the account's Parent Account. Send an account id\nto set or change the parent, `null` to remove it, and omit the field to leave the\ncurrent parent untouched. An empty string is treated as omitted, not as a request to\nremove the parent.\n\nAn update that sends only `parent_id: null` returns an error, because no fields reach\nZoho. Send `parent_id: null` together with another field to remove the parent.\n\nIf `parent_id` names an account that does not exist, Zoho rejects the entire update.\n\nZoho does not guard the hierarchy: it accepts an account as its own parent, and two\naccounts as each other's parent. Check the target before setting a parent if loops\nmatter to you.\n",
+                        },
+                        {
+                            "connector": "planhat",
+                            "description": "The status values mentioned by planhat are prospect,coming,customer,canceled,lost.\n\n`parent_id` is ignored on update and is never sent to Planhat. Planhat keeps its company\nhierarchy in `orgPath`, but writing that field through the API does not update the rest of\nthe hierarchy (the company's level and the parent's child count stay unchanged), so the\nconnector does not write it.\n\nWhen reading companies, `parent_id` returns the id of the company's direct parent in\nPlanhat's organization hierarchy.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics",
+                            "description": "Entity Reference (lookup) custom fields are written using Dataverse navigation-property\nsyntax automatically: supply the custom field id as either the read-side `_<attribute>_value`\nform or the bare attribute logical name, with the target row GUID as the value, and the\nconnector emits `<navigationProperty>@odata.bind` for you.\n\nTwo limitations: polymorphic multi-target lookup columns (e.g. Customer-type columns\ntargeting both accounts and contacts) cannot be auto-resolved from a bare GUID — the request\nfails with an actionable error; write those via pass_through with an explicit\n`<navigationProperty>@odata.bind` key. Clearing a lookup custom field by sending a null\nvalue is not supported.\n\n`parent_id` sets, changes or removes the account's Parent Account. Send an account id to\nset or change the parent, `null` to remove it, and omit the field to leave the current\nparent untouched. An empty string is treated as omitted, not as a request to remove the\nparent. Unlike lookup custom fields, `parent_id` can be cleared with `null`.\n\nIf `parent_id` names an account that does not exist, or would make an account its own\nparent or ancestor, Dynamics rejects the entire update.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "`parent_id` is ignored on update and is never sent to Odoo. On current Odoo Online versions,\ngiving a company a parent company turns it into a contact of that parent: it takes on the\nparent's VAT number and is no longer returned by the Companies endpoints. The connector\ntherefore does not write the parent, so the company stays available through this API.\nSending `null` does not remove an existing parent either.\n\nWhen reading companies, `parent_id` returns the id of the parent company where one is set.\nOn Odoo Online a company with a parent is not returned by the Companies endpoints, so in\npractice `parent_id` is only populated on release versions (Odoo.sh or self-hosted).\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1780,10 +2016,9 @@ class ApideckCompanies(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmCompaniesUpdateResponse(
                 update_company_response=unmarshal_json_response(
-                    Optional[models.UpdateCompanyResponse], http_res
+                    Optional[models.UpdateCompanyResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1824,10 +2059,9 @@ class ApideckCompanies(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmCompaniesUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1894,6 +2128,7 @@ class ApideckCompanies(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1918,9 +2153,11 @@ class ApideckCompanies(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={"x-apideck-api": "crm"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1928,10 +2165,9 @@ class ApideckCompanies(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmCompaniesDeleteResponse(
                 delete_company_response=unmarshal_json_response(
-                    Optional[models.DeleteCompanyResponse], http_res
+                    Optional[models.DeleteCompanyResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1972,10 +2208,9 @@ class ApideckCompanies(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmCompaniesDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2042,6 +2277,7 @@ class ApideckCompanies(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2066,9 +2302,11 @@ class ApideckCompanies(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={"x-apideck-api": "crm"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2076,10 +2314,9 @@ class ApideckCompanies(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmCompaniesDeleteResponse(
                 delete_company_response=unmarshal_json_response(
-                    Optional[models.DeleteCompanyResponse], http_res
+                    Optional[models.DeleteCompanyResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2120,10 +2357,9 @@ class ApideckCompanies(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmCompaniesDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

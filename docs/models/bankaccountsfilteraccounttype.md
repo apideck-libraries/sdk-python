@@ -2,6 +2,16 @@
 
 Filter by account type
 
+## Example Usage
+
+```python
+from apideck_unify.models import BankAccountsFilterAccountType
+
+value = BankAccountsFilterAccountType.CHECKING
+
+# Open enum: unrecognized values are captured as UnrecognizedStr
+```
+
 
 ## Values
 

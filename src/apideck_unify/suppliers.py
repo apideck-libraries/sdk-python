@@ -7,7 +7,7 @@ from apideck_unify.types import Nullable, OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from jsonpath import JSONPath
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
 
 
 class Suppliers(BaseSDK):
@@ -27,7 +27,7 @@ class Suppliers(BaseSDK):
         sort: Optional[
             Union[models.SuppliersSort, models.SuppliersSortTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -74,7 +74,7 @@ class Suppliers(BaseSDK):
             limit=limit,
             filter_=utils.get_pydantic_model(filter_, Optional[models.SuppliersFilter]),
             sort=utils.get_pydantic_model(sort, Optional[models.SuppliersSort]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -95,6 +95,7 @@ class Suppliers(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -119,9 +120,131 @@ class Suppliers(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "`filter[updated_since]` compares on whole days: SAP keeps only the date of the last change, so the time\npart is ignored and the filter is inclusive of the given day (in UTC). Records changed earlier that day are\nreturned again; dedupe by `id`. A supplier that has never been changed matches on its creation date.\n\n`emails`, `phone_numbers` and `websites` combine the entries SAP keeps on each of the supplier's addresses\nwith the ones kept on the supplier itself: the standard address's entries first, then the other addresses' in\nSAP's order, then the supplier's own. `phone_numbers` lists the landlines first, then the mobile numbers, each in\nthat order. Every entry has an `id` that is unique within its list. At most one entry per list is\n`primary`: the entry SAP marks as default on the standard address or, when that address has none, the\nfirst entry SAP marks as default. Every other entry is `secondary`; mobile numbers are `mobile`, so a list with only mobile numbers has no `primary`.\n`phone_numbers[].extension` is returned when SAP holds one.\n\n`addresses[].type` is `primary` for the supplier's standard address in SAP and `secondary` for every other\naddress. `line1` is the street, `street_number` the house number, and `line2` and `line3` are SAP's\nStreet 4 and Street 5 fields.\n",
+                        },
+                        {
+                            "connector": "e-conomic",
+                            "description": "Supported filters: `company_name`, `display_name` (both match anywhere in the name, ignoring case) and `email`. Sorting is not supported. e-conomic suppliers have no created or updated timestamps, so `updated_since` is not supported, and custom fields are not supported.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "Supported filters: `company_name`, `display_name` and `email`. Name filters match anywhere in the name, ignoring case.\n`filter[email]` returns the suppliers that have that email address. Sorting is not supported:\nMinox suppliers have no created or updated timestamps.\n",
+                        },
+                        {
+                            "connector": "e-boekhouden",
+                            "description": "`customers` and `suppliers` both list the same underlying set of relations. e-Boekhouden\ndoes not store a customer/supplier flag on a relation record — a relation only becomes one\nor the other through how it is later referenced on an invoice or a bill, not through any\nfield on the relation itself. There is no server-side filter this connector can apply to\nseparate the two, so both resources return every relation, and a record created through\neither resource shows up in both. If you need to tell them apart, classify client-side\nfrom your own business context — note that invoice/bill history only works for relations\nthat already have transactions, so a newly created customer or a supplier with no bills yet\ncannot be classified that way.\n",
+                        },
+                        {
+                            "connector": "snelstart",
+                            "description": "`addresses[].country` always returns `NL`. SnelStart stores an address's country as a\nreference to an internal country record rather than an ISO code, and this connector does\nnot resolve that reference — consistent with SnelStart being a Netherlands-only accounting\nplatform.\n",
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": 'By default, listing suppliers makes one Twinfield request per page (a `limit` above 100 can take two) and\nreturns only `id`, `display_id`, `company_name` and `display_name`. Use Get Supplier for the full record.\n\nTo get the Get Supplier details in the list as well, set "Include full details when listing suppliers" to\nYes in the connection\'s Suppliers configuration settings. Through the Vault API, this is the suppliers\nresource config `enrich_supplier_list` set to `"true"`. The list then also returns `emails`,\n`phone_numbers`, `addresses`, `status`, `updated_at`, `websites`, `bank_accounts`, `tax_number` and\n`account`.\n\nTwinfield returns these details one supplier at a time, so with the setting on every page makes one extra\nrequest for each supplier on it: a page of 200 suppliers makes 200 extra requests. Every extra request\ncounts as an Apideck API request, the same as a Get Supplier call, and against the connection\'s\nTwinfield rate limit.\n\nWith the setting on, `fields` limits the extra requests to lists that need them: a list that asks only for\n`id`, `display_id`, `company_name` and `display_name` makes no extra requests. With the setting off,\n`fields` cannot turn the extra details on.\n\nWhen the setting is on, a failed extra request does not fail the list. The response is still a 200, those\nsuppliers are returned without the extra details, and `meta.warnings` has an entry whose `operation` is\n`suppliersOne`. If Twinfield refuses access or rate-limits the connection, no further extra requests are\nmade for that page and its remaining suppliers are returned without the extra details.\n\nThe whole list request has about 20 seconds, counted from when it starts, so the time the list itself\ntakes is included. Suppliers not reached in that time are returned without the extra details, and a\n`meta.warnings` entry says how many. If you see that warning, request smaller pages with `limit`\n(default 20, maximum 200).\n\nThe setting applies to list requests only; it does not change webhook events.\n',
+                        },
+                        {
+                            "connector": "clearbooks-uk",
+                            "description": "Clearbooks does not support setting the pagination size.",
+                        },
+                        {
+                            "connector": "wafeq",
+                            "description": "Wafeq does not separate customers and suppliers as distinct API resources — both share `/v1/contacts/`. The unified `suppliers` resource sends `relationship[]=supplier` to filter. However, Wafeq's `relationship` field is internal and is NOT settable via the API on contact create/update — it is populated by Wafeq based on UI classification or transaction history. Newly-created contacts and contacts with no transactions will appear in BOTH the customers and suppliers lists until Wafeq tags them. To enforce strict customer/supplier separation, manage contact classification in the Wafeq UI.\n",
+                        },
+                        {
+                            "connector": "procountor-fi",
+                            "description": "Procountor only accepts the following values for the payment_method field: BANK_TRANSFER, DIRECT_DEBIT, DIRECT_PAYMENT, CLEARING, CREDIT_CARD_CHARGE, FOREIGN_PAYMENT, OTHER, CASH, DOMESTIC_PAYMENT_PLUSGIRO, DOMESTIC_PAYMENT_BANKGIRO, DOMESTIC_PAYMENT_CREDITOR, DKLMPKRE, NETS.\nProcountor only accepts the following values for the channel field: EMAIL, MAIL, ELECTRONIC_INVOICE, EDIFACT, PAPER_INVOICE, NO_SENDING.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": 'The minimun page size accepted for Netsuite is 5. The cursor for Netsuite expires if they have not been used within 15 minutes after its creation.\n`filter[subsidiary_id]` scopes results to suppliers assigned to (or shared with) the given subsidiary, and is only supported on NetSuite OneWorld accounts; on standard (single-entity) accounts it is ignored.\n`filter[company_name]`, `filter[display_name]`, `filter[first_name]` and `filter[last_name]` match by case-insensitive substring (contains); the value is matched literally, so `%` and `_` are not treated as wildcards. `filter[email]` matches exactly.\nWhen any `filter[*]`, `sort[*]`, or `pass_through[*]` parameter is present, the list call is routed through NetSuite\'s SuiteQL Analytics REST API. In this path, `addresses[]` entries contain only `type` and `string` fields — structured fields (`id`, `city`, `state`, `postal_code`, `country`, `contact_name`) are not available because the SuiteQL Analytics replica does not expose the address sub-table join. Full structured address data is only returned by the unfiltered SOAP path (i.e., `GET /accounting/suppliers` with no filter, sort, or pass_through parameters).\n`custom_fields` come back on `GET /accounting/suppliers/{id}` and on an unfiltered `GET /accounting/suppliers`, each entry carrying the NetSuite internal id, the script id and the value — for example `{"id": "987", "name": "custentity_vendor_code", "value": "ACME-123"}`. They are absent the moment any `filter[*]`, `sort[*]` or `pass_through[*]` parameter is present, because that routes the list through SuiteQL, where custom fields would require a secondary lookup per batch. So `GET /accounting/suppliers?limit=5` returns them and `GET /accounting/suppliers?filter[company_name]=Acme` does not. For an incremental sync, list with the filter to collect ids, then fetch the records you need custom fields for via `GET /accounting/suppliers/{id}`.\nA field whose script id starts with `custpage_` is omitted. Those are injected into the NetSuite UI form by SuiteScript rather than stored on the record: they have no internal id and their value is page markup — `custpage_inlinejavascript` returns a string of inline HTML script elements pointing at NetSuite media files. Custom segments (`cseg_*`) are returned normally.\nEach value\'s type comes from NetSuite\'s own field type, not from the shape of the text: a check box returns `true`/`false`, a numeric field returns a number, and everything else returns a string — so a text field holding `12345` returns the string `"12345"`. The one exception is a text field whose stored value is JSON, which is parsed before you receive it: a field holding `[]` returns `"value": []`, not `"[]"`. Send that value back unchanged on a write and NetSuite stores the original text.\n`tax_number` comes back on `GET /accounting/suppliers/{id}` and on an unfiltered `GET /accounting/suppliers`. It is absent the moment any `filter[*]`, `sort[*]` or `pass_through[*]` parameter is present, because that routes the list through SuiteQL, which exposes no VAT registration number column. For an incremental sync, list with the filter to collect ids, then fetch the records you need `tax_number` for via `GET /accounting/suppliers/{id}`.\n',
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "In Xero, contacts are not strictly separated into customers or suppliers until linked to a transaction. Apideck's approach is to return suppliers as `IsSupplier=true||IsCustomer=false` and customers as `IsCustomer=true||IsSupplier=false`. If you need other cases, use pass-through, e.g. `?pass_through[where]=IsCustomer=false AND IsSupplier=false` for uncategorized contacts. See the [Pass-through guide](https://developers.apideck.com/guides/pass-through) for more details.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks Online does not expose a reliable cross-page total record count. The `QueryResponse.totalCount` field in list responses reflects the count for that page only, not the full dataset. `meta.total_count` will not appear in list responses. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite uses the same underlying QuickBooks API. The `QueryResponse.totalCount` field in list responses reflects the per-page count only. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics",
+                            "description": "Microsoft Dynamics 365 does not include a total record count in default list responses. `meta.total_count` will not appear. Surfacing the total requires adding `$count=true` to the OData query or calling a separate `$count` endpoint — not currently implemented.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Zoho Books does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": "Moneybird does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "rillet",
+                            "description": "Rillet does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "pennylane",
+                            "description": "Pennylane does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "procountor-fi",
+                            "description": "Procountor does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "access-financials",
+                            "description": "Access Financials does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "dualentry",
+                            "description": "DualEntry suppliers are org-level master data and are not scoped to any company. The `x-apideck-company-id` header has no effect on supplier list or lookup results — all suppliers belong to the organisation, not to individual subsidiary companies.\n",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "AFAS does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "myob-acumatica",
+                            "description": "The Apideck service type is used for MYOB Acumatica non-stock items, and inventory is used for stock items.\n",
+                        },
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "QuickBooks Desktop does not expose a reliable cross-page total record count. Getting `total_count` requires a separate COUNT query — an extra API call that is not currently implemented. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "acumatica",
+                            "description": "The Apideck service type is used for Acumatica non-stock items, and inventory is used for stock items.\n",
+                        },
+                        {
+                            "connector": "lexware-office",
+                            "description": "The vendor emits a single, undifferentiated contact-change webhook event for both\ncustomers and suppliers, with no role information in the notification payload. Every\nsuch event is delivered as `customer.updated`, including a change to a vendor-only\ncontact (no customer role at all) — there is currently no way to distinguish or\nsubscribe to supplier-only contact changes separately.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Countries are returned as ISO 3166-1 alpha-2 codes. Fiken stores a country as free text, normally its Norwegian name; a stored value that is not a recognised country name is returned as stored.\n",
+                        },
+                        {
+                            "connector": "workday",
+                            "description": "Address lines on supplier reads: when Workday's address format for the country splits the street into components, `addresses[].line1` is built from them in this order: the street type when there is one (for example Spanish `Calle` or `Carrer`), then the street name, then the house number; so a Spanish address reads `Calle Montesa 16` and the house number is also returned as `street_number`. `line1` always places the house number after the street name, even where Workday's own formatted address in `string` puts it first, as for France and South Africa (`Rue Juliette Lamber 13`). When the format has a house number but no labelled street name, the lowest-numbered other component is used as the street name. The remaining typed components (building, unit, floor and similar) fill `line2` to `line5` in Workday's line order. For formats without a street-type or street-name component and without a house-number component (for example the US), `line1` is the lowest-numbered address line as Workday returns it, the others follow in `line2` to `line5`, and `street_number` is omitted.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -149,17 +272,19 @@ class Suppliers(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingSuppliersAllResponse(
                 get_suppliers_response=unmarshal_json_response(
-                    Optional[models.GetSuppliersResponse], http_res
+                    Optional[models.GetSuppliersResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -200,11 +325,10 @@ class Suppliers(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSuppliersAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -225,7 +349,7 @@ class Suppliers(BaseSDK):
         sort: Optional[
             Union[models.SuppliersSort, models.SuppliersSortTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -272,7 +396,7 @@ class Suppliers(BaseSDK):
             limit=limit,
             filter_=utils.get_pydantic_model(filter_, Optional[models.SuppliersFilter]),
             sort=utils.get_pydantic_model(sort, Optional[models.SuppliersSort]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -293,6 +417,7 @@ class Suppliers(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -317,9 +442,131 @@ class Suppliers(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "`filter[updated_since]` compares on whole days: SAP keeps only the date of the last change, so the time\npart is ignored and the filter is inclusive of the given day (in UTC). Records changed earlier that day are\nreturned again; dedupe by `id`. A supplier that has never been changed matches on its creation date.\n\n`emails`, `phone_numbers` and `websites` combine the entries SAP keeps on each of the supplier's addresses\nwith the ones kept on the supplier itself: the standard address's entries first, then the other addresses' in\nSAP's order, then the supplier's own. `phone_numbers` lists the landlines first, then the mobile numbers, each in\nthat order. Every entry has an `id` that is unique within its list. At most one entry per list is\n`primary`: the entry SAP marks as default on the standard address or, when that address has none, the\nfirst entry SAP marks as default. Every other entry is `secondary`; mobile numbers are `mobile`, so a list with only mobile numbers has no `primary`.\n`phone_numbers[].extension` is returned when SAP holds one.\n\n`addresses[].type` is `primary` for the supplier's standard address in SAP and `secondary` for every other\naddress. `line1` is the street, `street_number` the house number, and `line2` and `line3` are SAP's\nStreet 4 and Street 5 fields.\n",
+                        },
+                        {
+                            "connector": "e-conomic",
+                            "description": "Supported filters: `company_name`, `display_name` (both match anywhere in the name, ignoring case) and `email`. Sorting is not supported. e-conomic suppliers have no created or updated timestamps, so `updated_since` is not supported, and custom fields are not supported.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "Supported filters: `company_name`, `display_name` and `email`. Name filters match anywhere in the name, ignoring case.\n`filter[email]` returns the suppliers that have that email address. Sorting is not supported:\nMinox suppliers have no created or updated timestamps.\n",
+                        },
+                        {
+                            "connector": "e-boekhouden",
+                            "description": "`customers` and `suppliers` both list the same underlying set of relations. e-Boekhouden\ndoes not store a customer/supplier flag on a relation record — a relation only becomes one\nor the other through how it is later referenced on an invoice or a bill, not through any\nfield on the relation itself. There is no server-side filter this connector can apply to\nseparate the two, so both resources return every relation, and a record created through\neither resource shows up in both. If you need to tell them apart, classify client-side\nfrom your own business context — note that invoice/bill history only works for relations\nthat already have transactions, so a newly created customer or a supplier with no bills yet\ncannot be classified that way.\n",
+                        },
+                        {
+                            "connector": "snelstart",
+                            "description": "`addresses[].country` always returns `NL`. SnelStart stores an address's country as a\nreference to an internal country record rather than an ISO code, and this connector does\nnot resolve that reference — consistent with SnelStart being a Netherlands-only accounting\nplatform.\n",
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": 'By default, listing suppliers makes one Twinfield request per page (a `limit` above 100 can take two) and\nreturns only `id`, `display_id`, `company_name` and `display_name`. Use Get Supplier for the full record.\n\nTo get the Get Supplier details in the list as well, set "Include full details when listing suppliers" to\nYes in the connection\'s Suppliers configuration settings. Through the Vault API, this is the suppliers\nresource config `enrich_supplier_list` set to `"true"`. The list then also returns `emails`,\n`phone_numbers`, `addresses`, `status`, `updated_at`, `websites`, `bank_accounts`, `tax_number` and\n`account`.\n\nTwinfield returns these details one supplier at a time, so with the setting on every page makes one extra\nrequest for each supplier on it: a page of 200 suppliers makes 200 extra requests. Every extra request\ncounts as an Apideck API request, the same as a Get Supplier call, and against the connection\'s\nTwinfield rate limit.\n\nWith the setting on, `fields` limits the extra requests to lists that need them: a list that asks only for\n`id`, `display_id`, `company_name` and `display_name` makes no extra requests. With the setting off,\n`fields` cannot turn the extra details on.\n\nWhen the setting is on, a failed extra request does not fail the list. The response is still a 200, those\nsuppliers are returned without the extra details, and `meta.warnings` has an entry whose `operation` is\n`suppliersOne`. If Twinfield refuses access or rate-limits the connection, no further extra requests are\nmade for that page and its remaining suppliers are returned without the extra details.\n\nThe whole list request has about 20 seconds, counted from when it starts, so the time the list itself\ntakes is included. Suppliers not reached in that time are returned without the extra details, and a\n`meta.warnings` entry says how many. If you see that warning, request smaller pages with `limit`\n(default 20, maximum 200).\n\nThe setting applies to list requests only; it does not change webhook events.\n',
+                        },
+                        {
+                            "connector": "clearbooks-uk",
+                            "description": "Clearbooks does not support setting the pagination size.",
+                        },
+                        {
+                            "connector": "wafeq",
+                            "description": "Wafeq does not separate customers and suppliers as distinct API resources — both share `/v1/contacts/`. The unified `suppliers` resource sends `relationship[]=supplier` to filter. However, Wafeq's `relationship` field is internal and is NOT settable via the API on contact create/update — it is populated by Wafeq based on UI classification or transaction history. Newly-created contacts and contacts with no transactions will appear in BOTH the customers and suppliers lists until Wafeq tags them. To enforce strict customer/supplier separation, manage contact classification in the Wafeq UI.\n",
+                        },
+                        {
+                            "connector": "procountor-fi",
+                            "description": "Procountor only accepts the following values for the payment_method field: BANK_TRANSFER, DIRECT_DEBIT, DIRECT_PAYMENT, CLEARING, CREDIT_CARD_CHARGE, FOREIGN_PAYMENT, OTHER, CASH, DOMESTIC_PAYMENT_PLUSGIRO, DOMESTIC_PAYMENT_BANKGIRO, DOMESTIC_PAYMENT_CREDITOR, DKLMPKRE, NETS.\nProcountor only accepts the following values for the channel field: EMAIL, MAIL, ELECTRONIC_INVOICE, EDIFACT, PAPER_INVOICE, NO_SENDING.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": 'The minimun page size accepted for Netsuite is 5. The cursor for Netsuite expires if they have not been used within 15 minutes after its creation.\n`filter[subsidiary_id]` scopes results to suppliers assigned to (or shared with) the given subsidiary, and is only supported on NetSuite OneWorld accounts; on standard (single-entity) accounts it is ignored.\n`filter[company_name]`, `filter[display_name]`, `filter[first_name]` and `filter[last_name]` match by case-insensitive substring (contains); the value is matched literally, so `%` and `_` are not treated as wildcards. `filter[email]` matches exactly.\nWhen any `filter[*]`, `sort[*]`, or `pass_through[*]` parameter is present, the list call is routed through NetSuite\'s SuiteQL Analytics REST API. In this path, `addresses[]` entries contain only `type` and `string` fields — structured fields (`id`, `city`, `state`, `postal_code`, `country`, `contact_name`) are not available because the SuiteQL Analytics replica does not expose the address sub-table join. Full structured address data is only returned by the unfiltered SOAP path (i.e., `GET /accounting/suppliers` with no filter, sort, or pass_through parameters).\n`custom_fields` come back on `GET /accounting/suppliers/{id}` and on an unfiltered `GET /accounting/suppliers`, each entry carrying the NetSuite internal id, the script id and the value — for example `{"id": "987", "name": "custentity_vendor_code", "value": "ACME-123"}`. They are absent the moment any `filter[*]`, `sort[*]` or `pass_through[*]` parameter is present, because that routes the list through SuiteQL, where custom fields would require a secondary lookup per batch. So `GET /accounting/suppliers?limit=5` returns them and `GET /accounting/suppliers?filter[company_name]=Acme` does not. For an incremental sync, list with the filter to collect ids, then fetch the records you need custom fields for via `GET /accounting/suppliers/{id}`.\nA field whose script id starts with `custpage_` is omitted. Those are injected into the NetSuite UI form by SuiteScript rather than stored on the record: they have no internal id and their value is page markup — `custpage_inlinejavascript` returns a string of inline HTML script elements pointing at NetSuite media files. Custom segments (`cseg_*`) are returned normally.\nEach value\'s type comes from NetSuite\'s own field type, not from the shape of the text: a check box returns `true`/`false`, a numeric field returns a number, and everything else returns a string — so a text field holding `12345` returns the string `"12345"`. The one exception is a text field whose stored value is JSON, which is parsed before you receive it: a field holding `[]` returns `"value": []`, not `"[]"`. Send that value back unchanged on a write and NetSuite stores the original text.\n`tax_number` comes back on `GET /accounting/suppliers/{id}` and on an unfiltered `GET /accounting/suppliers`. It is absent the moment any `filter[*]`, `sort[*]` or `pass_through[*]` parameter is present, because that routes the list through SuiteQL, which exposes no VAT registration number column. For an incremental sync, list with the filter to collect ids, then fetch the records you need `tax_number` for via `GET /accounting/suppliers/{id}`.\n',
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "In Xero, contacts are not strictly separated into customers or suppliers until linked to a transaction. Apideck's approach is to return suppliers as `IsSupplier=true||IsCustomer=false` and customers as `IsCustomer=true||IsSupplier=false`. If you need other cases, use pass-through, e.g. `?pass_through[where]=IsCustomer=false AND IsSupplier=false` for uncategorized contacts. See the [Pass-through guide](https://developers.apideck.com/guides/pass-through) for more details.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks Online does not expose a reliable cross-page total record count. The `QueryResponse.totalCount` field in list responses reflects the count for that page only, not the full dataset. `meta.total_count` will not appear in list responses. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite uses the same underlying QuickBooks API. The `QueryResponse.totalCount` field in list responses reflects the per-page count only. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics",
+                            "description": "Microsoft Dynamics 365 does not include a total record count in default list responses. `meta.total_count` will not appear. Surfacing the total requires adding `$count=true` to the OData query or calling a separate `$count` endpoint — not currently implemented.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Zoho Books does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": "Moneybird does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "rillet",
+                            "description": "Rillet does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "pennylane",
+                            "description": "Pennylane does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "procountor-fi",
+                            "description": "Procountor does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "access-financials",
+                            "description": "Access Financials does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "dualentry",
+                            "description": "DualEntry suppliers are org-level master data and are not scoped to any company. The `x-apideck-company-id` header has no effect on supplier list or lookup results — all suppliers belong to the organisation, not to individual subsidiary companies.\n",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "AFAS does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "myob-acumatica",
+                            "description": "The Apideck service type is used for MYOB Acumatica non-stock items, and inventory is used for stock items.\n",
+                        },
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "QuickBooks Desktop does not expose a reliable cross-page total record count. Getting `total_count` requires a separate COUNT query — an extra API call that is not currently implemented. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "acumatica",
+                            "description": "The Apideck service type is used for Acumatica non-stock items, and inventory is used for stock items.\n",
+                        },
+                        {
+                            "connector": "lexware-office",
+                            "description": "The vendor emits a single, undifferentiated contact-change webhook event for both\ncustomers and suppliers, with no role information in the notification payload. Every\nsuch event is delivered as `customer.updated`, including a change to a vendor-only\ncontact (no customer role at all) — there is currently no way to distinguish or\nsubscribe to supplier-only contact changes separately.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Countries are returned as ISO 3166-1 alpha-2 codes. Fiken stores a country as free text, normally its Norwegian name; a stored value that is not a recognised country name is returned as stored.\n",
+                        },
+                        {
+                            "connector": "workday",
+                            "description": "Address lines on supplier reads: when Workday's address format for the country splits the street into components, `addresses[].line1` is built from them in this order: the street type when there is one (for example Spanish `Calle` or `Carrer`), then the street name, then the house number; so a Spanish address reads `Calle Montesa 16` and the house number is also returned as `street_number`. `line1` always places the house number after the street name, even where Workday's own formatted address in `string` puts it first, as for France and South Africa (`Rue Juliette Lamber 13`). When the format has a house number but no labelled street name, the lowest-numbered other component is used as the street name. The remaining typed components (building, unit, floor and similar) fill `line2` to `line5` in Workday's line order. For formats without a street-type or street-name component and without a house-number component (for example the US), `line1` is the lowest-numbered address line as Workday returns it, the others follow in `line2` to `line5`, and `street_number` is omitted.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -347,17 +594,19 @@ class Suppliers(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingSuppliersAllResponse(
                 get_suppliers_response=unmarshal_json_response(
-                    Optional[models.GetSuppliersResponse], http_res
+                    Optional[models.GetSuppliersResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -398,11 +647,10 @@ class Suppliers(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSuppliersAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -431,17 +679,19 @@ class Suppliers(BaseSDK):
         suffix: OptionalNullable[str] = UNSET,
         individual: OptionalNullable[bool] = UNSET,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         phone_numbers: Optional[
-            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+            Union[Iterable[models.PhoneNumber], Iterable[models.PhoneNumberTypedDict]]
         ] = None,
-        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        emails: Optional[
+            Union[Iterable[models.Email], Iterable[models.EmailTypedDict]]
+        ] = None,
         websites: Optional[
-            Union[List[models.Website], List[models.WebsiteTypedDict]]
+            Union[Iterable[models.Website], Iterable[models.WebsiteTypedDict]]
         ] = None,
         bank_accounts: Optional[
-            Union[List[models.BankAccount], List[models.BankAccountTypedDict]]
+            Union[Iterable[models.BankAccount], Iterable[models.BankAccountTypedDict]]
         ] = None,
         notes: OptionalNullable[str] = UNSET,
         tax_rate: Optional[
@@ -461,23 +711,26 @@ class Suppliers(BaseSDK):
         issued_method: OptionalNullable[str] = UNSET,
         issued_email: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         tax_details: Optional[
             Union[
-                List[Nullable[models.LinkedTaxDetail]],
-                List[Nullable[models.LinkedTaxDetailTypedDict]],
+                Iterable[Nullable[models.LinkedTaxDetail]],
+                Iterable[Nullable[models.LinkedTaxDetailTypedDict]],
             ]
         ] = None,
         tax_status_details: Optional[
             Union[
-                List[Nullable[models.LinkedTaxStatusDetail]],
-                List[Nullable[models.LinkedTaxStatusDetailTypedDict]],
+                Iterable[Nullable[models.LinkedTaxStatusDetail]],
+                Iterable[Nullable[models.LinkedTaxStatusDetailTypedDict]],
             ]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         subsidiary_id: Optional[str] = None,
         integration_system_id: Optional[str] = None,
@@ -639,6 +892,7 @@ class Suppliers(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.supplier, False, False, "json", models.SupplierInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -663,9 +917,91 @@ class Suppliers(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "e-conomic",
+                            "description": "`company_name` (or `display_name`) and `currency` are required. e-conomic also requires a supplier group, a VAT zone and payment terms on every supplier: a create uses supplier group 1 and VAT zone 1, the domestic defaults of a new e-conomic agreement, and payment terms 1 unless you send `terms_id`. To use another group or VAT zone, send `pass_through` with `supplierGroup.supplierGroupNumber` or `vatZone.vatZoneNumber`. An update changes only the fields you send. e-conomic suppliers have no VAT number or website field, so `tax_number` and `websites` are not stored.\ne-conomic has only a barred flag: `status` `inactive` or `archived` bars the supplier and reads back as `inactive`; any other value leaves it active.\nSend an `Idempotency-Key` to make retrying a create safe: Unify sends e-conomic a 32-character key derived from it as e-conomic's own `Idempotency-Key` header, and e-conomic answers a repeat with the original supplier instead of creating a second one. e-conomic keeps a key for one hour, and Unify remembers it for the same hour. Reusing a key with a different body returns 422, from Unify within its hour and from e-conomic while e-conomic still remembers the key; after both have forgotten it, the same key is treated as a new request. Use a new key for every supplier.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "`custom_fields` are returned but cannot be written: Minox accepts them without storing them, so they are left out of create and update requests. `tax_number` must be a valid VAT number; Minox rejects an invalid one with a `400`. Suppliers cannot be deleted.\n\n`currency` must be the administration's own currency; Minox stores a currency together with an exchange rate, which this record has no field for, so any other currency is rejected with a `400`. A supplier in another currency (set up in Minox) cannot be updated through the API: Minox resets the currency of a supplier to the administration's on every update that does not send it, and does not expose the exchange rate to send it back with, so such an update is rejected with a `400`. Sending `notes` empty or `null` clears them. Minox keeps one free-text contact person per address (often with a title, such as \"De heer G. van der Heiden\"), which is not split into `first_name` and `last_name`; those fields, and `individual`, are not supported. Minox has three address types: `billing` and `primary` are stored as the postal address, `shipping` as the delivery address and any other type as the street address, which reads back as `office`. One address of each Minox type is sent: when several map to the same type, `billing` wins over `primary`, and otherwise the first one is used.\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": "Moneybird rejects an email address on a domain that cannot receive mail (for example `example.com`)\nwith a `422`.\n",
+                        },
+                        {
+                            "connector": "snelstart",
+                            "description": "`addresses[].country` is not written. SnelStart requires a country as a reference to an\ninternal country record rather than an ISO code, and this connector does not resolve that\nreference, so the country is left unset on the created record — consistent with SnelStart\nbeing a Netherlands-only accounting platform. `addresses[].street_number` is also not\nwritten separately; SnelStart stores the street name and house number as one combined\nfield, so `line1` and `street_number` are concatenated into it.\n\nA SnelStart contact can be both a customer and a supplier at once. To add the customer\nrole to an existing supplier (or vice versa), call `customers.update`/`suppliers.update`\nwith that contact's id — this connector merges in the new role rather than replacing the\nexisting one, so both survive. There is no field exposing which role(s) a contact has, so\na dual-tagged contact appears, unremarkably, in both `customers.list` and\n`suppliers.list`.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": '`custom_fields` are writable. Identify each field either by its NetSuite internal id or by\nits script id — both forms work, and `id` wins if you send both:\n\n`"custom_fields": [{"id": "987", "value": "ACME-123"}, {"name": "custentity_vendor_flag", "value": true}]`\n\n**The NetSuite field type is derived from the JSON value you send, not from the field\'s real\ntype**, so the value\'s shape decides how it is transmitted:\n\n- `true` / `false`, or the strings `"true"` / `"false"` → check box\n- a number, **and any string made only of digits** — `7`, `10.5`, `"12345"` → decimal number.\n  A numeric code that belongs in a text field must therefore not be sent as a digits-only\n  string: it reaches NetSuite as a number and is stored as one, so `"007"` is stored as `7.0`.\n- a date — both `"2026-08-18"` and a full `"2026-08-18T09:00:00Z"` → date field\n- anything else → free-form text\n- an object or array is serialized to JSON text, so `"value": []` stores `[]`\n\nA list (dropdown) field does not follow these rules. Send the internal id of the option as\n`value` and identify the field by its script id, in `name` or in `id`:\n`{"name": "custentity_region_list", "value": "2"}`. The value is then stored as that option. The\nconnector learns that the field is a list field from NetSuite\'s field definitions; if they\ncannot be read for the connection, the option id is sent as a number and NetSuite rejects it.\nA list field identified only by its numeric internal id is also sent as a number.\n\nAn entry with `value: null`, or with no `value`, is rejected with a `400`, except a custom\nsegment (a `name` starting with `cseg`), which is sent without a value.\n\nA `cseg_*` custom segment needs both keys — its internal id in `id` and the segment script id\nin `name`, with the referenced record\'s internal id as the value:\n`{"id": "801", "name": "cseg_region", "value": "42"}`.\n\nA value read from `GET /accounting/suppliers/{id}` can be sent back unchanged. A text field\nholding `{"a":1}` reads back as the object `{"a": 1}`, and sending that object back stores\n`{"a":1}` again.\n\nDate-only values need no configuration between UTC-10 and UTC+13: the connector anchors them to\n10:00 UTC before sending, because NetSuite resolves the instant against the account\'s time zone\nand an unanchored value would store the previous calendar day. Four zones fall outside that\nrange and still shift by a day — `Pacific/Pago_Pago`, `Pacific/Niue` and `Pacific/Midway`\n(UTC-11) store one day early, `Pacific/Kiritimati` (UTC+14) one day late. Unlike the date fields\non other resources, the optional `timezone` connection setting does **not** cover custom fields:\nthat anchoring runs in the mapping layer, which this path does not go through. In those four\nzones, send the value as a full dateTime you have offset yourself.\n\nTwo rejections to expect, both naming the offending field. A field that is read-only or owned\nby a NetSuite bundle returns `INSUFFICIENT_PERMISSION` — "You do not have permissions to set\na value for element custentity_x". A value NetSuite cannot convert to the field\'s real type\nreturns `INVALID_FLD_VALUE` — "You have entered an Invalid Field Value hello for the\nfollowing field: custentity_x". A text field converts instead of rejecting, as with `"007"`\nabove.\n\nHow much of each array is written depends on whether the supplier is a company or an\nindividual — NetSuite keeps different contact fields on each. A company holds four phone\nnumbers (`primary`, `secondary`, `mobile`, `fax`), one email (`primary`) and one website;\nan individual holds five phone numbers (those four plus `home`), two emails (`primary` and\n`secondary`) and one website. Entries of any other type are ignored.\n\n`home` and the `secondary` email exist only on a supplier marked as an individual, so send\n`individual: true` in the same request or both are dropped. When two entries share a\ntype, the first one is used.\n\nThe website must be the `primary` entry, start with `http://`, `https://`, `ftp://` or\n`file://` and contain no spaces. For an individual it is saved in a second request to\nNetSuite, after the supplier is created. If that request fails, the response is an error\nthat gives the id of the supplier that was created without its website; update that\nsupplier instead of creating it again.\n',
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "Only `active` and `inactive` are applied. Sage's status field has no other members, so any\nother value from the unified enum is ignored and the record keeps its current status rather\nthan the write being rejected.\n",
+                        },
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "On create, QuickBooks Desktop stores `display_name` (or `company_name` when it is missing), `company_name`, `first_name`, `last_name`, the `billing` address (the first address when none is typed `billing`), the `primary` and `fax` phone numbers and the `primary` email. An `other` or `secondary` phone number is not stored on create.\n\nWrites are applied on the Web Connector's next run, so a create can return a `504` timeout after 28 seconds while QuickBooks still creates the supplier; a re-sent create is rejected because the name is already in use (error 3100). Read suppliers by `filter[display_name]` before retrying.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks only supports a single billing address. Therefore, the first item in the addresses array will always be mapped as the billing address, regardless of its original type.",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite only supports a single billing address. Therefore, the first item in the addresses array will always be mapped as the billing address, regardless of its original type.",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "If you encounter a '400 Bad Request' error indicating \"Control 'fieldName' is read-only\" it means the 'editable' property for this field in Microsoft Dynamics 365 Business Central is currently set to false. To resolve this issue and make the field writable, simply update the 'editable' property to true in Microsoft Dynamics 365 Business Central.\n",
+                        },
+                        {
+                            "connector": "freshbooks",
+                            "description": "Freshbooks API set status to active by default for new suppliers. To change the status, you can use the Update Supplier endpoint.\n",
+                        },
+                        {
+                            "connector": "workday",
+                            "description": "In Workday, the supplier_category, display_name, addresses, emails, company_id, currency, terms, and payment_method fields are required to create a supplier. display_name and company_id should be same.\n",
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": 'Creating a supplier requires a correspondence language and a business partner grouping. The language\ndefaults to `EN`. The grouping is taken from the connection\'s **Default Business Partner Grouping**\nsetting, or `BP01` when that is empty. Override either one for a single request with `pass_through`\n(`extend_object`), for example:\n\n`"pass_through": [{"service_id": "sap-s4hana-cloud", "extend_object": {"BusinessPartnerGrouping": "BP02", "CorrespondenceLanguage": "DE"}}]`\n\nA request with `first_name` or `last_name` creates a person; otherwise it creates a company. SAP\nbuilds `display_name` from the company name, or from the first and last name. A request that sends a\nnon-empty `company_name` for a person, or a non-empty `display_name` that differs from the name SAP\nbuilds, is rejected with a `400` and no supplier is created.\n\n**Tax number.** `tax_number` is stored as the supplier\'s tax number. SAP files it under a tax number category\nthat depends on the country: the connector uses the two-letter `country` of the standard address (the\nfirst address written) plus `0`, SAP\'s VAT registration category (`DE0`, `NL0`, `GB0`, `FR0`). SAP\nrejects a category it does not have, such as `US0`, and nothing is created; for such a country, add the\ntax number in SAP. A non-empty `tax_number` needs an address with a two-letter `country` and can have\n20 characters; otherwise the request is rejected with a `400` naming the problem, and nothing is created.\n\n`CorrespondenceLanguage` sets the language of a person. SAP keeps the language of a company on its\naddress, so for a company send `"to_BusinessPartnerAddress": {"results": [{"Language": "DE"}]}` in the\nsame `extend_object` instead.\n\n**Which grouping to use depends on the SAP tenant.** Each tenant configures whether a grouping assigns\nnumbers automatically. If the grouping requires a manually assigned number, SAP returns\n`400 Grouping <code> has external number assignment. Please enter a valid number.` Either use a grouping\nthat assigns numbers automatically, or supply the number in the same `extend_object`, next to the\ngrouping it belongs to, as `"BusinessPartner": "<8–10 digit number, unique in the tenant>"`. A grouping\nthat assigns numbers automatically ignores a supplied number and assigns its own.\n\n**Company code.** A supplier can only be used on bills and bill payments once it is set up in a company code.\nSend `company_id` together with `account.id` (the reconciliation account, a G/L account number) to create\nthe supplier in that company code. When `account.id` is omitted, the connection\'s\n**Default Supplier Reconciliation Account** is used. If neither is available the supplier is created\nwithout a company code, and `company_id` has no effect. Send `terms` with an SAP payment terms key (for\nexample `0004`) to set the supplier\'s payment terms in that company code. `account` and `terms` have no\neffect without `company_id`, `terms` cannot be changed by an update, and none of the three is returned when the supplier is read. If SAP does\nnot accept the company code, the account or the payment terms, the request fails with SAP\'s message and\nnothing is created. A supplier created without `terms` has no payment terms in SAP, so SAP cannot work\nout when its bills are due: send `due_date` when creating a bill for it.\n\n**Addresses.** Send at least one address, each with a `country` (e.g. `US`, `DE`). An address without a\n`country` rejects the whole request with a `400` naming it (for example `addresses[1] has no country`) and\nnothing is created. Every address is written: the one with type `primary` (or else the first) first, the\nothers after it in request order. The first one becomes the standard address in SAP and reads back as\n`primary`; the others read back as `secondary`, whatever `type` was sent. `line1` is stored as the street,\n`street_number` as the house number, `line2` and `line3` as SAP\'s Street 4 and Street 5 fields. This\nconnector does not write the address fields `email`, `phone_number`, `website`, `fax`, `name`, `county`,\n`contact_name`, `salutation`, `notes`, `line4`, `line5`, `string`, `latitude` and `longitude`, so an\naddress with a value in any of them rejects the request with a `400` naming every such field (for example\n`addresses[1].fax`) and nothing is created; empty, whitespace-only or `null` values are ignored. Send an\naddress\'s email, phone number or website in the top-level `emails`, `phone_numbers` or `websites` list\ninstead, and the street in `line1` and `street_number` rather than `string`. A value longer than SAP\nstores rejects the request with a `400` naming the field (for example\n`addresses[0].line2 is longer than 40 characters`) and nothing is created. The limits are: `line1` 60,\n`street_number` 10, `line2` 40, `line3` 40, `city` 40, `state` 3, `postal_code` 10 and `country` 3\ncharacters.\n\n**Emails, phone numbers and websites** are stored on the standard address (the first address written), not\non the supplier itself, so a request with any of them and no address is rejected with a `400` naming the lists\n(for example `emails and phone_numbers need an address with a country`) and nothing is created. A value\nthat is only whitespace (for example `phone_numbers[1].number is blank`) is rejected the same way. SAP makes\nthe first entry of each kind its default, so the entry typed `primary` is written first and the rest in\nrequest order. With several entries typed `primary`, only the first is written first and becomes SAP\'s\ndefault; the others read back as `secondary`. Mobile numbers are written in request order and always read\nback as `mobile`, so a mobile number is never the `primary` entry. At most one entry per list reads back as\n`primary`, and a list with only mobile numbers has none. SAP stores no label on an email or a website and only landline or\nmobile on a phone: a phone with `type` `mobile` is stored as a mobile number, and every other phone type\n(`home`, `work`, `fax`, ...) is stored as a landline. An email or website of any type, for example\n`billing`, is stored without its type and the request succeeds.\n\n**Phone details.** `extension` is stored (up to 10 characters) and returned. `country_code` and `area_code`\nare folded into `number` as `+<country_code> <area_code> <number>` when `number` does not start with `+`,\nand are not returned separately. A `number` that starts with `00` is already international: it is stored\nwith the `00` replaced by `+`, and `country_code` and `area_code` are not added to it. A leading `0` is\nstored as sent, because whether it is a national trunk prefix depends on the country. With `country_code`,\nsend `area_code` and `number` without the national trunk prefix (`country_code` `31`, `area_code` `20`, not `020`),\nso the number is stored as `+31 20 555 0104`. Without `country_code`, SAP derives the international number from the address country, so a\nnational number such as `020 555 0104` is stored correctly. A number can have 30 characters in SAP; the\nlimit applies to the stored value, dial codes included, and a longer value is rejected naming\n`phone_numbers[i].number`. Emails can have 241 characters and websites 132: SAP keeps\n132 characters of a website address, so a longer one is rejected rather than stored cut short.\n\n**`pass_through`.** `extend_object` for `to_BusinessPartnerAddress` is applied by array position after the\nprimary address has been moved first: `results[0]` is the standard address, and the contacts above are\ninside it. Setting `{"to_BusinessPartnerAddress": {"results": [{"Language": "DE"}]}}` changes the language of\nthat address only and keeps its contacts. A value set at a position the connector also writes, for example\n`to_EmailAddress.results[0].EmailAddress`, overwrites that entry\'s value, and a flag such as\n`IsDefaultEmailAddress` is added to the entry. Send contacts in `emails`, `phone_numbers` and `websites`,\nnot through `pass_through`.\n\n**Status.** `status: inactive` creates the supplier blocked. `active`, any other value, or no status creates it\nactive.\n',
+                        },
+                        {
+                            "connector": "exact-online",
+                            "description": "Exact does not enforce uniqueness on the supplier name — posting the same `display_name`/\n`company_name` twice creates two separate suppliers, both with a `201`. This connector\npasses the name through as sent rather than matching on write; the caller owns\nde-duplication (for example, checking `suppliers.list` for an existing name, or storing\nthe returned `id` and reusing it) before creating a supplier that may already exist.\n",
+                        },
+                        {
+                            "connector": "exact-online-nl",
+                            "description": "Exact does not enforce uniqueness on the supplier name — posting the same `display_name`/\n`company_name` twice creates two separate suppliers, both with a `201`. This connector\npasses the name through as sent rather than matching on write; the caller owns\nde-duplication (for example, checking `suppliers.list` for an existing name, or storing\nthe returned `id` and reusing it) before creating a supplier that may already exist.\n",
+                        },
+                        {
+                            "connector": "exact-online-uk",
+                            "description": "Exact does not enforce uniqueness on the supplier name — posting the same `display_name`/\n`company_name` twice creates two separate suppliers, both with a `201`. This connector\npasses the name through as sent rather than matching on write; the caller owns\nde-duplication (for example, checking `suppliers.list` for an existing name, or storing\nthe returned `id` and reusing it) before creating a supplier that may already exist.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "A country sent as an ISO 3166-1 alpha-2 code is saved under its Norwegian name, as Fiken's own screens save it. A supplier saved without a country is stored with Norway.\n",
+                        },
+                        {
+                            "connector": "visma-netvisor",
+                            "description": "`tax_number` is required: send the supplier's Finnish Business ID (Y-tunnus, for example `1234567-1`), not the VAT number (`FI12345678`). It reads back the same way. Netvisor stores no separate display name: `display_name` reads back as the company name.\nAlso send `currency`, an address with `country`, and at least one phone number or email; Netvisor rejects a supplier without them.\n",
+                        },
+                        {
+                            "connector": "myob",
+                            "description": "`tax_rate.id` is required: MYOB needs a purchase tax code on every supplier, and it is also used as the freight tax code. `currency` is not set on create. Only one bank account is stored; its `account_name` is saved in uppercase and may hold up to 32 letters, digits, spaces and `- / * & .`.\n`tax_number` is saved as the Australian ABN when it has 11 digits (spaces allowed), and as MYOB's Tax ID number otherwise. Reads return the ABN when the supplier has one, otherwise the Tax ID number.\nMYOB stores up to five addresses by position and keeps no address type: the `primary` address becomes the first, `secondary` the second, and any other address follows them. Addresses read back by position — the first as `primary`, the second as `secondary` and the rest as `other` — so a `billing` or `shipping` address sent with a `primary` one reads back as `secondary`. Only `line1`, `city`, `state`, `postal_code`, `country`, `phone_number`, `fax`, `email`, `website`, `contact_name` and `salutation` are stored; `line2` to `line4` and other address fields are ignored, and an address with none of the stored fields is rejected with a `400`. Address `id` values are ignored on create.\n`emails` and `websites` accept `primary` and `secondary`; `phone_numbers` also accepts `mobile` and `fax`, which are stored on the primary address. A `secondary` address, email, website or phone number needs something stored on the first address in the same request: a `primary` address, a `primary` email, website or phone number, or a `mobile` or `fax` number. Requests MYOB cannot represent, such as more than five addresses or two `primary` emails, are rejected with a `400`.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -673,10 +1009,9 @@ class Suppliers(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingSuppliersAddResponse(
                 create_supplier_response=unmarshal_json_response(
-                    Optional[models.CreateSupplierResponse], http_res
+                    Optional[models.CreateSupplierResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -717,10 +1052,9 @@ class Suppliers(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSuppliersAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -749,17 +1083,19 @@ class Suppliers(BaseSDK):
         suffix: OptionalNullable[str] = UNSET,
         individual: OptionalNullable[bool] = UNSET,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         phone_numbers: Optional[
-            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+            Union[Iterable[models.PhoneNumber], Iterable[models.PhoneNumberTypedDict]]
         ] = None,
-        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        emails: Optional[
+            Union[Iterable[models.Email], Iterable[models.EmailTypedDict]]
+        ] = None,
         websites: Optional[
-            Union[List[models.Website], List[models.WebsiteTypedDict]]
+            Union[Iterable[models.Website], Iterable[models.WebsiteTypedDict]]
         ] = None,
         bank_accounts: Optional[
-            Union[List[models.BankAccount], List[models.BankAccountTypedDict]]
+            Union[Iterable[models.BankAccount], Iterable[models.BankAccountTypedDict]]
         ] = None,
         notes: OptionalNullable[str] = UNSET,
         tax_rate: Optional[
@@ -779,23 +1115,26 @@ class Suppliers(BaseSDK):
         issued_method: OptionalNullable[str] = UNSET,
         issued_email: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         tax_details: Optional[
             Union[
-                List[Nullable[models.LinkedTaxDetail]],
-                List[Nullable[models.LinkedTaxDetailTypedDict]],
+                Iterable[Nullable[models.LinkedTaxDetail]],
+                Iterable[Nullable[models.LinkedTaxDetailTypedDict]],
             ]
         ] = None,
         tax_status_details: Optional[
             Union[
-                List[Nullable[models.LinkedTaxStatusDetail]],
-                List[Nullable[models.LinkedTaxStatusDetailTypedDict]],
+                Iterable[Nullable[models.LinkedTaxStatusDetail]],
+                Iterable[Nullable[models.LinkedTaxStatusDetailTypedDict]],
             ]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         subsidiary_id: Optional[str] = None,
         integration_system_id: Optional[str] = None,
@@ -957,6 +1296,7 @@ class Suppliers(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.supplier, False, False, "json", models.SupplierInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -981,9 +1321,91 @@ class Suppliers(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "e-conomic",
+                            "description": "`company_name` (or `display_name`) and `currency` are required. e-conomic also requires a supplier group, a VAT zone and payment terms on every supplier: a create uses supplier group 1 and VAT zone 1, the domestic defaults of a new e-conomic agreement, and payment terms 1 unless you send `terms_id`. To use another group or VAT zone, send `pass_through` with `supplierGroup.supplierGroupNumber` or `vatZone.vatZoneNumber`. An update changes only the fields you send. e-conomic suppliers have no VAT number or website field, so `tax_number` and `websites` are not stored.\ne-conomic has only a barred flag: `status` `inactive` or `archived` bars the supplier and reads back as `inactive`; any other value leaves it active.\nSend an `Idempotency-Key` to make retrying a create safe: Unify sends e-conomic a 32-character key derived from it as e-conomic's own `Idempotency-Key` header, and e-conomic answers a repeat with the original supplier instead of creating a second one. e-conomic keeps a key for one hour, and Unify remembers it for the same hour. Reusing a key with a different body returns 422, from Unify within its hour and from e-conomic while e-conomic still remembers the key; after both have forgotten it, the same key is treated as a new request. Use a new key for every supplier.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "`custom_fields` are returned but cannot be written: Minox accepts them without storing them, so they are left out of create and update requests. `tax_number` must be a valid VAT number; Minox rejects an invalid one with a `400`. Suppliers cannot be deleted.\n\n`currency` must be the administration's own currency; Minox stores a currency together with an exchange rate, which this record has no field for, so any other currency is rejected with a `400`. A supplier in another currency (set up in Minox) cannot be updated through the API: Minox resets the currency of a supplier to the administration's on every update that does not send it, and does not expose the exchange rate to send it back with, so such an update is rejected with a `400`. Sending `notes` empty or `null` clears them. Minox keeps one free-text contact person per address (often with a title, such as \"De heer G. van der Heiden\"), which is not split into `first_name` and `last_name`; those fields, and `individual`, are not supported. Minox has three address types: `billing` and `primary` are stored as the postal address, `shipping` as the delivery address and any other type as the street address, which reads back as `office`. One address of each Minox type is sent: when several map to the same type, `billing` wins over `primary`, and otherwise the first one is used.\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": "Moneybird rejects an email address on a domain that cannot receive mail (for example `example.com`)\nwith a `422`.\n",
+                        },
+                        {
+                            "connector": "snelstart",
+                            "description": "`addresses[].country` is not written. SnelStart requires a country as a reference to an\ninternal country record rather than an ISO code, and this connector does not resolve that\nreference, so the country is left unset on the created record — consistent with SnelStart\nbeing a Netherlands-only accounting platform. `addresses[].street_number` is also not\nwritten separately; SnelStart stores the street name and house number as one combined\nfield, so `line1` and `street_number` are concatenated into it.\n\nA SnelStart contact can be both a customer and a supplier at once. To add the customer\nrole to an existing supplier (or vice versa), call `customers.update`/`suppliers.update`\nwith that contact's id — this connector merges in the new role rather than replacing the\nexisting one, so both survive. There is no field exposing which role(s) a contact has, so\na dual-tagged contact appears, unremarkably, in both `customers.list` and\n`suppliers.list`.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": '`custom_fields` are writable. Identify each field either by its NetSuite internal id or by\nits script id — both forms work, and `id` wins if you send both:\n\n`"custom_fields": [{"id": "987", "value": "ACME-123"}, {"name": "custentity_vendor_flag", "value": true}]`\n\n**The NetSuite field type is derived from the JSON value you send, not from the field\'s real\ntype**, so the value\'s shape decides how it is transmitted:\n\n- `true` / `false`, or the strings `"true"` / `"false"` → check box\n- a number, **and any string made only of digits** — `7`, `10.5`, `"12345"` → decimal number.\n  A numeric code that belongs in a text field must therefore not be sent as a digits-only\n  string: it reaches NetSuite as a number and is stored as one, so `"007"` is stored as `7.0`.\n- a date — both `"2026-08-18"` and a full `"2026-08-18T09:00:00Z"` → date field\n- anything else → free-form text\n- an object or array is serialized to JSON text, so `"value": []` stores `[]`\n\nA list (dropdown) field does not follow these rules. Send the internal id of the option as\n`value` and identify the field by its script id, in `name` or in `id`:\n`{"name": "custentity_region_list", "value": "2"}`. The value is then stored as that option. The\nconnector learns that the field is a list field from NetSuite\'s field definitions; if they\ncannot be read for the connection, the option id is sent as a number and NetSuite rejects it.\nA list field identified only by its numeric internal id is also sent as a number.\n\nAn entry with `value: null`, or with no `value`, is rejected with a `400`, except a custom\nsegment (a `name` starting with `cseg`), which is sent without a value.\n\nA `cseg_*` custom segment needs both keys — its internal id in `id` and the segment script id\nin `name`, with the referenced record\'s internal id as the value:\n`{"id": "801", "name": "cseg_region", "value": "42"}`.\n\nA value read from `GET /accounting/suppliers/{id}` can be sent back unchanged. A text field\nholding `{"a":1}` reads back as the object `{"a": 1}`, and sending that object back stores\n`{"a":1}` again.\n\nDate-only values need no configuration between UTC-10 and UTC+13: the connector anchors them to\n10:00 UTC before sending, because NetSuite resolves the instant against the account\'s time zone\nand an unanchored value would store the previous calendar day. Four zones fall outside that\nrange and still shift by a day — `Pacific/Pago_Pago`, `Pacific/Niue` and `Pacific/Midway`\n(UTC-11) store one day early, `Pacific/Kiritimati` (UTC+14) one day late. Unlike the date fields\non other resources, the optional `timezone` connection setting does **not** cover custom fields:\nthat anchoring runs in the mapping layer, which this path does not go through. In those four\nzones, send the value as a full dateTime you have offset yourself.\n\nTwo rejections to expect, both naming the offending field. A field that is read-only or owned\nby a NetSuite bundle returns `INSUFFICIENT_PERMISSION` — "You do not have permissions to set\na value for element custentity_x". A value NetSuite cannot convert to the field\'s real type\nreturns `INVALID_FLD_VALUE` — "You have entered an Invalid Field Value hello for the\nfollowing field: custentity_x". A text field converts instead of rejecting, as with `"007"`\nabove.\n\nHow much of each array is written depends on whether the supplier is a company or an\nindividual — NetSuite keeps different contact fields on each. A company holds four phone\nnumbers (`primary`, `secondary`, `mobile`, `fax`), one email (`primary`) and one website;\nan individual holds five phone numbers (those four plus `home`), two emails (`primary` and\n`secondary`) and one website. Entries of any other type are ignored.\n\n`home` and the `secondary` email exist only on a supplier marked as an individual, so send\n`individual: true` in the same request or both are dropped. When two entries share a\ntype, the first one is used.\n\nThe website must be the `primary` entry, start with `http://`, `https://`, `ftp://` or\n`file://` and contain no spaces. For an individual it is saved in a second request to\nNetSuite, after the supplier is created. If that request fails, the response is an error\nthat gives the id of the supplier that was created without its website; update that\nsupplier instead of creating it again.\n',
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "Only `active` and `inactive` are applied. Sage's status field has no other members, so any\nother value from the unified enum is ignored and the record keeps its current status rather\nthan the write being rejected.\n",
+                        },
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "On create, QuickBooks Desktop stores `display_name` (or `company_name` when it is missing), `company_name`, `first_name`, `last_name`, the `billing` address (the first address when none is typed `billing`), the `primary` and `fax` phone numbers and the `primary` email. An `other` or `secondary` phone number is not stored on create.\n\nWrites are applied on the Web Connector's next run, so a create can return a `504` timeout after 28 seconds while QuickBooks still creates the supplier; a re-sent create is rejected because the name is already in use (error 3100). Read suppliers by `filter[display_name]` before retrying.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks only supports a single billing address. Therefore, the first item in the addresses array will always be mapped as the billing address, regardless of its original type.",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite only supports a single billing address. Therefore, the first item in the addresses array will always be mapped as the billing address, regardless of its original type.",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "If you encounter a '400 Bad Request' error indicating \"Control 'fieldName' is read-only\" it means the 'editable' property for this field in Microsoft Dynamics 365 Business Central is currently set to false. To resolve this issue and make the field writable, simply update the 'editable' property to true in Microsoft Dynamics 365 Business Central.\n",
+                        },
+                        {
+                            "connector": "freshbooks",
+                            "description": "Freshbooks API set status to active by default for new suppliers. To change the status, you can use the Update Supplier endpoint.\n",
+                        },
+                        {
+                            "connector": "workday",
+                            "description": "In Workday, the supplier_category, display_name, addresses, emails, company_id, currency, terms, and payment_method fields are required to create a supplier. display_name and company_id should be same.\n",
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": 'Creating a supplier requires a correspondence language and a business partner grouping. The language\ndefaults to `EN`. The grouping is taken from the connection\'s **Default Business Partner Grouping**\nsetting, or `BP01` when that is empty. Override either one for a single request with `pass_through`\n(`extend_object`), for example:\n\n`"pass_through": [{"service_id": "sap-s4hana-cloud", "extend_object": {"BusinessPartnerGrouping": "BP02", "CorrespondenceLanguage": "DE"}}]`\n\nA request with `first_name` or `last_name` creates a person; otherwise it creates a company. SAP\nbuilds `display_name` from the company name, or from the first and last name. A request that sends a\nnon-empty `company_name` for a person, or a non-empty `display_name` that differs from the name SAP\nbuilds, is rejected with a `400` and no supplier is created.\n\n**Tax number.** `tax_number` is stored as the supplier\'s tax number. SAP files it under a tax number category\nthat depends on the country: the connector uses the two-letter `country` of the standard address (the\nfirst address written) plus `0`, SAP\'s VAT registration category (`DE0`, `NL0`, `GB0`, `FR0`). SAP\nrejects a category it does not have, such as `US0`, and nothing is created; for such a country, add the\ntax number in SAP. A non-empty `tax_number` needs an address with a two-letter `country` and can have\n20 characters; otherwise the request is rejected with a `400` naming the problem, and nothing is created.\n\n`CorrespondenceLanguage` sets the language of a person. SAP keeps the language of a company on its\naddress, so for a company send `"to_BusinessPartnerAddress": {"results": [{"Language": "DE"}]}` in the\nsame `extend_object` instead.\n\n**Which grouping to use depends on the SAP tenant.** Each tenant configures whether a grouping assigns\nnumbers automatically. If the grouping requires a manually assigned number, SAP returns\n`400 Grouping <code> has external number assignment. Please enter a valid number.` Either use a grouping\nthat assigns numbers automatically, or supply the number in the same `extend_object`, next to the\ngrouping it belongs to, as `"BusinessPartner": "<8–10 digit number, unique in the tenant>"`. A grouping\nthat assigns numbers automatically ignores a supplied number and assigns its own.\n\n**Company code.** A supplier can only be used on bills and bill payments once it is set up in a company code.\nSend `company_id` together with `account.id` (the reconciliation account, a G/L account number) to create\nthe supplier in that company code. When `account.id` is omitted, the connection\'s\n**Default Supplier Reconciliation Account** is used. If neither is available the supplier is created\nwithout a company code, and `company_id` has no effect. Send `terms` with an SAP payment terms key (for\nexample `0004`) to set the supplier\'s payment terms in that company code. `account` and `terms` have no\neffect without `company_id`, `terms` cannot be changed by an update, and none of the three is returned when the supplier is read. If SAP does\nnot accept the company code, the account or the payment terms, the request fails with SAP\'s message and\nnothing is created. A supplier created without `terms` has no payment terms in SAP, so SAP cannot work\nout when its bills are due: send `due_date` when creating a bill for it.\n\n**Addresses.** Send at least one address, each with a `country` (e.g. `US`, `DE`). An address without a\n`country` rejects the whole request with a `400` naming it (for example `addresses[1] has no country`) and\nnothing is created. Every address is written: the one with type `primary` (or else the first) first, the\nothers after it in request order. The first one becomes the standard address in SAP and reads back as\n`primary`; the others read back as `secondary`, whatever `type` was sent. `line1` is stored as the street,\n`street_number` as the house number, `line2` and `line3` as SAP\'s Street 4 and Street 5 fields. This\nconnector does not write the address fields `email`, `phone_number`, `website`, `fax`, `name`, `county`,\n`contact_name`, `salutation`, `notes`, `line4`, `line5`, `string`, `latitude` and `longitude`, so an\naddress with a value in any of them rejects the request with a `400` naming every such field (for example\n`addresses[1].fax`) and nothing is created; empty, whitespace-only or `null` values are ignored. Send an\naddress\'s email, phone number or website in the top-level `emails`, `phone_numbers` or `websites` list\ninstead, and the street in `line1` and `street_number` rather than `string`. A value longer than SAP\nstores rejects the request with a `400` naming the field (for example\n`addresses[0].line2 is longer than 40 characters`) and nothing is created. The limits are: `line1` 60,\n`street_number` 10, `line2` 40, `line3` 40, `city` 40, `state` 3, `postal_code` 10 and `country` 3\ncharacters.\n\n**Emails, phone numbers and websites** are stored on the standard address (the first address written), not\non the supplier itself, so a request with any of them and no address is rejected with a `400` naming the lists\n(for example `emails and phone_numbers need an address with a country`) and nothing is created. A value\nthat is only whitespace (for example `phone_numbers[1].number is blank`) is rejected the same way. SAP makes\nthe first entry of each kind its default, so the entry typed `primary` is written first and the rest in\nrequest order. With several entries typed `primary`, only the first is written first and becomes SAP\'s\ndefault; the others read back as `secondary`. Mobile numbers are written in request order and always read\nback as `mobile`, so a mobile number is never the `primary` entry. At most one entry per list reads back as\n`primary`, and a list with only mobile numbers has none. SAP stores no label on an email or a website and only landline or\nmobile on a phone: a phone with `type` `mobile` is stored as a mobile number, and every other phone type\n(`home`, `work`, `fax`, ...) is stored as a landline. An email or website of any type, for example\n`billing`, is stored without its type and the request succeeds.\n\n**Phone details.** `extension` is stored (up to 10 characters) and returned. `country_code` and `area_code`\nare folded into `number` as `+<country_code> <area_code> <number>` when `number` does not start with `+`,\nand are not returned separately. A `number` that starts with `00` is already international: it is stored\nwith the `00` replaced by `+`, and `country_code` and `area_code` are not added to it. A leading `0` is\nstored as sent, because whether it is a national trunk prefix depends on the country. With `country_code`,\nsend `area_code` and `number` without the national trunk prefix (`country_code` `31`, `area_code` `20`, not `020`),\nso the number is stored as `+31 20 555 0104`. Without `country_code`, SAP derives the international number from the address country, so a\nnational number such as `020 555 0104` is stored correctly. A number can have 30 characters in SAP; the\nlimit applies to the stored value, dial codes included, and a longer value is rejected naming\n`phone_numbers[i].number`. Emails can have 241 characters and websites 132: SAP keeps\n132 characters of a website address, so a longer one is rejected rather than stored cut short.\n\n**`pass_through`.** `extend_object` for `to_BusinessPartnerAddress` is applied by array position after the\nprimary address has been moved first: `results[0]` is the standard address, and the contacts above are\ninside it. Setting `{"to_BusinessPartnerAddress": {"results": [{"Language": "DE"}]}}` changes the language of\nthat address only and keeps its contacts. A value set at a position the connector also writes, for example\n`to_EmailAddress.results[0].EmailAddress`, overwrites that entry\'s value, and a flag such as\n`IsDefaultEmailAddress` is added to the entry. Send contacts in `emails`, `phone_numbers` and `websites`,\nnot through `pass_through`.\n\n**Status.** `status: inactive` creates the supplier blocked. `active`, any other value, or no status creates it\nactive.\n',
+                        },
+                        {
+                            "connector": "exact-online",
+                            "description": "Exact does not enforce uniqueness on the supplier name — posting the same `display_name`/\n`company_name` twice creates two separate suppliers, both with a `201`. This connector\npasses the name through as sent rather than matching on write; the caller owns\nde-duplication (for example, checking `suppliers.list` for an existing name, or storing\nthe returned `id` and reusing it) before creating a supplier that may already exist.\n",
+                        },
+                        {
+                            "connector": "exact-online-nl",
+                            "description": "Exact does not enforce uniqueness on the supplier name — posting the same `display_name`/\n`company_name` twice creates two separate suppliers, both with a `201`. This connector\npasses the name through as sent rather than matching on write; the caller owns\nde-duplication (for example, checking `suppliers.list` for an existing name, or storing\nthe returned `id` and reusing it) before creating a supplier that may already exist.\n",
+                        },
+                        {
+                            "connector": "exact-online-uk",
+                            "description": "Exact does not enforce uniqueness on the supplier name — posting the same `display_name`/\n`company_name` twice creates two separate suppliers, both with a `201`. This connector\npasses the name through as sent rather than matching on write; the caller owns\nde-duplication (for example, checking `suppliers.list` for an existing name, or storing\nthe returned `id` and reusing it) before creating a supplier that may already exist.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "A country sent as an ISO 3166-1 alpha-2 code is saved under its Norwegian name, as Fiken's own screens save it. A supplier saved without a country is stored with Norway.\n",
+                        },
+                        {
+                            "connector": "visma-netvisor",
+                            "description": "`tax_number` is required: send the supplier's Finnish Business ID (Y-tunnus, for example `1234567-1`), not the VAT number (`FI12345678`). It reads back the same way. Netvisor stores no separate display name: `display_name` reads back as the company name.\nAlso send `currency`, an address with `country`, and at least one phone number or email; Netvisor rejects a supplier without them.\n",
+                        },
+                        {
+                            "connector": "myob",
+                            "description": "`tax_rate.id` is required: MYOB needs a purchase tax code on every supplier, and it is also used as the freight tax code. `currency` is not set on create. Only one bank account is stored; its `account_name` is saved in uppercase and may hold up to 32 letters, digits, spaces and `- / * & .`.\n`tax_number` is saved as the Australian ABN when it has 11 digits (spaces allowed), and as MYOB's Tax ID number otherwise. Reads return the ABN when the supplier has one, otherwise the Tax ID number.\nMYOB stores up to five addresses by position and keeps no address type: the `primary` address becomes the first, `secondary` the second, and any other address follows them. Addresses read back by position — the first as `primary`, the second as `secondary` and the rest as `other` — so a `billing` or `shipping` address sent with a `primary` one reads back as `secondary`. Only `line1`, `city`, `state`, `postal_code`, `country`, `phone_number`, `fax`, `email`, `website`, `contact_name` and `salutation` are stored; `line2` to `line4` and other address fields are ignored, and an address with none of the stored fields is rejected with a `400`. Address `id` values are ignored on create.\n`emails` and `websites` accept `primary` and `secondary`; `phone_numbers` also accepts `mobile` and `fax`, which are stored on the primary address. A `secondary` address, email, website or phone number needs something stored on the first address in the same request: a `primary` address, a `primary` email, website or phone number, or a `mobile` or `fax` number. Requests MYOB cannot represent, such as more than five addresses or two `primary` emails, are rejected with a `400`.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -991,10 +1413,9 @@ class Suppliers(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingSuppliersAddResponse(
                 create_supplier_response=unmarshal_json_response(
-                    Optional[models.CreateSupplierResponse], http_res
+                    Optional[models.CreateSupplierResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1035,10 +1456,9 @@ class Suppliers(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSuppliersAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1111,6 +1531,7 @@ class Suppliers(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1135,9 +1556,31 @@ class Suppliers(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "twinfield",
+                            "description": "A Twinfield supplier can have several addresses and bank accounts. `addresses`, `phone_numbers` and\n`bank_accounts` return one entry each: the address or bank account marked as default in Twinfield, or\nthe first one when none is marked. `emails` returns one entry: the supplier's e-billing\nemail address in Twinfield (the one a create or update through this API sets), or the email of that\nsame address when no e-billing email is set.\n\nIn an address, `contact_name` is Twinfield's first address field and `line1` and `line2` are its second\nand third. That matches Twinfield's standard address layout, where the first field is the attention\nline and the next two hold the street. An administration that renamed those fields in Twinfield gets\nthem in the same positions. Creating or updating a supplier writes the same three fields.\n\n`status` is `active`, or `archived` for a supplier that was deleted in Twinfield, including one Twinfield\nkeeps hidden because it is used in a transaction.\n",
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "Customers and suppliers are both SAP business partners. A business partner that does not have the\nsupplier role returns `404` here, even if it exists as a customer.\n\n`emails`, `phone_numbers` and `websites` combine the entries SAP keeps on each of the supplier's addresses\nwith the ones kept on the supplier itself: the standard address's entries first, then the other addresses' in\nSAP's order, then the supplier's own. `phone_numbers` lists the landlines first, then the mobile numbers, each in\nthat order. Every entry has an `id` that is unique within its list. At most one entry per list is\n`primary`: the entry SAP marks as default on the standard address or, when that address has none, the\nfirst entry SAP marks as default. Every other entry is `secondary`; mobile numbers are `mobile`, so a list with only mobile numbers has no `primary`.\n`phone_numbers[].extension` is returned when SAP holds one.\n\n`addresses[].type` is `primary` for the supplier's standard address in SAP and `secondary` for every other\naddress. `line1` is the street, `street_number` the house number, and `line2` and `line3` are SAP's\nStreet 4 and Street 5 fields.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Customers and suppliers are both Fiken contacts. A contact that is a customer but not a supplier returns `404` here. Countries are returned as ISO 3166-1 alpha-2 codes. Fiken stores a country as free text, normally its Norwegian name; a stored value that is not a recognised country name is returned as stored.\n",
+                        },
+                        {
+                            "connector": "workday",
+                            "description": "Address lines on supplier reads: when Workday's address format for the country splits the street into components, `addresses[].line1` is built from them in this order: the street type when there is one (for example Spanish `Calle` or `Carrer`), then the street name, then the house number; so a Spanish address reads `Calle Montesa 16` and the house number is also returned as `street_number`. `line1` always places the house number after the street name, even where Workday's own formatted address in `string` puts it first, as for France and South Africa (`Rue Juliette Lamber 13`). When the format has a house number but no labelled street name, the lowest-numbered other component is used as the street name. The remaining typed components (building, unit, floor and similar) fill `line2` to `line5` in Workday's line order. For formats without a street-type or street-name component and without a house-number component (for example the US), `line1` is the lowest-numbered address line as Workday returns it, the others follow in `line2` to `line5`, and `street_number` is omitted.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1145,10 +1588,9 @@ class Suppliers(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingSuppliersOneResponse(
                 get_supplier_response=unmarshal_json_response(
-                    Optional[models.GetSupplierResponse], http_res
+                    Optional[models.GetSupplierResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1189,10 +1631,9 @@ class Suppliers(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSuppliersOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1265,6 +1706,7 @@ class Suppliers(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1289,9 +1731,31 @@ class Suppliers(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "twinfield",
+                            "description": "A Twinfield supplier can have several addresses and bank accounts. `addresses`, `phone_numbers` and\n`bank_accounts` return one entry each: the address or bank account marked as default in Twinfield, or\nthe first one when none is marked. `emails` returns one entry: the supplier's e-billing\nemail address in Twinfield (the one a create or update through this API sets), or the email of that\nsame address when no e-billing email is set.\n\nIn an address, `contact_name` is Twinfield's first address field and `line1` and `line2` are its second\nand third. That matches Twinfield's standard address layout, where the first field is the attention\nline and the next two hold the street. An administration that renamed those fields in Twinfield gets\nthem in the same positions. Creating or updating a supplier writes the same three fields.\n\n`status` is `active`, or `archived` for a supplier that was deleted in Twinfield, including one Twinfield\nkeeps hidden because it is used in a transaction.\n",
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "Customers and suppliers are both SAP business partners. A business partner that does not have the\nsupplier role returns `404` here, even if it exists as a customer.\n\n`emails`, `phone_numbers` and `websites` combine the entries SAP keeps on each of the supplier's addresses\nwith the ones kept on the supplier itself: the standard address's entries first, then the other addresses' in\nSAP's order, then the supplier's own. `phone_numbers` lists the landlines first, then the mobile numbers, each in\nthat order. Every entry has an `id` that is unique within its list. At most one entry per list is\n`primary`: the entry SAP marks as default on the standard address or, when that address has none, the\nfirst entry SAP marks as default. Every other entry is `secondary`; mobile numbers are `mobile`, so a list with only mobile numbers has no `primary`.\n`phone_numbers[].extension` is returned when SAP holds one.\n\n`addresses[].type` is `primary` for the supplier's standard address in SAP and `secondary` for every other\naddress. `line1` is the street, `street_number` the house number, and `line2` and `line3` are SAP's\nStreet 4 and Street 5 fields.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Customers and suppliers are both Fiken contacts. A contact that is a customer but not a supplier returns `404` here. Countries are returned as ISO 3166-1 alpha-2 codes. Fiken stores a country as free text, normally its Norwegian name; a stored value that is not a recognised country name is returned as stored.\n",
+                        },
+                        {
+                            "connector": "workday",
+                            "description": "Address lines on supplier reads: when Workday's address format for the country splits the street into components, `addresses[].line1` is built from them in this order: the street type when there is one (for example Spanish `Calle` or `Carrer`), then the street name, then the house number; so a Spanish address reads `Calle Montesa 16` and the house number is also returned as `street_number`. `line1` always places the house number after the street name, even where Workday's own formatted address in `string` puts it first, as for France and South Africa (`Rue Juliette Lamber 13`). When the format has a house number but no labelled street name, the lowest-numbered other component is used as the street name. The remaining typed components (building, unit, floor and similar) fill `line2` to `line5` in Workday's line order. For formats without a street-type or street-name component and without a house-number component (for example the US), `line1` is the lowest-numbered address line as Workday returns it, the others follow in `line2` to `line5`, and `street_number` is omitted.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1299,10 +1763,9 @@ class Suppliers(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingSuppliersOneResponse(
                 get_supplier_response=unmarshal_json_response(
-                    Optional[models.GetSupplierResponse], http_res
+                    Optional[models.GetSupplierResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1343,10 +1806,9 @@ class Suppliers(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSuppliersOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1375,17 +1837,19 @@ class Suppliers(BaseSDK):
         suffix: OptionalNullable[str] = UNSET,
         individual: OptionalNullable[bool] = UNSET,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         phone_numbers: Optional[
-            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+            Union[Iterable[models.PhoneNumber], Iterable[models.PhoneNumberTypedDict]]
         ] = None,
-        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        emails: Optional[
+            Union[Iterable[models.Email], Iterable[models.EmailTypedDict]]
+        ] = None,
         websites: Optional[
-            Union[List[models.Website], List[models.WebsiteTypedDict]]
+            Union[Iterable[models.Website], Iterable[models.WebsiteTypedDict]]
         ] = None,
         bank_accounts: Optional[
-            Union[List[models.BankAccount], List[models.BankAccountTypedDict]]
+            Union[Iterable[models.BankAccount], Iterable[models.BankAccountTypedDict]]
         ] = None,
         notes: OptionalNullable[str] = UNSET,
         tax_rate: Optional[
@@ -1405,23 +1869,26 @@ class Suppliers(BaseSDK):
         issued_method: OptionalNullable[str] = UNSET,
         issued_email: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         tax_details: Optional[
             Union[
-                List[Nullable[models.LinkedTaxDetail]],
-                List[Nullable[models.LinkedTaxDetailTypedDict]],
+                Iterable[Nullable[models.LinkedTaxDetail]],
+                Iterable[Nullable[models.LinkedTaxDetailTypedDict]],
             ]
         ] = None,
         tax_status_details: Optional[
             Union[
-                List[Nullable[models.LinkedTaxStatusDetail]],
-                List[Nullable[models.LinkedTaxStatusDetailTypedDict]],
+                Iterable[Nullable[models.LinkedTaxStatusDetail]],
+                Iterable[Nullable[models.LinkedTaxStatusDetailTypedDict]],
             ]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         subsidiary_id: Optional[str] = None,
         integration_system_id: Optional[str] = None,
@@ -1583,6 +2050,7 @@ class Suppliers(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.supplier, False, False, "json", models.SupplierInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1607,9 +2075,61 @@ class Suppliers(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Updates need `row_version` from a prior read of the record: without it the update is rejected with `Missing required field: data.editSequence`.\n\nWrites are applied on the Web Connector's next run, so an update can return a `504` timeout after 28 seconds while QuickBooks still applies it. Read the record back before retrying.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "A supplier in a currency other than the administration's (set up in Minox) cannot be\nupdated: Minox resets the currency to the administration's on every update that does not\nsend it, and never returns the exchange rate it would have to be sent back with, so the\nupdate is rejected with a `400` rather than silently changing the currency. `currency`, when\nsent, must be the administration's own. Only the fields sent are changed: addresses and\ncontacts are left alone unless `addresses`, `company_name`, `emails`, `phone_numbers` or\n`websites` are in the body. Sending `notes` empty or `null` clears them.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": '`custom_fields` are writable. Identify each field either by its NetSuite internal id or by\nits script id — both forms work, and `id` wins if you send both:\n\n`"custom_fields": [{"id": "987", "value": "ACME-123"}, {"name": "custentity_vendor_flag", "value": true}]`\n\n**The NetSuite field type is derived from the JSON value you send, not from the field\'s real\ntype**, so the value\'s shape decides how it is transmitted:\n\n- `true` / `false`, or the strings `"true"` / `"false"` → check box\n- a number, **and any string made only of digits** — `7`, `10.5`, `"12345"` → decimal number.\n  A numeric code that belongs in a text field must therefore not be sent as a digits-only\n  string: it reaches NetSuite as a number and is stored as one, so `"007"` is stored as `7.0`.\n- a date — both `"2026-08-18"` and a full `"2026-08-18T09:00:00Z"` → date field\n- anything else → free-form text\n- an object or array is serialized to JSON text, so `"value": []` stores `[]`\n\nA list (dropdown) field does not follow these rules. Send the internal id of the option as\n`value` and identify the field by its script id, in `name` or in `id`:\n`{"name": "custentity_region_list", "value": "2"}`. The value is then stored as that option. The\nconnector learns that the field is a list field from NetSuite\'s field definitions; if they\ncannot be read for the connection, the option id is sent as a number and NetSuite rejects it.\nA list field identified only by its numeric internal id is also sent as a number.\n\nAn entry with `value: null`, or with no `value`, is rejected with a `400`, except a custom\nsegment (a `name` starting with `cseg`), which is sent without a value.\n\nA `cseg_*` custom segment needs both keys — its internal id in `id` and the segment script id\nin `name`, with the referenced record\'s internal id as the value:\n`{"id": "801", "name": "cseg_region", "value": "42"}`.\n\nA value read from `GET /accounting/suppliers/{id}` can be sent back unchanged. A text field\nholding `{"a":1}` reads back as the object `{"a": 1}`, and sending that object back stores\n`{"a":1}` again.\n\nDate-only values need no configuration between UTC-10 and UTC+13: the connector anchors them to\n10:00 UTC before sending, because NetSuite resolves the instant against the account\'s time zone\nand an unanchored value would store the previous calendar day. Four zones fall outside that\nrange and still shift by a day — `Pacific/Pago_Pago`, `Pacific/Niue` and `Pacific/Midway`\n(UTC-11) store one day early, `Pacific/Kiritimati` (UTC+14) one day late. Unlike the date fields\non other resources, the optional `timezone` connection setting does **not** cover custom fields:\nthat anchoring runs in the mapping layer, which this path does not go through. In those four\nzones, send the value as a full dateTime you have offset yourself.\n\nTwo rejections to expect, both naming the offending field. A field that is read-only or owned\nby a NetSuite bundle returns `INSUFFICIENT_PERMISSION` — "You do not have permissions to set\na value for element custentity_x". A value NetSuite cannot convert to the field\'s real type\nreturns `INVALID_FLD_VALUE` — "You have entered an Invalid Field Value hello for the\nfollowing field: custentity_x". A text field converts instead of rejecting, as with `"007"`\nabove.\n\nHow much of each array is written depends on whether the supplier is a company or an\nindividual — NetSuite keeps different contact fields on each. A company holds four phone\nnumbers (`primary`, `secondary`, `mobile`, `fax`), one email (`primary`) and one website;\nan individual holds five phone numbers (those four plus `home`), two emails (`primary` and\n`secondary`) and one website. Entries of any other type are ignored.\n\n`home` and the `secondary` email exist only on a supplier that is an individual, and are\nignored on a company. On an update you do not need to restate `individual` — the layout\nis read from the existing record when the request touches one of those fields. When two\nentries share a type, the first one is used.\n\nThe website must be the `primary` entry, start with `http://`, `https://`, `ftp://` or\n`file://` and contain no spaces. For an individual it is saved in a second request to\nNetSuite, after the rest of the supplier. If that request fails, the response is an error\nthat says the supplier was saved but the website was not; a website the supplier already had\nstays as it was.\n',
+                        },
+                        {
+                            "Procountor only accepts the following values for the channel field": "EMAIL, MAIL, ELECTRONIC_INVOICE, EDIFACT, PAPER_INVOICE, NO_SENDING.",
+                            "Procountor only accepts the following values for the payment_method field": "BANK_TRANSFER, DIRECT_DEBIT, DIRECT_PAYMENT, CLEARING, CREDIT_CARD_CHARGE, FOREIGN_PAYMENT, OTHER, CASH, DOMESTIC_PAYMENT_PLUSGIRO, DOMESTIC_PAYMENT_BANKGIRO, DOMESTIC_PAYMENT_CREDITOR, DKLMPKRE, NETS.",
+                            "connector": "procountor-fi",
+                            "description": "",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks only supports a single billing address. Therefore, the first item in the addresses array will always be mapped as the billing address, regardless of its original type.",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite only supports a single billing address. Therefore, the first item in the addresses array will always be mapped as the billing address, regardless of its original type.",
+                        },
+                        {
+                            "connector": "freshbooks",
+                            "description": 'The status field can be updated to either "active" or "archived".\n',
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": 'The status field can be updated to either "active" or "inactive".\nPlease send status updates separately from other updates for the supplier.\n',
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "Only `first_name`, `last_name`, `company_name`, `tax_number` and `status` can be updated.\n\nSAP builds `display_name` from the name fields.\n`first_name` and `last_name` don't apply to a company, and `company_name` doesn't apply to a person.\nAn update that sends one of these with a value the record doesn't hold is rejected with a `400` and\nnothing is changed. A `display_name` matching the name the update produces is accepted, so sending\nthe values a read returned works. An update that sends only `display_name` is also\nrejected with a `400`: with the reason above when the value differs from the record, and as having\nnothing to update when it matches.\n\n**Tax number.** A `tax_number` that differs from the one the supplier holds is written after the other\nfields, as a request of its own. When the supplier holds a tax number, the one a read returns is changed,\nin the category it already has. When it holds none, one is added in the category chosen as on create,\nfrom the `country` of the standard address (`DE0` for a German address); SAP rejects a category it does\nnot have, such as `US0`. Adding one needs the supplier's standard address to have a two-letter `country`;\nwithout it the update is rejected with a `400` and nothing is changed. Changing a held tax number does not\nneed the country. A `tax_number` equal to a stored one, or empty, changes nothing. A `tax_number`\ncan have 20 characters. Because the tax\nnumber is a second request, if SAP refuses it the other fields of the update have already been\napplied; the error says so, and sending the request again is safe. When SAP does not answer clearly,\nthe tax number may or may not have been stored: the error says so too, and asks to read the supplier\nbefore sending the request again. An update with only `tax_number` changes nothing else.\n\nUpdates that include entries in `addresses`, `bank_accounts`, `emails`, `phone_numbers` or `websites` are\nrejected with a `400` and nothing is updated. Lists can only be set when the record is created, or changed\nin SAP. Leave these fields out, or send them empty, to keep them unchanged: an empty list is ignored and\nclears nothing, because clearing a list is not supported. `terms` is rejected too when it has a value: it\ncan only be set when the record is created.\n\n`company_id` and `account` are ignored on update: a company code cannot be added or changed through this\nendpoint. An update that contains none of the fields that can be updated, and no `pass_through` for\nthis connector, is rejected with a `400`.\n`status` only changes when it is sent, so updating an inactive record leaves it inactive.\n\nA business partner that does not have the supplier role returns `404` and nothing is changed. If the\nrole can't be verified (for example SAP is unavailable), the request fails and nothing is changed; a\n`429` or `5xx` can be retried.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Fiken replaces the whole contact on every update, so fields you leave out keep their current value, including the contact persons, language, discount, default payment terms and member number that the unified model does not expose. Send a field as `null` to clear it. An address sent with only some fields changes only those fields. The contact name is taken from `company_name`, then `display_name`, then the name parts, so send the one you want to change. Customers and suppliers are both Fiken contacts. A contact that is a customer but not a supplier returns `404` here. A country sent as an ISO 3166-1 alpha-2 code is saved under its Norwegian name, as Fiken's own screens save it. A supplier saved without a country is stored with Norway.\n",
+                        },
+                        {
+                            "connector": "myob",
+                            "description": 'Only the fields you send change; everything else on the supplier, including details the unified model does not expose, is kept. To do this, each update first reads the supplier (two MYOB calls), so the application also needs read consent on suppliers; without it the update returns `403`. If the supplier cannot be read, nothing is sent: `404` when it does not exist, the error MYOB returned (for example `401` or `429`), or `503` for a temporary failure that can be retried. `row_version` is optional; a stale one returns `409`. `currency` is not updated, and a field cannot be cleared by sending it empty or `null`. Changing `tax_rate` changes the purchase tax code only; the freight tax code keeps its value. `tax_number` is written as on create: to the ABN when it has 11 digits, otherwise to the Tax ID number. Reads return the ABN first, so writing a Tax ID number removes a stored ABN.\nEach address has an `id` that is its position (`"1"` to `"5"`): send it to change that address. An `id` that does not exist on the supplier, is not written as the read returns it, or whose `type` names another position returns `400`. Without an `id`, a `primary` or `secondary` address changes the first or second address, and any other address is added after the existing ones, so retrying that request adds it again; an update that would leave more than five addresses returns `400`. Addresses cannot be removed. Address fields, contact and bank-account rules are the same as on create.\n',
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1617,10 +2137,9 @@ class Suppliers(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingSuppliersUpdateResponse(
                 update_supplier_response=unmarshal_json_response(
-                    Optional[models.UpdateSupplierResponse], http_res
+                    Optional[models.UpdateSupplierResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1661,10 +2180,9 @@ class Suppliers(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSuppliersUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1693,17 +2211,19 @@ class Suppliers(BaseSDK):
         suffix: OptionalNullable[str] = UNSET,
         individual: OptionalNullable[bool] = UNSET,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         phone_numbers: Optional[
-            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+            Union[Iterable[models.PhoneNumber], Iterable[models.PhoneNumberTypedDict]]
         ] = None,
-        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        emails: Optional[
+            Union[Iterable[models.Email], Iterable[models.EmailTypedDict]]
+        ] = None,
         websites: Optional[
-            Union[List[models.Website], List[models.WebsiteTypedDict]]
+            Union[Iterable[models.Website], Iterable[models.WebsiteTypedDict]]
         ] = None,
         bank_accounts: Optional[
-            Union[List[models.BankAccount], List[models.BankAccountTypedDict]]
+            Union[Iterable[models.BankAccount], Iterable[models.BankAccountTypedDict]]
         ] = None,
         notes: OptionalNullable[str] = UNSET,
         tax_rate: Optional[
@@ -1723,23 +2243,26 @@ class Suppliers(BaseSDK):
         issued_method: OptionalNullable[str] = UNSET,
         issued_email: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         tax_details: Optional[
             Union[
-                List[Nullable[models.LinkedTaxDetail]],
-                List[Nullable[models.LinkedTaxDetailTypedDict]],
+                Iterable[Nullable[models.LinkedTaxDetail]],
+                Iterable[Nullable[models.LinkedTaxDetailTypedDict]],
             ]
         ] = None,
         tax_status_details: Optional[
             Union[
-                List[Nullable[models.LinkedTaxStatusDetail]],
-                List[Nullable[models.LinkedTaxStatusDetailTypedDict]],
+                Iterable[Nullable[models.LinkedTaxStatusDetail]],
+                Iterable[Nullable[models.LinkedTaxStatusDetailTypedDict]],
             ]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         subsidiary_id: Optional[str] = None,
         integration_system_id: Optional[str] = None,
@@ -1901,6 +2424,7 @@ class Suppliers(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.supplier, False, False, "json", models.SupplierInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1925,9 +2449,61 @@ class Suppliers(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Updates need `row_version` from a prior read of the record: without it the update is rejected with `Missing required field: data.editSequence`.\n\nWrites are applied on the Web Connector's next run, so an update can return a `504` timeout after 28 seconds while QuickBooks still applies it. Read the record back before retrying.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "A supplier in a currency other than the administration's (set up in Minox) cannot be\nupdated: Minox resets the currency to the administration's on every update that does not\nsend it, and never returns the exchange rate it would have to be sent back with, so the\nupdate is rejected with a `400` rather than silently changing the currency. `currency`, when\nsent, must be the administration's own. Only the fields sent are changed: addresses and\ncontacts are left alone unless `addresses`, `company_name`, `emails`, `phone_numbers` or\n`websites` are in the body. Sending `notes` empty or `null` clears them.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": '`custom_fields` are writable. Identify each field either by its NetSuite internal id or by\nits script id — both forms work, and `id` wins if you send both:\n\n`"custom_fields": [{"id": "987", "value": "ACME-123"}, {"name": "custentity_vendor_flag", "value": true}]`\n\n**The NetSuite field type is derived from the JSON value you send, not from the field\'s real\ntype**, so the value\'s shape decides how it is transmitted:\n\n- `true` / `false`, or the strings `"true"` / `"false"` → check box\n- a number, **and any string made only of digits** — `7`, `10.5`, `"12345"` → decimal number.\n  A numeric code that belongs in a text field must therefore not be sent as a digits-only\n  string: it reaches NetSuite as a number and is stored as one, so `"007"` is stored as `7.0`.\n- a date — both `"2026-08-18"` and a full `"2026-08-18T09:00:00Z"` → date field\n- anything else → free-form text\n- an object or array is serialized to JSON text, so `"value": []` stores `[]`\n\nA list (dropdown) field does not follow these rules. Send the internal id of the option as\n`value` and identify the field by its script id, in `name` or in `id`:\n`{"name": "custentity_region_list", "value": "2"}`. The value is then stored as that option. The\nconnector learns that the field is a list field from NetSuite\'s field definitions; if they\ncannot be read for the connection, the option id is sent as a number and NetSuite rejects it.\nA list field identified only by its numeric internal id is also sent as a number.\n\nAn entry with `value: null`, or with no `value`, is rejected with a `400`, except a custom\nsegment (a `name` starting with `cseg`), which is sent without a value.\n\nA `cseg_*` custom segment needs both keys — its internal id in `id` and the segment script id\nin `name`, with the referenced record\'s internal id as the value:\n`{"id": "801", "name": "cseg_region", "value": "42"}`.\n\nA value read from `GET /accounting/suppliers/{id}` can be sent back unchanged. A text field\nholding `{"a":1}` reads back as the object `{"a": 1}`, and sending that object back stores\n`{"a":1}` again.\n\nDate-only values need no configuration between UTC-10 and UTC+13: the connector anchors them to\n10:00 UTC before sending, because NetSuite resolves the instant against the account\'s time zone\nand an unanchored value would store the previous calendar day. Four zones fall outside that\nrange and still shift by a day — `Pacific/Pago_Pago`, `Pacific/Niue` and `Pacific/Midway`\n(UTC-11) store one day early, `Pacific/Kiritimati` (UTC+14) one day late. Unlike the date fields\non other resources, the optional `timezone` connection setting does **not** cover custom fields:\nthat anchoring runs in the mapping layer, which this path does not go through. In those four\nzones, send the value as a full dateTime you have offset yourself.\n\nTwo rejections to expect, both naming the offending field. A field that is read-only or owned\nby a NetSuite bundle returns `INSUFFICIENT_PERMISSION` — "You do not have permissions to set\na value for element custentity_x". A value NetSuite cannot convert to the field\'s real type\nreturns `INVALID_FLD_VALUE` — "You have entered an Invalid Field Value hello for the\nfollowing field: custentity_x". A text field converts instead of rejecting, as with `"007"`\nabove.\n\nHow much of each array is written depends on whether the supplier is a company or an\nindividual — NetSuite keeps different contact fields on each. A company holds four phone\nnumbers (`primary`, `secondary`, `mobile`, `fax`), one email (`primary`) and one website;\nan individual holds five phone numbers (those four plus `home`), two emails (`primary` and\n`secondary`) and one website. Entries of any other type are ignored.\n\n`home` and the `secondary` email exist only on a supplier that is an individual, and are\nignored on a company. On an update you do not need to restate `individual` — the layout\nis read from the existing record when the request touches one of those fields. When two\nentries share a type, the first one is used.\n\nThe website must be the `primary` entry, start with `http://`, `https://`, `ftp://` or\n`file://` and contain no spaces. For an individual it is saved in a second request to\nNetSuite, after the rest of the supplier. If that request fails, the response is an error\nthat says the supplier was saved but the website was not; a website the supplier already had\nstays as it was.\n',
+                        },
+                        {
+                            "Procountor only accepts the following values for the channel field": "EMAIL, MAIL, ELECTRONIC_INVOICE, EDIFACT, PAPER_INVOICE, NO_SENDING.",
+                            "Procountor only accepts the following values for the payment_method field": "BANK_TRANSFER, DIRECT_DEBIT, DIRECT_PAYMENT, CLEARING, CREDIT_CARD_CHARGE, FOREIGN_PAYMENT, OTHER, CASH, DOMESTIC_PAYMENT_PLUSGIRO, DOMESTIC_PAYMENT_BANKGIRO, DOMESTIC_PAYMENT_CREDITOR, DKLMPKRE, NETS.",
+                            "connector": "procountor-fi",
+                            "description": "",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks only supports a single billing address. Therefore, the first item in the addresses array will always be mapped as the billing address, regardless of its original type.",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite only supports a single billing address. Therefore, the first item in the addresses array will always be mapped as the billing address, regardless of its original type.",
+                        },
+                        {
+                            "connector": "freshbooks",
+                            "description": 'The status field can be updated to either "active" or "archived".\n',
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": 'The status field can be updated to either "active" or "inactive".\nPlease send status updates separately from other updates for the supplier.\n',
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "Only `first_name`, `last_name`, `company_name`, `tax_number` and `status` can be updated.\n\nSAP builds `display_name` from the name fields.\n`first_name` and `last_name` don't apply to a company, and `company_name` doesn't apply to a person.\nAn update that sends one of these with a value the record doesn't hold is rejected with a `400` and\nnothing is changed. A `display_name` matching the name the update produces is accepted, so sending\nthe values a read returned works. An update that sends only `display_name` is also\nrejected with a `400`: with the reason above when the value differs from the record, and as having\nnothing to update when it matches.\n\n**Tax number.** A `tax_number` that differs from the one the supplier holds is written after the other\nfields, as a request of its own. When the supplier holds a tax number, the one a read returns is changed,\nin the category it already has. When it holds none, one is added in the category chosen as on create,\nfrom the `country` of the standard address (`DE0` for a German address); SAP rejects a category it does\nnot have, such as `US0`. Adding one needs the supplier's standard address to have a two-letter `country`;\nwithout it the update is rejected with a `400` and nothing is changed. Changing a held tax number does not\nneed the country. A `tax_number` equal to a stored one, or empty, changes nothing. A `tax_number`\ncan have 20 characters. Because the tax\nnumber is a second request, if SAP refuses it the other fields of the update have already been\napplied; the error says so, and sending the request again is safe. When SAP does not answer clearly,\nthe tax number may or may not have been stored: the error says so too, and asks to read the supplier\nbefore sending the request again. An update with only `tax_number` changes nothing else.\n\nUpdates that include entries in `addresses`, `bank_accounts`, `emails`, `phone_numbers` or `websites` are\nrejected with a `400` and nothing is updated. Lists can only be set when the record is created, or changed\nin SAP. Leave these fields out, or send them empty, to keep them unchanged: an empty list is ignored and\nclears nothing, because clearing a list is not supported. `terms` is rejected too when it has a value: it\ncan only be set when the record is created.\n\n`company_id` and `account` are ignored on update: a company code cannot be added or changed through this\nendpoint. An update that contains none of the fields that can be updated, and no `pass_through` for\nthis connector, is rejected with a `400`.\n`status` only changes when it is sent, so updating an inactive record leaves it inactive.\n\nA business partner that does not have the supplier role returns `404` and nothing is changed. If the\nrole can't be verified (for example SAP is unavailable), the request fails and nothing is changed; a\n`429` or `5xx` can be retried.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Fiken replaces the whole contact on every update, so fields you leave out keep their current value, including the contact persons, language, discount, default payment terms and member number that the unified model does not expose. Send a field as `null` to clear it. An address sent with only some fields changes only those fields. The contact name is taken from `company_name`, then `display_name`, then the name parts, so send the one you want to change. Customers and suppliers are both Fiken contacts. A contact that is a customer but not a supplier returns `404` here. A country sent as an ISO 3166-1 alpha-2 code is saved under its Norwegian name, as Fiken's own screens save it. A supplier saved without a country is stored with Norway.\n",
+                        },
+                        {
+                            "connector": "myob",
+                            "description": 'Only the fields you send change; everything else on the supplier, including details the unified model does not expose, is kept. To do this, each update first reads the supplier (two MYOB calls), so the application also needs read consent on suppliers; without it the update returns `403`. If the supplier cannot be read, nothing is sent: `404` when it does not exist, the error MYOB returned (for example `401` or `429`), or `503` for a temporary failure that can be retried. `row_version` is optional; a stale one returns `409`. `currency` is not updated, and a field cannot be cleared by sending it empty or `null`. Changing `tax_rate` changes the purchase tax code only; the freight tax code keeps its value. `tax_number` is written as on create: to the ABN when it has 11 digits, otherwise to the Tax ID number. Reads return the ABN first, so writing a Tax ID number removes a stored ABN.\nEach address has an `id` that is its position (`"1"` to `"5"`): send it to change that address. An `id` that does not exist on the supplier, is not written as the read returns it, or whose `type` names another position returns `400`. Without an `id`, a `primary` or `secondary` address changes the first or second address, and any other address is added after the existing ones, so retrying that request adds it again; an update that would leave more than five addresses returns `400`. Addresses cannot be removed. Address fields, contact and bank-account rules are the same as on create.\n',
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1935,10 +2511,9 @@ class Suppliers(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingSuppliersUpdateResponse(
                 update_supplier_response=unmarshal_json_response(
-                    Optional[models.UpdateSupplierResponse], http_res
+                    Optional[models.UpdateSupplierResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1979,10 +2554,9 @@ class Suppliers(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSuppliersUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2052,6 +2626,7 @@ class Suppliers(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2076,9 +2651,27 @@ class Suppliers(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "freshbooks",
+                            "description": "Delete will set the supplier to inactive and will soft delete it, meaning it will stop appearing in the list API call.\n",
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "SAP does not allow deleting a supplier that has been used in transactions. Delete blocks the supplier instead:\nthe record stays in SAP and subsequent reads return `status: inactive`. Updating `status` to `active`\nunblocks it.\n\nThe block applies to the whole SAP business partner. If the same business partner is also a customer,\nit is blocked as a customer too and reads `status: inactive` under customers until it is unblocked.\n\nA business partner that does not have the supplier role returns `404` and nothing is blocked. If the\nrole can't be verified (for example SAP is unavailable), the request fails and nothing is blocked; a\n`429` or `5xx` can be retried.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Customers and suppliers are both Fiken contacts. A contact that is a customer but not a supplier returns `404` here.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2086,10 +2679,9 @@ class Suppliers(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingSuppliersDeleteResponse(
                 delete_supplier_response=unmarshal_json_response(
-                    Optional[models.DeleteSupplierResponse], http_res
+                    Optional[models.DeleteSupplierResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2130,10 +2722,9 @@ class Suppliers(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSuppliersDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2203,6 +2794,7 @@ class Suppliers(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2227,9 +2819,27 @@ class Suppliers(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "freshbooks",
+                            "description": "Delete will set the supplier to inactive and will soft delete it, meaning it will stop appearing in the list API call.\n",
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "SAP does not allow deleting a supplier that has been used in transactions. Delete blocks the supplier instead:\nthe record stays in SAP and subsequent reads return `status: inactive`. Updating `status` to `active`\nunblocks it.\n\nThe block applies to the whole SAP business partner. If the same business partner is also a customer,\nit is blocked as a customer too and reads `status: inactive` under customers until it is unblocked.\n\nA business partner that does not have the supplier role returns `404` and nothing is blocked. If the\nrole can't be verified (for example SAP is unavailable), the request fails and nothing is blocked; a\n`429` or `5xx` can be retried.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Customers and suppliers are both Fiken contacts. A contact that is a customer but not a supplier returns `404` here.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2237,10 +2847,9 @@ class Suppliers(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingSuppliersDeleteResponse(
                 delete_supplier_response=unmarshal_json_response(
-                    Optional[models.DeleteSupplierResponse], http_res
+                    Optional[models.DeleteSupplierResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2281,10 +2890,9 @@ class Suppliers(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSuppliersDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2293,8 +2901,8 @@ class Suppliers(BaseSDK):
         self,
         *,
         items: Union[
-            List[models.BatchSuppliersRequestItems],
-            List[models.BatchSuppliersRequestItemsTypedDict],
+            Iterable[models.BatchSuppliersRequestItems],
+            Iterable[models.BatchSuppliersRequestItemsTypedDict],
         ],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
@@ -2368,6 +2976,7 @@ class Suppliers(BaseSDK):
                 "json",
                 models.BatchSuppliersRequest,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2392,9 +3001,31 @@ class Suppliers(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "xero",
+                            "description": "The whole request is one call to the provider, so it counts as **one request**\nagainst your plan however many records it carries.\n\nAt most 20 suppliers per request. A request carrying more is rejected before any\nsupplier is written.\n\nA request that times out may still have created some or all of its suppliers.\nWhen that happens no ids are returned for them, so treat a timed-out batch as\nuncertain rather than failed: list suppliers to find what was written before\nretrying, or a retry will duplicate them.\n\nResults are returned in the order the items were sent. Supply `_ref` on every\nitem if you need to tie outcomes back to your own records.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Records are written one at a time, so the request counts as **one request per\nrecord** against your plan — batching saves you round trips, not quota.\n\nAt most 10 records per request.\n\nRecords are written one at a time, so a request of N suppliers takes about N times as\nlong as a single write and counts as N requests against your plan. Each record\nsucceeds or fails on its own; read the per-item `status` to see which were written.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "The whole request is one call to the provider, so it counts as **one request**\nagainst your plan however many records it carries.\n\nAt most 20 suppliers per request. A request carrying more is rejected before any\nrecord is written.\n\nResponse time scales with the number of records rather than being a fixed cost,\nso set client timeouts for the size of request you send.\n\nA request that times out may still have written some or all of its records. When\nthat happens no ids are returned for them, so treat a timed-out batch as uncertain\nrather than failed: list the records to find what was written before retrying, or a\nretry will duplicate them.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "The whole request is one call to the provider, so it counts as **one request**\nagainst your plan however many records it carries.\n\nAt most 20 suppliers per request. A request carrying more is rejected before any\nrecord is written.\n\nResponse time scales with the number of records rather than being a fixed cost,\nso set client timeouts for the size of request you send.\n\nA request that times out may still have written some or all of its records. When\nthat happens no ids are returned for them, so treat a timed-out batch as uncertain\nrather than failed: list the records to find what was written before retrying, or a\nretry will duplicate them.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2402,10 +3033,9 @@ class Suppliers(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingSuppliersBatchAddResponse(
                 batch_suppliers_response=unmarshal_json_response(
-                    Optional[models.BatchSuppliersResponse], http_res
+                    Optional[models.BatchSuppliersResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2446,10 +3076,9 @@ class Suppliers(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSuppliersBatchAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2458,8 +3087,8 @@ class Suppliers(BaseSDK):
         self,
         *,
         items: Union[
-            List[models.BatchSuppliersRequestItems],
-            List[models.BatchSuppliersRequestItemsTypedDict],
+            Iterable[models.BatchSuppliersRequestItems],
+            Iterable[models.BatchSuppliersRequestItemsTypedDict],
         ],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
@@ -2533,6 +3162,7 @@ class Suppliers(BaseSDK):
                 "json",
                 models.BatchSuppliersRequest,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2557,9 +3187,31 @@ class Suppliers(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "xero",
+                            "description": "The whole request is one call to the provider, so it counts as **one request**\nagainst your plan however many records it carries.\n\nAt most 20 suppliers per request. A request carrying more is rejected before any\nsupplier is written.\n\nA request that times out may still have created some or all of its suppliers.\nWhen that happens no ids are returned for them, so treat a timed-out batch as\nuncertain rather than failed: list suppliers to find what was written before\nretrying, or a retry will duplicate them.\n\nResults are returned in the order the items were sent. Supply `_ref` on every\nitem if you need to tie outcomes back to your own records.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Records are written one at a time, so the request counts as **one request per\nrecord** against your plan — batching saves you round trips, not quota.\n\nAt most 10 records per request.\n\nRecords are written one at a time, so a request of N suppliers takes about N times as\nlong as a single write and counts as N requests against your plan. Each record\nsucceeds or fails on its own; read the per-item `status` to see which were written.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "The whole request is one call to the provider, so it counts as **one request**\nagainst your plan however many records it carries.\n\nAt most 20 suppliers per request. A request carrying more is rejected before any\nrecord is written.\n\nResponse time scales with the number of records rather than being a fixed cost,\nso set client timeouts for the size of request you send.\n\nA request that times out may still have written some or all of its records. When\nthat happens no ids are returned for them, so treat a timed-out batch as uncertain\nrather than failed: list the records to find what was written before retrying, or a\nretry will duplicate them.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "The whole request is one call to the provider, so it counts as **one request**\nagainst your plan however many records it carries.\n\nAt most 20 suppliers per request. A request carrying more is rejected before any\nrecord is written.\n\nResponse time scales with the number of records rather than being a fixed cost,\nso set client timeouts for the size of request you send.\n\nA request that times out may still have written some or all of its records. When\nthat happens no ids are returned for them, so treat a timed-out batch as uncertain\nrather than failed: list the records to find what was written before retrying, or a\nretry will duplicate them.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2567,10 +3219,9 @@ class Suppliers(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingSuppliersBatchAddResponse(
                 batch_suppliers_response=unmarshal_json_response(
-                    Optional[models.BatchSuppliersResponse], http_res
+                    Optional[models.BatchSuppliersResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2611,10 +3262,9 @@ class Suppliers(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSuppliersBatchAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

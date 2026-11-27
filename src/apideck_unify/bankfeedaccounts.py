@@ -8,7 +8,7 @@ from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from datetime import datetime
 from jsonpath import JSONPath
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
 
 
 class BankFeedAccounts(BaseSDK):
@@ -22,7 +22,7 @@ class BankFeedAccounts(BaseSDK):
         company_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -65,7 +65,7 @@ class BankFeedAccounts(BaseSDK):
             company_id=company_id,
             cursor=cursor,
             limit=limit,
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -86,6 +86,7 @@ class BankFeedAccounts(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -110,9 +111,51 @@ class BankFeedAccounts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "A bank feed account is a QuickBooks Desktop `Bank` or `CreditCard` account; `id` is the\naccount ListID and listing returns exactly those accounts.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Bank Feed Accounts in Xero represent bank accounts connected to Xero's Bank Feeds feature, which automatically imports bank transactions into Xero on a daily basis.\nFor more information on setting up and using Bank Feeds with Xero, see the [Bank Feeds for Xero guide](https://developers.apideck.com/guides/bank-feeds-xero).\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "stripe",
+                            "description": "Stripe removed `total_count` from list responses in March 2025 (API version 2025-03-31.basil). `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": 'Moneybird cash accounts (financial accounts with `type: "cash"`) are surfaced with\n`bank_account_type: "bank"`, since the unified enum has no `cash` value. Cash accounts cannot\nmeaningfully receive bank feed statements and are not distinguishable from real bank accounts in\nthis list.\n\n`source_account_id` is always `null` — Moneybird financial accounts have no concept of a separate\n"source" account distinct from the ledger account itself.\n',
+                        },
+                        {
+                            "connector": "intuit-bank-feeds",
+                            "description": "`feed_status` reads back as `pending` for every account in this release — it does not yet reflect\nwhether QuickBooks has picked the feed up. `status` is returned for every account, including\nrevoked ones.\n",
+                        },
+                        {
+                            "connector": "plaid-exchange",
+                            "description": "`feed_status` reads back as `pending` for every account in this release. `status` is returned\nfor every account, including revoked ones.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Returns only the accounts that can receive a feed: active accounts of type bank or credit card.\nPetty cash accounts cannot receive one and are excluded, as are deactivated accounts; both\nremain available through `bank-accounts`.\n\nPass an account's `id` as `bank_feed_account_id` when creating bank feed statements.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "`feed_status` reads back as `pending` for every active account — NetSuite does not expose Format Profile\nlinking. From bundle version 1.3.2, `custom_fields` carries `last_import_requested_at`: when NetSuite's\nbank data import last asked for the account (ISO 8601, UTC). NetSuite only asks for accounts linked in a\nFormat Profile, so the value shows the account was linked at that time; it is not proof the account is\nstill linked. It is set by the first import after the account is linked (on the profile's import schedule,\nor when a user clicks **Update Imported Bank Data**), moves forward with each import while the account\nstays linked, and stops once it is unlinked. It is absent for accounts that have never been requested.\nNetSuite imports an account at most once every 60 minutes, so the value moves forward at most hourly.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -138,17 +181,21 @@ class BankFeedAccounts(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingBankFeedAccountsAllResponse(
                 get_bank_feed_accounts_response=unmarshal_json_response(
-                    Optional[models.GetBankFeedAccountsResponse], http_res
+                    Optional[models.GetBankFeedAccountsResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -189,11 +236,10 @@ class BankFeedAccounts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingBankFeedAccountsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -208,7 +254,7 @@ class BankFeedAccounts(BaseSDK):
         company_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -251,7 +297,7 @@ class BankFeedAccounts(BaseSDK):
             company_id=company_id,
             cursor=cursor,
             limit=limit,
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -272,6 +318,7 @@ class BankFeedAccounts(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -296,9 +343,51 @@ class BankFeedAccounts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "A bank feed account is a QuickBooks Desktop `Bank` or `CreditCard` account; `id` is the\naccount ListID and listing returns exactly those accounts.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Bank Feed Accounts in Xero represent bank accounts connected to Xero's Bank Feeds feature, which automatically imports bank transactions into Xero on a daily basis.\nFor more information on setting up and using Bank Feeds with Xero, see the [Bank Feeds for Xero guide](https://developers.apideck.com/guides/bank-feeds-xero).\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "stripe",
+                            "description": "Stripe removed `total_count` from list responses in March 2025 (API version 2025-03-31.basil). `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": 'Moneybird cash accounts (financial accounts with `type: "cash"`) are surfaced with\n`bank_account_type: "bank"`, since the unified enum has no `cash` value. Cash accounts cannot\nmeaningfully receive bank feed statements and are not distinguishable from real bank accounts in\nthis list.\n\n`source_account_id` is always `null` — Moneybird financial accounts have no concept of a separate\n"source" account distinct from the ledger account itself.\n',
+                        },
+                        {
+                            "connector": "intuit-bank-feeds",
+                            "description": "`feed_status` reads back as `pending` for every account in this release — it does not yet reflect\nwhether QuickBooks has picked the feed up. `status` is returned for every account, including\nrevoked ones.\n",
+                        },
+                        {
+                            "connector": "plaid-exchange",
+                            "description": "`feed_status` reads back as `pending` for every account in this release. `status` is returned\nfor every account, including revoked ones.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Returns only the accounts that can receive a feed: active accounts of type bank or credit card.\nPetty cash accounts cannot receive one and are excluded, as are deactivated accounts; both\nremain available through `bank-accounts`.\n\nPass an account's `id` as `bank_feed_account_id` when creating bank feed statements.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "`feed_status` reads back as `pending` for every active account — NetSuite does not expose Format Profile\nlinking. From bundle version 1.3.2, `custom_fields` carries `last_import_requested_at`: when NetSuite's\nbank data import last asked for the account (ISO 8601, UTC). NetSuite only asks for accounts linked in a\nFormat Profile, so the value shows the account was linked at that time; it is not proof the account is\nstill linked. It is set by the first import after the account is linked (on the profile's import schedule,\nor when a user clicks **Update Imported Bank Data**), moves forward with each import while the account\nstays linked, and stops once it is unlinked. It is absent for accounts that have never been requested.\nNetSuite imports an account at most once every 60 minutes, so the value moves forward at most hourly.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -324,17 +413,21 @@ class BankFeedAccounts(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingBankFeedAccountsAllResponse(
                 get_bank_feed_accounts_response=unmarshal_json_response(
-                    Optional[models.GetBankFeedAccountsResponse], http_res
+                    Optional[models.GetBankFeedAccountsResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -375,11 +468,10 @@ class BankFeedAccounts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingBankFeedAccountsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -407,19 +499,21 @@ class BankFeedAccounts(BaseSDK):
         country: OptionalNullable[str] = UNSET,
         account_holders: Optional[
             Union[
-                List[models.BankFeedAccountHolder],
-                List[models.BankFeedAccountHolderTypedDict],
+                Iterable[models.BankFeedAccountHolder],
+                Iterable[models.BankFeedAccountHolderTypedDict],
             ]
         ] = None,
-        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        emails: Optional[
+            Union[Iterable[models.Email], Iterable[models.EmailTypedDict]]
+        ] = None,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         phone_numbers: Optional[
-            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+            Union[Iterable[models.PhoneNumber], Iterable[models.PhoneNumberTypedDict]]
         ] = None,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -528,6 +622,7 @@ class BankFeedAccounts(BaseSDK):
                 "json",
                 models.BankFeedAccountInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -552,9 +647,55 @@ class BankFeedAccounts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Creating with `target_account_id` links that existing Bank/CreditCard account (no write).\nCreating without it adds the account in QuickBooks; because the Web Connector polls on a\nschedule, that call can return a timeout error — the account is still created, and\nretrying the same request links it (create is idempotent by name). Bank feeds post\ntransactions straight into the register: set the `bank_feed_offset_account` connection\nsetting to the income/expense account lines are categorised to. If it is blank,\nQuickBooks' Uncategorized Income / Uncategorized Expenses accounts are used, and files\nthat do not have them reject every line (error 3140).\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Bank Feed Accounts in Xero represent bank accounts connected to Xero's Bank Feeds feature, which automatically imports bank transactions into Xero on a daily basis.\nFor more information on setting up and using Bank Feeds with Xero, see the [Bank Feeds for Xero guide](https://developers.apideck.com/guides/bank-feeds-xero).\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": "Moneybird does not support creating financial accounts via its API — this operation returns an\nunsupported-operation error. Bank accounts must be set up in the Moneybird UI; once created they\nappear in the Bank Feed Accounts list and their IDs can be used as `bank_feed_account_id` when\ncreating bank feed statements.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": '`target_account_name` is required. NetSuite has no "register an existing account as a feed"\nconcept, so this operation creates a **new** General Ledger account and uses `target_account_name`\nas its (required) account name. If it is omitted, NetSuite rejects the request with a cryptic\n`INVALID_FLD_VALUE` ("Field must contain a value"). `target_account_number` is optional.\n\n`target_account_id` is **not** used — this operation always creates a new GL account and never\nlinks an existing one. To attach the feed to an account that already exists in NetSuite, skip this\ncreate call entirely: list accounts with `GET /bank-feed-accounts`, take the `id` of the account\nyou want, and pass it as `bank_feed_account_id` when creating bank feed statements.\n\nFor reconciliation to work, the bank feed and the transactions it should match (e.g. expenses\nposted as credit card charges) must live on the **same** NetSuite account. The reliable pattern is\nto reuse the account both already post to — set `bank_feed_account_id` on the statement to that\naccount\'s id — rather than creating a separate account with this endpoint.\n',
+                        },
+                        {
+                            "connector": "intuit-bank-feeds",
+                            "description": "**No QuickBooks OAuth connection is required or used.** `intuit-bank-feeds` is a separate connector\nwith its own connection lifecycle, so a bank-feeds-only integration never authenticates to\nQuickBooks: connecting `quickbooks` does nothing for this connector, and this connector needs\nnothing from it.\n\n**QuickBooks requires holder contact data on every account.** It reads the holders' names,\nemails, addresses and phones with each account, so `account_holders`, `emails`, `addresses` and\n`phone_numbers` must each carry at least one entry, or the account is rejected with one\n`contact_required` violation per missing list. Each list holds at most 10 items, and only the\nfields the bank-feed provider stores are forwarded: an address keeps `type`, `line1`–`line3`,\n`city`, `state`, `postal_code` and `country`, and `id` is dropped from every item.\n\n- Each holder needs `first_name` and `last_name`, or `business_name` when `type` or\n  `relationship` marks it as a business.\n- At least one phone must be servable: `type` one of `mobile`, `home`, `work`, `office`,\n  `personal` or `fax`, at most 15 digits across `area_code` and `number`, and the country code in\n  `country_code` rather than a leading `+` in `number`.\n- Each address needs `line1`, `city` and `country` as an uppercase ISO 3166 alpha-2 code. Address\n  lines, `city` and `state` are limited to 64 characters and `postal_code` to 10. Each email must\n  be a valid address.\n\nAn address that carries only fields the bank-feed provider does not store (for example only\n`string`) is dropped, and the account is then rejected as if the list were empty.\n\nA connection only becomes callable once it reports ready, so a newly created one can briefly stay\nin the `added` state. Re-check it and retry rather than reading `added` as a failure.\n\nField handling is stricter than the unified contract: `null` is rejected rather than ignored, so\nomit an optional field instead of sending `null` for it. `feed_status` is not returned on this\ncreate response — read the account back to see it.\n\n`balance_as_of` is when `balance` was true; when `balance` is sent without it, the time the\nbalance was received is recorded instead. A value without a timezone offset (`Z` or `±hh:mm`), or\none that is not a valid date-time, is rejected with `timezone_offset`.\n\nPosting the same `source_account_id` again updates that account rather than creating another,\nand returns the same `id`, so retrying a create that timed out is safe. The update replaces the\naccount: fields left out of it are cleared.\n\n`status` sets a new account's consent: send `revoked` to create it without sharing it with the\ndata consumer. Omitted, it defaults to `active`. When the `source_account_id` already exists,\n`status` is ignored and the account keeps its current status; change it with an update.\n",
+                        },
+                        {
+                            "connector": "plaid-exchange",
+                            "description": "**Plaid requires holder contact data on every account.** `account_holders`, `emails`, `addresses`\nand `phone_numbers` must each carry at least one entry, or the account is rejected with one\n`contact_required` violation per missing list. Each list holds at most 10 items, and only the\nfields the bank-feed provider stores are forwarded: an address keeps `type`, `line1`–`line3`,\n`city`, `state`, `postal_code` and `country`, and `id` is dropped from every item.\n\n- Each holder needs `first_name` and `last_name`, or `business_name` when `type` or\n  `relationship` marks it as a business.\n- At least one phone must be servable: `type` one of `mobile`, `home`, `work`, `office`,\n  `personal` or `fax`, at most 15 digits across `area_code` and `number`, and the country code in\n  `country_code` rather than a leading `+` in `number`.\n- Each address needs `line1`, `city` and `country` as an uppercase ISO 3166 alpha-2 code. Address\n  lines, `city` and `state` are limited to 64 characters and `postal_code` to 10. Each email must\n  be a valid address.\n\nAn address that carries only fields the bank-feed provider does not store (for example only\n`string`) is dropped, and the account is then rejected as if the list were empty.\n\nPosting the same `source_account_id` again updates that account rather than creating another,\nand returns the same `id`, so retrying a create that timed out is safe. The update replaces the\naccount: fields left out of it are cleared.\n\nA connection only becomes callable once it reports ready, so a newly created one can briefly stay\nin the `added` state. Re-check it and retry rather than reading `added` as a failure.\n\nOmit an optional field instead of sending `null` for it: `null` is rejected on `type` and on the\nholder name fields. `feed_status` is not returned on this create response — read the account\nback to see it.\n\n`balance_as_of` is when `balance` was true; when `balance` is sent without it, the time the\nbalance was received is recorded instead. A value without a timezone offset (`Z` or `±hh:mm`), or\none that is not a valid date-time, is rejected with `timezone_offset`.\n\n`status` sets a new account's consent: send `revoked` to create it without sharing it with the\ndata consumer. Omitted, it defaults to `active`. When the `source_account_id` already exists,\n`status` is ignored and the account keeps its current status; change it with an update.\n\nPlaid cannot read the data yet: client authentication between Plaid and Apideck's FDX data\nprovider is still pending, so ingested accounts are stored but not yet served to Plaid.\n",
+                        },
+                        {
+                            "connector": "exact-online-nl",
+                            "description": "Not supported. A bank feed account is a bank journal in Exact Online, and a usable one needs\na linked bank account and an unallocated account this operation cannot supply. Create it via\nthe `journals` resource — which exposes `iban`, `default_account` and `clearing_account`\n— and pass its `id` as `bank_feed_account_id`. Reading is unaffected;\ndelete is also not wired.\n",
+                        },
+                        {
+                            "connector": "exact-online",
+                            "description": "Same as `exact-online-nl`.\n",
+                        },
+                        {
+                            "connector": "exact-online-uk",
+                            "description": "Same as `exact-online-nl`.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "On ledgers that have one, a bank feed account is a connection registered against an account.\nZoho Books has no such object: the feed account is the bank account itself, so this\noperation registers nothing — it creates a bank account. Use `bank-accounts.add`, which is\nthe operation for that, and which additionally sets `bank_name` and `description` and maps\n`account_type` onto what Zoho Books stores.\n\nThis operation always creates a new account: `target_account_id` is ignored, so an account\nthat already exists cannot be attached to a feed through it. To feed an existing account,\nskip the create and pass its `id` from `bank-feed-accounts` as `bank_feed_account_id` when\ncreating statements.\n\n`target_account_name` is required in practice, although this schema does not mark it so.\n`source_account_id`, `source_account_number` and `country` are not stored and are not\nreturned. `target_account_number` reads back masked, and is not stored for a `credit_card`\naccount.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -562,10 +703,11 @@ class BankFeedAccounts(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingBankFeedAccountsAddResponse(
                 create_bank_feed_account_response=unmarshal_json_response(
-                    Optional[models.CreateBankFeedAccountResponse], http_res
+                    Optional[models.CreateBankFeedAccountResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -606,10 +748,9 @@ class BankFeedAccounts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingBankFeedAccountsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -637,19 +778,21 @@ class BankFeedAccounts(BaseSDK):
         country: OptionalNullable[str] = UNSET,
         account_holders: Optional[
             Union[
-                List[models.BankFeedAccountHolder],
-                List[models.BankFeedAccountHolderTypedDict],
+                Iterable[models.BankFeedAccountHolder],
+                Iterable[models.BankFeedAccountHolderTypedDict],
             ]
         ] = None,
-        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        emails: Optional[
+            Union[Iterable[models.Email], Iterable[models.EmailTypedDict]]
+        ] = None,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         phone_numbers: Optional[
-            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+            Union[Iterable[models.PhoneNumber], Iterable[models.PhoneNumberTypedDict]]
         ] = None,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -758,6 +901,7 @@ class BankFeedAccounts(BaseSDK):
                 "json",
                 models.BankFeedAccountInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -782,9 +926,55 @@ class BankFeedAccounts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Creating with `target_account_id` links that existing Bank/CreditCard account (no write).\nCreating without it adds the account in QuickBooks; because the Web Connector polls on a\nschedule, that call can return a timeout error — the account is still created, and\nretrying the same request links it (create is idempotent by name). Bank feeds post\ntransactions straight into the register: set the `bank_feed_offset_account` connection\nsetting to the income/expense account lines are categorised to. If it is blank,\nQuickBooks' Uncategorized Income / Uncategorized Expenses accounts are used, and files\nthat do not have them reject every line (error 3140).\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Bank Feed Accounts in Xero represent bank accounts connected to Xero's Bank Feeds feature, which automatically imports bank transactions into Xero on a daily basis.\nFor more information on setting up and using Bank Feeds with Xero, see the [Bank Feeds for Xero guide](https://developers.apideck.com/guides/bank-feeds-xero).\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": "Moneybird does not support creating financial accounts via its API — this operation returns an\nunsupported-operation error. Bank accounts must be set up in the Moneybird UI; once created they\nappear in the Bank Feed Accounts list and their IDs can be used as `bank_feed_account_id` when\ncreating bank feed statements.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": '`target_account_name` is required. NetSuite has no "register an existing account as a feed"\nconcept, so this operation creates a **new** General Ledger account and uses `target_account_name`\nas its (required) account name. If it is omitted, NetSuite rejects the request with a cryptic\n`INVALID_FLD_VALUE` ("Field must contain a value"). `target_account_number` is optional.\n\n`target_account_id` is **not** used — this operation always creates a new GL account and never\nlinks an existing one. To attach the feed to an account that already exists in NetSuite, skip this\ncreate call entirely: list accounts with `GET /bank-feed-accounts`, take the `id` of the account\nyou want, and pass it as `bank_feed_account_id` when creating bank feed statements.\n\nFor reconciliation to work, the bank feed and the transactions it should match (e.g. expenses\nposted as credit card charges) must live on the **same** NetSuite account. The reliable pattern is\nto reuse the account both already post to — set `bank_feed_account_id` on the statement to that\naccount\'s id — rather than creating a separate account with this endpoint.\n',
+                        },
+                        {
+                            "connector": "intuit-bank-feeds",
+                            "description": "**No QuickBooks OAuth connection is required or used.** `intuit-bank-feeds` is a separate connector\nwith its own connection lifecycle, so a bank-feeds-only integration never authenticates to\nQuickBooks: connecting `quickbooks` does nothing for this connector, and this connector needs\nnothing from it.\n\n**QuickBooks requires holder contact data on every account.** It reads the holders' names,\nemails, addresses and phones with each account, so `account_holders`, `emails`, `addresses` and\n`phone_numbers` must each carry at least one entry, or the account is rejected with one\n`contact_required` violation per missing list. Each list holds at most 10 items, and only the\nfields the bank-feed provider stores are forwarded: an address keeps `type`, `line1`–`line3`,\n`city`, `state`, `postal_code` and `country`, and `id` is dropped from every item.\n\n- Each holder needs `first_name` and `last_name`, or `business_name` when `type` or\n  `relationship` marks it as a business.\n- At least one phone must be servable: `type` one of `mobile`, `home`, `work`, `office`,\n  `personal` or `fax`, at most 15 digits across `area_code` and `number`, and the country code in\n  `country_code` rather than a leading `+` in `number`.\n- Each address needs `line1`, `city` and `country` as an uppercase ISO 3166 alpha-2 code. Address\n  lines, `city` and `state` are limited to 64 characters and `postal_code` to 10. Each email must\n  be a valid address.\n\nAn address that carries only fields the bank-feed provider does not store (for example only\n`string`) is dropped, and the account is then rejected as if the list were empty.\n\nA connection only becomes callable once it reports ready, so a newly created one can briefly stay\nin the `added` state. Re-check it and retry rather than reading `added` as a failure.\n\nField handling is stricter than the unified contract: `null` is rejected rather than ignored, so\nomit an optional field instead of sending `null` for it. `feed_status` is not returned on this\ncreate response — read the account back to see it.\n\n`balance_as_of` is when `balance` was true; when `balance` is sent without it, the time the\nbalance was received is recorded instead. A value without a timezone offset (`Z` or `±hh:mm`), or\none that is not a valid date-time, is rejected with `timezone_offset`.\n\nPosting the same `source_account_id` again updates that account rather than creating another,\nand returns the same `id`, so retrying a create that timed out is safe. The update replaces the\naccount: fields left out of it are cleared.\n\n`status` sets a new account's consent: send `revoked` to create it without sharing it with the\ndata consumer. Omitted, it defaults to `active`. When the `source_account_id` already exists,\n`status` is ignored and the account keeps its current status; change it with an update.\n",
+                        },
+                        {
+                            "connector": "plaid-exchange",
+                            "description": "**Plaid requires holder contact data on every account.** `account_holders`, `emails`, `addresses`\nand `phone_numbers` must each carry at least one entry, or the account is rejected with one\n`contact_required` violation per missing list. Each list holds at most 10 items, and only the\nfields the bank-feed provider stores are forwarded: an address keeps `type`, `line1`–`line3`,\n`city`, `state`, `postal_code` and `country`, and `id` is dropped from every item.\n\n- Each holder needs `first_name` and `last_name`, or `business_name` when `type` or\n  `relationship` marks it as a business.\n- At least one phone must be servable: `type` one of `mobile`, `home`, `work`, `office`,\n  `personal` or `fax`, at most 15 digits across `area_code` and `number`, and the country code in\n  `country_code` rather than a leading `+` in `number`.\n- Each address needs `line1`, `city` and `country` as an uppercase ISO 3166 alpha-2 code. Address\n  lines, `city` and `state` are limited to 64 characters and `postal_code` to 10. Each email must\n  be a valid address.\n\nAn address that carries only fields the bank-feed provider does not store (for example only\n`string`) is dropped, and the account is then rejected as if the list were empty.\n\nPosting the same `source_account_id` again updates that account rather than creating another,\nand returns the same `id`, so retrying a create that timed out is safe. The update replaces the\naccount: fields left out of it are cleared.\n\nA connection only becomes callable once it reports ready, so a newly created one can briefly stay\nin the `added` state. Re-check it and retry rather than reading `added` as a failure.\n\nOmit an optional field instead of sending `null` for it: `null` is rejected on `type` and on the\nholder name fields. `feed_status` is not returned on this create response — read the account\nback to see it.\n\n`balance_as_of` is when `balance` was true; when `balance` is sent without it, the time the\nbalance was received is recorded instead. A value without a timezone offset (`Z` or `±hh:mm`), or\none that is not a valid date-time, is rejected with `timezone_offset`.\n\n`status` sets a new account's consent: send `revoked` to create it without sharing it with the\ndata consumer. Omitted, it defaults to `active`. When the `source_account_id` already exists,\n`status` is ignored and the account keeps its current status; change it with an update.\n\nPlaid cannot read the data yet: client authentication between Plaid and Apideck's FDX data\nprovider is still pending, so ingested accounts are stored but not yet served to Plaid.\n",
+                        },
+                        {
+                            "connector": "exact-online-nl",
+                            "description": "Not supported. A bank feed account is a bank journal in Exact Online, and a usable one needs\na linked bank account and an unallocated account this operation cannot supply. Create it via\nthe `journals` resource — which exposes `iban`, `default_account` and `clearing_account`\n— and pass its `id` as `bank_feed_account_id`. Reading is unaffected;\ndelete is also not wired.\n",
+                        },
+                        {
+                            "connector": "exact-online",
+                            "description": "Same as `exact-online-nl`.\n",
+                        },
+                        {
+                            "connector": "exact-online-uk",
+                            "description": "Same as `exact-online-nl`.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "On ledgers that have one, a bank feed account is a connection registered against an account.\nZoho Books has no such object: the feed account is the bank account itself, so this\noperation registers nothing — it creates a bank account. Use `bank-accounts.add`, which is\nthe operation for that, and which additionally sets `bank_name` and `description` and maps\n`account_type` onto what Zoho Books stores.\n\nThis operation always creates a new account: `target_account_id` is ignored, so an account\nthat already exists cannot be attached to a feed through it. To feed an existing account,\nskip the create and pass its `id` from `bank-feed-accounts` as `bank_feed_account_id` when\ncreating statements.\n\n`target_account_name` is required in practice, although this schema does not mark it so.\n`source_account_id`, `source_account_number` and `country` are not stored and are not\nreturned. `target_account_number` reads back masked, and is not stored for a `credit_card`\naccount.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -792,10 +982,11 @@ class BankFeedAccounts(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingBankFeedAccountsAddResponse(
                 create_bank_feed_account_response=unmarshal_json_response(
-                    Optional[models.CreateBankFeedAccountResponse], http_res
+                    Optional[models.CreateBankFeedAccountResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -836,10 +1027,9 @@ class BankFeedAccounts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingBankFeedAccountsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -912,6 +1102,7 @@ class BankFeedAccounts(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -936,9 +1127,31 @@ class BankFeedAccounts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "moneybird",
+                            "description": "Moneybird does not provide a financial account detail endpoint — this operation is unsupported.\nUse the bank feed accounts list to find the account.\n",
+                        },
+                        {
+                            "connector": "intuit-bank-feeds",
+                            "description": "`feed_status` reads back as `pending` for every account in this release — it does not yet reflect\nwhether QuickBooks has picked the feed up.\n\n`status` is the consent for this account: `revoked` means QuickBooks no longer receives it.\n",
+                        },
+                        {
+                            "connector": "plaid-exchange",
+                            "description": "`feed_status` reads back as `pending` for every account in this release.\n\n`status` is the consent for this account: `revoked` means Plaid no longer receives it.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "`source_account_id` is not returned: there is no aggregator-side account behind a Zoho Books\nbank feed. `target_account_id` repeats the account's own `id`, and `feed_status` always reads\n`pending` — Zoho Books has no feed-delivery state.\n\n`bank-accounts` returns the same account with its full field set, including `name`,\n`account_type`, `bank_name`, `description`, `status` and `available_balance`.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -946,10 +1159,11 @@ class BankFeedAccounts(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingBankFeedAccountsOneResponse(
                 get_bank_feed_account_response=unmarshal_json_response(
-                    Optional[models.GetBankFeedAccountResponse], http_res
+                    Optional[models.GetBankFeedAccountResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -990,10 +1204,9 @@ class BankFeedAccounts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingBankFeedAccountsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1066,6 +1279,7 @@ class BankFeedAccounts(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1090,9 +1304,31 @@ class BankFeedAccounts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "moneybird",
+                            "description": "Moneybird does not provide a financial account detail endpoint — this operation is unsupported.\nUse the bank feed accounts list to find the account.\n",
+                        },
+                        {
+                            "connector": "intuit-bank-feeds",
+                            "description": "`feed_status` reads back as `pending` for every account in this release — it does not yet reflect\nwhether QuickBooks has picked the feed up.\n\n`status` is the consent for this account: `revoked` means QuickBooks no longer receives it.\n",
+                        },
+                        {
+                            "connector": "plaid-exchange",
+                            "description": "`feed_status` reads back as `pending` for every account in this release.\n\n`status` is the consent for this account: `revoked` means Plaid no longer receives it.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "`source_account_id` is not returned: there is no aggregator-side account behind a Zoho Books\nbank feed. `target_account_id` repeats the account's own `id`, and `feed_status` always reads\n`pending` — Zoho Books has no feed-delivery state.\n\n`bank-accounts` returns the same account with its full field set, including `name`,\n`account_type`, `bank_name`, `description`, `status` and `available_balance`.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1100,10 +1336,11 @@ class BankFeedAccounts(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingBankFeedAccountsOneResponse(
                 get_bank_feed_account_response=unmarshal_json_response(
-                    Optional[models.GetBankFeedAccountResponse], http_res
+                    Optional[models.GetBankFeedAccountResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1144,10 +1381,9 @@ class BankFeedAccounts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingBankFeedAccountsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1176,19 +1412,21 @@ class BankFeedAccounts(BaseSDK):
         country: OptionalNullable[str] = UNSET,
         account_holders: Optional[
             Union[
-                List[models.BankFeedAccountHolder],
-                List[models.BankFeedAccountHolderTypedDict],
+                Iterable[models.BankFeedAccountHolder],
+                Iterable[models.BankFeedAccountHolderTypedDict],
             ]
         ] = None,
-        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        emails: Optional[
+            Union[Iterable[models.Email], Iterable[models.EmailTypedDict]]
+        ] = None,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         phone_numbers: Optional[
-            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+            Union[Iterable[models.PhoneNumber], Iterable[models.PhoneNumberTypedDict]]
         ] = None,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1299,6 +1537,7 @@ class BankFeedAccounts(BaseSDK):
                 "json",
                 models.BankFeedAccountInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1323,9 +1562,27 @@ class BankFeedAccounts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "intuit-bank-feeds",
+                            "description": "Only `status` is changed: set it to `revoked` to stop the data consumer receiving this account,\nand to `active` to restore it. Nothing is deleted. Other fields in the request are ignored, and a\nrequest without `status` is rejected by the provider.\n",
+                        },
+                        {
+                            "connector": "plaid-exchange",
+                            "description": "Only `status` is changed: set it to `revoked` to stop the data consumer receiving this account,\nand to `active` to restore it. Nothing is deleted. Other fields in the request are ignored, and a\nrequest without `status` is rejected by the provider.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Not supported: a bank feed account is the bank account itself, so there is nothing separate to\nchange. Use `bank-accounts.update`, which accepts the full field set.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1333,10 +1590,11 @@ class BankFeedAccounts(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingBankFeedAccountsUpdateResponse(
                 update_bank_feed_account_response=unmarshal_json_response(
-                    Optional[models.UpdateBankFeedAccountResponse], http_res
+                    Optional[models.UpdateBankFeedAccountResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1377,10 +1635,9 @@ class BankFeedAccounts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingBankFeedAccountsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1409,19 +1666,21 @@ class BankFeedAccounts(BaseSDK):
         country: OptionalNullable[str] = UNSET,
         account_holders: Optional[
             Union[
-                List[models.BankFeedAccountHolder],
-                List[models.BankFeedAccountHolderTypedDict],
+                Iterable[models.BankFeedAccountHolder],
+                Iterable[models.BankFeedAccountHolderTypedDict],
             ]
         ] = None,
-        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        emails: Optional[
+            Union[Iterable[models.Email], Iterable[models.EmailTypedDict]]
+        ] = None,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         phone_numbers: Optional[
-            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+            Union[Iterable[models.PhoneNumber], Iterable[models.PhoneNumberTypedDict]]
         ] = None,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1532,6 +1791,7 @@ class BankFeedAccounts(BaseSDK):
                 "json",
                 models.BankFeedAccountInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1556,9 +1816,27 @@ class BankFeedAccounts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "intuit-bank-feeds",
+                            "description": "Only `status` is changed: set it to `revoked` to stop the data consumer receiving this account,\nand to `active` to restore it. Nothing is deleted. Other fields in the request are ignored, and a\nrequest without `status` is rejected by the provider.\n",
+                        },
+                        {
+                            "connector": "plaid-exchange",
+                            "description": "Only `status` is changed: set it to `revoked` to stop the data consumer receiving this account,\nand to `active` to restore it. Nothing is deleted. Other fields in the request are ignored, and a\nrequest without `status` is rejected by the provider.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Not supported: a bank feed account is the bank account itself, so there is nothing separate to\nchange. Use `bank-accounts.update`, which accepts the full field set.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1566,10 +1844,11 @@ class BankFeedAccounts(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingBankFeedAccountsUpdateResponse(
                 update_bank_feed_account_response=unmarshal_json_response(
-                    Optional[models.UpdateBankFeedAccountResponse], http_res
+                    Optional[models.UpdateBankFeedAccountResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1610,10 +1889,9 @@ class BankFeedAccounts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingBankFeedAccountsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1680,6 +1958,7 @@ class BankFeedAccounts(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1704,9 +1983,19 @@ class BankFeedAccounts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "zoho-books",
+                            "description": "Not supported: a bank feed account is the bank account itself, so deleting one would delete the\naccount. Use `bank-accounts.delete` if that is the intent, and read its limitation first — it\nalso removes transactions still awaiting reconciliation.\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1714,10 +2003,11 @@ class BankFeedAccounts(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingBankFeedAccountsDeleteResponse(
                 delete_bank_feed_account_response=unmarshal_json_response(
-                    Optional[models.DeleteBankFeedAccountResponse], http_res
+                    Optional[models.DeleteBankFeedAccountResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1758,10 +2048,9 @@ class BankFeedAccounts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingBankFeedAccountsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1828,6 +2117,7 @@ class BankFeedAccounts(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1852,9 +2142,19 @@ class BankFeedAccounts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "zoho-books",
+                            "description": "Not supported: a bank feed account is the bank account itself, so deleting one would delete the\naccount. Use `bank-accounts.delete` if that is the intent, and read its limitation first — it\nalso removes transactions still awaiting reconciliation.\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1862,10 +2162,11 @@ class BankFeedAccounts(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingBankFeedAccountsDeleteResponse(
                 delete_bank_feed_account_response=unmarshal_json_response(
-                    Optional[models.DeleteBankFeedAccountResponse], http_res
+                    Optional[models.DeleteBankFeedAccountResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1906,10 +2207,9 @@ class BankFeedAccounts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingBankFeedAccountsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

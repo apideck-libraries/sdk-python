@@ -2,6 +2,16 @@
 
 The status of the job.
 
+## Example Usage
+
+```python
+from apideck_unify.models import JobStatus
+
+value = JobStatus.DRAFT
+
+# Open enum: unrecognized values are captured as UnrecognizedStr
+```
+
 
 ## Values
 

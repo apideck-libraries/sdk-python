@@ -1,5 +1,4 @@
-# TrackingCategories
-(*accounting.tracking_categories*)
+# Accounting.TrackingCategories
 
 ## Overview
 
@@ -27,7 +26,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.tracking_categories.list(raw=False, service_id="salesforce", company_id="12345", limit=20, pass_through={
@@ -88,7 +87,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.tracking_categories.create(raw=False, service_id="salesforce", company_id="12345", parent_id="12345", parent_name="Area", name="Department", code="100", status=apideck_unify.TrackingCategoryStatus.ACTIVE, row_version="1-12345", pass_through=[
@@ -209,7 +208,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.tracking_categories.get(id="<id>", service_id="salesforce", company_id="12345", raw=False, fields="id,updated_at")
@@ -266,7 +265,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.tracking_categories.update(id="<id>", service_id="salesforce", company_id="12345", raw=False, parent_id="12345", parent_name="Area", name="Department", code="100", status=apideck_unify.TrackingCategoryStatus.ACTIVE, row_version="1-12345", pass_through=[
@@ -351,7 +350,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.tracking_categories.delete(id="<id>", service_id="salesforce", company_id="12345", raw=False)
@@ -406,7 +405,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.tracking_categories.create_batch(items=[], raw=False, service_id="salesforce", company_id="12345")

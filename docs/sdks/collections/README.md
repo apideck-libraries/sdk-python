@@ -1,5 +1,4 @@
-# Collections
-(*issue_tracking.collections*)
+# IssueTracking.Collections
 
 ## Overview
 
@@ -24,7 +23,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.issue_tracking.collections.list(raw=False, service_id="salesforce", limit=20, sort={
@@ -87,7 +86,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.issue_tracking.collections.get(collection_id="apideck-io", service_id="salesforce", raw=False, fields="id,updated_at")

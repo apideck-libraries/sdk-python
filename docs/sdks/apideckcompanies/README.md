@@ -1,5 +1,4 @@
-# ApideckCompanies
-(*crm.companies*)
+# Crm.Companies
 
 ## Overview
 
@@ -27,7 +26,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.crm.companies.list(raw=False, service_id="salesforce", limit=20, filter_={
@@ -95,7 +94,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.crm.companies.create(name="SpaceX", raw=False, service_id="salesforce", owner_id="12345", image="https://www.spacex.com/static/images/share.jpg", description="Space Exploration Technologies Corp. is an American aerospace manufacturer, space transportation services and communications company headquartered in Hawthorne, California.", vat_number="BE0689615164", currency=apideck_unify.Currency.USD, status="Open", fax="+12129876543", annual_revenue="+$35m", number_of_employees="500-1000", industry="Apparel", ownership="Public", sales_tax_number="12456EN", payee_number="78932EN", abn_or_tfn="46 115 614 695", abn_branch="123", acn="XXX XXX XXX", first_name="Elon", last_name="Musk", parent_id="22345", bank_accounts=[
@@ -216,13 +215,13 @@ with Apideck(
             "id": "2389328923893298",
             "name": "employee_level",
             "description": "Employee Level",
-            "value": 10,
+            "value": 10.0,
         },
         {
             "id": "2389328923893298",
             "name": "employee_level",
             "description": "Employee Level",
-            "value": 10,
+            "value": 10.0,
         },
     ], tags=[
         "New",
@@ -339,7 +338,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.crm.companies.get(id="<id>", raw=False, service_id="salesforce", fields="id,updated_at")
@@ -396,7 +395,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.crm.companies.update(id="<id>", name="SpaceX", raw=False, service_id="salesforce", owner_id="12345", image="https://www.spacex.com/static/images/share.jpg", description="Space Exploration Technologies Corp. is an American aerospace manufacturer, space transportation services and communications company headquartered in Hawthorne, California.", vat_number="BE0689615164", currency=apideck_unify.Currency.USD, status="Open", fax="+12129876543", annual_revenue="+$35m", number_of_employees="500-1000", industry="Apparel", ownership="Public", sales_tax_number="12456EN", payee_number="78932EN", abn_or_tfn="46 115 614 695", abn_branch="123", acn="XXX XXX XXX", first_name="Elon", last_name="Musk", parent_id="22345", bank_accounts=[
@@ -689,7 +688,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.crm.companies.delete(id="<id>", raw=False, service_id="salesforce")

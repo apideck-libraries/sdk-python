@@ -1,5 +1,4 @@
-# DriveGroups
-(*file_storage.drive_groups*)
+# FileStorage.DriveGroups
 
 ## Overview
 
@@ -26,7 +25,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.file_storage.drive_groups.list(raw=False, service_id="salesforce", limit=20, filter_={
@@ -88,7 +87,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.file_storage.drive_groups.create(name="accounting", raw=False, service_id="salesforce", display_name="accounting", description="A description", pass_through=[
@@ -188,7 +187,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.file_storage.drive_groups.get(id="<id>", service_id="salesforce", raw=False, fields="id,updated_at")
@@ -243,7 +242,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.file_storage.drive_groups.update(id="<id>", name="accounting", service_id="salesforce", raw=False, display_name="accounting", description="A description", pass_through=[
@@ -365,7 +364,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.file_storage.drive_groups.delete(id="<id>", service_id="salesforce", raw=False)

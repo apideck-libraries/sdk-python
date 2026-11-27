@@ -1,5 +1,4 @@
-# ExpenseCategories
-(*accounting.expense_categories*)
+# Accounting.ExpenseCategories
 
 ## Overview
 
@@ -28,7 +27,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.expense_categories.list(raw=False, service_id="salesforce", limit=20, fields="id,updated_at", filter_={
@@ -92,7 +91,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.expense_categories.create(name="Travel", raw=False, service_id="salesforce", display_id="123456", code="TRAVEL-001", description="Travel-related expenses including flights, hotels, and ground transportation.", status=apideck_unify.ExpenseCategoryStatus.ACTIVE, account={
@@ -112,7 +111,7 @@ with Apideck(
     }, tax_rate={
         "id": "123456",
         "code": "N-T",
-        "rate": 10,
+        "rate": 10.0,
     }, rate_required=False, default_rate=0.67, row_version="1-12345", pass_through=[
         {
             "service_id": "<id>",
@@ -189,7 +188,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.expense_categories.get(id="<id>", service_id="salesforce", raw=False, fields="id,updated_at")
@@ -245,7 +244,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.expense_categories.update(id="<id>", service_id="salesforce", raw=False, display_id="123456", name="Travel", code="TRAVEL-001", description="Travel-related expenses including flights, hotels, and ground transportation.", status=apideck_unify.ExpenseCategoryUpdateInputStatus.ACTIVE, account={
@@ -265,7 +264,7 @@ with Apideck(
     }, tax_rate={
         "id": "123456",
         "code": "N-T",
-        "rate": 10,
+        "rate": 10.0,
     }, rate_required=False, default_rate=0.67, row_version="1-12345", pass_through=[
         {
             "service_id": "<id>",
@@ -343,7 +342,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.expense_categories.delete(id="<id>", service_id="salesforce", raw=False)

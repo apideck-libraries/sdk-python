@@ -1,5 +1,15 @@
 # PaymentsFilterType
 
+## Example Usage
+
+```python
+from apideck_unify.models import PaymentsFilterType
+
+value = PaymentsFilterType.ACCOUNTS_RECEIVABLE
+
+# Open enum: unrecognized values are captured as UnrecognizedStr
+```
+
 
 ## Values
 

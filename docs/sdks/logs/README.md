@@ -1,5 +1,4 @@
-# Logs
-(*vault.logs*)
+# Vault.Logs
 
 ## Overview
 
@@ -23,12 +22,12 @@ import os
 with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
     consumer_id="test-consumer",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.vault.logs.list(filter_={
         "connector_id": "crm+salesforce",
-        "status_code": 201,
+        "status_code": 201.0,
         "exclude_unified_apis": "vault,proxy",
     }, limit=20)
 

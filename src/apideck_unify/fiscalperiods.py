@@ -21,7 +21,7 @@ class FiscalPeriods(BaseSDK):
         company_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -64,7 +64,7 @@ class FiscalPeriods(BaseSDK):
             company_id=company_id,
             cursor=cursor,
             limit=limit,
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -85,6 +85,7 @@ class FiscalPeriods(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -109,9 +110,99 @@ class FiscalPeriods(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "netsuite",
+                            "description": "Read from NetSuite's accounting periods. `type` follows NetSuite's year and quarter flags, so years and quarters are returned alongside posting periods. `status` is `closed` when the period is closed (NetSuite stops everyone from posting to a closed period until it is reopened), `locked` when all, AP, AR or payroll transactions are locked (users with the Override Period Restrictions permission can still post), otherwise `open`; `future` is never returned. `fiscal_year` is the calendar year in which the period's fiscal year ends, from the end date of the parent year period (`2026` for `FY 2026`); the year period itself is a record with `type: year`. Inactive periods are included. With multiple fiscal calendars enabled, the periods of every calendar are returned together and are not distinguished. `locked_through`, `period_number`, `created_at` and `updated_at` are not available.\n",
+                        },
+                        {
+                            "connector": "oracle-fusion",
+                            "description": "Periods are the General Ledger calendar of the ledger selected on the connection, so only that ledger's periods are returned. The id is the period name (for example `Jan-26`). Oracle's closing status maps as Open to `open`, Closed and Permanently Closed to `closed`, and Future Enterable and Never Opened to `future`; Close Pending returns a null `status`, because Oracle does not say whether it stops postings. `fiscal_year` is Oracle's period year as four digits (null otherwise). Oracle's calendar setup defines it as the year in which the fiscal year ends, and Apideck passes it through without recomputing it from the dates, so a calendar set up with another convention reports its own. Adjustment periods are flagged with `is_adjustment`. `locked_through`, `created_at` and `updated_at` are not available.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "Business Central stores only a period's start date. `end_date` (the day before the next period starts), `fiscal_year` (the calendar year in which the fiscal year ends, so Jul 2025 to Jun 2026 is `2026`; 12 months are assumed for the company's last fiscal year) and `period_number` are derived from the company's full period list, which costs one extra request, and are null if that list cannot be read; `end_date` is always null for the company's last period. `status` and `locked_through` come from the company's General Ledger Setup (Allow Posting From / Allow Posting To), read with one more request; the accounting period's own Closed and Date Locked flags are not used, because they do not stop posting (entries can still be posted to a closed year and are flagged Prior-Year Entry). A period that ends before Allow Posting From or starts after Allow Posting To is `locked`, never `closed`, because User Setup can give individual users a different window; otherwise it is `open`. `locked_through` is the day before Allow Posting From, capped at the period's end date, and null when that day is before the period starts or Allow Posting From is empty. `future` is never returned. If the connection's user cannot read the General Ledger Setup (403), `status` and `locked_through` are null; other failures of that read fail the request. `is_adjustment` and `created_at` are not available.\n",
+                        },
+                        {
+                            "connector": "exact-online",
+                            "description": "Periods of the selected division, in fiscal year and period order. `name` is generated as `{fiscal_year}-P{period_number}` (for example `2026-P01`) because Exact has no period name. `fiscal_year` is the calendar year in which the period's fiscal year ends, taken from the latest period end of that fiscal year (one extra read of the division's periods; null if it cannot be read); Exact's own financial year label, which can be the start year, is the first part of `name`. `status`, `locked_through` and `is_adjustment` are not exposed by Exact and are always null.\n",
+                        },
+                        {
+                            "connector": "exact-online-nl",
+                            "description": "Periods of the selected division, in fiscal year and period order. `name` is generated as `{fiscal_year}-P{period_number}` (for example `2026-P01`) because Exact has no period name. `fiscal_year` is the calendar year in which the period's fiscal year ends, taken from the latest period end of that fiscal year (one extra read of the division's periods; null if it cannot be read); Exact's own financial year label, which can be the start year, is the first part of `name`. `status`, `locked_through` and `is_adjustment` are not exposed by Exact and are always null.\n",
+                        },
+                        {
+                            "connector": "exact-online-uk",
+                            "description": "Periods of the selected division, in fiscal year and period order. `name` is generated as `{fiscal_year}-P{period_number}` (for example `2026-P01`) because Exact has no period name. `fiscal_year` is the calendar year in which the period's fiscal year ends, taken from the latest period end of that fiscal year (one extra read of the division's periods; null if it cannot be read); Exact's own financial year label, which can be the start year, is the first part of `name`. `status`, `locked_through` and `is_adjustment` are not exposed by Exact and are always null.\n",
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": "Twinfield returns periods one fiscal year at a time, so a list makes one extra request per year and covers at most the 10 most recent years, plus one request for the year before the oldest so its first `start_date` matches a get-one; if any of those years cannot be read the list fails with a 502 rather than returning a gap. Ids have the form `{year}-{period number}` (for example `2026-01`). Twinfield returns no start date: `start_date` is the day after the previous period ends and is null for the earliest period Twinfield has. `fiscal_year` is the calendar year in which the fiscal year ends (the year of its last period's end date), whatever Twinfield calls the year; `name` is Twinfield's period name. `status` is `open` or `closed` from Twinfield's open flag: a period that is not open accepts no postings from anyone until it is reopened (https://taasupportportal.wolterskluwer.com/nl/nl-nl/artikel/perioden-3041044), and `locked` and `future` are not used. `locked_through` is null. `is_adjustment`, `created_at` and `updated_at` are not available.\n",
+                        },
+                        {
+                            "connector": "visma-netvisor",
+                            "description": "Netvisor's accounting periods are fiscal years, so every record has `type: year` and `period_number` is null. `fiscal_year` is the calendar year the period ends in. `status` is derived from the company's lock dates: `closed` when the period ends on or before the accounting period lock date (Netvisor blocks changes until the fiscal year is reopened), `locked` when it ends on or before the VAT or accounts payable lock date only (users with a personal VAT override and accountants still post), otherwise `open`; a year the lock date falls inside reads `open`. Netvisor reports no \"not yet opened\" state, so `future` is never returned. `locked_through` is the latest of the three lock dates, capped at the period's end date, and null when it falls before the period starts. `created_at` and `updated_at` are not available.\n",
+                        },
+                        {
+                            "connector": "procountor-fi",
+                            "description": "Each Procountor tracking period is returned as a `period` record, with `period_number` its position in the fiscal year and `fiscal_year` the year the fiscal year ends in; a fiscal year without tracking periods is returned as one `year` record. Ids are `{fiscalYearId}:{trackingPeriodId}` for periods and `{fiscalYearId}` for years, so a year that gains tracking periods is replaced by period records with new ids. `status` maps Open to `open` and Closed to `closed`; a tracking period of a closed fiscal year is `closed` whatever its own status, because Procountor does not allow editing or opening it. Pending, which Procountor sets on a period whose material a Solo customer has delivered and that is not yet closed, returns null because Procountor does not document whether it blocks postings. `locked` and `future` are never returned and `locked_through` is null (Procountor has no lock date). `name` is derived from the dates. The list is not paginated by Procountor.\n",
+                        },
+                        {
+                            "connector": "pennylane",
+                            "description": "Pennylane exposes fiscal years only, so every record has `type: year` and `period_number`, `is_adjustment` and `locked_through` are not available. `name` is derived from the dates (for example `2026`, or `2025-2026` for a fiscal year spanning two calendar years); `fiscal_year` is the calendar year the fiscal year ends in (`2026` for both). `status` maps Pennylane's `open` and `reopen` to `open` and `closed` to `closed`; `frozen` returns a null `status`, because Pennylane does not document whom a frozen year stops.\n",
+                        },
+                        {
+                            "connector": "fortnox",
+                            "description": "Fortnox exposes financial years only, so every record has `type: year` and `period_number` is null. `name` and `fiscal_year` are the year in which the financial year ends. `status` comes from the company's locked period: `locked` when the year ends on or before it, otherwise `open`; a lock date inside a year leaves it `open`. Fortnox lets an administrator lock a period for some or all users and returns one date without saying which, so `closed` is never returned. `locked_through` is the locked date capped at the year's end, when it is on or after the year's start, otherwise null. Reading the locked period needs the opt-in Fortnox `settings` scope, which connections do not request by default: a connection authorized without it gets `status` and `locked_through` null. Connections store the scopes Fortnox granted and skip the locked period call when `settings` is not among them; connections authorized before that was stored try the call and treat Fortnox error code 2000663 (no access to the scope) as the same case.\n",
+                        },
+                        {
+                            "connector": "spiris",
+                            "description": "Spiris exposes fiscal years only, so every record has `type: year` and `period_number` is null. `status` is `closed` when the year is locked for accounting (`IsLockedForAccounting`), otherwise `open`: Spiris documents a locked year as closed to postings for every user, apart from the year's first and last day, until the lock is removed. It exposes no lock date, so `locked_through` is null, and `locked` and `future` are never returned. `name` and `fiscal_year` are the year in which the fiscal year ends.\n",
+                        },
+                        {
+                            "connector": "visma-eaccounting",
+                            "description": 'Visma eAccounting exposes fiscal years only, so every record has `type: year` and `period_number` is null. `status` is `closed` when the year is locked for accounting (`IsLockedForAccounting`, "no longer possible to bookkeep on the year"), otherwise `open`; the lock applies to every user until it is removed. It exposes no lock date, so `locked_through` is null, and `locked` and `future` are never returned. `name` and `fiscal_year` are the year in which the fiscal year ends.\n',
+                        },
+                        {
+                            "connector": "datev-unternehmen-online",
+                            "description": "DATEV exposes fiscal years only, so every record has `type: year`. DATEV's fiscal-year data has no open, closed or locked indicator, so `status` is always null. The id is the year's start date as `YYYYMMDD`; `fiscal_year` is the calendar year of the year's end date. `locked_through` is null. Only fiscal years for which the client has data at DATEV are listed. A list makes one extra request per fiscal year.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "Minox exposes fiscal years only, so every record has `type: year` and `period_number` is null. `name` is Minox's own fiscal year number; `fiscal_year` is the calendar year of the fiscal year's end date (null if the end date is missing), so a broken fiscal year that Minox numbers by its start year still reports its end year. `status` is `closed` when every regular period of the year is closed, permanently or provisionally (Minox's \"voorlopig afgesloten\", which can be undone); a year with only some periods closed is `open`, and `locked` and `future` are never returned. Minox also keeps a correction period after the last regular one, which `status` does not reflect. `locked_through` is not available.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Xero has no fiscal-year list. Years are generated from the organisation's financial year-end setting: the current fiscal year and the 9 before it, listed newest first, never a year that ended before the organisation was created in Xero. Xero does not return the conversion date, so history converted from an earlier system, or dated before the organisation was created, is not listed. If the company ever changed its fiscal year-end, earlier years are reported on the current year-end, not the one in force at the time. Every record has `type: year`; `id` is the year's start date (`YYYY-MM-DD`) and `name` and `fiscal_year` are the year in which it ends. `status` comes from the lock dates: `closed` when the year ends on or before the end-of-year lock date (it stops every user, advisers included), `locked` when it ends on or before the period lock date (it stops every user except advisers), otherwise `open`; a lock date inside a year leaves it `open`. `locked_through` is the later of the two lock dates capped at the year's end, when it is on or after the year's start, otherwise null.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks has no fiscal-year list. Years are generated from the company's fiscal-year start month: the current fiscal year and the 9 before it, listed newest first, never a year that ends before the company start date. If the company ever changed its fiscal year-end, earlier years are reported on the current year-end, not the one in force at the time. Every record has `type: year`; `id` is the year's start date (`YYYY-MM-DD`) and `name` and `fiscal_year` are the year in which it ends. `status` is `locked` when the year ends on or before the books closing date, otherwise `open`: QuickBooks only asks for a warning confirmation or the closing-date password, so users who have the password can still post and `closed` is never returned. Preferences does not say which of the two settings is on, so a closing date set to warning-only is also reported `locked`. A closing date inside a year leaves it `open`. `locked_through` is the closing date capped at the year's end, when it is on or after the year's start, otherwise null. Each request reads CompanyInfo and Preferences and fails if either cannot be read.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo has no fiscal-year list. Years are generated from the company's fiscal year-end setting: the current fiscal year and the 9 before it, never one ending before the company's accounting opening date (or creation date), listed newest first. If the company ever changed its fiscal year-end, earlier years are reported on the current year-end, not the one in force at the time. Every record has `type: year`; `id` is the year's start date (`YYYY-MM- DD`) and `name` and `fiscal_year` are the year in which it ends. `status` is `closed` when the year ends on or before the fiscal-year lock date or the hard lock date (Odoo 18+), which stop every user; `locked` when it ends on or before the period lock date (Odoo 17 and earlier, stops everyone except Advisers) or a sales, purchase or tax lock date, which block only some users or transaction types; otherwise `open`. A lock date inside a year leaves it `open`. `locked_through` is the latest of those lock dates capped at the year's end, when it is on or after the year's start, otherwise null. Odoo 18 per-user lock exceptions and parent-company locks are not considered, and a lock date field the Odoo version does not have is ignored. Send `x-apideck-company-id` (or set a default company) for a multi-company database, otherwise the request returns 422. Odoo Enterprise fiscal-year records are not used. An invalid API key returns 401 and a user without access to the company returns 403.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "Years are FreeAgent's own accounting years for the company, listed newest first, with the year's start date as `id`; every record has `type: year`. `status` comes from the account locks (the year-end or filed-return locks and the user lock): `closed` when the year ends on or before the latest lock date, otherwise `open`; a lock date inside a year leaves it `open`. FreeAgent locks stop every user, accountants included, so `locked` is never returned. `locked_through` is the latest lock date capped at the year's end, when it is on or after the year's start, otherwise null. Account locks need FreeAgent's Full Access level: below it, `status` and `locked_through` are null.\n",
+                        },
+                        {
+                            "connector": "snelstart",
+                            "description": "SnelStart has no fiscal-year list. Years are generated from the administration's fiscal-year start month: the current fiscal year and the 9 before it, listed newest first. SnelStart exposes no creation date, so years before the administration existed can be listed. If the company ever changed its fiscal year-end, earlier years are reported on the current year-end, not the one in force at the time. Every record has `type: year`; `id` is the year's start date (`YYYY- MM-DD`) and `name` and `fiscal_year` are the year in which it ends. SnelStart does not expose whether a year is closed, so `status` and `locked_through` are null.\n",
+                        },
+                        {
+                            "connector": "e-conomic",
+                            "description": "Each period of every e-conomic accounting year is returned as a `period` record, in year and period order; a list makes one extra request per accounting year. Ids have the form `{accounting year}-{e-conomic period number}`. e-conomic numbers periods consecutively across all accounting years, so the first period of a company's fifth year has an id such as `2026-49`; `period_number` is the period's position within its year (`1` for that period), and getting a single period makes two extra requests. A split accounting year such as `2025/2026` is written `2025_6_2026` in ids. `fiscal_year` is the calendar year the accounting year ends in (`2026` for `2025/2026`). `name` is generated from the accounting year and the position (for example `2025/2026-P01`) because e-conomic has no period name. e-conomic closes whole accounting years, not single periods: `status` is `closed` for every period of a closed accounting year and `open` otherwise. `locked_through`, `is_adjustment`, `created_at` and `updated_at` are not available.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -137,17 +228,19 @@ class FiscalPeriods(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingFiscalPeriodsAllResponse(
                 get_fiscal_periods_response=unmarshal_json_response(
-                    Optional[models.GetFiscalPeriodsResponse], http_res
+                    Optional[models.GetFiscalPeriodsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -188,11 +281,10 @@ class FiscalPeriods(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingFiscalPeriodsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -207,7 +299,7 @@ class FiscalPeriods(BaseSDK):
         company_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -250,7 +342,7 @@ class FiscalPeriods(BaseSDK):
             company_id=company_id,
             cursor=cursor,
             limit=limit,
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -271,6 +363,7 @@ class FiscalPeriods(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -295,9 +388,99 @@ class FiscalPeriods(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "netsuite",
+                            "description": "Read from NetSuite's accounting periods. `type` follows NetSuite's year and quarter flags, so years and quarters are returned alongside posting periods. `status` is `closed` when the period is closed (NetSuite stops everyone from posting to a closed period until it is reopened), `locked` when all, AP, AR or payroll transactions are locked (users with the Override Period Restrictions permission can still post), otherwise `open`; `future` is never returned. `fiscal_year` is the calendar year in which the period's fiscal year ends, from the end date of the parent year period (`2026` for `FY 2026`); the year period itself is a record with `type: year`. Inactive periods are included. With multiple fiscal calendars enabled, the periods of every calendar are returned together and are not distinguished. `locked_through`, `period_number`, `created_at` and `updated_at` are not available.\n",
+                        },
+                        {
+                            "connector": "oracle-fusion",
+                            "description": "Periods are the General Ledger calendar of the ledger selected on the connection, so only that ledger's periods are returned. The id is the period name (for example `Jan-26`). Oracle's closing status maps as Open to `open`, Closed and Permanently Closed to `closed`, and Future Enterable and Never Opened to `future`; Close Pending returns a null `status`, because Oracle does not say whether it stops postings. `fiscal_year` is Oracle's period year as four digits (null otherwise). Oracle's calendar setup defines it as the year in which the fiscal year ends, and Apideck passes it through without recomputing it from the dates, so a calendar set up with another convention reports its own. Adjustment periods are flagged with `is_adjustment`. `locked_through`, `created_at` and `updated_at` are not available.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "Business Central stores only a period's start date. `end_date` (the day before the next period starts), `fiscal_year` (the calendar year in which the fiscal year ends, so Jul 2025 to Jun 2026 is `2026`; 12 months are assumed for the company's last fiscal year) and `period_number` are derived from the company's full period list, which costs one extra request, and are null if that list cannot be read; `end_date` is always null for the company's last period. `status` and `locked_through` come from the company's General Ledger Setup (Allow Posting From / Allow Posting To), read with one more request; the accounting period's own Closed and Date Locked flags are not used, because they do not stop posting (entries can still be posted to a closed year and are flagged Prior-Year Entry). A period that ends before Allow Posting From or starts after Allow Posting To is `locked`, never `closed`, because User Setup can give individual users a different window; otherwise it is `open`. `locked_through` is the day before Allow Posting From, capped at the period's end date, and null when that day is before the period starts or Allow Posting From is empty. `future` is never returned. If the connection's user cannot read the General Ledger Setup (403), `status` and `locked_through` are null; other failures of that read fail the request. `is_adjustment` and `created_at` are not available.\n",
+                        },
+                        {
+                            "connector": "exact-online",
+                            "description": "Periods of the selected division, in fiscal year and period order. `name` is generated as `{fiscal_year}-P{period_number}` (for example `2026-P01`) because Exact has no period name. `fiscal_year` is the calendar year in which the period's fiscal year ends, taken from the latest period end of that fiscal year (one extra read of the division's periods; null if it cannot be read); Exact's own financial year label, which can be the start year, is the first part of `name`. `status`, `locked_through` and `is_adjustment` are not exposed by Exact and are always null.\n",
+                        },
+                        {
+                            "connector": "exact-online-nl",
+                            "description": "Periods of the selected division, in fiscal year and period order. `name` is generated as `{fiscal_year}-P{period_number}` (for example `2026-P01`) because Exact has no period name. `fiscal_year` is the calendar year in which the period's fiscal year ends, taken from the latest period end of that fiscal year (one extra read of the division's periods; null if it cannot be read); Exact's own financial year label, which can be the start year, is the first part of `name`. `status`, `locked_through` and `is_adjustment` are not exposed by Exact and are always null.\n",
+                        },
+                        {
+                            "connector": "exact-online-uk",
+                            "description": "Periods of the selected division, in fiscal year and period order. `name` is generated as `{fiscal_year}-P{period_number}` (for example `2026-P01`) because Exact has no period name. `fiscal_year` is the calendar year in which the period's fiscal year ends, taken from the latest period end of that fiscal year (one extra read of the division's periods; null if it cannot be read); Exact's own financial year label, which can be the start year, is the first part of `name`. `status`, `locked_through` and `is_adjustment` are not exposed by Exact and are always null.\n",
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": "Twinfield returns periods one fiscal year at a time, so a list makes one extra request per year and covers at most the 10 most recent years, plus one request for the year before the oldest so its first `start_date` matches a get-one; if any of those years cannot be read the list fails with a 502 rather than returning a gap. Ids have the form `{year}-{period number}` (for example `2026-01`). Twinfield returns no start date: `start_date` is the day after the previous period ends and is null for the earliest period Twinfield has. `fiscal_year` is the calendar year in which the fiscal year ends (the year of its last period's end date), whatever Twinfield calls the year; `name` is Twinfield's period name. `status` is `open` or `closed` from Twinfield's open flag: a period that is not open accepts no postings from anyone until it is reopened (https://taasupportportal.wolterskluwer.com/nl/nl-nl/artikel/perioden-3041044), and `locked` and `future` are not used. `locked_through` is null. `is_adjustment`, `created_at` and `updated_at` are not available.\n",
+                        },
+                        {
+                            "connector": "visma-netvisor",
+                            "description": "Netvisor's accounting periods are fiscal years, so every record has `type: year` and `period_number` is null. `fiscal_year` is the calendar year the period ends in. `status` is derived from the company's lock dates: `closed` when the period ends on or before the accounting period lock date (Netvisor blocks changes until the fiscal year is reopened), `locked` when it ends on or before the VAT or accounts payable lock date only (users with a personal VAT override and accountants still post), otherwise `open`; a year the lock date falls inside reads `open`. Netvisor reports no \"not yet opened\" state, so `future` is never returned. `locked_through` is the latest of the three lock dates, capped at the period's end date, and null when it falls before the period starts. `created_at` and `updated_at` are not available.\n",
+                        },
+                        {
+                            "connector": "procountor-fi",
+                            "description": "Each Procountor tracking period is returned as a `period` record, with `period_number` its position in the fiscal year and `fiscal_year` the year the fiscal year ends in; a fiscal year without tracking periods is returned as one `year` record. Ids are `{fiscalYearId}:{trackingPeriodId}` for periods and `{fiscalYearId}` for years, so a year that gains tracking periods is replaced by period records with new ids. `status` maps Open to `open` and Closed to `closed`; a tracking period of a closed fiscal year is `closed` whatever its own status, because Procountor does not allow editing or opening it. Pending, which Procountor sets on a period whose material a Solo customer has delivered and that is not yet closed, returns null because Procountor does not document whether it blocks postings. `locked` and `future` are never returned and `locked_through` is null (Procountor has no lock date). `name` is derived from the dates. The list is not paginated by Procountor.\n",
+                        },
+                        {
+                            "connector": "pennylane",
+                            "description": "Pennylane exposes fiscal years only, so every record has `type: year` and `period_number`, `is_adjustment` and `locked_through` are not available. `name` is derived from the dates (for example `2026`, or `2025-2026` for a fiscal year spanning two calendar years); `fiscal_year` is the calendar year the fiscal year ends in (`2026` for both). `status` maps Pennylane's `open` and `reopen` to `open` and `closed` to `closed`; `frozen` returns a null `status`, because Pennylane does not document whom a frozen year stops.\n",
+                        },
+                        {
+                            "connector": "fortnox",
+                            "description": "Fortnox exposes financial years only, so every record has `type: year` and `period_number` is null. `name` and `fiscal_year` are the year in which the financial year ends. `status` comes from the company's locked period: `locked` when the year ends on or before it, otherwise `open`; a lock date inside a year leaves it `open`. Fortnox lets an administrator lock a period for some or all users and returns one date without saying which, so `closed` is never returned. `locked_through` is the locked date capped at the year's end, when it is on or after the year's start, otherwise null. Reading the locked period needs the opt-in Fortnox `settings` scope, which connections do not request by default: a connection authorized without it gets `status` and `locked_through` null. Connections store the scopes Fortnox granted and skip the locked period call when `settings` is not among them; connections authorized before that was stored try the call and treat Fortnox error code 2000663 (no access to the scope) as the same case.\n",
+                        },
+                        {
+                            "connector": "spiris",
+                            "description": "Spiris exposes fiscal years only, so every record has `type: year` and `period_number` is null. `status` is `closed` when the year is locked for accounting (`IsLockedForAccounting`), otherwise `open`: Spiris documents a locked year as closed to postings for every user, apart from the year's first and last day, until the lock is removed. It exposes no lock date, so `locked_through` is null, and `locked` and `future` are never returned. `name` and `fiscal_year` are the year in which the fiscal year ends.\n",
+                        },
+                        {
+                            "connector": "visma-eaccounting",
+                            "description": 'Visma eAccounting exposes fiscal years only, so every record has `type: year` and `period_number` is null. `status` is `closed` when the year is locked for accounting (`IsLockedForAccounting`, "no longer possible to bookkeep on the year"), otherwise `open`; the lock applies to every user until it is removed. It exposes no lock date, so `locked_through` is null, and `locked` and `future` are never returned. `name` and `fiscal_year` are the year in which the fiscal year ends.\n',
+                        },
+                        {
+                            "connector": "datev-unternehmen-online",
+                            "description": "DATEV exposes fiscal years only, so every record has `type: year`. DATEV's fiscal-year data has no open, closed or locked indicator, so `status` is always null. The id is the year's start date as `YYYYMMDD`; `fiscal_year` is the calendar year of the year's end date. `locked_through` is null. Only fiscal years for which the client has data at DATEV are listed. A list makes one extra request per fiscal year.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "Minox exposes fiscal years only, so every record has `type: year` and `period_number` is null. `name` is Minox's own fiscal year number; `fiscal_year` is the calendar year of the fiscal year's end date (null if the end date is missing), so a broken fiscal year that Minox numbers by its start year still reports its end year. `status` is `closed` when every regular period of the year is closed, permanently or provisionally (Minox's \"voorlopig afgesloten\", which can be undone); a year with only some periods closed is `open`, and `locked` and `future` are never returned. Minox also keeps a correction period after the last regular one, which `status` does not reflect. `locked_through` is not available.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Xero has no fiscal-year list. Years are generated from the organisation's financial year-end setting: the current fiscal year and the 9 before it, listed newest first, never a year that ended before the organisation was created in Xero. Xero does not return the conversion date, so history converted from an earlier system, or dated before the organisation was created, is not listed. If the company ever changed its fiscal year-end, earlier years are reported on the current year-end, not the one in force at the time. Every record has `type: year`; `id` is the year's start date (`YYYY-MM-DD`) and `name` and `fiscal_year` are the year in which it ends. `status` comes from the lock dates: `closed` when the year ends on or before the end-of-year lock date (it stops every user, advisers included), `locked` when it ends on or before the period lock date (it stops every user except advisers), otherwise `open`; a lock date inside a year leaves it `open`. `locked_through` is the later of the two lock dates capped at the year's end, when it is on or after the year's start, otherwise null.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks has no fiscal-year list. Years are generated from the company's fiscal-year start month: the current fiscal year and the 9 before it, listed newest first, never a year that ends before the company start date. If the company ever changed its fiscal year-end, earlier years are reported on the current year-end, not the one in force at the time. Every record has `type: year`; `id` is the year's start date (`YYYY-MM-DD`) and `name` and `fiscal_year` are the year in which it ends. `status` is `locked` when the year ends on or before the books closing date, otherwise `open`: QuickBooks only asks for a warning confirmation or the closing-date password, so users who have the password can still post and `closed` is never returned. Preferences does not say which of the two settings is on, so a closing date set to warning-only is also reported `locked`. A closing date inside a year leaves it `open`. `locked_through` is the closing date capped at the year's end, when it is on or after the year's start, otherwise null. Each request reads CompanyInfo and Preferences and fails if either cannot be read.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo has no fiscal-year list. Years are generated from the company's fiscal year-end setting: the current fiscal year and the 9 before it, never one ending before the company's accounting opening date (or creation date), listed newest first. If the company ever changed its fiscal year-end, earlier years are reported on the current year-end, not the one in force at the time. Every record has `type: year`; `id` is the year's start date (`YYYY-MM- DD`) and `name` and `fiscal_year` are the year in which it ends. `status` is `closed` when the year ends on or before the fiscal-year lock date or the hard lock date (Odoo 18+), which stop every user; `locked` when it ends on or before the period lock date (Odoo 17 and earlier, stops everyone except Advisers) or a sales, purchase or tax lock date, which block only some users or transaction types; otherwise `open`. A lock date inside a year leaves it `open`. `locked_through` is the latest of those lock dates capped at the year's end, when it is on or after the year's start, otherwise null. Odoo 18 per-user lock exceptions and parent-company locks are not considered, and a lock date field the Odoo version does not have is ignored. Send `x-apideck-company-id` (or set a default company) for a multi-company database, otherwise the request returns 422. Odoo Enterprise fiscal-year records are not used. An invalid API key returns 401 and a user without access to the company returns 403.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "Years are FreeAgent's own accounting years for the company, listed newest first, with the year's start date as `id`; every record has `type: year`. `status` comes from the account locks (the year-end or filed-return locks and the user lock): `closed` when the year ends on or before the latest lock date, otherwise `open`; a lock date inside a year leaves it `open`. FreeAgent locks stop every user, accountants included, so `locked` is never returned. `locked_through` is the latest lock date capped at the year's end, when it is on or after the year's start, otherwise null. Account locks need FreeAgent's Full Access level: below it, `status` and `locked_through` are null.\n",
+                        },
+                        {
+                            "connector": "snelstart",
+                            "description": "SnelStart has no fiscal-year list. Years are generated from the administration's fiscal-year start month: the current fiscal year and the 9 before it, listed newest first. SnelStart exposes no creation date, so years before the administration existed can be listed. If the company ever changed its fiscal year-end, earlier years are reported on the current year-end, not the one in force at the time. Every record has `type: year`; `id` is the year's start date (`YYYY- MM-DD`) and `name` and `fiscal_year` are the year in which it ends. SnelStart does not expose whether a year is closed, so `status` and `locked_through` are null.\n",
+                        },
+                        {
+                            "connector": "e-conomic",
+                            "description": "Each period of every e-conomic accounting year is returned as a `period` record, in year and period order; a list makes one extra request per accounting year. Ids have the form `{accounting year}-{e-conomic period number}`. e-conomic numbers periods consecutively across all accounting years, so the first period of a company's fifth year has an id such as `2026-49`; `period_number` is the period's position within its year (`1` for that period), and getting a single period makes two extra requests. A split accounting year such as `2025/2026` is written `2025_6_2026` in ids. `fiscal_year` is the calendar year the accounting year ends in (`2026` for `2025/2026`). `name` is generated from the accounting year and the position (for example `2025/2026-P01`) because e-conomic has no period name. e-conomic closes whole accounting years, not single periods: `status` is `closed` for every period of a closed accounting year and `open` otherwise. `locked_through`, `is_adjustment`, `created_at` and `updated_at` are not available.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -323,17 +506,19 @@ class FiscalPeriods(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingFiscalPeriodsAllResponse(
                 get_fiscal_periods_response=unmarshal_json_response(
-                    Optional[models.GetFiscalPeriodsResponse], http_res
+                    Optional[models.GetFiscalPeriodsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -374,11 +559,10 @@ class FiscalPeriods(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingFiscalPeriodsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -451,6 +635,7 @@ class FiscalPeriods(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -475,9 +660,55 @@ class FiscalPeriods(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "netsuite",
+                            "description": "An id with no accounting period answers 404.\n",
+                        },
+                        {
+                            "connector": "pennylane",
+                            "description": "Pennylane has no endpoint for a single fiscal year, so this lists the company's fiscal years and returns the matching one.\n",
+                        },
+                        {
+                            "connector": "visma-netvisor",
+                            "description": "Netvisor has no endpoint for a single accounting period, so this lists the periods and returns the matching one.\n",
+                        },
+                        {
+                            "connector": "procountor-fi",
+                            "description": "Procountor has no endpoint for a single period, so this lists the fiscal years and returns the matching period or year.\n",
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": "For the first period of a year, `start_date` needs the previous year's periods, which costs one extra request; it is null if that year cannot be read. A malformed id, or a year the office does not have, answers 404 before any period is requested; a period number the year does not have answers 404 as well.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "An id outside the generated 10-year window answers 404.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "An id outside the generated 10-year window answers 404.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "An id outside the generated 10-year window answers 404.\n",
+                        },
+                        {
+                            "connector": "snelstart",
+                            "description": "An id outside the generated 10-year window answers 404.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "FreeAgent has no endpoint for a single accounting year, so this reads the company's years and returns the matching one.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -485,10 +716,9 @@ class FiscalPeriods(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingFiscalPeriodsOneResponse(
                 get_fiscal_period_response=unmarshal_json_response(
-                    Optional[models.GetFiscalPeriodResponse], http_res
+                    Optional[models.GetFiscalPeriodResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -529,10 +759,9 @@ class FiscalPeriods(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingFiscalPeriodsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -605,6 +834,7 @@ class FiscalPeriods(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -629,9 +859,55 @@ class FiscalPeriods(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "netsuite",
+                            "description": "An id with no accounting period answers 404.\n",
+                        },
+                        {
+                            "connector": "pennylane",
+                            "description": "Pennylane has no endpoint for a single fiscal year, so this lists the company's fiscal years and returns the matching one.\n",
+                        },
+                        {
+                            "connector": "visma-netvisor",
+                            "description": "Netvisor has no endpoint for a single accounting period, so this lists the periods and returns the matching one.\n",
+                        },
+                        {
+                            "connector": "procountor-fi",
+                            "description": "Procountor has no endpoint for a single period, so this lists the fiscal years and returns the matching period or year.\n",
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": "For the first period of a year, `start_date` needs the previous year's periods, which costs one extra request; it is null if that year cannot be read. A malformed id, or a year the office does not have, answers 404 before any period is requested; a period number the year does not have answers 404 as well.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "An id outside the generated 10-year window answers 404.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "An id outside the generated 10-year window answers 404.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "An id outside the generated 10-year window answers 404.\n",
+                        },
+                        {
+                            "connector": "snelstart",
+                            "description": "An id outside the generated 10-year window answers 404.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "FreeAgent has no endpoint for a single accounting year, so this reads the company's years and returns the matching one.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -639,10 +915,9 @@ class FiscalPeriods(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingFiscalPeriodsOneResponse(
                 get_fiscal_period_response=unmarshal_json_response(
-                    Optional[models.GetFiscalPeriodResponse], http_res
+                    Optional[models.GetFiscalPeriodResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -683,10 +958,9 @@ class FiscalPeriods(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingFiscalPeriodsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

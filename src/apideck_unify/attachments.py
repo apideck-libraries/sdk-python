@@ -31,7 +31,7 @@ class Attachments(BaseSDK):
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
         fields: OptionalNullable[str] = UNSET,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -78,7 +78,7 @@ class Attachments(BaseSDK):
             cursor=cursor,
             limit=limit,
             fields=fields,
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
         )
 
         req = self._build_request(
@@ -98,6 +98,7 @@ class Attachments(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -122,9 +123,91 @@ class Attachments(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "fiken",
+                            "description": "Supported `reference_type` values are `invoice`, `bill` and `journal-entry`; every other\nvalue is rejected with `422`. Fiken does not paginate attachments, so the full list of the\nrecord is returned in one page. `size`, `created_at` and `updated_at` are not returned by\nFiken, and `file_url` needs the same bearer token as the API, so use the download\nendpoint instead of handing the link to a browser.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "Attachments are supported on journal entries, invoices, bills, credit notes and bill credit\nnotes (`reference_type=journal-entry`, `invoice`, `bill`, `credit-note` or\n`bill-credit-note`), with `reference_id` the record's id. A record holds at most one\ndocument.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "Supported `reference_type` values are `bill`, `bill-credit-note` and `expense`. A FreeAgent\nbill, bill credit note or expense holds at most one attachment, so the list has zero or one\nentry. A bill credit note is only found as `bill-credit-note`, and a bill only as `bill`.\n\n`file_url` is FreeAgent's own signed link and stops working 30 seconds after the list or get\ncall; use the download endpoint, which returns the file itself, instead of storing it.\n`created_at` and `updated_at` are not returned.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "At most one attachment is visible per record. Sage attaches files to a record through a\nsingle *supporting document* reference on the record itself, and each upload creates a new\nsupporting document and repoints that reference at it. The previously attached file still\nexists in Sage under Company > Supporting Documents, but it is no longer linked to the\nrecord, so it does not appear here and cannot be fetched or downloaded through the\nattachment endpoints.\n\nUploading a second file to the same `reference_id` therefore replaces the first rather than\nadding to it, and returns `201` either way. If a record needs several documents, attach them\noutside the API for now, or keep them in one file.\n\nThis is a limitation of the integration, not of Sage: a Sage supporting document can hold\nseveral files, and they can be added one at a time. Lifting it is tracked work.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "Only `invoice` and `bill` are supported as a `reference_type`. Listing attachments for\n`expense`, `expense-report` or `quote` returns an empty list rather than an error, even\nwhen the record has a file attached in Sage.\n\nUse the `sage-intacct-rest` connector if you need attachments on those record types — it\nsupports all five.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n\nSupported `reference_type` values are `invoice`, `bill`, `credit-note`, `bill-credit-note`, `journal-entry` and `expense`. Listing attachments for `quote` or `expense-report`, or with a non-numeric `reference_id`, returns an empty list rather than an error.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite uses the same underlying QuickBooks API. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks Online does not expose a reliable cross-page total record count. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "If you encounter a '400 Bad Request' error indicating \"Control 'fieldName' is read-only\" it means the 'editable' property for this field in Microsoft Dynamics 365 Business Central is currently set to false. To resolve this issue and make the field writable, simply update the 'editable' property to true in Microsoft Dynamics 365 Business Central.\nAdditionally, line item tax rates must be specified by tax rate *code* (e.g., \"G3\"), not by ID. In U.S.-regionalized Business Central tenants, the `tax_inclusive` field cannot be set to `true`.\n\nFor `reference_type` values `journal-entry` and `expense`, `id` is a document number rather\nthan a single Business Central record — both group every ledger line that shares that\ndocument number into one unified record. Listing attachments for one of these returns every\nfile attached to any of its lines. If a document number is shared between an unposted/default\ngrouping used for both `expense` and `journal-entry`, the same attachments can appear under\nboth `reference_type` values for that document number.\n",
+                        },
+                        {
+                            "connector": "myob",
+                            "description": "Attachments are supported on bills only. MYOB has no attachment support on invoices,\ncredit notes, or other records. The `reference_id` must be the layout-encoded bill ID\nreturned by the bills resource (base64 JSON with `id` and `type` fields where type is\nservice, product, professional, or misc).\n\n`attachmentsOne` (get single attachment) is unsupported — MYOB exposes no per-attachment\nread endpoint (a GET on a single attachment returns 405). Use `attachmentsAll` to list\nattachments for a bill and select the file by id or name.\n\n`attachmentsDownload` is unsupported — use the `file_url` from `attachmentsAll` to\ndownload files. MYOB provides presigned S3 URLs in the attachment list response. Two\ncaveats on those URLs: responses are gzip-encoded (use a client that auto-decompresses,\ne.g. `curl --compressed`), and for image uploads MYOB may serve a PDF rendition of the\nstored file rather than the original image bytes, while `name` keeps the original\nextension. PDFs are returned byte-identical.\n\n`mime_type`, `size`, `created_at` and `updated_at` are always null — MYOB's attachment\nobject does not carry them.\n",
+                        },
+                        {
+                            "connector": "pennylane",
+                            "description": "Pennylane does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "AFAS does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "exact-online",
+                            "description": "`reference_id` is the invoice, bill, or journal entry's own unified id — not Exact's\ninternal Document envelope GUID. The connector resolves between the two internally\n(Exact's `FinancialTransactionEntryID`, live-verified to equal the unified id for all\nthree reference types), so no manual lookup or pass-through is needed.\n\n`file_url` is Exact's own document viewer page\n(`https://start.exactonline.{tld}/docs/SysAttachment.aspx?...`), not a direct file\ndownload link — it requires an active, logged-in Exact browser session and redirects to\na login page for an unauthenticated request (live-verified: a plain GET returns a 302 to\nthe Exact login page, not the file). There is no other download-capable URL on this\nconnector's attachment records.\n\nThis list has no server-side total count, so pagination metadata never includes a count.\n",
+                        },
+                        {
+                            "connector": "exact-online-nl",
+                            "description": "`reference_id` is the invoice, bill, or journal entry's own unified id — not Exact's\ninternal Document envelope GUID. The connector resolves between the two internally\n(Exact's `FinancialTransactionEntryID`, live-verified to equal the unified id for all\nthree reference types), so no manual lookup or pass-through is needed.\n\n`file_url` is Exact's own document viewer page\n(`https://start.exactonline.{tld}/docs/SysAttachment.aspx?...`), not a direct file\ndownload link — it requires an active, logged-in Exact browser session and redirects to\na login page for an unauthenticated request (live-verified: a plain GET returns a 302 to\nthe Exact login page, not the file). There is no other download-capable URL on this\nconnector's attachment records.\n\nThis list has no server-side total count, so pagination metadata never includes a count.\n",
+                        },
+                        {
+                            "connector": "exact-online-uk",
+                            "description": "`reference_id` is the invoice, bill, or journal entry's own unified id — not Exact's\ninternal Document envelope GUID. The connector resolves between the two internally\n(Exact's `FinancialTransactionEntryID`, live-verified to equal the unified id for all\nthree reference types), so no manual lookup or pass-through is needed.\n\n`file_url` is Exact's own document viewer page\n(`https://start.exactonline.{tld}/docs/SysAttachment.aspx?...`), not a direct file\ndownload link — it requires an active, logged-in Exact browser session and redirects to\na login page for an unauthenticated request (live-verified: a plain GET returns a 302 to\nthe Exact login page, not the file). There is no other download-capable URL on this\nconnector's attachment records.\n\nThis list has no server-side total count, so pagination metadata never includes a count.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Zoho Books has no standalone attachments-listing endpoint; attachment metadata is nested inside each record's own detail response as a `documents` array. `reference_id` here is the record's own unified `id` (no separate lookup needed) for `invoice`, `bill`, `expense`, and `journal-entry`, and `credit-note`. The `credit-note` list route is not live-verified — if Zoho's real credit-note detail response omits the `documents` array (unconfirmed either way), listing returns an empty result rather than an error; upload is unaffected either way.\n",
+                        },
+                        {
+                            "connector": "sevdesk",
+                            "description": "Only `invoice`, `bill` and `credit-note` are supported as a `reference_type`.\nListing with any other value returns a vendor error rather than an empty list.\n\nOnly files a caller has uploaded through this endpoint are returned — sevDesk's\nown auto-generated invoice/credit note PDFs are not included, since they are\nlinked internally in a way this endpoint does not surface.\n",
+                        },
+                        {
+                            "connector": "lexware-office",
+                            "description": "Only `bill` is supported as a `reference_type` — the equivalent endpoint on invoices and\ncredit notes exists but always errors. `name`, `mime_type`, `size`, `description` and the\ntimestamp fields are always null: there is no metadata endpoint for a file, only a raw\ndownload, and this connector does not download file bytes just to populate a list response.\n\n`attachmentsOne` (get single attachment) is unsupported — Lexware Office exposes no\nper-attachment read endpoint, only a bill's own list of file ids. Use `attachmentsAll` to\nlist a bill's attachments and select the file you need by `id`.\n",
+                        },
+                        {
+                            "connector": "sap-business-one",
+                            "description": "Only `invoice`, `bill`, `credit-note` and `quote` are supported as a `reference_type`; any\nother value returns `400`. A document's files form one SAP Business One attachment entry and\nthe list returns all of them in one page. An attachment `id` is `{entry}-{line}` (for\nexample `4-2`). `size`, `created_by` and `updated_at` are not available, and `created_at`\ncarries the date only.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -152,17 +235,19 @@ class Attachments(BaseSDK):
                 fields=fields,
                 pass_through=pass_through,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingAttachmentsAllResponse(
                 get_attachments_response=unmarshal_json_response(
-                    Optional[models.GetAttachmentsResponse], http_res
+                    Optional[models.GetAttachmentsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -203,11 +288,10 @@ class Attachments(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingAttachmentsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -225,7 +309,7 @@ class Attachments(BaseSDK):
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
         fields: OptionalNullable[str] = UNSET,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -272,7 +356,7 @@ class Attachments(BaseSDK):
             cursor=cursor,
             limit=limit,
             fields=fields,
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
         )
 
         req = self._build_request_async(
@@ -292,6 +376,7 @@ class Attachments(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -316,9 +401,91 @@ class Attachments(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "fiken",
+                            "description": "Supported `reference_type` values are `invoice`, `bill` and `journal-entry`; every other\nvalue is rejected with `422`. Fiken does not paginate attachments, so the full list of the\nrecord is returned in one page. `size`, `created_at` and `updated_at` are not returned by\nFiken, and `file_url` needs the same bearer token as the API, so use the download\nendpoint instead of handing the link to a browser.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "Attachments are supported on journal entries, invoices, bills, credit notes and bill credit\nnotes (`reference_type=journal-entry`, `invoice`, `bill`, `credit-note` or\n`bill-credit-note`), with `reference_id` the record's id. A record holds at most one\ndocument.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "Supported `reference_type` values are `bill`, `bill-credit-note` and `expense`. A FreeAgent\nbill, bill credit note or expense holds at most one attachment, so the list has zero or one\nentry. A bill credit note is only found as `bill-credit-note`, and a bill only as `bill`.\n\n`file_url` is FreeAgent's own signed link and stops working 30 seconds after the list or get\ncall; use the download endpoint, which returns the file itself, instead of storing it.\n`created_at` and `updated_at` are not returned.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "At most one attachment is visible per record. Sage attaches files to a record through a\nsingle *supporting document* reference on the record itself, and each upload creates a new\nsupporting document and repoints that reference at it. The previously attached file still\nexists in Sage under Company > Supporting Documents, but it is no longer linked to the\nrecord, so it does not appear here and cannot be fetched or downloaded through the\nattachment endpoints.\n\nUploading a second file to the same `reference_id` therefore replaces the first rather than\nadding to it, and returns `201` either way. If a record needs several documents, attach them\noutside the API for now, or keep them in one file.\n\nThis is a limitation of the integration, not of Sage: a Sage supporting document can hold\nseveral files, and they can be added one at a time. Lifting it is tracked work.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "Only `invoice` and `bill` are supported as a `reference_type`. Listing attachments for\n`expense`, `expense-report` or `quote` returns an empty list rather than an error, even\nwhen the record has a file attached in Sage.\n\nUse the `sage-intacct-rest` connector if you need attachments on those record types — it\nsupports all five.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n\nSupported `reference_type` values are `invoice`, `bill`, `credit-note`, `bill-credit-note`, `journal-entry` and `expense`. Listing attachments for `quote` or `expense-report`, or with a non-numeric `reference_id`, returns an empty list rather than an error.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite uses the same underlying QuickBooks API. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks Online does not expose a reliable cross-page total record count. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "If you encounter a '400 Bad Request' error indicating \"Control 'fieldName' is read-only\" it means the 'editable' property for this field in Microsoft Dynamics 365 Business Central is currently set to false. To resolve this issue and make the field writable, simply update the 'editable' property to true in Microsoft Dynamics 365 Business Central.\nAdditionally, line item tax rates must be specified by tax rate *code* (e.g., \"G3\"), not by ID. In U.S.-regionalized Business Central tenants, the `tax_inclusive` field cannot be set to `true`.\n\nFor `reference_type` values `journal-entry` and `expense`, `id` is a document number rather\nthan a single Business Central record — both group every ledger line that shares that\ndocument number into one unified record. Listing attachments for one of these returns every\nfile attached to any of its lines. If a document number is shared between an unposted/default\ngrouping used for both `expense` and `journal-entry`, the same attachments can appear under\nboth `reference_type` values for that document number.\n",
+                        },
+                        {
+                            "connector": "myob",
+                            "description": "Attachments are supported on bills only. MYOB has no attachment support on invoices,\ncredit notes, or other records. The `reference_id` must be the layout-encoded bill ID\nreturned by the bills resource (base64 JSON with `id` and `type` fields where type is\nservice, product, professional, or misc).\n\n`attachmentsOne` (get single attachment) is unsupported — MYOB exposes no per-attachment\nread endpoint (a GET on a single attachment returns 405). Use `attachmentsAll` to list\nattachments for a bill and select the file by id or name.\n\n`attachmentsDownload` is unsupported — use the `file_url` from `attachmentsAll` to\ndownload files. MYOB provides presigned S3 URLs in the attachment list response. Two\ncaveats on those URLs: responses are gzip-encoded (use a client that auto-decompresses,\ne.g. `curl --compressed`), and for image uploads MYOB may serve a PDF rendition of the\nstored file rather than the original image bytes, while `name` keeps the original\nextension. PDFs are returned byte-identical.\n\n`mime_type`, `size`, `created_at` and `updated_at` are always null — MYOB's attachment\nobject does not carry them.\n",
+                        },
+                        {
+                            "connector": "pennylane",
+                            "description": "Pennylane does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "AFAS does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "exact-online",
+                            "description": "`reference_id` is the invoice, bill, or journal entry's own unified id — not Exact's\ninternal Document envelope GUID. The connector resolves between the two internally\n(Exact's `FinancialTransactionEntryID`, live-verified to equal the unified id for all\nthree reference types), so no manual lookup or pass-through is needed.\n\n`file_url` is Exact's own document viewer page\n(`https://start.exactonline.{tld}/docs/SysAttachment.aspx?...`), not a direct file\ndownload link — it requires an active, logged-in Exact browser session and redirects to\na login page for an unauthenticated request (live-verified: a plain GET returns a 302 to\nthe Exact login page, not the file). There is no other download-capable URL on this\nconnector's attachment records.\n\nThis list has no server-side total count, so pagination metadata never includes a count.\n",
+                        },
+                        {
+                            "connector": "exact-online-nl",
+                            "description": "`reference_id` is the invoice, bill, or journal entry's own unified id — not Exact's\ninternal Document envelope GUID. The connector resolves between the two internally\n(Exact's `FinancialTransactionEntryID`, live-verified to equal the unified id for all\nthree reference types), so no manual lookup or pass-through is needed.\n\n`file_url` is Exact's own document viewer page\n(`https://start.exactonline.{tld}/docs/SysAttachment.aspx?...`), not a direct file\ndownload link — it requires an active, logged-in Exact browser session and redirects to\na login page for an unauthenticated request (live-verified: a plain GET returns a 302 to\nthe Exact login page, not the file). There is no other download-capable URL on this\nconnector's attachment records.\n\nThis list has no server-side total count, so pagination metadata never includes a count.\n",
+                        },
+                        {
+                            "connector": "exact-online-uk",
+                            "description": "`reference_id` is the invoice, bill, or journal entry's own unified id — not Exact's\ninternal Document envelope GUID. The connector resolves between the two internally\n(Exact's `FinancialTransactionEntryID`, live-verified to equal the unified id for all\nthree reference types), so no manual lookup or pass-through is needed.\n\n`file_url` is Exact's own document viewer page\n(`https://start.exactonline.{tld}/docs/SysAttachment.aspx?...`), not a direct file\ndownload link — it requires an active, logged-in Exact browser session and redirects to\na login page for an unauthenticated request (live-verified: a plain GET returns a 302 to\nthe Exact login page, not the file). There is no other download-capable URL on this\nconnector's attachment records.\n\nThis list has no server-side total count, so pagination metadata never includes a count.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Zoho Books has no standalone attachments-listing endpoint; attachment metadata is nested inside each record's own detail response as a `documents` array. `reference_id` here is the record's own unified `id` (no separate lookup needed) for `invoice`, `bill`, `expense`, and `journal-entry`, and `credit-note`. The `credit-note` list route is not live-verified — if Zoho's real credit-note detail response omits the `documents` array (unconfirmed either way), listing returns an empty result rather than an error; upload is unaffected either way.\n",
+                        },
+                        {
+                            "connector": "sevdesk",
+                            "description": "Only `invoice`, `bill` and `credit-note` are supported as a `reference_type`.\nListing with any other value returns a vendor error rather than an empty list.\n\nOnly files a caller has uploaded through this endpoint are returned — sevDesk's\nown auto-generated invoice/credit note PDFs are not included, since they are\nlinked internally in a way this endpoint does not surface.\n",
+                        },
+                        {
+                            "connector": "lexware-office",
+                            "description": "Only `bill` is supported as a `reference_type` — the equivalent endpoint on invoices and\ncredit notes exists but always errors. `name`, `mime_type`, `size`, `description` and the\ntimestamp fields are always null: there is no metadata endpoint for a file, only a raw\ndownload, and this connector does not download file bytes just to populate a list response.\n\n`attachmentsOne` (get single attachment) is unsupported — Lexware Office exposes no\nper-attachment read endpoint, only a bill's own list of file ids. Use `attachmentsAll` to\nlist a bill's attachments and select the file you need by `id`.\n",
+                        },
+                        {
+                            "connector": "sap-business-one",
+                            "description": "Only `invoice`, `bill`, `credit-note` and `quote` are supported as a `reference_type`; any\nother value returns `400`. A document's files form one SAP Business One attachment entry and\nthe list returns all of them in one page. An attachment `id` is `{entry}-{line}` (for\nexample `4-2`). `size`, `created_by` and `updated_at` are not available, and `created_at`\ncarries the date only.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -346,17 +513,19 @@ class Attachments(BaseSDK):
                 fields=fields,
                 pass_through=pass_through,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingAttachmentsAllResponse(
                 get_attachments_response=unmarshal_json_response(
-                    Optional[models.GetAttachmentsResponse], http_res
+                    Optional[models.GetAttachmentsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -397,11 +566,10 @@ class Attachments(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingAttachmentsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -411,7 +579,7 @@ class Attachments(BaseSDK):
         *,
         reference_type: models.AttachmentReferenceType,
         reference_id: str,
-        request_body: Union[bytes, IO[bytes], io.BufferedReader],
+        request_body: Union[bytes, IO[bytes], io.IOBase],
         raw: Optional[bool] = False,
         x_apideck_metadata: Optional[str] = None,
         consumer_id: Optional[str] = None,
@@ -482,8 +650,9 @@ class Attachments(BaseSDK):
                 False,
                 False,
                 "raw",
-                Union[bytes, IO[bytes], io.BufferedReader],
+                Union[bytes, IO[bytes], io.IOBase],
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -508,9 +677,72 @@ class Attachments(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "fiken",
+                            "description": "Supported `reference_type` values are `invoice`, `bill` and `journal-entry`; every other\nvalue (including `credit-note`, `quote` and `expense`) is rejected with `422`. Accepted\nfile types are PDF, PNG, JPEG and GIF, and the file name from the `x-apideck-metadata`\nheader must end in one of those extensions.\n\nFiken does not return the id of the new attachment, so Apideck reads the record's\nattachments after the upload and returns the newest one with the uploaded file name. A\nconcurrent upload of the same file name to the same record can therefore return the other\nupload's id. When no attachment carries the file name, the upload still succeeds and `id`\nis null. `description` is not stored: Fiken only keeps a comment on contact\nattachments. On a bill the file is attached as documentation of the purchase itself.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "Attachments are supported on journal entries, invoices, bills, credit notes and bill credit\nnotes (`reference_type=journal-entry`, `invoice`, `bill`, `credit-note` or\n`bill-credit-note`), with `reference_id` the record's id; an id of another type, such as an\ninvoice's id with `reference_type=journal-entry`, answers `404`. Each record holds one PDF:\nuploading replaces the existing document. Deleting an\nattachment removes the document only; the record stays.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "Uploading replaces the attachment the bill, bill credit note or expense already has. FreeAgent\naccepts PDF, PNG, JPEG and GIF files up to 5MB; other content types are refused with a 415\nand larger files with a 413. A paid bill still accepts a new attachment.\n",
+                        },
+                        {
+                            "connector": "myob",
+                            "description": "Uploads are supported on bills only — MYOB has no attachment API for invoices, credit\nnotes, or other records; a non-bill `reference_type` is rejected with a clear error. The\n`reference_id` must be the layout-encoded bill ID returned by the bills resource; a raw\nMYOB UID is rejected because the bill layout cannot be derived from it. Repeat uploads of\nthe same file name create separate attachments (MYOB does not deduplicate or replace).\n\nMYOB accepts only .pdf, .tiff, .jpg, .jpeg and .png files, requires the file name to\ncarry one of those extensions, and validates the extension against the actual content.\nText content types (`text/*`) are rejected upfront: they would be re-encoded as UTF-8,\nwhich corrupts binary files. Send the file's real content type (e.g. application/pdf).\nWhen no `x-apideck-metadata` name is provided, a name is derived from the content type.\n\nThe upload response returns the created attachment's `id` and `name` but no `file_url` —\nMYOB does not include download URLs on the create response. Fetch the attachment list to\nobtain the presigned `file_url`.\n",
+                        },
+                        {
+                            "connector": "snelstart",
+                            "description": "Files larger than 10 MB are rejected. There is no chunked or resumable upload path to work\naround this — split or compress the source file below that size. The filename is also\nconstrained: an overly long filename, or one containing characters SnelStart does not\naccept, is rejected. When in doubt, keep filenames short and limited to letters, digits,\nspaces, hyphens and underscores.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "Uploading a second file to the same `reference_id` REPLACES the first rather than adding to\nit, and returns `201` either way. Sage links files to a record through a single supporting\ndocument reference; each upload creates a new supporting document and repoints that\nreference. The earlier file remains in Sage under Company > Supporting Documents but is no\nlonger linked to the record, so it stops appearing in the attachment list and cannot be\nfetched or downloaded.\n\nIf a record needs several documents, combine them into one file. This is a limitation of the\nintegration rather than of Sage — a Sage supporting document can hold several files — and\nlifting it is tracked work.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "Only `invoice` and `bill` are supported as a `reference_type`. An upload against\n`expense`, `expense-report` or `quote` still returns `201` with an attachment `id`, but\nthe file is NOT linked to the record: it is created in Sage under\nCompany > Supporting Documents and left unattached. Listing that record's attachments\nthen returns an empty array, and deleting the returned `id` answers `200` without\nremoving anything.\n\nTreat a `201` on those three reference types as \"file stored, not attached\" — no status\ncode on any of the three calls reports the problem. Use the `sage-intacct-rest` connector\nif you need attachments on those record types; it supports all five.\n\nThe `name` you send in `x-apideck-metadata` becomes Sage's supporting-document ID, which\nSage limits to **20 characters**. A longer name is rejected with `400`\n(`PL03000018 — Attachments ID is too long`).\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "Quickbooks limits attachment uploads to 100MB.",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite limits attachment uploads to 100MB.",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Xero limits to 10 attachments per resource (invoices/bills) of 3.5MB each.",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "An uploaded file is linked to the invoice's or bill's customer/supplier, not to the specific\ninvoice or bill record itself. It will not appear when listing attachments filtered to the\n`reference_id` it was uploaded against — list attachments by that customer/supplier's other\nrecords, or fetch the attachment by the `id` returned from the upload response, to find it.\n\nRequires a per-tenant AFAS SubjectType code, passed per call as\n`pass_through[subject_type_id]=<code>`. A file name with no extension is rejected.\n",
+                        },
+                        {
+                            "connector": "sevdesk",
+                            "description": "Only png, jpeg, jpg, pdf, xls, xlsx, doc, docx and xml files are accepted — anything\nelse (including plain text) is rejected. Only `invoice`, `bill` and `credit-note` are\nsupported as a `reference_type`; uploading against any other value returns a vendor\nerror rather than a clean rejection.\n",
+                        },
+                        {
+                            "connector": "lexware-office",
+                            "description": "Only `bill` is supported as a `reference_type`; uploading against `invoice` or\n`credit-note` errors. The upload response returns only the file's `id` — no name,\nsize or mime_type is available anywhere for a file beyond its raw downloaded bytes.\n",
+                        },
+                        {
+                            "connector": "sap-business-one",
+                            "description": 'Only `invoice`, `bill`, `credit-note` and `quote` are supported as a `reference_type`.\nUploads need the company\'s attachments folder (Administration > System Initialization >\nGeneral Settings > Path) to exist and be writable by the Service Layer user; otherwise\nevery upload fails with `Internal error (-43) occurred`. SAP Business One keeps all\nattachments in that one folder, so a file name can be used once per company: a name\nanother document already uses returns `400` ("A file with this name already exists"),\nand a name the same document already uses returns `409`. Rename the file to upload it.\nFiles are limited to 50 MB, and `description` is not stored. When two uploads reach a\ndocument without attachments at the same moment, the second returns `409` naming the\nattachment entry its file was stored in; that entry is not attached to the document.\n',
+                        },
+                    ],
+                    "x-sdk-exclude": True,
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -518,10 +750,9 @@ class Attachments(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingAttachmentsUploadResponse(
                 create_attachment_response=unmarshal_json_response(
-                    Optional[models.CreateAttachmentResponse], http_res
+                    Optional[models.CreateAttachmentResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -562,10 +793,9 @@ class Attachments(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingAttachmentsUploadResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -575,7 +805,7 @@ class Attachments(BaseSDK):
         *,
         reference_type: models.AttachmentReferenceType,
         reference_id: str,
-        request_body: Union[bytes, IO[bytes], io.BufferedReader],
+        request_body: Union[bytes, IO[bytes], io.IOBase],
         raw: Optional[bool] = False,
         x_apideck_metadata: Optional[str] = None,
         consumer_id: Optional[str] = None,
@@ -646,8 +876,9 @@ class Attachments(BaseSDK):
                 False,
                 False,
                 "raw",
-                Union[bytes, IO[bytes], io.BufferedReader],
+                Union[bytes, IO[bytes], io.IOBase],
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -672,9 +903,72 @@ class Attachments(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "fiken",
+                            "description": "Supported `reference_type` values are `invoice`, `bill` and `journal-entry`; every other\nvalue (including `credit-note`, `quote` and `expense`) is rejected with `422`. Accepted\nfile types are PDF, PNG, JPEG and GIF, and the file name from the `x-apideck-metadata`\nheader must end in one of those extensions.\n\nFiken does not return the id of the new attachment, so Apideck reads the record's\nattachments after the upload and returns the newest one with the uploaded file name. A\nconcurrent upload of the same file name to the same record can therefore return the other\nupload's id. When no attachment carries the file name, the upload still succeeds and `id`\nis null. `description` is not stored: Fiken only keeps a comment on contact\nattachments. On a bill the file is attached as documentation of the purchase itself.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "Attachments are supported on journal entries, invoices, bills, credit notes and bill credit\nnotes (`reference_type=journal-entry`, `invoice`, `bill`, `credit-note` or\n`bill-credit-note`), with `reference_id` the record's id; an id of another type, such as an\ninvoice's id with `reference_type=journal-entry`, answers `404`. Each record holds one PDF:\nuploading replaces the existing document. Deleting an\nattachment removes the document only; the record stays.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "Uploading replaces the attachment the bill, bill credit note or expense already has. FreeAgent\naccepts PDF, PNG, JPEG and GIF files up to 5MB; other content types are refused with a 415\nand larger files with a 413. A paid bill still accepts a new attachment.\n",
+                        },
+                        {
+                            "connector": "myob",
+                            "description": "Uploads are supported on bills only — MYOB has no attachment API for invoices, credit\nnotes, or other records; a non-bill `reference_type` is rejected with a clear error. The\n`reference_id` must be the layout-encoded bill ID returned by the bills resource; a raw\nMYOB UID is rejected because the bill layout cannot be derived from it. Repeat uploads of\nthe same file name create separate attachments (MYOB does not deduplicate or replace).\n\nMYOB accepts only .pdf, .tiff, .jpg, .jpeg and .png files, requires the file name to\ncarry one of those extensions, and validates the extension against the actual content.\nText content types (`text/*`) are rejected upfront: they would be re-encoded as UTF-8,\nwhich corrupts binary files. Send the file's real content type (e.g. application/pdf).\nWhen no `x-apideck-metadata` name is provided, a name is derived from the content type.\n\nThe upload response returns the created attachment's `id` and `name` but no `file_url` —\nMYOB does not include download URLs on the create response. Fetch the attachment list to\nobtain the presigned `file_url`.\n",
+                        },
+                        {
+                            "connector": "snelstart",
+                            "description": "Files larger than 10 MB are rejected. There is no chunked or resumable upload path to work\naround this — split or compress the source file below that size. The filename is also\nconstrained: an overly long filename, or one containing characters SnelStart does not\naccept, is rejected. When in doubt, keep filenames short and limited to letters, digits,\nspaces, hyphens and underscores.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "Uploading a second file to the same `reference_id` REPLACES the first rather than adding to\nit, and returns `201` either way. Sage links files to a record through a single supporting\ndocument reference; each upload creates a new supporting document and repoints that\nreference. The earlier file remains in Sage under Company > Supporting Documents but is no\nlonger linked to the record, so it stops appearing in the attachment list and cannot be\nfetched or downloaded.\n\nIf a record needs several documents, combine them into one file. This is a limitation of the\nintegration rather than of Sage — a Sage supporting document can hold several files — and\nlifting it is tracked work.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "Only `invoice` and `bill` are supported as a `reference_type`. An upload against\n`expense`, `expense-report` or `quote` still returns `201` with an attachment `id`, but\nthe file is NOT linked to the record: it is created in Sage under\nCompany > Supporting Documents and left unattached. Listing that record's attachments\nthen returns an empty array, and deleting the returned `id` answers `200` without\nremoving anything.\n\nTreat a `201` on those three reference types as \"file stored, not attached\" — no status\ncode on any of the three calls reports the problem. Use the `sage-intacct-rest` connector\nif you need attachments on those record types; it supports all five.\n\nThe `name` you send in `x-apideck-metadata` becomes Sage's supporting-document ID, which\nSage limits to **20 characters**. A longer name is rejected with `400`\n(`PL03000018 — Attachments ID is too long`).\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "Quickbooks limits attachment uploads to 100MB.",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite limits attachment uploads to 100MB.",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Xero limits to 10 attachments per resource (invoices/bills) of 3.5MB each.",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "An uploaded file is linked to the invoice's or bill's customer/supplier, not to the specific\ninvoice or bill record itself. It will not appear when listing attachments filtered to the\n`reference_id` it was uploaded against — list attachments by that customer/supplier's other\nrecords, or fetch the attachment by the `id` returned from the upload response, to find it.\n\nRequires a per-tenant AFAS SubjectType code, passed per call as\n`pass_through[subject_type_id]=<code>`. A file name with no extension is rejected.\n",
+                        },
+                        {
+                            "connector": "sevdesk",
+                            "description": "Only png, jpeg, jpg, pdf, xls, xlsx, doc, docx and xml files are accepted — anything\nelse (including plain text) is rejected. Only `invoice`, `bill` and `credit-note` are\nsupported as a `reference_type`; uploading against any other value returns a vendor\nerror rather than a clean rejection.\n",
+                        },
+                        {
+                            "connector": "lexware-office",
+                            "description": "Only `bill` is supported as a `reference_type`; uploading against `invoice` or\n`credit-note` errors. The upload response returns only the file's `id` — no name,\nsize or mime_type is available anywhere for a file beyond its raw downloaded bytes.\n",
+                        },
+                        {
+                            "connector": "sap-business-one",
+                            "description": 'Only `invoice`, `bill`, `credit-note` and `quote` are supported as a `reference_type`.\nUploads need the company\'s attachments folder (Administration > System Initialization >\nGeneral Settings > Path) to exist and be writable by the Service Layer user; otherwise\nevery upload fails with `Internal error (-43) occurred`. SAP Business One keeps all\nattachments in that one folder, so a file name can be used once per company: a name\nanother document already uses returns `400` ("A file with this name already exists"),\nand a name the same document already uses returns `409`. Rename the file to upload it.\nFiles are limited to 50 MB, and `description` is not stored. When two uploads reach a\ndocument without attachments at the same moment, the second returns `409` naming the\nattachment entry its file was stored in; that entry is not attached to the document.\n',
+                        },
+                    ],
+                    "x-sdk-exclude": True,
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -682,10 +976,9 @@ class Attachments(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingAttachmentsUploadResponse(
                 create_attachment_response=unmarshal_json_response(
-                    Optional[models.CreateAttachmentResponse], http_res
+                    Optional[models.CreateAttachmentResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -726,10 +1019,9 @@ class Attachments(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingAttachmentsUploadResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -808,6 +1100,7 @@ class Attachments(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -832,9 +1125,31 @@ class Attachments(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "fiken",
+                            "description": "Fiken has no endpoint to read a single attachment, so the record's attachment list is read\nand the attachment is picked by `id`. An id that belongs to another record returns `404`.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "Only the record's current attachment is found: an earlier attachment id returns 404 after a\nnewer file was uploaded, and so does an id that belongs to another record.\n",
+                        },
+                        {
+                            "connector": "sevdesk",
+                            "description": "The `id` must belong to the record named by `reference_type`/`reference_id`. An id from a\ndifferent record — or from a document not linked to any invoice, bill or credit note —\nreturns `404` rather than another record's file, matching the same ownership scoping\n`attachmentsDelete` and `attachmentsDownload` enforce on this connector.\n",
+                        },
+                        {
+                            "connector": "sap-business-one",
+                            "description": "The `id` (`{entry}-{line}`) must belong to the document named by\n`reference_type`/`reference_id`. An id from another document's attachments returns `404`.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -842,10 +1157,9 @@ class Attachments(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingAttachmentsOneResponse(
                 get_attachment_response=unmarshal_json_response(
-                    Optional[models.GetAttachmentResponse], http_res
+                    Optional[models.GetAttachmentResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -886,10 +1200,9 @@ class Attachments(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingAttachmentsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -968,6 +1281,7 @@ class Attachments(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -992,9 +1306,31 @@ class Attachments(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "fiken",
+                            "description": "Fiken has no endpoint to read a single attachment, so the record's attachment list is read\nand the attachment is picked by `id`. An id that belongs to another record returns `404`.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "Only the record's current attachment is found: an earlier attachment id returns 404 after a\nnewer file was uploaded, and so does an id that belongs to another record.\n",
+                        },
+                        {
+                            "connector": "sevdesk",
+                            "description": "The `id` must belong to the record named by `reference_type`/`reference_id`. An id from a\ndifferent record — or from a document not linked to any invoice, bill or credit note —\nreturns `404` rather than another record's file, matching the same ownership scoping\n`attachmentsDelete` and `attachmentsDownload` enforce on this connector.\n",
+                        },
+                        {
+                            "connector": "sap-business-one",
+                            "description": "The `id` (`{entry}-{line}`) must belong to the document named by\n`reference_type`/`reference_id`. An id from another document's attachments returns `404`.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1002,10 +1338,9 @@ class Attachments(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingAttachmentsOneResponse(
                 get_attachment_response=unmarshal_json_response(
-                    Optional[models.GetAttachmentResponse], http_res
+                    Optional[models.GetAttachmentResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1046,10 +1381,9 @@ class Attachments(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingAttachmentsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1122,6 +1456,7 @@ class Attachments(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1146,9 +1481,43 @@ class Attachments(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "fiken",
+                            "description": "The `id` must belong to the record named by `reference_type`/`reference_id`; an id from\nanother record returns `404` rather than deleting it. The delete only removes the link\nbetween the record and the file; the file stays in the company's Fiken archive.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "Only the record's current attachment is found: an earlier attachment id returns 404 after a\nnewer file was uploaded, and so does an id that belongs to another record.\n",
+                        },
+                        {
+                            "connector": "myob",
+                            "description": "Deletes are supported on bills only, and the `id` must belong to the bill named by\n`reference_id`. An id from a different bill returns `404` rather than deleting it —\nMYOB's own API deletes by attachment id alone, so Apideck verifies ownership before\nforwarding the delete. The delete removes the file itself, not just the link.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "The `id` must belong to the record named by `reference_type`/`reference_id`. An id from a\ndifferent record returns `404` rather than deleting it — attachments are scoped to the\nrecord they are attached to.\n\nThe delete removes the file itself, not just the link.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Detaches the file from the parent record. The file itself stays in the File Cabinet.",
+                        },
+                        {
+                            "connector": "sevdesk",
+                            "description": "The `id` must belong to the record named by `reference_type`/`reference_id`. An id from a\ndifferent record returns `404` rather than deleting it — attachments are scoped to the\nrecord they are attached to.\n",
+                        },
+                        {
+                            "connector": "sap-business-one",
+                            "description": "Not supported. SAP Business One does not allow an attachment, or a single file of one, to\nbe removed.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1156,10 +1525,9 @@ class Attachments(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingAttachmentsDeleteResponse(
                 delete_attachment_response=unmarshal_json_response(
-                    Optional[models.DeleteAttachmentResponse], http_res
+                    Optional[models.DeleteAttachmentResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1200,10 +1568,9 @@ class Attachments(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingAttachmentsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1276,6 +1643,7 @@ class Attachments(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1300,9 +1668,43 @@ class Attachments(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "fiken",
+                            "description": "The `id` must belong to the record named by `reference_type`/`reference_id`; an id from\nanother record returns `404` rather than deleting it. The delete only removes the link\nbetween the record and the file; the file stays in the company's Fiken archive.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "Only the record's current attachment is found: an earlier attachment id returns 404 after a\nnewer file was uploaded, and so does an id that belongs to another record.\n",
+                        },
+                        {
+                            "connector": "myob",
+                            "description": "Deletes are supported on bills only, and the `id` must belong to the bill named by\n`reference_id`. An id from a different bill returns `404` rather than deleting it —\nMYOB's own API deletes by attachment id alone, so Apideck verifies ownership before\nforwarding the delete. The delete removes the file itself, not just the link.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "The `id` must belong to the record named by `reference_type`/`reference_id`. An id from a\ndifferent record returns `404` rather than deleting it — attachments are scoped to the\nrecord they are attached to.\n\nThe delete removes the file itself, not just the link.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Detaches the file from the parent record. The file itself stays in the File Cabinet.",
+                        },
+                        {
+                            "connector": "sevdesk",
+                            "description": "The `id` must belong to the record named by `reference_type`/`reference_id`. An id from a\ndifferent record returns `404` rather than deleting it — attachments are scoped to the\nrecord they are attached to.\n",
+                        },
+                        {
+                            "connector": "sap-business-one",
+                            "description": "Not supported. SAP Business One does not allow an attachment, or a single file of one, to\nbe removed.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1310,10 +1712,9 @@ class Attachments(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingAttachmentsDeleteResponse(
                 delete_attachment_response=unmarshal_json_response(
-                    Optional[models.DeleteAttachmentResponse], http_res
+                    Optional[models.DeleteAttachmentResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1354,10 +1755,9 @@ class Attachments(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingAttachmentsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1376,8 +1776,8 @@ class Attachments(BaseSDK):
         follow_redirects: Optional[bool] = True,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
         accept_header_override: Optional[DownloadAcceptEnum] = None,
+        timeout_ms: Optional[int] = None,
         http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingAttachmentsDownloadResponse:
         r"""Download Attachment
@@ -1440,6 +1840,7 @@ class Attachments(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1464,9 +1865,31 @@ class Attachments(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "fiken",
+                            "description": "Returns the file itself with Fiken's content type and file name. The `id` must belong to the\nrecord named by `reference_type`/`reference_id`; an id from another record returns `404`.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "Returns the file itself, with its content type and file name. An id that is not the record's\ncurrent attachment, or a bill requested as a `bill-credit-note` (or the reverse), returns a\n400 validation error rather than a 404.\n",
+                        },
+                        {
+                            "connector": "sevdesk",
+                            "description": "The `id` must belong to the record named by `reference_type`/`reference_id`. An id from a\ndifferent record returns `404` rather than another record's file content — the same\nownership scoping `attachmentsOne` and `attachmentsDelete` enforce on this connector.\n",
+                        },
+                        {
+                            "connector": "sap-business-one",
+                            "description": "The `id` (`{entry}-{line}`) must belong to the document named by\n`reference_type`/`reference_id`. An id from another document's attachments returns `404`.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             stream=True,
             retry_config=retry_config,
         )
@@ -1476,7 +1899,6 @@ class Attachments(BaseSDK):
             return models.AccountingAttachmentsDownloadResponse(
                 get_attachment_download_response=http_res,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             http_res_text = utils.stream_to_text(http_res)
@@ -1526,10 +1948,12 @@ class Attachments(BaseSDK):
             http_res_text = utils.stream_to_text(http_res)
             return models.AccountingAttachmentsDownloadResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res, http_res_text
+                    Optional[models.UnexpectedErrorResponse],
+                    http_res,
+                    http_res_text,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         http_res_text = utils.stream_to_text(http_res)
@@ -1549,8 +1973,8 @@ class Attachments(BaseSDK):
         follow_redirects: Optional[bool] = True,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
         accept_header_override: Optional[DownloadAcceptEnum] = None,
+        timeout_ms: Optional[int] = None,
         http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingAttachmentsDownloadResponse:
         r"""Download Attachment
@@ -1613,6 +2037,7 @@ class Attachments(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1637,9 +2062,31 @@ class Attachments(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "fiken",
+                            "description": "Returns the file itself with Fiken's content type and file name. The `id` must belong to the\nrecord named by `reference_type`/`reference_id`; an id from another record returns `404`.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "Returns the file itself, with its content type and file name. An id that is not the record's\ncurrent attachment, or a bill requested as a `bill-credit-note` (or the reverse), returns a\n400 validation error rather than a 404.\n",
+                        },
+                        {
+                            "connector": "sevdesk",
+                            "description": "The `id` must belong to the record named by `reference_type`/`reference_id`. An id from a\ndifferent record returns `404` rather than another record's file content — the same\nownership scoping `attachmentsOne` and `attachmentsDelete` enforce on this connector.\n",
+                        },
+                        {
+                            "connector": "sap-business-one",
+                            "description": "The `id` (`{entry}-{line}`) must belong to the document named by\n`reference_type`/`reference_id`. An id from another document's attachments returns `404`.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             stream=True,
             retry_config=retry_config,
         )
@@ -1649,7 +2096,6 @@ class Attachments(BaseSDK):
             return models.AccountingAttachmentsDownloadResponse(
                 get_attachment_download_response=http_res,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             http_res_text = await utils.stream_to_text_async(http_res)
@@ -1699,10 +2145,12 @@ class Attachments(BaseSDK):
             http_res_text = await utils.stream_to_text_async(http_res)
             return models.AccountingAttachmentsDownloadResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res, http_res_text
+                    Optional[models.UnexpectedErrorResponse],
+                    http_res,
+                    http_res_text,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         http_res_text = await utils.stream_to_text_async(http_res)

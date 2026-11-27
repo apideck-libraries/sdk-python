@@ -7,7 +7,7 @@ from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from jsonpath import JSONPath
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
 
 
 class Drives(BaseSDK):
@@ -84,6 +84,7 @@ class Drives(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -108,9 +109,31 @@ class Drives(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["fileStorage"],
+                extensions={
+                    "x-apideck-api": "fileStorage",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "onedrive",
+                            "description": "OneDrive does not include a total record count in default list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "sharepoint",
+                            "description": "SharePoint does not include a total record count in default list responses. `meta.total_count` will not appear. Surfacing the total requires adding `$count=true` to the OData query — not currently implemented.\n",
+                        },
+                        {
+                            "connector": "google-drive",
+                            "description": "Google drive does not provide `previous` cursor information, so the cursors for the previous pages will be empty.",
+                        },
+                        {
+                            "connector": "google-drive",
+                            "description": "Google Drive does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -135,17 +158,19 @@ class Drives(BaseSDK):
                 filter_=filter_,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.FileStorageDrivesAllResponse(
                 get_drives_response=unmarshal_json_response(
-                    Optional[models.GetDrivesResponse], http_res
+                    Optional[models.GetDrivesResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -186,11 +211,10 @@ class Drives(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.FileStorageDrivesAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -268,6 +292,7 @@ class Drives(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -292,9 +317,31 @@ class Drives(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["fileStorage"],
+                extensions={
+                    "x-apideck-api": "fileStorage",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "onedrive",
+                            "description": "OneDrive does not include a total record count in default list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "sharepoint",
+                            "description": "SharePoint does not include a total record count in default list responses. `meta.total_count` will not appear. Surfacing the total requires adding `$count=true` to the OData query — not currently implemented.\n",
+                        },
+                        {
+                            "connector": "google-drive",
+                            "description": "Google drive does not provide `previous` cursor information, so the cursors for the previous pages will be empty.",
+                        },
+                        {
+                            "connector": "google-drive",
+                            "description": "Google Drive does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -319,17 +366,19 @@ class Drives(BaseSDK):
                 filter_=filter_,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.FileStorageDrivesAllResponse(
                 get_drives_response=unmarshal_json_response(
-                    Optional[models.GetDrivesResponse], http_res
+                    Optional[models.GetDrivesResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -370,11 +419,10 @@ class Drives(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.FileStorageDrivesAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -389,7 +437,10 @@ class Drives(BaseSDK):
         service_id: Optional[str] = None,
         description: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -456,6 +507,7 @@ class Drives(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.drive, False, False, "json", models.DriveInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -480,9 +532,11 @@ class Drives(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["fileStorage"],
+                extensions={"x-apideck-api": "fileStorage"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -490,10 +544,9 @@ class Drives(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.FileStorageDrivesAddResponse(
                 create_drive_response=unmarshal_json_response(
-                    Optional[models.CreateDriveResponse], http_res
+                    Optional[models.CreateDriveResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -534,10 +587,9 @@ class Drives(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.FileStorageDrivesAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -552,7 +604,10 @@ class Drives(BaseSDK):
         service_id: Optional[str] = None,
         description: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -619,6 +674,7 @@ class Drives(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.drive, False, False, "json", models.DriveInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -643,9 +699,11 @@ class Drives(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["fileStorage"],
+                extensions={"x-apideck-api": "fileStorage"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -653,10 +711,9 @@ class Drives(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.FileStorageDrivesAddResponse(
                 create_drive_response=unmarshal_json_response(
-                    Optional[models.CreateDriveResponse], http_res
+                    Optional[models.CreateDriveResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -697,10 +754,9 @@ class Drives(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.FileStorageDrivesAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -770,6 +826,7 @@ class Drives(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -794,9 +851,11 @@ class Drives(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["fileStorage"],
+                extensions={"x-apideck-api": "fileStorage"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -804,10 +863,9 @@ class Drives(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.FileStorageDrivesOneResponse(
                 get_drive_response=unmarshal_json_response(
-                    Optional[models.GetDriveResponse], http_res
+                    Optional[models.GetDriveResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -848,10 +906,9 @@ class Drives(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.FileStorageDrivesOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -921,6 +978,7 @@ class Drives(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -945,9 +1003,11 @@ class Drives(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["fileStorage"],
+                extensions={"x-apideck-api": "fileStorage"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -955,10 +1015,9 @@ class Drives(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.FileStorageDrivesOneResponse(
                 get_drive_response=unmarshal_json_response(
-                    Optional[models.GetDriveResponse], http_res
+                    Optional[models.GetDriveResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -999,10 +1058,9 @@ class Drives(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.FileStorageDrivesOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1018,7 +1076,10 @@ class Drives(BaseSDK):
         raw: Optional[bool] = False,
         description: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1087,6 +1148,7 @@ class Drives(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.drive, False, False, "json", models.DriveInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1111,9 +1173,11 @@ class Drives(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["fileStorage"],
+                extensions={"x-apideck-api": "fileStorage"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1121,10 +1185,9 @@ class Drives(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.FileStorageDrivesUpdateResponse(
                 update_drive_response=unmarshal_json_response(
-                    Optional[models.UpdateDriveResponse], http_res
+                    Optional[models.UpdateDriveResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1165,10 +1228,9 @@ class Drives(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.FileStorageDrivesUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1184,7 +1246,10 @@ class Drives(BaseSDK):
         raw: Optional[bool] = False,
         description: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1253,6 +1318,7 @@ class Drives(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.drive, False, False, "json", models.DriveInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1277,9 +1343,11 @@ class Drives(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["fileStorage"],
+                extensions={"x-apideck-api": "fileStorage"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1287,10 +1355,9 @@ class Drives(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.FileStorageDrivesUpdateResponse(
                 update_drive_response=unmarshal_json_response(
-                    Optional[models.UpdateDriveResponse], http_res
+                    Optional[models.UpdateDriveResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1331,10 +1398,9 @@ class Drives(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.FileStorageDrivesUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1401,6 +1467,7 @@ class Drives(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1425,9 +1492,11 @@ class Drives(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["fileStorage"],
+                extensions={"x-apideck-api": "fileStorage"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1435,10 +1504,9 @@ class Drives(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.FileStorageDrivesDeleteResponse(
                 delete_drive_response=unmarshal_json_response(
-                    Optional[models.DeleteDriveResponse], http_res
+                    Optional[models.DeleteDriveResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1479,10 +1547,9 @@ class Drives(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.FileStorageDrivesDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1549,6 +1616,7 @@ class Drives(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1573,9 +1641,11 @@ class Drives(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["fileStorage"],
+                extensions={"x-apideck-api": "fileStorage"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1583,10 +1653,9 @@ class Drives(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.FileStorageDrivesDeleteResponse(
                 delete_drive_response=unmarshal_json_response(
-                    Optional[models.DeleteDriveResponse], http_res
+                    Optional[models.DeleteDriveResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1627,10 +1696,9 @@ class Drives(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.FileStorageDrivesDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

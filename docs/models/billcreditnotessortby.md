@@ -2,6 +2,16 @@
 
 The field on which to sort the Bill Credit Notes
 
+## Example Usage
+
+```python
+from apideck_unify.models import BillCreditNotesSortBy
+
+value = BillCreditNotesSortBy.CREATED_AT
+
+# Open enum: unrecognized values are captured as UnrecognizedStr
+```
+
 
 ## Values
 

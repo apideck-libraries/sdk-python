@@ -7,7 +7,7 @@ from apideck_unify.types import Nullable, OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from jsonpath import JSONPath
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
 
 
 class Activities(BaseSDK):
@@ -26,7 +26,7 @@ class Activities(BaseSDK):
         sort: Optional[
             Union[models.ActivitiesSort, models.ActivitiesSortTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -73,7 +73,7 @@ class Activities(BaseSDK):
                 filter_, Optional[models.ActivitiesFilter]
             ),
             sort=utils.get_pydantic_model(sort, Optional[models.ActivitiesSort]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -94,6 +94,7 @@ class Activities(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -118,9 +119,47 @@ class Activities(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "microsoft-dynamics",
+                            "description": "Microsoft Dynamics 365 does not include a total record count in default list responses. `meta.total_count` will not appear. Surfacing the total requires adding `$count=true` to the OData query or calling a separate `$count` endpoint — not currently implemented.\n",
+                        },
+                        {
+                            "connector": "hubspot",
+                            "description": "Hubspot will only return activities from the last 30 days when using the `filter[updated_since]` parameter, with a maximum of 10.000 records. More info [here](https://legacydocs.hubspot.com/docs/methods/engagements/get-recent-engagements). Use `filter[type]=call` to get custom fields for call activities. When using both `filter[type]=call` and `filter[updated_since]` together, you will get partial response data as the calls search endpoint does not support many data fields. Use only one filter to get better data fields. `filter[contact_id]` returns **all** activity types (calls, emails, meetings, notes, and tasks) associated with the contact, served by HubSpot's legacy associated-engagements API. Two interactions to note: combining `filter[contact_id]` with `filter[updated_since]` is not supported — the contact filter takes precedence and the date filter is silently ignored (the associated-engagements endpoint has no date filter). And `filter[type]` narrows the result only when `type=call` (returning that contact's calls); any other `type` value is ignored and all activity types are still returned.",
+                        },
+                        {
+                            "connector": "pipedrive",
+                            "description": "`filter[contact_id]` is served by Pipedrive's v2 activities API and returns only activities whose **primary participant** is the given person. It can be combined with `filter[owner_id]` and `filter[updated_since]`, but not with other activities filters such as `filter[company_id]` or `filter[type]` — those combinations are rejected with an unsupported-filters error. A `contact_id` that does not exist in Pipedrive returns a 400 error from the downstream API (Pipedrive validates the person ID) rather than an empty list. Cursors are tied to the filter combination that produced them and cannot be reused across filtered and unfiltered requests.",
+                        },
+                        {
+                            "connector": "salesforce",
+                            "description": 'Salesforce imposes a maximum offset limit of 2000. Exceeding this offset will result in an error from Salesforce. For result sets larger than 2000 items, it is necessary to set the pagination limit to 200, as this will enforce the use of batchSize for pagination. Note that setting a limit lower than 200 will not reduce the batchSize due to Salesforce\'s minimum batch size policy of 200, as detailed in their documentation [here](https://developer.salesforce.com/docs/atlas.en-us.250.0.api_rest.meta/api_rest/headers_queryoptions.htm) and will have no effect. In Salesforce, to get list of tasks, calls or emails, please use filter "type": "task" to ensure proper handling.',
+                        },
+                        {
+                            "connector": "pipedrive",
+                            "description": "Pipedrive does not expose a cross-page total record count in standard list responses. `meta.total_count` will not appear. Surfacing the total requires additional request parameters or a separate API call — not currently implemented.\n",
+                        },
+                        {
+                            "connector": "zendesk-sell",
+                            "description": "Zendesk Sell does not expose a native cross-page total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate request to the Zendesk Sell `GET /v2/{resource}/count` endpoint — an extra API call not currently implemented.\n",
+                        },
+                        {
+                            "connector": "zoho-crm",
+                            "description": "Zoho CRM's `info.count` in list responses is a per-page count only, not a cross-page total. `meta.total_count` will not appear.\nZoho CRM activities are backed entirely by the Events module (`/v2.1/Events`), so every activity is returned with `type: meeting` regardless of how it was created. Other activity types (`note`, `call`, `task`, `email`) are not represented. To read notes, use the dedicated `/crm/notes` resource (mapped to Zoho's `/v5/Notes`).\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -147,17 +186,19 @@ class Activities(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmActivitiesAllResponse(
                 get_activities_response=unmarshal_json_response(
-                    Optional[models.GetActivitiesResponse], http_res
+                    Optional[models.GetActivitiesResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -198,11 +239,10 @@ class Activities(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmActivitiesAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -222,7 +262,7 @@ class Activities(BaseSDK):
         sort: Optional[
             Union[models.ActivitiesSort, models.ActivitiesSortTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -269,7 +309,7 @@ class Activities(BaseSDK):
                 filter_, Optional[models.ActivitiesFilter]
             ),
             sort=utils.get_pydantic_model(sort, Optional[models.ActivitiesSort]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -290,6 +330,7 @@ class Activities(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -314,9 +355,47 @@ class Activities(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "microsoft-dynamics",
+                            "description": "Microsoft Dynamics 365 does not include a total record count in default list responses. `meta.total_count` will not appear. Surfacing the total requires adding `$count=true` to the OData query or calling a separate `$count` endpoint — not currently implemented.\n",
+                        },
+                        {
+                            "connector": "hubspot",
+                            "description": "Hubspot will only return activities from the last 30 days when using the `filter[updated_since]` parameter, with a maximum of 10.000 records. More info [here](https://legacydocs.hubspot.com/docs/methods/engagements/get-recent-engagements). Use `filter[type]=call` to get custom fields for call activities. When using both `filter[type]=call` and `filter[updated_since]` together, you will get partial response data as the calls search endpoint does not support many data fields. Use only one filter to get better data fields. `filter[contact_id]` returns **all** activity types (calls, emails, meetings, notes, and tasks) associated with the contact, served by HubSpot's legacy associated-engagements API. Two interactions to note: combining `filter[contact_id]` with `filter[updated_since]` is not supported — the contact filter takes precedence and the date filter is silently ignored (the associated-engagements endpoint has no date filter). And `filter[type]` narrows the result only when `type=call` (returning that contact's calls); any other `type` value is ignored and all activity types are still returned.",
+                        },
+                        {
+                            "connector": "pipedrive",
+                            "description": "`filter[contact_id]` is served by Pipedrive's v2 activities API and returns only activities whose **primary participant** is the given person. It can be combined with `filter[owner_id]` and `filter[updated_since]`, but not with other activities filters such as `filter[company_id]` or `filter[type]` — those combinations are rejected with an unsupported-filters error. A `contact_id` that does not exist in Pipedrive returns a 400 error from the downstream API (Pipedrive validates the person ID) rather than an empty list. Cursors are tied to the filter combination that produced them and cannot be reused across filtered and unfiltered requests.",
+                        },
+                        {
+                            "connector": "salesforce",
+                            "description": 'Salesforce imposes a maximum offset limit of 2000. Exceeding this offset will result in an error from Salesforce. For result sets larger than 2000 items, it is necessary to set the pagination limit to 200, as this will enforce the use of batchSize for pagination. Note that setting a limit lower than 200 will not reduce the batchSize due to Salesforce\'s minimum batch size policy of 200, as detailed in their documentation [here](https://developer.salesforce.com/docs/atlas.en-us.250.0.api_rest.meta/api_rest/headers_queryoptions.htm) and will have no effect. In Salesforce, to get list of tasks, calls or emails, please use filter "type": "task" to ensure proper handling.',
+                        },
+                        {
+                            "connector": "pipedrive",
+                            "description": "Pipedrive does not expose a cross-page total record count in standard list responses. `meta.total_count` will not appear. Surfacing the total requires additional request parameters or a separate API call — not currently implemented.\n",
+                        },
+                        {
+                            "connector": "zendesk-sell",
+                            "description": "Zendesk Sell does not expose a native cross-page total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate request to the Zendesk Sell `GET /v2/{resource}/count` endpoint — an extra API call not currently implemented.\n",
+                        },
+                        {
+                            "connector": "zoho-crm",
+                            "description": "Zoho CRM's `info.count` in list responses is a per-page count only, not a cross-page total. `meta.total_count` will not appear.\nZoho CRM activities are backed entirely by the Events module (`/v2.1/Events`), so every activity is returned with `type: meeting` regardless of how it was created. Other activity types (`note`, `call`, `task`, `email`) are not represented. To read notes, use the dedicated `/crm/notes` resource (mapped to Zoho's `/v5/Notes`).\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -343,17 +422,19 @@ class Activities(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmActivitiesAllResponse(
                 get_activities_response=unmarshal_json_response(
-                    Optional[models.GetActivitiesResponse], http_res
+                    Optional[models.GetActivitiesResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -394,11 +475,10 @@ class Activities(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmActivitiesAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -454,16 +534,19 @@ class Activities(BaseSDK):
         video_conference_url: OptionalNullable[str] = UNSET,
         video_conference_id: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         attendees: Optional[
             Union[
-                List[models.ActivityAttendeeInput],
-                List[models.ActivityAttendeeInputTypedDict],
+                Iterable[models.ActivityAttendeeInput],
+                Iterable[models.ActivityAttendeeInputTypedDict],
             ]
         ] = None,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -474,7 +557,7 @@ class Activities(BaseSDK):
 
         Create activity
 
-        :param type: The type of the activity
+        :param type_: The type of the activity
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
@@ -618,6 +701,7 @@ class Activities(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.activity, False, False, "json", models.ActivityInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -642,9 +726,31 @@ class Activities(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "salesforce",
+                            "description": 'Salesforce activities map to the Event object by default. Creating an Event requires a start date/time, so you must send `activity_datetime` (mapped to Salesforce `ActivityDateTime`). Omitting it returns `Required fields are missing: [ActivityDateTime]`. For all-day events, send `activity_date` (mapped to `ActivityDate`) and set `all_day_event: true` instead.\nWhen creating tasks, calls, or emails, please specify `"type": "task"` with the correct `event_sub_type` value in the request body to ensure proper handling. These map to the Salesforce Task object and do not require `activity_datetime`.\nAssociate the activity with a record using `contact_id` or `lead_id` (mapped to `WhoId`), and `account_id`/`opportunity_id`/etc. (mapped to `WhatId`).',
+                        },
+                        {
+                            "connector": "planhat",
+                            "description": "While creating an activity, the type should always be `task`.",
+                        },
+                        {
+                            "connector": "hubspot",
+                            "description": "HubSpot leads are Contacts, so `lead_id` and `contact_id` both associate the activity with a HubSpot contact. When both are sent with different ids, the activity is associated with both contacts.",
+                        },
+                        {
+                            "connector": "zoho-crm",
+                            "description": "Zoho CRM maps all activities to the Events module (`POST /v2.1/Events`) regardless of the `type` value. An activity created with `type: note`, `call`, `task`, or `email` is still stored as a Zoho Event (a calendar entry), and reads of `/crm/activities` return only Events. To log a note against a record, use the dedicated `/crm/notes` resource (mapped to Zoho's `/v5/Notes`) instead.",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -652,10 +758,9 @@ class Activities(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.CrmActivitiesAddResponse(
                 create_activity_response=unmarshal_json_response(
-                    Optional[models.CreateActivityResponse], http_res
+                    Optional[models.CreateActivityResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -696,10 +801,9 @@ class Activities(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmActivitiesAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -755,16 +859,19 @@ class Activities(BaseSDK):
         video_conference_url: OptionalNullable[str] = UNSET,
         video_conference_id: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         attendees: Optional[
             Union[
-                List[models.ActivityAttendeeInput],
-                List[models.ActivityAttendeeInputTypedDict],
+                Iterable[models.ActivityAttendeeInput],
+                Iterable[models.ActivityAttendeeInputTypedDict],
             ]
         ] = None,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -775,7 +882,7 @@ class Activities(BaseSDK):
 
         Create activity
 
-        :param type: The type of the activity
+        :param type_: The type of the activity
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
@@ -919,6 +1026,7 @@ class Activities(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.activity, False, False, "json", models.ActivityInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -943,9 +1051,31 @@ class Activities(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "salesforce",
+                            "description": 'Salesforce activities map to the Event object by default. Creating an Event requires a start date/time, so you must send `activity_datetime` (mapped to Salesforce `ActivityDateTime`). Omitting it returns `Required fields are missing: [ActivityDateTime]`. For all-day events, send `activity_date` (mapped to `ActivityDate`) and set `all_day_event: true` instead.\nWhen creating tasks, calls, or emails, please specify `"type": "task"` with the correct `event_sub_type` value in the request body to ensure proper handling. These map to the Salesforce Task object and do not require `activity_datetime`.\nAssociate the activity with a record using `contact_id` or `lead_id` (mapped to `WhoId`), and `account_id`/`opportunity_id`/etc. (mapped to `WhatId`).',
+                        },
+                        {
+                            "connector": "planhat",
+                            "description": "While creating an activity, the type should always be `task`.",
+                        },
+                        {
+                            "connector": "hubspot",
+                            "description": "HubSpot leads are Contacts, so `lead_id` and `contact_id` both associate the activity with a HubSpot contact. When both are sent with different ids, the activity is associated with both contacts.",
+                        },
+                        {
+                            "connector": "zoho-crm",
+                            "description": "Zoho CRM maps all activities to the Events module (`POST /v2.1/Events`) regardless of the `type` value. An activity created with `type: note`, `call`, `task`, or `email` is still stored as a Zoho Event (a calendar entry), and reads of `/crm/activities` return only Events. To log a note against a record, use the dedicated `/crm/notes` resource (mapped to Zoho's `/v5/Notes`) instead.",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -953,10 +1083,9 @@ class Activities(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.CrmActivitiesAddResponse(
                 create_activity_response=unmarshal_json_response(
-                    Optional[models.CreateActivityResponse], http_res
+                    Optional[models.CreateActivityResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -997,10 +1126,9 @@ class Activities(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmActivitiesAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1070,6 +1198,7 @@ class Activities(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1094,9 +1223,11 @@ class Activities(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={"x-apideck-api": "crm"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1104,10 +1235,9 @@ class Activities(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmActivitiesOneResponse(
                 get_activity_response=unmarshal_json_response(
-                    Optional[models.GetActivityResponse], http_res
+                    Optional[models.GetActivityResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1148,10 +1278,9 @@ class Activities(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmActivitiesOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1221,6 +1350,7 @@ class Activities(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1245,9 +1375,11 @@ class Activities(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={"x-apideck-api": "crm"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1255,10 +1387,9 @@ class Activities(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmActivitiesOneResponse(
                 get_activity_response=unmarshal_json_response(
-                    Optional[models.GetActivityResponse], http_res
+                    Optional[models.GetActivityResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1299,10 +1430,9 @@ class Activities(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmActivitiesOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1359,16 +1489,19 @@ class Activities(BaseSDK):
         video_conference_url: OptionalNullable[str] = UNSET,
         video_conference_id: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         attendees: Optional[
             Union[
-                List[models.ActivityAttendeeInput],
-                List[models.ActivityAttendeeInputTypedDict],
+                Iterable[models.ActivityAttendeeInput],
+                Iterable[models.ActivityAttendeeInputTypedDict],
             ]
         ] = None,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1380,7 +1513,7 @@ class Activities(BaseSDK):
         Update activity
 
         :param id: ID of the record you are acting upon.
-        :param type: The type of the activity
+        :param type_: The type of the activity
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
@@ -1525,6 +1658,7 @@ class Activities(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.activity, False, False, "json", models.ActivityInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1549,9 +1683,27 @@ class Activities(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "salesforce",
+                            "description": 'In Salesforce, when updating tasks, calls, or emails, please specify "type": "task" in the request body to ensure proper handling.',
+                        },
+                        {
+                            "connector": "planhat",
+                            "description": "While updating an activity, the type should always be `task`.",
+                        },
+                        {
+                            "connector": "hubspot",
+                            "description": 'To update custom fields for call activities, use `"type": "call"` in the request body.',
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1559,10 +1711,9 @@ class Activities(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmActivitiesUpdateResponse(
                 update_activity_response=unmarshal_json_response(
-                    Optional[models.UpdateActivityResponse], http_res
+                    Optional[models.UpdateActivityResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1603,10 +1754,9 @@ class Activities(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmActivitiesUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1663,16 +1813,19 @@ class Activities(BaseSDK):
         video_conference_url: OptionalNullable[str] = UNSET,
         video_conference_id: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         attendees: Optional[
             Union[
-                List[models.ActivityAttendeeInput],
-                List[models.ActivityAttendeeInputTypedDict],
+                Iterable[models.ActivityAttendeeInput],
+                Iterable[models.ActivityAttendeeInputTypedDict],
             ]
         ] = None,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1684,7 +1837,7 @@ class Activities(BaseSDK):
         Update activity
 
         :param id: ID of the record you are acting upon.
-        :param type: The type of the activity
+        :param type_: The type of the activity
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
@@ -1829,6 +1982,7 @@ class Activities(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.activity, False, False, "json", models.ActivityInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1853,9 +2007,27 @@ class Activities(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "salesforce",
+                            "description": 'In Salesforce, when updating tasks, calls, or emails, please specify "type": "task" in the request body to ensure proper handling.',
+                        },
+                        {
+                            "connector": "planhat",
+                            "description": "While updating an activity, the type should always be `task`.",
+                        },
+                        {
+                            "connector": "hubspot",
+                            "description": 'To update custom fields for call activities, use `"type": "call"` in the request body.',
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1863,10 +2035,9 @@ class Activities(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmActivitiesUpdateResponse(
                 update_activity_response=unmarshal_json_response(
-                    Optional[models.UpdateActivityResponse], http_res
+                    Optional[models.UpdateActivityResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1907,10 +2078,9 @@ class Activities(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmActivitiesUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1977,6 +2147,7 @@ class Activities(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2001,9 +2172,19 @@ class Activities(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "salesforce",
+                            "description": "This endpoint is mapped to Salesforce Events; tasks are not included. As a workaround we recommended using the Proxy API.",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2011,10 +2192,9 @@ class Activities(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmActivitiesDeleteResponse(
                 delete_activity_response=unmarshal_json_response(
-                    Optional[models.DeleteActivityResponse], http_res
+                    Optional[models.DeleteActivityResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2055,10 +2235,9 @@ class Activities(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmActivitiesDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2125,6 +2304,7 @@ class Activities(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2149,9 +2329,19 @@ class Activities(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "salesforce",
+                            "description": "This endpoint is mapped to Salesforce Events; tasks are not included. As a workaround we recommended using the Proxy API.",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2159,10 +2349,9 @@ class Activities(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmActivitiesDeleteResponse(
                 delete_activity_response=unmarshal_json_response(
-                    Optional[models.DeleteActivityResponse], http_res
+                    Optional[models.DeleteActivityResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2203,10 +2392,9 @@ class Activities(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmActivitiesDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

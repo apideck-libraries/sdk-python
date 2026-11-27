@@ -2,6 +2,16 @@
 
 The operational health status of the connection
 
+## Example Usage
+
+```python
+from apideck_unify.models import ConnectionHealth
+
+value = ConnectionHealth.OK
+
+# Open enum: unrecognized values are captured as UnrecognizedStr
+```
+
 
 ## Values
 

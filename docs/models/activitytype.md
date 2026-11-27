@@ -2,6 +2,16 @@
 
 The type of the activity
 
+## Example Usage
+
+```python
+from apideck_unify.models import ActivityType
+
+value = ActivityType.CALL
+
+# Open enum: unrecognized values are captured as UnrecognizedStr
+```
+
 
 ## Values
 

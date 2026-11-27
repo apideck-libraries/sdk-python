@@ -2,6 +2,16 @@
 
 Priority level of the project
 
+## Example Usage
+
+```python
+from apideck_unify.models import ProjectUpdateInputPriority
+
+value = ProjectUpdateInputPriority.LOW
+
+# Open enum: unrecognized values are captured as UnrecognizedStr
+```
+
 
 ## Values
 

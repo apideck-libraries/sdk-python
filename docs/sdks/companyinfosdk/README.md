@@ -1,5 +1,4 @@
-# CompanyInfoSDK
-(*accounting.company_info*)
+# Accounting.CompanyInfo
 
 ## Overview
 
@@ -22,7 +21,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.company_info.get(raw=False, service_id="salesforce", company_id="12345", fields="id,updated_at")

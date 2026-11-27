@@ -2,6 +2,16 @@
 
 The type of account being referenced. Use `ledger_account` for GL accounts from the chart of accounts, or `bank_account` for bank account entities. When not specified, the connector will use its default behavior.
 
+## Example Usage
+
+```python
+from apideck_unify.models import LinkedFinancialAccountAccountType
+
+value = LinkedFinancialAccountAccountType.LEDGER_ACCOUNT
+
+# Open enum: unrecognized values are captured as UnrecognizedStr
+```
+
 
 ## Values
 

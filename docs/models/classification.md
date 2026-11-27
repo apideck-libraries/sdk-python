@@ -2,6 +2,16 @@
 
 Filter by account classification.
 
+## Example Usage
+
+```python
+from apideck_unify.models import Classification
+
+value = Classification.ASSET
+
+# Open enum: unrecognized values are captured as UnrecognizedStr
+```
+
 
 ## Values
 

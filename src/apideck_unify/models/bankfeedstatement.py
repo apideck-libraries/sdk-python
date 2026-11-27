@@ -9,14 +9,15 @@ from apideck_unify.types import (
     OptionalNullable,
     UNSET,
     UNSET_SENTINEL,
+    current_exclude_none,
+    serialize_with_info,
 )
-from apideck_unify.utils import validate_open_enum
+from apideck_unify.types.basemodel import current_filtered_dump
 from datetime import datetime
 from enum import Enum
 from pydantic import field_serializer, model_serializer
-from pydantic.functional_validators import PlainValidator
 from typing import List, Optional
-from typing_extensions import Annotated, NotRequired, TypedDict
+from typing_extensions import NotRequired, TypedDict
 
 
 class StatementStatus(str, Enum, metaclass=utils.OpenEnumMeta):
@@ -66,7 +67,7 @@ class Transactions(BaseModel):
     amount: float
     r"""The amount of the transaction."""
 
-    credit_or_debit: Annotated[CreditOrDebit, PlainValidator(validate_open_enum(False))]
+    credit_or_debit: CreditOrDebit
     r"""Whether the amount is a credit or debit."""
 
     description: Optional[str] = None
@@ -81,10 +82,7 @@ class Transactions(BaseModel):
     reference: Optional[str] = None
     r"""The reference of the transaction."""
 
-    transaction_type: Annotated[
-        Optional[BankFeedStatementTransactionType],
-        PlainValidator(validate_open_enum(False)),
-    ] = None
+    transaction_type: Optional[BankFeedStatementTransactionType] = None
     r"""Type of transaction."""
 
     merchant_category_code: OptionalNullable[str] = UNSET
@@ -109,39 +107,43 @@ class Transactions(BaseModel):
         return value
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = [
-            "description",
-            "source_transaction_id",
-            "counterparty",
-            "reference",
-            "transaction_type",
-            "merchant_category_code",
-        ]
-        nullable_fields = ["merchant_category_code"]
-        null_default_fields = []
-
+        optional_fields = set(
+            [
+                "description",
+                "source_transaction_id",
+                "counterparty",
+                "reference",
+                "transaction_type",
+                "merchant_category_code",
+            ]
+        )
+        nullable_fields = set(["merchant_category_code"])
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m
 
@@ -184,9 +186,7 @@ class BankFeedStatement(BaseModel):
     bank_feed_account_id: Optional[str] = None
     r"""The ID of the bank feed account this statement belongs to."""
 
-    status: Annotated[
-        Optional[StatementStatus], PlainValidator(validate_open_enum(False))
-    ] = None
+    status: Optional[StatementStatus] = None
     r"""The current status of the bank feed statement."""
 
     start_date: Optional[datetime] = None
@@ -198,17 +198,13 @@ class BankFeedStatement(BaseModel):
     start_balance: Optional[float] = None
     r"""Balance amount at the start of the period."""
 
-    start_balance_credit_or_debit: Annotated[
-        Optional[CreditOrDebit], PlainValidator(validate_open_enum(False))
-    ] = None
+    start_balance_credit_or_debit: Optional[CreditOrDebit] = None
     r"""Whether the amount is a credit or debit."""
 
     end_balance: Optional[float] = None
     r"""Balance amount at the end of the period."""
 
-    end_balance_credit_or_debit: Annotated[
-        Optional[CreditOrDebit], PlainValidator(validate_open_enum(False))
-    ] = None
+    end_balance_credit_or_debit: Optional[CreditOrDebit] = None
     r"""Whether the amount is a credit or debit."""
 
     transactions: Optional[List[Transactions]] = None
@@ -254,46 +250,50 @@ class BankFeedStatement(BaseModel):
         return value
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = [
-            "bank_feed_account_id",
-            "status",
-            "start_date",
-            "end_date",
-            "start_balance",
-            "start_balance_credit_or_debit",
-            "end_balance",
-            "end_balance_credit_or_debit",
-            "transactions",
-            "created_at",
-            "created_by",
-            "updated_at",
-            "updated_by",
-        ]
-        nullable_fields = ["created_at", "created_by", "updated_at", "updated_by"]
-        null_default_fields = []
-
+        optional_fields = set(
+            [
+                "bank_feed_account_id",
+                "status",
+                "start_date",
+                "end_date",
+                "start_balance",
+                "start_balance_credit_or_debit",
+                "end_balance",
+                "end_balance_credit_or_debit",
+                "transactions",
+                "created_at",
+                "created_by",
+                "updated_at",
+                "updated_by",
+            ]
+        )
+        nullable_fields = set(["created_at", "created_by", "updated_at", "updated_by"])
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m
 
@@ -323,9 +323,7 @@ class BankFeedStatementInput(BaseModel):
     bank_feed_account_id: Optional[str] = None
     r"""The ID of the bank feed account this statement belongs to."""
 
-    status: Annotated[
-        Optional[StatementStatus], PlainValidator(validate_open_enum(False))
-    ] = None
+    status: Optional[StatementStatus] = None
     r"""The current status of the bank feed statement."""
 
     start_date: Optional[datetime] = None
@@ -337,17 +335,13 @@ class BankFeedStatementInput(BaseModel):
     start_balance: Optional[float] = None
     r"""Balance amount at the start of the period."""
 
-    start_balance_credit_or_debit: Annotated[
-        Optional[CreditOrDebit], PlainValidator(validate_open_enum(False))
-    ] = None
+    start_balance_credit_or_debit: Optional[CreditOrDebit] = None
     r"""Whether the amount is a credit or debit."""
 
     end_balance: Optional[float] = None
     r"""Balance amount at the end of the period."""
 
-    end_balance_credit_or_debit: Annotated[
-        Optional[CreditOrDebit], PlainValidator(validate_open_enum(False))
-    ] = None
+    end_balance_credit_or_debit: Optional[CreditOrDebit] = None
     r"""Whether the amount is a credit or debit."""
 
     transactions: Optional[List[Transactions]] = None
@@ -379,3 +373,38 @@ class BankFeedStatementInput(BaseModel):
             except ValueError:
                 return value
         return value
+
+    @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
+    def serialize_model(self, handler):
+        optional_fields = set(
+            [
+                "bank_feed_account_id",
+                "status",
+                "start_date",
+                "end_date",
+                "start_balance",
+                "start_balance_credit_or_debit",
+                "end_balance",
+                "end_balance_credit_or_debit",
+                "transactions",
+            ]
+        )
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
+        serialized = handler(self)
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+
+            if val != UNSET_SENTINEL:
+                if val is not None or k not in optional_fields:
+                    m[k] = val
+
+        return m

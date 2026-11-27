@@ -2,12 +2,17 @@
 
 from __future__ import annotations
 from apideck_unify import utils
-from apideck_unify.types import BaseModel
-from apideck_unify.utils import validate_open_enum
+from apideck_unify.types import (
+    BaseModel,
+    UNSET_SENTINEL,
+    current_exclude_none,
+    serialize_with_info,
+)
+from apideck_unify.types.basemodel import current_filtered_dump
 from enum import Enum
-from pydantic.functional_validators import PlainValidator
+from pydantic import model_serializer
 from typing import Dict, Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing_extensions import NotRequired, TypeAliasType, TypedDict
 
 
 class Two(str, Enum, metaclass=utils.OpenEnumMeta):
@@ -30,6 +35,29 @@ class One(BaseModel):
     write: Optional[bool] = None
     r"""Whether the field can be written to"""
 
+    @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
+    def serialize_model(self, handler):
+        optional_fields = set(["read", "write"])
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
+        serialized = handler(self)
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+
+            if val != UNSET_SENTINEL:
+                if val is not None or k not in optional_fields:
+                    m[k] = val
+
+        return m
+
 
 UpdateConsentRequestResourcesTypedDict = TypeAliasType(
     "UpdateConsentRequestResourcesTypedDict",
@@ -38,11 +66,7 @@ UpdateConsentRequestResourcesTypedDict = TypeAliasType(
 
 
 UpdateConsentRequestResources = TypeAliasType(
-    "UpdateConsentRequestResources",
-    Union[
-        Dict[str, Dict[str, One]],
-        Annotated[Two, PlainValidator(validate_open_enum(False))],
-    ],
+    "UpdateConsentRequestResources", Union[Dict[str, Dict[str, One]], Two]
 )
 
 

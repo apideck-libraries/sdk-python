@@ -2,13 +2,17 @@
 
 from __future__ import annotations
 from apideck_unify import models, utils
-from apideck_unify.types import BaseModel
-from apideck_unify.utils import validate_open_enum
+from apideck_unify.types import (
+    BaseModel,
+    UNSET_SENTINEL,
+    current_exclude_none,
+    serialize_with_info,
+)
+from apideck_unify.types.basemodel import current_filtered_dump
 from enum import Enum
-from pydantic import field_serializer
-from pydantic.functional_validators import PlainValidator
+from pydantic import field_serializer, model_serializer
 from typing import Dict, List, Optional
-from typing_extensions import Annotated, NotRequired, TypedDict
+from typing_extensions import NotRequired, TypedDict
 
 
 class Mode(str, Enum, metaclass=utils.OpenEnumMeta):
@@ -69,7 +73,7 @@ class RequestRate(BaseModel):
     size: int
     r"""Size of request window."""
 
-    unit: Annotated[Unit, PlainValidator(validate_open_enum(False))]
+    unit: Unit
     r"""The window unit for the rate."""
 
     @field_serializer("unit")
@@ -89,6 +93,29 @@ class WebhookSupportResourcesTypedDict(TypedDict):
 class WebhookSupportResources(BaseModel):
     events: Optional[List[str]] = None
 
+    @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
+    def serialize_model(self, handler):
+        optional_fields = set(["events"])
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
+        serialized = handler(self)
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+
+            if val != UNSET_SENTINEL:
+                if val is not None or k not in optional_fields:
+                    m[k] = val
+
+        return m
+
 
 class VirtualWebhooksTypedDict(TypedDict):
     r"""Virtual webhook config for the connector."""
@@ -107,6 +134,29 @@ class VirtualWebhooks(BaseModel):
 
     resources: Optional[Dict[str, WebhookSupportResources]] = None
     r"""The resources that will be requested from downstream."""
+
+    @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
+    def serialize_model(self, handler):
+        optional_fields = set(["resources"])
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
+        serialized = handler(self)
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+
+            if val != UNSET_SENTINEL:
+                if val is not None or k not in optional_fields:
+                    m[k] = val
+
+        return m
 
 
 class WebhookSupportTypedDict(TypedDict):
@@ -131,25 +181,19 @@ class WebhookSupportTypedDict(TypedDict):
 class WebhookSupport(BaseModel):
     r"""How webhooks are supported for the connector. Sometimes the connector natively supports webhooks, other times Apideck virtualizes them based on polling."""
 
-    mode: Annotated[Optional[Mode], PlainValidator(validate_open_enum(False))] = None
+    mode: Optional[Mode] = None
     r"""Mode of the webhook support."""
 
-    subscription_level: Annotated[
-        Optional[SubscriptionLevel], PlainValidator(validate_open_enum(False))
-    ] = None
+    subscription_level: Optional[SubscriptionLevel] = None
     r"""Received events are scoped to connection or across integration."""
 
-    managed_via: Annotated[
-        Optional[ManagedVia], PlainValidator(validate_open_enum(False))
-    ] = None
+    managed_via: Optional[ManagedVia] = None
     r"""How the subscription is managed in the downstream."""
 
     shared_with: Optional[List[str]] = None
     r"""Service IDs of connectors that receive events from this connector's webhook URL when the URL's own connector has no callable connection for the event. Connectors listed here must use the same webhook event mapping."""
 
-    target_url_scope: Annotated[
-        Optional[TargetURLScope], PlainValidator(validate_open_enum(False))
-    ] = None
+    target_url_scope: Optional[TargetURLScope] = None
     r"""Where the vendor stores the webhook target URL. `app` means one URL per vendor developer app, which customers on Apideck's own credentials cannot configure. `tenant` means each customer's vendor account holds its own URL."""
 
     vendor_app_url: Optional[bool] = None
@@ -193,3 +237,36 @@ class WebhookSupport(BaseModel):
             except ValueError:
                 return value
         return value
+
+    @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
+    def serialize_model(self, handler):
+        optional_fields = set(
+            [
+                "mode",
+                "subscription_level",
+                "managed_via",
+                "shared_with",
+                "target_url_scope",
+                "vendor_app_url",
+                "virtual_webhooks",
+            ]
+        )
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
+        serialized = handler(self)
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+
+            if val != UNSET_SENTINEL:
+                if val is not None or k not in optional_fields:
+                    m[k] = val
+
+        return m

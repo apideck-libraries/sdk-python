@@ -5,12 +5,16 @@ from .paginationcoverage import PaginationCoverage, PaginationCoverageTypedDict
 from .resourcestatus import ResourceStatus
 from .supportedproperty import SupportedProperty, SupportedPropertyTypedDict
 from apideck_unify import models
-from apideck_unify.types import BaseModel
-from apideck_unify.utils import validate_open_enum
-from pydantic import field_serializer
-from pydantic.functional_validators import PlainValidator
+from apideck_unify.types import (
+    BaseModel,
+    UNSET_SENTINEL,
+    current_exclude_none,
+    serialize_with_info,
+)
+from apideck_unify.types.basemodel import current_filtered_dump
+from pydantic import field_serializer, model_serializer
 from typing import List, Optional
-from typing_extensions import Annotated, NotRequired, TypedDict
+from typing_extensions import NotRequired, TypedDict
 
 
 class ConnectorResourceTypedDict(TypedDict):
@@ -56,9 +60,7 @@ class ConnectorResource(BaseModel):
     downstream_name: Optional[str] = None
     r"""Name of the resource in the Connector's API (downstream)"""
 
-    status: Annotated[
-        Optional[ResourceStatus], PlainValidator(validate_open_enum(False))
-    ] = None
+    status: Optional[ResourceStatus] = None
     r"""Status of the resource. Resources with status live or beta are callable."""
 
     pagination_supported: Optional[bool] = None
@@ -95,3 +97,43 @@ class ConnectorResource(BaseModel):
             except ValueError:
                 return value
         return value
+
+    @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
+    def serialize_model(self, handler):
+        optional_fields = set(
+            [
+                "id",
+                "name",
+                "downstream_id",
+                "downstream_name",
+                "status",
+                "pagination_supported",
+                "pagination",
+                "custom_fields_supported",
+                "supported_operations",
+                "downstream_unsupported_operations",
+                "supported_filters",
+                "supported_sort_by",
+                "supported_fields",
+                "supported_list_fields",
+            ]
+        )
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
+        serialized = handler(self)
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+
+            if val != UNSET_SENTINEL:
+                if val is not None or k not in optional_fields:
+                    m[k] = val
+
+        return m

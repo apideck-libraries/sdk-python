@@ -8,7 +8,7 @@ from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from datetime import date, datetime
 from jsonpath import JSONPath
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
 
 
 class ExpenseReports(BaseSDK):
@@ -25,7 +25,7 @@ class ExpenseReports(BaseSDK):
         filter_: Optional[
             Union[models.ExpenseReportsFilter, models.ExpenseReportsFilterTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -70,7 +70,7 @@ class ExpenseReports(BaseSDK):
             filter_=utils.get_pydantic_model(
                 filter_, Optional[models.ExpenseReportsFilter]
             ),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
         )
 
         req = self._build_request(
@@ -90,6 +90,7 @@ class ExpenseReports(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -114,9 +115,19 @@ class ExpenseReports(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "netsuite",
+                            "description": "`filter[subsidiary_id]` scopes results to a single subsidiary and is only supported on NetSuite OneWorld accounts; on standard (single-entity) accounts it is ignored.\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -142,17 +153,19 @@ class ExpenseReports(BaseSDK):
                 filter_=filter_,
                 pass_through=pass_through,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingExpenseReportsAllResponse(
                 get_expense_reports_response=unmarshal_json_response(
-                    Optional[models.GetExpenseReportsResponse], http_res
+                    Optional[models.GetExpenseReportsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -193,11 +206,10 @@ class ExpenseReports(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingExpenseReportsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -215,7 +227,7 @@ class ExpenseReports(BaseSDK):
         filter_: Optional[
             Union[models.ExpenseReportsFilter, models.ExpenseReportsFilterTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -260,7 +272,7 @@ class ExpenseReports(BaseSDK):
             filter_=utils.get_pydantic_model(
                 filter_, Optional[models.ExpenseReportsFilter]
             ),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
         )
 
         req = self._build_request_async(
@@ -280,6 +292,7 @@ class ExpenseReports(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -304,9 +317,19 @@ class ExpenseReports(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "netsuite",
+                            "description": "`filter[subsidiary_id]` scopes results to a single subsidiary and is only supported on NetSuite OneWorld accounts; on standard (single-entity) accounts it is ignored.\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -332,17 +355,19 @@ class ExpenseReports(BaseSDK):
                 filter_=filter_,
                 pass_through=pass_through,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingExpenseReportsAllResponse(
                 get_expense_reports_response=unmarshal_json_response(
-                    Optional[models.GetExpenseReportsResponse], http_res
+                    Optional[models.GetExpenseReportsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -383,11 +408,10 @@ class ExpenseReports(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingExpenseReportsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -400,8 +424,8 @@ class ExpenseReports(BaseSDK):
         ],
         transaction_date: Nullable[datetime],
         line_items: Union[
-            List[models.ExpenseReportLineItemInput],
-            List[models.ExpenseReportLineItemInputTypedDict],
+            Iterable[models.ExpenseReportLineItemInput],
+            Iterable[models.ExpenseReportLineItemInputTypedDict],
         ],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
@@ -438,8 +462,8 @@ class ExpenseReports(BaseSDK):
         ] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         tax_inclusive: OptionalNullable[bool] = UNSET,
@@ -447,11 +471,14 @@ class ExpenseReports(BaseSDK):
             Union[models.ApprovedBy, models.ApprovedByTypedDict]
         ] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -589,6 +616,7 @@ class ExpenseReports(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.expense_report, False, False, "json", models.ExpenseReportInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -613,9 +641,19 @@ class ExpenseReports(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "netsuite",
+                            "description": "When creating expense report line items, the `line_items[].account.id` field is not written to NetSuite.\nIn NetSuite, the GL account is automatically derived from the expense category. Setting `line_items[].account.id`\nhas no effect and may trigger an INSUFFICIENT_PERMISSION error in strict tenant configurations.\nUse `line_items[].expense_category.id` to specify the category (which implicitly sets the GL account).\n\nThe `line_items[].reimbursable` field maps to the NetSuite `corporateCreditCard` boolean on each expense line.\nSetting `reimbursable: false` sets `corporateCreditCard: true`, marking the line as a corporate card expense.\nNetSuite will automatically create an offsetting accounting entry against the corporate card liability account,\nand the line's amount will not count toward the employee reimbursement total (resulting in `total_amount: 0`\nif all lines are non-reimbursable). Setting `reimbursable: true` (or omitting the field) leaves\n`corporateCreditCard` unset, meaning the employee is expected to be reimbursed out-of-pocket.\n\nThe employee record linked to the expense report must have a corporate credit card configured in NetSuite\nwhen `reimbursable: false` is used, otherwise the API will return a validation error.\n\nNote: `corporateCreditCard` is the current NetSuite SOAP field for this purpose. The legacy\n`isNonReimbursable` field was removed in NetSuite 18.2 for accounts that did not use it prior to that version.\n\nImportant read limitation: The list endpoint (`GET /expense-reports`) reads `line_items[].reimbursable`\nfrom the NetSuite SuiteQL `transactionline` table, which exposes only the legacy `isNonReimbursable` column.\nBecause writing `reimbursable: false` sets `corporateCreditCard` (not `isNonReimbursable`), the list\nendpoint will always return `reimbursable: true` for lines created with `reimbursable: false` via this API.\nTo get accurate `reimbursable` values for corporate card lines, use the single record endpoint\n(`GET /expense-reports/{id}`), which reads directly from the NetSuite SOAP API where `corporateCreditCard`\nis available.\n\nNetSuite does not support attaching receipts inline via `line_items[].receipt_url`; providing a non-empty\nvalue returns a 422. To attach a receipt: (1) create the expense report, (2) upload the file via\n`POST /accounting/attachments/expense-report/{id}` — encode the line reference in the filename\n(e.g. `receipt-line-1-taxi.pdf`) since NetSuite attaches at the report level only, (3) store the\nattachment `id` returned from the upload. Note: `GET /accounting/attachments/expense-report/{id}`\n(list all) is not supported on NetSuite — retrieve individual attachments via\n`GET /accounting/attachments/expense-report/{id}/{attachment_id}` (returns `file_url` and `description`).\n\nDate-only fields need no configuration: NetSuite converts the datetime it receives into the\nSOAP/integration user's time zone before storing the date part, and these fields are anchored so\nthey store on the intended calendar day for any integration user between UTC-10 and UTC+13.\n\nFour zones fall outside that range and need the optional `timezone` connection setting:\n`Pacific/Pago_Pago`, `Pacific/Niue` and `Pacific/Midway` (UTC-11) store one day early without it,\nand `Pacific/Kiritimati` (UTC+14) stores one day late. Set it to the IANA zone of the NetSuite user\nthis connection authenticates as, read from that user's Home > Set Preferences > Time Zone — Setup >\nCompany > Company Information only supplies the default, so a user who overrode it needs their own\nzone.\n\nWhen the setting is used its value must be within 12 hours of that user's real zone in either\ndirection: more than ~12h east stores dates one day early, more than ~12h west stores them one day\nlate.\n\nThis applies to every NetSuite date-only write field across the accounting resources.\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -623,10 +661,11 @@ class ExpenseReports(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingExpenseReportsAddResponse(
                 create_expense_report_response=unmarshal_json_response(
-                    Optional[models.CreateExpenseReportResponse], http_res
+                    Optional[models.CreateExpenseReportResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -667,10 +706,9 @@ class ExpenseReports(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingExpenseReportsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -683,8 +721,8 @@ class ExpenseReports(BaseSDK):
         ],
         transaction_date: Nullable[datetime],
         line_items: Union[
-            List[models.ExpenseReportLineItemInput],
-            List[models.ExpenseReportLineItemInputTypedDict],
+            Iterable[models.ExpenseReportLineItemInput],
+            Iterable[models.ExpenseReportLineItemInputTypedDict],
         ],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
@@ -721,8 +759,8 @@ class ExpenseReports(BaseSDK):
         ] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         tax_inclusive: OptionalNullable[bool] = UNSET,
@@ -730,11 +768,14 @@ class ExpenseReports(BaseSDK):
             Union[models.ApprovedBy, models.ApprovedByTypedDict]
         ] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -872,6 +913,7 @@ class ExpenseReports(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.expense_report, False, False, "json", models.ExpenseReportInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -896,9 +938,19 @@ class ExpenseReports(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "netsuite",
+                            "description": "When creating expense report line items, the `line_items[].account.id` field is not written to NetSuite.\nIn NetSuite, the GL account is automatically derived from the expense category. Setting `line_items[].account.id`\nhas no effect and may trigger an INSUFFICIENT_PERMISSION error in strict tenant configurations.\nUse `line_items[].expense_category.id` to specify the category (which implicitly sets the GL account).\n\nThe `line_items[].reimbursable` field maps to the NetSuite `corporateCreditCard` boolean on each expense line.\nSetting `reimbursable: false` sets `corporateCreditCard: true`, marking the line as a corporate card expense.\nNetSuite will automatically create an offsetting accounting entry against the corporate card liability account,\nand the line's amount will not count toward the employee reimbursement total (resulting in `total_amount: 0`\nif all lines are non-reimbursable). Setting `reimbursable: true` (or omitting the field) leaves\n`corporateCreditCard` unset, meaning the employee is expected to be reimbursed out-of-pocket.\n\nThe employee record linked to the expense report must have a corporate credit card configured in NetSuite\nwhen `reimbursable: false` is used, otherwise the API will return a validation error.\n\nNote: `corporateCreditCard` is the current NetSuite SOAP field for this purpose. The legacy\n`isNonReimbursable` field was removed in NetSuite 18.2 for accounts that did not use it prior to that version.\n\nImportant read limitation: The list endpoint (`GET /expense-reports`) reads `line_items[].reimbursable`\nfrom the NetSuite SuiteQL `transactionline` table, which exposes only the legacy `isNonReimbursable` column.\nBecause writing `reimbursable: false` sets `corporateCreditCard` (not `isNonReimbursable`), the list\nendpoint will always return `reimbursable: true` for lines created with `reimbursable: false` via this API.\nTo get accurate `reimbursable` values for corporate card lines, use the single record endpoint\n(`GET /expense-reports/{id}`), which reads directly from the NetSuite SOAP API where `corporateCreditCard`\nis available.\n\nNetSuite does not support attaching receipts inline via `line_items[].receipt_url`; providing a non-empty\nvalue returns a 422. To attach a receipt: (1) create the expense report, (2) upload the file via\n`POST /accounting/attachments/expense-report/{id}` — encode the line reference in the filename\n(e.g. `receipt-line-1-taxi.pdf`) since NetSuite attaches at the report level only, (3) store the\nattachment `id` returned from the upload. Note: `GET /accounting/attachments/expense-report/{id}`\n(list all) is not supported on NetSuite — retrieve individual attachments via\n`GET /accounting/attachments/expense-report/{id}/{attachment_id}` (returns `file_url` and `description`).\n\nDate-only fields need no configuration: NetSuite converts the datetime it receives into the\nSOAP/integration user's time zone before storing the date part, and these fields are anchored so\nthey store on the intended calendar day for any integration user between UTC-10 and UTC+13.\n\nFour zones fall outside that range and need the optional `timezone` connection setting:\n`Pacific/Pago_Pago`, `Pacific/Niue` and `Pacific/Midway` (UTC-11) store one day early without it,\nand `Pacific/Kiritimati` (UTC+14) stores one day late. Set it to the IANA zone of the NetSuite user\nthis connection authenticates as, read from that user's Home > Set Preferences > Time Zone — Setup >\nCompany > Company Information only supplies the default, so a user who overrode it needs their own\nzone.\n\nWhen the setting is used its value must be within 12 hours of that user's real zone in either\ndirection: more than ~12h east stores dates one day early, more than ~12h west stores them one day\nlate.\n\nThis applies to every NetSuite date-only write field across the accounting resources.\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -906,10 +958,11 @@ class ExpenseReports(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingExpenseReportsAddResponse(
                 create_expense_report_response=unmarshal_json_response(
-                    Optional[models.CreateExpenseReportResponse], http_res
+                    Optional[models.CreateExpenseReportResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -950,10 +1003,9 @@ class ExpenseReports(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingExpenseReportsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1023,6 +1075,7 @@ class ExpenseReports(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1047,9 +1100,19 @@ class ExpenseReports(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "netsuite",
+                            "description": '`tracking_categories[].name` is normalized to the leaf class name at both the expense-report header and each line item: a NetSuite hierarchical class path such as `"Fruit : Apple"` returns `name: "Apple"` and `parent_name: "Fruit"` (deeper paths return the deepest leaf). `department.name` and `location.name` (header and line items) are likewise normalized to the leaf segment.\n',
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1057,10 +1120,9 @@ class ExpenseReports(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingExpenseReportsOneResponse(
                 get_expense_report_response=unmarshal_json_response(
-                    Optional[models.GetExpenseReportResponse], http_res
+                    Optional[models.GetExpenseReportResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1101,10 +1163,9 @@ class ExpenseReports(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingExpenseReportsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1174,6 +1235,7 @@ class ExpenseReports(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1198,9 +1260,19 @@ class ExpenseReports(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "netsuite",
+                            "description": '`tracking_categories[].name` is normalized to the leaf class name at both the expense-report header and each line item: a NetSuite hierarchical class path such as `"Fruit : Apple"` returns `name: "Apple"` and `parent_name: "Fruit"` (deeper paths return the deepest leaf). `department.name` and `location.name` (header and line items) are likewise normalized to the leaf segment.\n',
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1208,10 +1280,9 @@ class ExpenseReports(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingExpenseReportsOneResponse(
                 get_expense_report_response=unmarshal_json_response(
-                    Optional[models.GetExpenseReportResponse], http_res
+                    Optional[models.GetExpenseReportResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1252,10 +1323,9 @@ class ExpenseReports(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingExpenseReportsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1305,8 +1375,8 @@ class ExpenseReports(BaseSDK):
         ] = UNSET,
         line_items: Optional[
             Union[
-                List[models.ExpenseReportLineItemInput],
-                List[models.ExpenseReportLineItemInputTypedDict],
+                Iterable[models.ExpenseReportLineItemInput],
+                Iterable[models.ExpenseReportLineItemInputTypedDict],
             ]
         ] = None,
         reference: OptionalNullable[str] = UNSET,
@@ -1315,8 +1385,8 @@ class ExpenseReports(BaseSDK):
         ] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         tax_inclusive: OptionalNullable[bool] = UNSET,
@@ -1327,11 +1397,14 @@ class ExpenseReports(BaseSDK):
             ]
         ] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1477,6 +1550,7 @@ class ExpenseReports(BaseSDK):
                 "json",
                 models.ExpenseReportUpdateInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1501,9 +1575,19 @@ class ExpenseReports(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "netsuite",
+                            "description": "When updating expense report line items, the `line_items[].account.id` field is not written to NetSuite.\nIn NetSuite, the GL account is automatically derived from the expense category. Setting `line_items[].account.id`\nhas no effect and may trigger an INSUFFICIENT_PERMISSION error in strict tenant configurations.\nUse `line_items[].expense_category.id` to specify the category (which implicitly sets the GL account).\n\nThe `line_items[].reimbursable` field maps to the NetSuite `corporateCreditCard` boolean on each expense line.\nSetting `reimbursable: false` sets `corporateCreditCard: true`, marking the line as a corporate card expense.\nNetSuite will automatically create an offsetting accounting entry against the corporate card liability account,\nand the line's amount will not count toward the employee reimbursement total (resulting in `total_amount: 0`\nif all lines are non-reimbursable). Setting `reimbursable: true` (or omitting the field) leaves\n`corporateCreditCard` unset, meaning the employee is expected to be reimbursed out-of-pocket.\n\nThe employee record linked to the expense report must have a corporate credit card configured in NetSuite\nwhen `reimbursable: false` is used, otherwise the API will return a validation error.\n\nNote: `corporateCreditCard` is the current NetSuite SOAP field for this purpose. The legacy\n`isNonReimbursable` field was removed in NetSuite 18.2 for accounts that did not use it prior to that version.\n\nImportant read limitation: The list endpoint (`GET /expense-reports`) reads `line_items[].reimbursable`\nfrom the NetSuite SuiteQL `transactionline` table, which exposes only the legacy `isNonReimbursable` column.\nBecause writing `reimbursable: false` sets `corporateCreditCard` (not `isNonReimbursable`), the list\nendpoint will always return `reimbursable: true` for lines created with `reimbursable: false` via this API.\nTo get accurate `reimbursable` values for corporate card lines, use the single record endpoint\n(`GET /expense-reports/{id}`), which reads directly from the NetSuite SOAP API where `corporateCreditCard`\nis available.\n\nNetSuite does not support attaching receipts inline via `line_items[].receipt_url`; providing a non-empty\nvalue returns a 422. To attach a receipt: (1) create or update the expense report, (2) upload the file via\n`POST /accounting/attachments/expense-report/{id}` — encode the line reference in the filename\n(e.g. `receipt-line-1-taxi.pdf`) since NetSuite attaches at the report level only, (3) store the\nattachment `id` returned from the upload. Note: `GET /accounting/attachments/expense-report/{id}`\n(list all) is not supported on NetSuite — retrieve individual attachments via\n`GET /accounting/attachments/expense-report/{id}/{attachment_id}` (returns `file_url` and `description`).\n\nDate-only fields need no configuration: NetSuite converts the datetime it receives into the\nSOAP/integration user's time zone before storing the date part, and these fields are anchored so\nthey store on the intended calendar day for any integration user between UTC-10 and UTC+13.\n\nFour zones fall outside that range and need the optional `timezone` connection setting:\n`Pacific/Pago_Pago`, `Pacific/Niue` and `Pacific/Midway` (UTC-11) store one day early without it,\nand `Pacific/Kiritimati` (UTC+14) stores one day late. Set it to the IANA zone of the NetSuite user\nthis connection authenticates as, read from that user's Home > Set Preferences > Time Zone — Setup >\nCompany > Company Information only supplies the default, so a user who overrode it needs their own\nzone.\n\nWhen the setting is used its value must be within 12 hours of that user's real zone in either\ndirection: more than ~12h east stores dates one day early, more than ~12h west stores them one day\nlate.\n\nThis applies to every NetSuite date-only write field across the accounting resources.\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1511,10 +1595,11 @@ class ExpenseReports(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingExpenseReportsUpdateResponse(
                 update_expense_report_response=unmarshal_json_response(
-                    Optional[models.UpdateExpenseReportResponse], http_res
+                    Optional[models.UpdateExpenseReportResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1555,10 +1640,9 @@ class ExpenseReports(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingExpenseReportsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1608,8 +1692,8 @@ class ExpenseReports(BaseSDK):
         ] = UNSET,
         line_items: Optional[
             Union[
-                List[models.ExpenseReportLineItemInput],
-                List[models.ExpenseReportLineItemInputTypedDict],
+                Iterable[models.ExpenseReportLineItemInput],
+                Iterable[models.ExpenseReportLineItemInputTypedDict],
             ]
         ] = None,
         reference: OptionalNullable[str] = UNSET,
@@ -1618,8 +1702,8 @@ class ExpenseReports(BaseSDK):
         ] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         tax_inclusive: OptionalNullable[bool] = UNSET,
@@ -1630,11 +1714,14 @@ class ExpenseReports(BaseSDK):
             ]
         ] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1780,6 +1867,7 @@ class ExpenseReports(BaseSDK):
                 "json",
                 models.ExpenseReportUpdateInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1804,9 +1892,19 @@ class ExpenseReports(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "netsuite",
+                            "description": "When updating expense report line items, the `line_items[].account.id` field is not written to NetSuite.\nIn NetSuite, the GL account is automatically derived from the expense category. Setting `line_items[].account.id`\nhas no effect and may trigger an INSUFFICIENT_PERMISSION error in strict tenant configurations.\nUse `line_items[].expense_category.id` to specify the category (which implicitly sets the GL account).\n\nThe `line_items[].reimbursable` field maps to the NetSuite `corporateCreditCard` boolean on each expense line.\nSetting `reimbursable: false` sets `corporateCreditCard: true`, marking the line as a corporate card expense.\nNetSuite will automatically create an offsetting accounting entry against the corporate card liability account,\nand the line's amount will not count toward the employee reimbursement total (resulting in `total_amount: 0`\nif all lines are non-reimbursable). Setting `reimbursable: true` (or omitting the field) leaves\n`corporateCreditCard` unset, meaning the employee is expected to be reimbursed out-of-pocket.\n\nThe employee record linked to the expense report must have a corporate credit card configured in NetSuite\nwhen `reimbursable: false` is used, otherwise the API will return a validation error.\n\nNote: `corporateCreditCard` is the current NetSuite SOAP field for this purpose. The legacy\n`isNonReimbursable` field was removed in NetSuite 18.2 for accounts that did not use it prior to that version.\n\nImportant read limitation: The list endpoint (`GET /expense-reports`) reads `line_items[].reimbursable`\nfrom the NetSuite SuiteQL `transactionline` table, which exposes only the legacy `isNonReimbursable` column.\nBecause writing `reimbursable: false` sets `corporateCreditCard` (not `isNonReimbursable`), the list\nendpoint will always return `reimbursable: true` for lines created with `reimbursable: false` via this API.\nTo get accurate `reimbursable` values for corporate card lines, use the single record endpoint\n(`GET /expense-reports/{id}`), which reads directly from the NetSuite SOAP API where `corporateCreditCard`\nis available.\n\nNetSuite does not support attaching receipts inline via `line_items[].receipt_url`; providing a non-empty\nvalue returns a 422. To attach a receipt: (1) create or update the expense report, (2) upload the file via\n`POST /accounting/attachments/expense-report/{id}` — encode the line reference in the filename\n(e.g. `receipt-line-1-taxi.pdf`) since NetSuite attaches at the report level only, (3) store the\nattachment `id` returned from the upload. Note: `GET /accounting/attachments/expense-report/{id}`\n(list all) is not supported on NetSuite — retrieve individual attachments via\n`GET /accounting/attachments/expense-report/{id}/{attachment_id}` (returns `file_url` and `description`).\n\nDate-only fields need no configuration: NetSuite converts the datetime it receives into the\nSOAP/integration user's time zone before storing the date part, and these fields are anchored so\nthey store on the intended calendar day for any integration user between UTC-10 and UTC+13.\n\nFour zones fall outside that range and need the optional `timezone` connection setting:\n`Pacific/Pago_Pago`, `Pacific/Niue` and `Pacific/Midway` (UTC-11) store one day early without it,\nand `Pacific/Kiritimati` (UTC+14) stores one day late. Set it to the IANA zone of the NetSuite user\nthis connection authenticates as, read from that user's Home > Set Preferences > Time Zone — Setup >\nCompany > Company Information only supplies the default, so a user who overrode it needs their own\nzone.\n\nWhen the setting is used its value must be within 12 hours of that user's real zone in either\ndirection: more than ~12h east stores dates one day early, more than ~12h west stores them one day\nlate.\n\nThis applies to every NetSuite date-only write field across the accounting resources.\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1814,10 +1912,11 @@ class ExpenseReports(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingExpenseReportsUpdateResponse(
                 update_expense_report_response=unmarshal_json_response(
-                    Optional[models.UpdateExpenseReportResponse], http_res
+                    Optional[models.UpdateExpenseReportResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1858,10 +1957,9 @@ class ExpenseReports(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingExpenseReportsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1928,6 +2026,7 @@ class ExpenseReports(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1952,9 +2051,11 @@ class ExpenseReports(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={"x-apideck-api": "accounting"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1962,10 +2063,11 @@ class ExpenseReports(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingExpenseReportsDeleteResponse(
                 delete_expense_report_response=unmarshal_json_response(
-                    Optional[models.DeleteExpenseReportResponse], http_res
+                    Optional[models.DeleteExpenseReportResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2006,10 +2108,9 @@ class ExpenseReports(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingExpenseReportsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2076,6 +2177,7 @@ class ExpenseReports(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2100,9 +2202,11 @@ class ExpenseReports(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={"x-apideck-api": "accounting"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2110,10 +2214,11 @@ class ExpenseReports(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingExpenseReportsDeleteResponse(
                 delete_expense_report_response=unmarshal_json_response(
-                    Optional[models.DeleteExpenseReportResponse], http_res
+                    Optional[models.DeleteExpenseReportResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2154,10 +2259,9 @@ class ExpenseReports(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingExpenseReportsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

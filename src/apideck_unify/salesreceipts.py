@@ -8,7 +8,7 @@ from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from datetime import datetime
 from jsonpath import JSONPath
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
 
 
 class SalesReceipts(BaseSDK):
@@ -28,7 +28,7 @@ class SalesReceipts(BaseSDK):
         sort: Optional[
             Union[models.SalesReceiptsSort, models.SalesReceiptsSortTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -77,7 +77,7 @@ class SalesReceipts(BaseSDK):
                 filter_, Optional[models.SalesReceiptsFilter]
             ),
             sort=utils.get_pydantic_model(sort, Optional[models.SalesReceiptsSort]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -98,6 +98,7 @@ class SalesReceipts(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -122,9 +123,23 @@ class SalesReceipts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Only `filter[updated_since]` is supported; `customer_id` is not. `currency` and `customer_memo` are not returned.\n\nQuickBooks Desktop does not expose a reliable cross-page total record count. Getting `total_count` requires a separate COUNT query — an extra API call that is not currently implemented. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Sales receipts are Fiken's cash sales (\"Annet salg\" paid at the time of sale). Fiken's invoice sales, whether issued in Fiken or registered from an external invoice, are not sales receipts; deleted cash sales are not returned either. Fiken cannot filter by kind, so the connector reads Fiken's sales pages and keeps the cash sales, which makes a list call read as many sales pages as the company has (up to 2,000 sales, after which the response carries a warning that the list is incomplete).\n\nCash sales never have a customer or a customer memo in Fiken, so `customer` is not returned and `filter[customer_id]` always returns an empty list. `number` is the sale number, which is only present when one was set when the receipt was created. `filter[updated_since]` works at day granularity.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -152,17 +167,19 @@ class SalesReceipts(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingSalesReceiptsAllResponse(
                 get_sales_receipts_response=unmarshal_json_response(
-                    Optional[models.GetSalesReceiptsResponse], http_res
+                    Optional[models.GetSalesReceiptsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -203,11 +220,10 @@ class SalesReceipts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSalesReceiptsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -228,7 +244,7 @@ class SalesReceipts(BaseSDK):
         sort: Optional[
             Union[models.SalesReceiptsSort, models.SalesReceiptsSortTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -277,7 +293,7 @@ class SalesReceipts(BaseSDK):
                 filter_, Optional[models.SalesReceiptsFilter]
             ),
             sort=utils.get_pydantic_model(sort, Optional[models.SalesReceiptsSort]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -298,6 +314,7 @@ class SalesReceipts(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -322,9 +339,23 @@ class SalesReceipts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Only `filter[updated_since]` is supported; `customer_id` is not. `currency` and `customer_memo` are not returned.\n\nQuickBooks Desktop does not expose a reliable cross-page total record count. Getting `total_count` requires a separate COUNT query — an extra API call that is not currently implemented. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Sales receipts are Fiken's cash sales (\"Annet salg\" paid at the time of sale). Fiken's invoice sales, whether issued in Fiken or registered from an external invoice, are not sales receipts; deleted cash sales are not returned either. Fiken cannot filter by kind, so the connector reads Fiken's sales pages and keeps the cash sales, which makes a list call read as many sales pages as the company has (up to 2,000 sales, after which the response carries a warning that the list is incomplete).\n\nCash sales never have a customer or a customer memo in Fiken, so `customer` is not returned and `filter[customer_id]` always returns an empty list. `number` is the sale number, which is only present when one was set when the receipt was created. `filter[updated_since]` works at day granularity.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -352,17 +383,19 @@ class SalesReceipts(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingSalesReceiptsAllResponse(
                 get_sales_receipts_response=unmarshal_json_response(
-                    Optional[models.GetSalesReceiptsResponse], http_res
+                    Optional[models.GetSalesReceiptsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -403,11 +436,10 @@ class SalesReceipts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSalesReceiptsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -439,8 +471,8 @@ class SalesReceipts(BaseSDK):
         ] = UNSET,
         line_items: Optional[
             Union[
-                List[models.InvoiceLineItemInput],
-                List[models.InvoiceLineItemInputTypedDict],
+                Iterable[models.InvoiceLineItemInput],
+                Iterable[models.InvoiceLineItemInputTypedDict],
             ]
         ] = None,
         tax_code: OptionalNullable[str] = UNSET,
@@ -460,16 +492,19 @@ class SalesReceipts(BaseSDK):
         ] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -603,6 +638,7 @@ class SalesReceipts(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.sales_receipt, False, False, "json", models.SalesReceiptInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -627,9 +663,31 @@ class SalesReceipts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "A `line_items[]` entry sends `unit_price`, or `total_amount` when no unit price is given. `line_items[].tax_rate`, `currency` and the discount fields are not written. `customer_memo` is not written either: QuickBooks holds it as a reference to its Customer Message list and refuses the document for any other text.\n\nWrites are applied on the Web Connector's next run, so a create can return a `504` timeout after 28 seconds while QuickBooks still creates the sales receipt. List sales receipts to find it before retrying: sending the create again adds a second sales receipt.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Creates a cash sale in Fiken (\"Annet salg\"). `account` is required: it is the bank or cash ledger account (for example `1920:10001`) the sale was paid into, and the sale is registered as paid in full on `transaction_date`. Each line item needs `tax_rate.id` (a Fiken VAT type from tax rates that is valid for sales) and `ledger_account.id` (the revenue account).\n\nA customer cannot be attached to a cash sale; Fiken rejects it, so `customer` is not sent. Fiken also rejects cash sales in a foreign currency that carry Norwegian VAT, and the connector has only been verified with `NOK`. `number` sets the sale number.\n\nEach line's VAT is its `tax_amount`, or, when that is left out, is calculated from the line's `tax_rate`; with `tax_inclusive: true` the line amounts include VAT. Each line's amount and VAT are rounded to øre, and the amount paid is the sum of the lines. A `total_amount` that differs from that sum by more than one øre per line is rejected with a `422`.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "tax_inclusive only applies to UK, AU, IN, and CA editions. US companies ignore this field\nsilently.\n\npayment_method_id is required to set the payment method. Provide the ID of a payment\nmethod record configured in QuickBooks.\n\ntotal_amount is required on each line item. If not provided, it is computed from\nquantity * unit_price.\n\ntracking_categories behavior depends on company settings. \"One to entire transaction\"\nuses top-level tracking_categories. \"One to each row\" requires tracking_categories on\neach line item.\n\nThe deposit destination is controlled via account. Omit account to deposit to\nUndeposited Funds (QuickBooks' default).\n\nTax handling depends on the company's country edition. US companies with Automated Sales\nTax calculate tax automatically by location: a submitted tax_code or total_tax overrides\nthe automatic calculation, so omit both to accept it. Line item tax_rate values must be\nthe pseudo-codes TAX or NON for US companies (other values are rejected with a validation\nerror).\n\nNon-US editions require real QuickBooks tax code IDs for tax_rate instead of the US\npseudo-codes, and total_tax is recalculated from the line tax codes and cannot be\noverridden.\n\nWith multicurrency enabled, currency must match the customer's currency, and\ncurrency_rate is required when it differs from the company's home currency.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "tax_inclusive only applies to UK, AU, IN, and CA editions. US companies ignore this field\nsilently.\n\npayment_method_id is required to set the payment method. Provide the ID of a payment\nmethod record configured in Intuit Enterprise Suite.\n\ntotal_amount is required on each line item. If not provided, it is computed from\nquantity * unit_price.\n\ntracking_categories behavior depends on company settings. \"One to entire transaction\"\nuses top-level tracking_categories. \"One to each row\" requires tracking_categories on\neach line item.\n\nThe deposit destination is controlled via account. Omit account to deposit to\nUndeposited Funds (Intuit Enterprise Suite's default).\n\nTax handling depends on the company's country edition. US companies with Automated Sales\nTax calculate tax automatically by location: a submitted tax_code or total_tax overrides\nthe automatic calculation, so omit both to accept it. Line item tax_rate values must be\nthe pseudo-codes TAX or NON for US companies (other values are rejected with a validation\nerror).\n\nNon-US editions require real Intuit Enterprise Suite tax code IDs for tax_rate instead of the US\npseudo-codes, and total_tax is recalculated from the line tax codes and cannot be\noverridden.\n\nWith multicurrency enabled, currency must match the customer's currency, and\ncurrency_rate is required when it differs from the company's home currency.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -637,10 +695,11 @@ class SalesReceipts(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingSalesReceiptsAddResponse(
                 create_sales_receipt_response=unmarshal_json_response(
-                    Optional[models.CreateSalesReceiptResponse], http_res
+                    Optional[models.CreateSalesReceiptResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -681,10 +740,9 @@ class SalesReceipts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSalesReceiptsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -716,8 +774,8 @@ class SalesReceipts(BaseSDK):
         ] = UNSET,
         line_items: Optional[
             Union[
-                List[models.InvoiceLineItemInput],
-                List[models.InvoiceLineItemInputTypedDict],
+                Iterable[models.InvoiceLineItemInput],
+                Iterable[models.InvoiceLineItemInputTypedDict],
             ]
         ] = None,
         tax_code: OptionalNullable[str] = UNSET,
@@ -737,16 +795,19 @@ class SalesReceipts(BaseSDK):
         ] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -880,6 +941,7 @@ class SalesReceipts(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.sales_receipt, False, False, "json", models.SalesReceiptInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -904,9 +966,31 @@ class SalesReceipts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "A `line_items[]` entry sends `unit_price`, or `total_amount` when no unit price is given. `line_items[].tax_rate`, `currency` and the discount fields are not written. `customer_memo` is not written either: QuickBooks holds it as a reference to its Customer Message list and refuses the document for any other text.\n\nWrites are applied on the Web Connector's next run, so a create can return a `504` timeout after 28 seconds while QuickBooks still creates the sales receipt. List sales receipts to find it before retrying: sending the create again adds a second sales receipt.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Creates a cash sale in Fiken (\"Annet salg\"). `account` is required: it is the bank or cash ledger account (for example `1920:10001`) the sale was paid into, and the sale is registered as paid in full on `transaction_date`. Each line item needs `tax_rate.id` (a Fiken VAT type from tax rates that is valid for sales) and `ledger_account.id` (the revenue account).\n\nA customer cannot be attached to a cash sale; Fiken rejects it, so `customer` is not sent. Fiken also rejects cash sales in a foreign currency that carry Norwegian VAT, and the connector has only been verified with `NOK`. `number` sets the sale number.\n\nEach line's VAT is its `tax_amount`, or, when that is left out, is calculated from the line's `tax_rate`; with `tax_inclusive: true` the line amounts include VAT. Each line's amount and VAT are rounded to øre, and the amount paid is the sum of the lines. A `total_amount` that differs from that sum by more than one øre per line is rejected with a `422`.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "tax_inclusive only applies to UK, AU, IN, and CA editions. US companies ignore this field\nsilently.\n\npayment_method_id is required to set the payment method. Provide the ID of a payment\nmethod record configured in QuickBooks.\n\ntotal_amount is required on each line item. If not provided, it is computed from\nquantity * unit_price.\n\ntracking_categories behavior depends on company settings. \"One to entire transaction\"\nuses top-level tracking_categories. \"One to each row\" requires tracking_categories on\neach line item.\n\nThe deposit destination is controlled via account. Omit account to deposit to\nUndeposited Funds (QuickBooks' default).\n\nTax handling depends on the company's country edition. US companies with Automated Sales\nTax calculate tax automatically by location: a submitted tax_code or total_tax overrides\nthe automatic calculation, so omit both to accept it. Line item tax_rate values must be\nthe pseudo-codes TAX or NON for US companies (other values are rejected with a validation\nerror).\n\nNon-US editions require real QuickBooks tax code IDs for tax_rate instead of the US\npseudo-codes, and total_tax is recalculated from the line tax codes and cannot be\noverridden.\n\nWith multicurrency enabled, currency must match the customer's currency, and\ncurrency_rate is required when it differs from the company's home currency.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "tax_inclusive only applies to UK, AU, IN, and CA editions. US companies ignore this field\nsilently.\n\npayment_method_id is required to set the payment method. Provide the ID of a payment\nmethod record configured in Intuit Enterprise Suite.\n\ntotal_amount is required on each line item. If not provided, it is computed from\nquantity * unit_price.\n\ntracking_categories behavior depends on company settings. \"One to entire transaction\"\nuses top-level tracking_categories. \"One to each row\" requires tracking_categories on\neach line item.\n\nThe deposit destination is controlled via account. Omit account to deposit to\nUndeposited Funds (Intuit Enterprise Suite's default).\n\nTax handling depends on the company's country edition. US companies with Automated Sales\nTax calculate tax automatically by location: a submitted tax_code or total_tax overrides\nthe automatic calculation, so omit both to accept it. Line item tax_rate values must be\nthe pseudo-codes TAX or NON for US companies (other values are rejected with a validation\nerror).\n\nNon-US editions require real Intuit Enterprise Suite tax code IDs for tax_rate instead of the US\npseudo-codes, and total_tax is recalculated from the line tax codes and cannot be\noverridden.\n\nWith multicurrency enabled, currency must match the customer's currency, and\ncurrency_rate is required when it differs from the company's home currency.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -914,10 +998,11 @@ class SalesReceipts(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingSalesReceiptsAddResponse(
                 create_sales_receipt_response=unmarshal_json_response(
-                    Optional[models.CreateSalesReceiptResponse], http_res
+                    Optional[models.CreateSalesReceiptResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -958,10 +1043,9 @@ class SalesReceipts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSalesReceiptsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1034,6 +1118,7 @@ class SalesReceipts(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1058,9 +1143,19 @@ class SalesReceipts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "fiken",
+                            "description": "Only live cash sales are sales receipts. Fetching the id of an invoice or a deleted sale returns 404. Cash sales never have a customer in Fiken, so `customer` is not returned.\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1068,10 +1163,9 @@ class SalesReceipts(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingSalesReceiptsOneResponse(
                 get_sales_receipt_response=unmarshal_json_response(
-                    Optional[models.GetSalesReceiptResponse], http_res
+                    Optional[models.GetSalesReceiptResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1112,10 +1206,9 @@ class SalesReceipts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSalesReceiptsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1188,6 +1281,7 @@ class SalesReceipts(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1212,9 +1306,19 @@ class SalesReceipts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "fiken",
+                            "description": "Only live cash sales are sales receipts. Fetching the id of an invoice or a deleted sale returns 404. Cash sales never have a customer in Fiken, so `customer` is not returned.\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1222,10 +1326,9 @@ class SalesReceipts(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingSalesReceiptsOneResponse(
                 get_sales_receipt_response=unmarshal_json_response(
-                    Optional[models.GetSalesReceiptResponse], http_res
+                    Optional[models.GetSalesReceiptResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1266,10 +1369,9 @@ class SalesReceipts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSalesReceiptsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1302,8 +1404,8 @@ class SalesReceipts(BaseSDK):
         ] = UNSET,
         line_items: Optional[
             Union[
-                List[models.InvoiceLineItemInput],
-                List[models.InvoiceLineItemInputTypedDict],
+                Iterable[models.InvoiceLineItemInput],
+                Iterable[models.InvoiceLineItemInputTypedDict],
             ]
         ] = None,
         tax_code: OptionalNullable[str] = UNSET,
@@ -1323,16 +1425,19 @@ class SalesReceipts(BaseSDK):
         ] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1472,6 +1577,7 @@ class SalesReceipts(BaseSDK):
                 "json",
                 models.SalesReceiptUpdateInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1496,9 +1602,27 @@ class SalesReceipts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Only `customer`, `number`, `transaction_date` and `note` change. `line_items` sent on update are ignored; delete and recreate the sales receipt to change its lines.\n\nUpdates need `row_version` from a prior read of the record. Writes are applied on the Web Connector's next run, so an update can return a `504` timeout after 28 seconds while QuickBooks still applies it, and the change can take a few minutes to show when the record is read back.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "row_version submitted in the request body is ignored. The connector always fetches the\nlatest version immediately before writing, so there is no optimistic-concurrency\nprotection — concurrent updates are last-write-wins.\n\ntax_inclusive only applies to UK, AU, IN, and CA editions. US companies ignore this field\nsilently.\n\npayment_method_id is required to set the payment method. Provide the ID of a payment\nmethod record configured in QuickBooks.\n\ntotal_amount is required on each line item. If not provided, it is computed from\nquantity * unit_price.\n\ntracking_categories behavior depends on company settings. \"One to each row\" requires\ntracking_categories on each line item.\n\nThe deposit destination is controlled via account. Omit account to deposit to\nUndeposited Funds (QuickBooks' default).\n\nTax handling depends on the company's country edition. US companies with Automated Sales\nTax calculate tax automatically by location: a submitted tax_code or total_tax overrides\nthe automatic calculation, so omit both to accept it. Line item tax_rate values must be\nthe pseudo-codes TAX or NON for US companies (other values are rejected with a validation\nerror).\n\nNon-US editions require real QuickBooks tax code IDs for tax_rate instead of the US\npseudo-codes, and total_tax is recalculated from the line tax codes and cannot be\noverridden.\n\nWith multicurrency enabled, currency must match the customer's currency, and\ncurrency_rate is required when it differs from the company's home currency.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "row_version submitted in the request body is ignored. The connector always fetches the\nlatest version immediately before writing, so there is no optimistic-concurrency\nprotection — concurrent updates are last-write-wins.\n\ntax_inclusive only applies to UK, AU, IN, and CA editions. US companies ignore this field\nsilently.\n\npayment_method_id is required to set the payment method. Provide the ID of a payment\nmethod record configured in Intuit Enterprise Suite.\n\ntotal_amount is required on each line item. If not provided, it is computed from\nquantity * unit_price.\n\ntracking_categories behavior depends on company settings. \"One to each row\" requires\ntracking_categories on each line item.\n\nThe deposit destination is controlled via account. Omit account to deposit to\nUndeposited Funds (Intuit Enterprise Suite's default).\n\nTax handling depends on the company's country edition. US companies with Automated Sales\nTax calculate tax automatically by location: a submitted tax_code or total_tax overrides\nthe automatic calculation, so omit both to accept it. Line item tax_rate values must be\nthe pseudo-codes TAX or NON for US companies (other values are rejected with a validation\nerror).\n\nNon-US editions require real Intuit Enterprise Suite tax code IDs for tax_rate instead of the US\npseudo-codes, and total_tax is recalculated from the line tax codes and cannot be\noverridden.\n\nWith multicurrency enabled, currency must match the customer's currency, and\ncurrency_rate is required when it differs from the company's home currency.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1506,10 +1630,11 @@ class SalesReceipts(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingSalesReceiptsUpdateResponse(
                 update_sales_receipt_response=unmarshal_json_response(
-                    Optional[models.UpdateSalesReceiptResponse], http_res
+                    Optional[models.UpdateSalesReceiptResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1550,10 +1675,9 @@ class SalesReceipts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSalesReceiptsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1586,8 +1710,8 @@ class SalesReceipts(BaseSDK):
         ] = UNSET,
         line_items: Optional[
             Union[
-                List[models.InvoiceLineItemInput],
-                List[models.InvoiceLineItemInputTypedDict],
+                Iterable[models.InvoiceLineItemInput],
+                Iterable[models.InvoiceLineItemInputTypedDict],
             ]
         ] = None,
         tax_code: OptionalNullable[str] = UNSET,
@@ -1607,16 +1731,19 @@ class SalesReceipts(BaseSDK):
         ] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1756,6 +1883,7 @@ class SalesReceipts(BaseSDK):
                 "json",
                 models.SalesReceiptUpdateInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1780,9 +1908,27 @@ class SalesReceipts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Only `customer`, `number`, `transaction_date` and `note` change. `line_items` sent on update are ignored; delete and recreate the sales receipt to change its lines.\n\nUpdates need `row_version` from a prior read of the record. Writes are applied on the Web Connector's next run, so an update can return a `504` timeout after 28 seconds while QuickBooks still applies it, and the change can take a few minutes to show when the record is read back.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "row_version submitted in the request body is ignored. The connector always fetches the\nlatest version immediately before writing, so there is no optimistic-concurrency\nprotection — concurrent updates are last-write-wins.\n\ntax_inclusive only applies to UK, AU, IN, and CA editions. US companies ignore this field\nsilently.\n\npayment_method_id is required to set the payment method. Provide the ID of a payment\nmethod record configured in QuickBooks.\n\ntotal_amount is required on each line item. If not provided, it is computed from\nquantity * unit_price.\n\ntracking_categories behavior depends on company settings. \"One to each row\" requires\ntracking_categories on each line item.\n\nThe deposit destination is controlled via account. Omit account to deposit to\nUndeposited Funds (QuickBooks' default).\n\nTax handling depends on the company's country edition. US companies with Automated Sales\nTax calculate tax automatically by location: a submitted tax_code or total_tax overrides\nthe automatic calculation, so omit both to accept it. Line item tax_rate values must be\nthe pseudo-codes TAX or NON for US companies (other values are rejected with a validation\nerror).\n\nNon-US editions require real QuickBooks tax code IDs for tax_rate instead of the US\npseudo-codes, and total_tax is recalculated from the line tax codes and cannot be\noverridden.\n\nWith multicurrency enabled, currency must match the customer's currency, and\ncurrency_rate is required when it differs from the company's home currency.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "row_version submitted in the request body is ignored. The connector always fetches the\nlatest version immediately before writing, so there is no optimistic-concurrency\nprotection — concurrent updates are last-write-wins.\n\ntax_inclusive only applies to UK, AU, IN, and CA editions. US companies ignore this field\nsilently.\n\npayment_method_id is required to set the payment method. Provide the ID of a payment\nmethod record configured in Intuit Enterprise Suite.\n\ntotal_amount is required on each line item. If not provided, it is computed from\nquantity * unit_price.\n\ntracking_categories behavior depends on company settings. \"One to each row\" requires\ntracking_categories on each line item.\n\nThe deposit destination is controlled via account. Omit account to deposit to\nUndeposited Funds (Intuit Enterprise Suite's default).\n\nTax handling depends on the company's country edition. US companies with Automated Sales\nTax calculate tax automatically by location: a submitted tax_code or total_tax overrides\nthe automatic calculation, so omit both to accept it. Line item tax_rate values must be\nthe pseudo-codes TAX or NON for US companies (other values are rejected with a validation\nerror).\n\nNon-US editions require real Intuit Enterprise Suite tax code IDs for tax_rate instead of the US\npseudo-codes, and total_tax is recalculated from the line tax codes and cannot be\noverridden.\n\nWith multicurrency enabled, currency must match the customer's currency, and\ncurrency_rate is required when it differs from the company's home currency.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1790,10 +1936,11 @@ class SalesReceipts(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingSalesReceiptsUpdateResponse(
                 update_sales_receipt_response=unmarshal_json_response(
-                    Optional[models.UpdateSalesReceiptResponse], http_res
+                    Optional[models.UpdateSalesReceiptResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1834,10 +1981,9 @@ class SalesReceipts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSalesReceiptsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1907,6 +2053,7 @@ class SalesReceipts(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1931,9 +2078,23 @@ class SalesReceipts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "A delete can return a `504` timeout after 28 seconds while QuickBooks still deletes the sales receipt. Read it back before retrying: a `404` means it is gone.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Deleting a sales receipt cancels the cash sale in Fiken: its postings are reversed by a counter-transaction (visible in general ledger transactions) rather than removed, and the receipt no longer appears in the list. Only live cash sales can be deleted: the id of an invoice's sale or of an already deleted sale returns 404.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1941,10 +2102,11 @@ class SalesReceipts(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingSalesReceiptsDeleteResponse(
                 delete_sales_receipt_response=unmarshal_json_response(
-                    Optional[models.DeleteSalesReceiptResponse], http_res
+                    Optional[models.DeleteSalesReceiptResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1985,10 +2147,9 @@ class SalesReceipts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSalesReceiptsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2058,6 +2219,7 @@ class SalesReceipts(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2082,9 +2244,23 @@ class SalesReceipts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "A delete can return a `504` timeout after 28 seconds while QuickBooks still deletes the sales receipt. Read it back before retrying: a `404` means it is gone.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Deleting a sales receipt cancels the cash sale in Fiken: its postings are reversed by a counter-transaction (visible in general ledger transactions) rather than removed, and the receipt no longer appears in the list. Only live cash sales can be deleted: the id of an invoice's sale or of an already deleted sale returns 404.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2092,10 +2268,11 @@ class SalesReceipts(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingSalesReceiptsDeleteResponse(
                 delete_sales_receipt_response=unmarshal_json_response(
-                    Optional[models.DeleteSalesReceiptResponse], http_res
+                    Optional[models.DeleteSalesReceiptResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2136,10 +2313,9 @@ class SalesReceipts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSalesReceiptsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

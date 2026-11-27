@@ -2,6 +2,16 @@
 
 The field on which to sort the Ledger Accounts
 
+## Example Usage
+
+```python
+from apideck_unify.models import LedgerAccountsSortBy
+
+value = LedgerAccountsSortBy.CREATED_AT
+
+# Open enum: unrecognized values are captured as UnrecognizedStr
+```
+
 
 ## Values
 

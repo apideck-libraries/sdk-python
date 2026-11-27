@@ -2,13 +2,17 @@
 
 from __future__ import annotations
 from apideck_unify import models, utils
-from apideck_unify.types import BaseModel
-from apideck_unify.utils import validate_open_enum
+from apideck_unify.types import (
+    BaseModel,
+    UNSET_SENTINEL,
+    current_exclude_none,
+    serialize_with_info,
+)
+from apideck_unify.types.basemodel import current_filtered_dump
 from enum import Enum
-from pydantic import field_serializer
-from pydantic.functional_validators import PlainValidator
+from pydantic import field_serializer, model_serializer
 from typing import List, Optional
-from typing_extensions import Annotated, NotRequired, TypedDict
+from typing_extensions import NotRequired, TypedDict
 
 
 class Difficulty(str, Enum, metaclass=utils.OpenEnumMeta):
@@ -78,6 +82,29 @@ class ResponsibilityMatrix(BaseModel):
 
     customer: Optional[str] = None
     r"""The end customer's responsibility for this area."""
+
+    @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
+    def serialize_model(self, handler):
+        optional_fields = set(["apideck", "consumer", "customer"])
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
+        serialized = handler(self)
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+
+            if val != UNSET_SENTINEL:
+                if val is not None or k not in optional_fields:
+                    m[k] = val
+
+        return m
 
 
 class EnvironmentNotesTypedDict(TypedDict):
@@ -153,7 +180,7 @@ class ConnectorOverviewTypedDict(TypedDict):
 class ConnectorOverview(BaseModel):
     r"""Editorial overview metadata for the connector, used to render the connector's Overview documentation (implementation difficulty, partnership requirements, sandbox availability, and other at-a-glance facts)."""
 
-    difficulty: Annotated[Difficulty, PlainValidator(validate_open_enum(False))]
+    difficulty: Difficulty
     r"""At-a-glance implementation difficulty rating."""
 
     difficulty_reason: str
@@ -233,3 +260,46 @@ class ConnectorOverview(BaseModel):
             except ValueError:
                 return value
         return value
+
+    @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
+    def serialize_model(self, handler):
+        optional_fields = set(
+            [
+                "beta",
+                "demo",
+                "authentication_note",
+                "webhooks",
+                "partnership_url",
+                "partnership_note",
+                "partnership_portal_name",
+                "apideck_credentials_note",
+                "costs",
+                "rate_limits",
+                "sandbox_url",
+                "sandbox_note",
+                "important_to_know",
+                "supported_resource_categories",
+                "external_guides",
+                "responsibility_matrix",
+                "environment_notes",
+            ]
+        )
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
+        serialized = handler(self)
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+
+            if val != UNSET_SENTINEL:
+                if val is not None or k not in optional_fields:
+                    m[k] = val
+
+        return m

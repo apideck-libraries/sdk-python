@@ -2,9 +2,16 @@
 
 from __future__ import annotations
 from apideck_unify.models import ApideckError
-from apideck_unify.types import BaseModel
+from apideck_unify.types import (
+    BaseModel,
+    UNSET_SENTINEL,
+    current_exclude_none,
+    serialize_with_info,
+)
+from apideck_unify.types.basemodel import current_filtered_dump
 from dataclasses import dataclass, field
 import httpx
+from pydantic import model_serializer
 from typing import Any, Dict, List, Optional, Union
 from typing_extensions import NotRequired, TypeAliasType, TypedDict
 
@@ -40,26 +47,43 @@ class DownstreamErrors(BaseModel):
     code: Optional[str] = None
     r"""Error code from the downstream provider"""
 
+    @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
+    def serialize_model(self, handler):
+        optional_fields = set(["message", "detail", "code"])
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
+        serialized = handler(self)
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+
+            if val != UNSET_SENTINEL:
+                if val is not None or k not in optional_fields:
+                    m[k] = val
+
+        return m
+
 
 class BadRequestResponseData(BaseModel):
     status_code: Optional[float] = None
     r"""HTTP status code"""
-
     error: Optional[str] = None
     r"""Contains an explanation of the status_code as defined in HTTP/1.1 standard (RFC 7231)"""
-
     type_name: Optional[str] = None
     r"""The type of error returned"""
-
     message: Optional[str] = None
     r"""A human-readable message providing more details about the error."""
-
     detail: Optional[BadRequestResponseDetail] = None
     r"""Contains parameter or domain specific information related to the error and why it occurred."""
-
     ref: Optional[str] = None
     r"""Link to documentation of error type"""
-
     downstream_errors: Optional[List[DownstreamErrors]] = None
     r"""Contains downstream errors returned from the connector. Only present when type_name is ConnectorExecutionError."""
 

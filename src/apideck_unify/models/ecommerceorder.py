@@ -22,14 +22,15 @@ from apideck_unify.types import (
     OptionalNullable,
     UNSET,
     UNSET_SENTINEL,
+    current_exclude_none,
+    serialize_with_info,
 )
-from apideck_unify.utils import validate_open_enum
+from apideck_unify.types.basemodel import current_filtered_dump
 from datetime import datetime
 from enum import Enum
 from pydantic import field_serializer, model_serializer
-from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
-from typing_extensions import Annotated, NotRequired, TypedDict
+from typing_extensions import NotRequired, TypedDict
 
 
 class EcommerceOrderPaymentStatus(str, Enum, metaclass=utils.OpenEnumMeta):
@@ -115,9 +116,7 @@ class EcommerceOrder(BaseModel):
     order_number: OptionalNullable[str] = UNSET
     r"""Order number, if any."""
 
-    currency: Annotated[
-        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    currency: OptionalNullable[Currency] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     discounts: Optional[List[EcommerceDiscount]] = None
@@ -146,21 +145,13 @@ class EcommerceOrder(BaseModel):
     tax_inclusive: OptionalNullable[bool] = UNSET
     r"""Indicates whether the order's monetary amounts are inclusive of tax."""
 
-    status: Annotated[
-        OptionalNullable[EcommerceOrderStatus],
-        PlainValidator(validate_open_enum(False)),
-    ] = UNSET
+    status: OptionalNullable[EcommerceOrderStatus] = UNSET
     r"""Current status of the order."""
 
-    payment_status: Annotated[
-        OptionalNullable[EcommerceOrderPaymentStatus],
-        PlainValidator(validate_open_enum(False)),
-    ] = UNSET
+    payment_status: OptionalNullable[EcommerceOrderPaymentStatus] = UNSET
     r"""Current payment status of the order."""
 
-    fulfillment_status: Annotated[
-        OptionalNullable[FulfillmentStatus], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    fulfillment_status: OptionalNullable[FulfillmentStatus] = UNSET
     r"""Current fulfillment status of the order."""
 
     payment_method: OptionalNullable[str] = UNSET
@@ -230,76 +221,82 @@ class EcommerceOrder(BaseModel):
         return value
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = [
-            "order_number",
-            "currency",
-            "discounts",
-            "sub_total",
-            "shipping_cost",
-            "coupon_discount",
-            "total_discount",
-            "total_tax",
-            "total_amount",
-            "refunded_amount",
-            "tax_inclusive",
-            "status",
-            "payment_status",
-            "fulfillment_status",
-            "payment_method",
-            "customer",
-            "billing_address",
-            "shipping_address",
-            "tracking",
-            "line_items",
-            "note",
-            "refunds",
-            "custom_mappings",
-            "created_at",
-            "updated_at",
-        ]
-        nullable_fields = [
-            "order_number",
-            "currency",
-            "sub_total",
-            "shipping_cost",
-            "coupon_discount",
-            "total_discount",
-            "total_tax",
-            "total_amount",
-            "refunded_amount",
-            "tax_inclusive",
-            "status",
-            "payment_status",
-            "fulfillment_status",
-            "payment_method",
-            "note",
-            "custom_mappings",
-            "created_at",
-            "updated_at",
-        ]
-        null_default_fields = []
-
+        optional_fields = set(
+            [
+                "order_number",
+                "currency",
+                "discounts",
+                "sub_total",
+                "shipping_cost",
+                "coupon_discount",
+                "total_discount",
+                "total_tax",
+                "total_amount",
+                "refunded_amount",
+                "tax_inclusive",
+                "status",
+                "payment_status",
+                "fulfillment_status",
+                "payment_method",
+                "customer",
+                "billing_address",
+                "shipping_address",
+                "tracking",
+                "line_items",
+                "note",
+                "refunds",
+                "custom_mappings",
+                "created_at",
+                "updated_at",
+            ]
+        )
+        nullable_fields = set(
+            [
+                "order_number",
+                "currency",
+                "sub_total",
+                "shipping_cost",
+                "coupon_discount",
+                "total_discount",
+                "total_tax",
+                "total_amount",
+                "refunded_amount",
+                "tax_inclusive",
+                "status",
+                "payment_status",
+                "fulfillment_status",
+                "payment_method",
+                "note",
+                "custom_mappings",
+                "created_at",
+                "updated_at",
+            ]
+        )
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m

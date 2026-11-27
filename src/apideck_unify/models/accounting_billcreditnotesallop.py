@@ -18,11 +18,14 @@ from apideck_unify.types import (
     OptionalNullable,
     UNSET,
     UNSET_SENTINEL,
+    current_exclude_none,
+    serialize_with_info,
 )
+from apideck_unify.types.basemodel import current_filtered_dump
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable, Dict, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -47,6 +50,29 @@ class AccountingBillCreditNotesAllGlobals(BaseModel):
         FieldMetadata(header=HeaderMetadata(style="simple", explode=False)),
     ] = None
     r"""The ID of your Unify application"""
+
+    @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
+    def serialize_model(self, handler):
+        optional_fields = set(["consumerId", "appId"])
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
+        serialized = handler(self)
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+
+            if val != UNSET_SENTINEL:
+                if val is not None or k not in optional_fields:
+                    m[k] = val
+
+        return m
 
 
 class AccountingBillCreditNotesAllRequestTypedDict(TypedDict):
@@ -147,51 +173,54 @@ class AccountingBillCreditNotesAllRequest(BaseModel):
     r"""The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded."""
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = [
-            "raw",
-            "consumerId",
-            "appId",
-            "serviceId",
-            "companyId",
-            "cursor",
-            "limit",
-            "filter",
-            "sort",
-            "pass_through",
-            "fields",
-        ]
-        nullable_fields = ["cursor", "fields"]
-        null_default_fields = []
-
+        optional_fields = set(
+            [
+                "raw",
+                "consumerId",
+                "appId",
+                "serviceId",
+                "companyId",
+                "cursor",
+                "limit",
+                "filter",
+                "sort",
+                "pass_through",
+                "fields",
+            ]
+        )
+        nullable_fields = set(["cursor", "fields"])
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m
 
 
 class AccountingBillCreditNotesAllResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
-    headers: Dict[str, List[str]]
     get_bill_credit_notes_response: NotRequired[GetBillCreditNotesResponseTypedDict]
     r"""Bill Credit Notes"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -203,10 +232,31 @@ class AccountingBillCreditNotesAllResponse(BaseModel):
 
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
 
-    headers: Dict[str, List[str]]
-
     get_bill_credit_notes_response: Optional[GetBillCreditNotesResponse] = None
     r"""Bill Credit Notes"""
 
     unexpected_error_response: Optional[UnexpectedErrorResponse] = None
     r"""Unexpected error"""
+
+    @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
+    def serialize_model(self, handler):
+        optional_fields = set(["GetBillCreditNotesResponse", "UnexpectedErrorResponse"])
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
+        serialized = handler(self)
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+
+            if val != UNSET_SENTINEL:
+                if val is not None or k not in optional_fields:
+                    m[k] = val
+
+        return m

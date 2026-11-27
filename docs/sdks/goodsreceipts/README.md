@@ -1,5 +1,4 @@
-# GoodsReceipts
-(*accounting.goods_receipts*)
+# Accounting.GoodsReceipts
 
 ## Overview
 
@@ -26,7 +25,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.goods_receipts.list(raw=False, service_id="salesforce", company_id="12345", limit=20, filter_={
@@ -96,7 +95,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.goods_receipts.create(purchase_order_id="4500000004", line_items=[], raw=False, service_id="salesforce", company_id="12345", received_date=date.fromisoformat("2026-09-01"), posted_date=date.fromisoformat("2026-09-01"), reference="DN-78910", notes="Partial delivery, remainder expected next week.", location_id="1710/171A", pass_through=[
@@ -172,7 +171,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.goods_receipts.get(id="<id>", service_id="salesforce", company_id="12345", raw=False, fields="id,updated_at")

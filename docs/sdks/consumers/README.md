@@ -1,5 +1,4 @@
-# Consumers
-(*vault.consumers*)
+# Vault.Consumers
 
 ## Overview
 
@@ -25,7 +24,7 @@ import os
 
 with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.vault.consumers.create(consumer_id="test_consumer_id", metadata={
@@ -81,7 +80,7 @@ import os
 
 with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.vault.consumers.list(filter_={
@@ -136,7 +135,7 @@ import os
 
 with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.vault.consumers.get(consumer_id="test_user_id")
@@ -185,7 +184,7 @@ import os
 
 with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.vault.consumers.update(consumer_id="test_user_id", metadata={
@@ -240,7 +239,7 @@ import os
 
 with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.vault.consumers.delete(consumer_id="test_user_id")

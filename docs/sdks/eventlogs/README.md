@@ -1,5 +1,4 @@
-# EventLogs
-(*webhook.event_logs*)
+# Webhook.EventLogs
 
 ## Overview
 
@@ -21,7 +20,7 @@ import os
 
 with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.webhook.event_logs.list(limit=20, filter_={
