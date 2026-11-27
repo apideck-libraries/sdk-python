@@ -7,7 +7,7 @@ from apideck_unify.types import Nullable, OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from jsonpath import JSONPath
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
 
 
 class ApideckHrisCompanies(BaseSDK):
@@ -20,7 +20,7 @@ class ApideckHrisCompanies(BaseSDK):
         service_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -61,7 +61,7 @@ class ApideckHrisCompanies(BaseSDK):
             service_id=service_id,
             cursor=cursor,
             limit=limit,
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -82,6 +82,7 @@ class ApideckHrisCompanies(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -106,9 +107,39 @@ class ApideckHrisCompanies(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["hris"],
+                extensions={
+                    "x-apideck-api": "hris",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sdworx-be-sme",
+                            "description": "`id` is the SD Worx employer file number (for example `1AB1234`), an alphanumeric payroll-file code. Only\n`legal_name`, `display_name` and `status` are available; addresses, phone numbers, emails, websites,\n`currency`, `company_number` and timestamps are not. `status` is `active` while the payroll file has no end\ndate and `inactive` once it has one.\n\nThe list contains every employer (payroll file) the integration's registered client may access, and it is\nreturned in full on every call; `limit` and `cursor` page through that list. An employee connection reads\none employer at a time: the `employer_file_number` connection setting picks one of these records.\n",
+                        },
+                        {
+                            "connector": "bamboohr",
+                            "description": "BambooHR only allows access to company data for the currently authorized connection.\n\nBambooHR does not publish its rate limits and throttles at its discretion. When BambooHR throttles the\nrequest for the record or list you asked for, Unify returns HTTP 429. When BambooHR includes a retry\ndelay, the 429 carries `Retry-After` (seconds to wait) and `x-downstream-ratelimit-reset` (Unix epoch\ntime in milliseconds after which to retry). No limit or remaining-request headers are provided.\n",
+                        },
+                        {
+                            "connector": "adp-ihcm",
+                            "description": "ADP iHCM does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "rippling",
+                            "description": "Rippling does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "okta",
+                            "description": "Okta does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "lucca-hr",
+                            "description": "`total_count` is available in Lucca HR but requires `?include=totalCount` query parameter. Currently not wired — `meta.total_count` will not appear.\n\nLucca enforces a limit of 50 requests per minute per Lucca domain (see\nhttps://developers.luccasoftware.com/documentation/limits). The quota is shared by every integration\nconnected to that domain, not per Unify connection, so other tools using the same Lucca account consume\nit too. When the limit is exceeded, Unify returns HTTP 429. When Lucca includes a retry delay in that\nresponse (it has in every observed case), the 429 also carries a `Retry-After` header (the number of\nseconds to wait before retrying), `x-downstream-ratelimit-limit` and `x-downstream-ratelimit-reset` (the\nUnix epoch time in milliseconds at which the window frees). Lucca provides no remaining-request count,\nand no rate-limit headers are returned on successful responses.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -133,17 +164,19 @@ class ApideckHrisCompanies(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.HrisCompaniesAllResponse(
                 get_hris_companies_response=unmarshal_json_response(
-                    Optional[models.GetHrisCompaniesResponse], http_res
+                    Optional[models.GetHrisCompaniesResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -184,11 +217,10 @@ class ApideckHrisCompanies(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.HrisCompaniesAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -202,7 +234,7 @@ class ApideckHrisCompanies(BaseSDK):
         service_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -243,7 +275,7 @@ class ApideckHrisCompanies(BaseSDK):
             service_id=service_id,
             cursor=cursor,
             limit=limit,
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -264,6 +296,7 @@ class ApideckHrisCompanies(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -288,9 +321,39 @@ class ApideckHrisCompanies(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["hris"],
+                extensions={
+                    "x-apideck-api": "hris",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sdworx-be-sme",
+                            "description": "`id` is the SD Worx employer file number (for example `1AB1234`), an alphanumeric payroll-file code. Only\n`legal_name`, `display_name` and `status` are available; addresses, phone numbers, emails, websites,\n`currency`, `company_number` and timestamps are not. `status` is `active` while the payroll file has no end\ndate and `inactive` once it has one.\n\nThe list contains every employer (payroll file) the integration's registered client may access, and it is\nreturned in full on every call; `limit` and `cursor` page through that list. An employee connection reads\none employer at a time: the `employer_file_number` connection setting picks one of these records.\n",
+                        },
+                        {
+                            "connector": "bamboohr",
+                            "description": "BambooHR only allows access to company data for the currently authorized connection.\n\nBambooHR does not publish its rate limits and throttles at its discretion. When BambooHR throttles the\nrequest for the record or list you asked for, Unify returns HTTP 429. When BambooHR includes a retry\ndelay, the 429 carries `Retry-After` (seconds to wait) and `x-downstream-ratelimit-reset` (Unix epoch\ntime in milliseconds after which to retry). No limit or remaining-request headers are provided.\n",
+                        },
+                        {
+                            "connector": "adp-ihcm",
+                            "description": "ADP iHCM does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "rippling",
+                            "description": "Rippling does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "okta",
+                            "description": "Okta does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "lucca-hr",
+                            "description": "`total_count` is available in Lucca HR but requires `?include=totalCount` query parameter. Currently not wired — `meta.total_count` will not appear.\n\nLucca enforces a limit of 50 requests per minute per Lucca domain (see\nhttps://developers.luccasoftware.com/documentation/limits). The quota is shared by every integration\nconnected to that domain, not per Unify connection, so other tools using the same Lucca account consume\nit too. When the limit is exceeded, Unify returns HTTP 429. When Lucca includes a retry delay in that\nresponse (it has in every observed case), the 429 also carries a `Retry-After` header (the number of\nseconds to wait before retrying), `x-downstream-ratelimit-limit` and `x-downstream-ratelimit-reset` (the\nUnix epoch time in milliseconds at which the window frees). Lucca provides no remaining-request count,\nand no rate-limit headers are returned on successful responses.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -315,17 +378,19 @@ class ApideckHrisCompanies(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.HrisCompaniesAllResponse(
                 get_hris_companies_response=unmarshal_json_response(
-                    Optional[models.GetHrisCompaniesResponse], http_res
+                    Optional[models.GetHrisCompaniesResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -366,11 +431,10 @@ class ApideckHrisCompanies(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.HrisCompaniesAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -389,18 +453,23 @@ class ApideckHrisCompanies(BaseSDK):
         company_number: OptionalNullable[str] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         phone_numbers: Optional[
-            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+            Union[Iterable[models.PhoneNumber], Iterable[models.PhoneNumberTypedDict]]
         ] = None,
-        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        emails: Optional[
+            Union[Iterable[models.Email], Iterable[models.EmailTypedDict]]
+        ] = None,
         websites: Optional[
-            Union[List[models.Website], List[models.WebsiteTypedDict]]
+            Union[Iterable[models.Website], Iterable[models.WebsiteTypedDict]]
         ] = None,
         debtor_id: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -491,6 +560,7 @@ class ApideckHrisCompanies(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.hris_company, False, False, "json", models.HrisCompanyInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -515,9 +585,11 @@ class ApideckHrisCompanies(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["hris"],
+                extensions={"x-apideck-api": "hris"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -525,10 +597,9 @@ class ApideckHrisCompanies(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.HrisCompaniesAddResponse(
                 create_hris_company_response=unmarshal_json_response(
-                    Optional[models.CreateHrisCompanyResponse], http_res
+                    Optional[models.CreateHrisCompanyResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -569,10 +640,9 @@ class ApideckHrisCompanies(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.HrisCompaniesAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -591,18 +661,23 @@ class ApideckHrisCompanies(BaseSDK):
         company_number: OptionalNullable[str] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         phone_numbers: Optional[
-            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+            Union[Iterable[models.PhoneNumber], Iterable[models.PhoneNumberTypedDict]]
         ] = None,
-        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        emails: Optional[
+            Union[Iterable[models.Email], Iterable[models.EmailTypedDict]]
+        ] = None,
         websites: Optional[
-            Union[List[models.Website], List[models.WebsiteTypedDict]]
+            Union[Iterable[models.Website], Iterable[models.WebsiteTypedDict]]
         ] = None,
         debtor_id: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -693,6 +768,7 @@ class ApideckHrisCompanies(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.hris_company, False, False, "json", models.HrisCompanyInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -717,9 +793,11 @@ class ApideckHrisCompanies(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["hris"],
+                extensions={"x-apideck-api": "hris"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -727,10 +805,9 @@ class ApideckHrisCompanies(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.HrisCompaniesAddResponse(
                 create_hris_company_response=unmarshal_json_response(
-                    Optional[models.CreateHrisCompanyResponse], http_res
+                    Optional[models.CreateHrisCompanyResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -771,10 +848,9 @@ class ApideckHrisCompanies(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.HrisCompaniesAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -844,6 +920,7 @@ class ApideckHrisCompanies(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -868,9 +945,27 @@ class ApideckHrisCompanies(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["hris"],
+                extensions={
+                    "x-apideck-api": "hris",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "bamboohr",
+                            "description": "BambooHR does not publish its rate limits and throttles at its discretion. When BambooHR throttles the\nrequest for the record or list you asked for, Unify returns HTTP 429. When BambooHR includes a retry\ndelay, the 429 carries `Retry-After` (seconds to wait) and `x-downstream-ratelimit-reset` (Unix epoch\ntime in milliseconds after which to retry). No limit or remaining-request headers are provided.\n",
+                        },
+                        {
+                            "connector": "sdworx-be-sme",
+                            "description": "`id` is the SD Worx employer file number (for example `1AB1234`). Only `legal_name`, `display_name` and\n`status` are available; `status` is `active` while the payroll file has no end date and `inactive` once it\nhas one. An unknown employer file number returns a 404.\n",
+                        },
+                        {
+                            "connector": "lucca-hr",
+                            "description": "Lucca enforces a limit of 50 requests per minute per Lucca domain (see\nhttps://developers.luccasoftware.com/documentation/limits). The quota is shared by every integration\nconnected to that domain, not per Unify connection, so other tools using the same Lucca account consume\nit too. When the limit is exceeded, Unify returns HTTP 429. When Lucca includes a retry delay in that\nresponse (it has in every observed case), the 429 also carries a `Retry-After` header (the number of\nseconds to wait before retrying), `x-downstream-ratelimit-limit` and `x-downstream-ratelimit-reset` (the\nUnix epoch time in milliseconds at which the window frees). Lucca provides no remaining-request count,\nand no rate-limit headers are returned on successful responses.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -878,10 +973,9 @@ class ApideckHrisCompanies(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.HrisCompaniesOneResponse(
                 get_hris_company_response=unmarshal_json_response(
-                    Optional[models.GetHrisCompanyResponse], http_res
+                    Optional[models.GetHrisCompanyResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -922,10 +1016,9 @@ class ApideckHrisCompanies(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.HrisCompaniesOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -995,6 +1088,7 @@ class ApideckHrisCompanies(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1019,9 +1113,27 @@ class ApideckHrisCompanies(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["hris"],
+                extensions={
+                    "x-apideck-api": "hris",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "bamboohr",
+                            "description": "BambooHR does not publish its rate limits and throttles at its discretion. When BambooHR throttles the\nrequest for the record or list you asked for, Unify returns HTTP 429. When BambooHR includes a retry\ndelay, the 429 carries `Retry-After` (seconds to wait) and `x-downstream-ratelimit-reset` (Unix epoch\ntime in milliseconds after which to retry). No limit or remaining-request headers are provided.\n",
+                        },
+                        {
+                            "connector": "sdworx-be-sme",
+                            "description": "`id` is the SD Worx employer file number (for example `1AB1234`). Only `legal_name`, `display_name` and\n`status` are available; `status` is `active` while the payroll file has no end date and `inactive` once it\nhas one. An unknown employer file number returns a 404.\n",
+                        },
+                        {
+                            "connector": "lucca-hr",
+                            "description": "Lucca enforces a limit of 50 requests per minute per Lucca domain (see\nhttps://developers.luccasoftware.com/documentation/limits). The quota is shared by every integration\nconnected to that domain, not per Unify connection, so other tools using the same Lucca account consume\nit too. When the limit is exceeded, Unify returns HTTP 429. When Lucca includes a retry delay in that\nresponse (it has in every observed case), the 429 also carries a `Retry-After` header (the number of\nseconds to wait before retrying), `x-downstream-ratelimit-limit` and `x-downstream-ratelimit-reset` (the\nUnix epoch time in milliseconds at which the window frees). Lucca provides no remaining-request count,\nand no rate-limit headers are returned on successful responses.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1029,10 +1141,9 @@ class ApideckHrisCompanies(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.HrisCompaniesOneResponse(
                 get_hris_company_response=unmarshal_json_response(
-                    Optional[models.GetHrisCompanyResponse], http_res
+                    Optional[models.GetHrisCompanyResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1073,10 +1184,9 @@ class ApideckHrisCompanies(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.HrisCompaniesOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1096,18 +1206,23 @@ class ApideckHrisCompanies(BaseSDK):
         company_number: OptionalNullable[str] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         phone_numbers: Optional[
-            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+            Union[Iterable[models.PhoneNumber], Iterable[models.PhoneNumberTypedDict]]
         ] = None,
-        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        emails: Optional[
+            Union[Iterable[models.Email], Iterable[models.EmailTypedDict]]
+        ] = None,
         websites: Optional[
-            Union[List[models.Website], List[models.WebsiteTypedDict]]
+            Union[Iterable[models.Website], Iterable[models.WebsiteTypedDict]]
         ] = None,
         debtor_id: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1200,6 +1315,7 @@ class ApideckHrisCompanies(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.hris_company, False, False, "json", models.HrisCompanyInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1224,9 +1340,11 @@ class ApideckHrisCompanies(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["hris"],
+                extensions={"x-apideck-api": "hris"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1234,10 +1352,9 @@ class ApideckHrisCompanies(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.HrisCompaniesUpdateResponse(
                 update_hris_company_response=unmarshal_json_response(
-                    Optional[models.UpdateHrisCompanyResponse], http_res
+                    Optional[models.UpdateHrisCompanyResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1278,10 +1395,9 @@ class ApideckHrisCompanies(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.HrisCompaniesUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1301,18 +1417,23 @@ class ApideckHrisCompanies(BaseSDK):
         company_number: OptionalNullable[str] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         phone_numbers: Optional[
-            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+            Union[Iterable[models.PhoneNumber], Iterable[models.PhoneNumberTypedDict]]
         ] = None,
-        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        emails: Optional[
+            Union[Iterable[models.Email], Iterable[models.EmailTypedDict]]
+        ] = None,
         websites: Optional[
-            Union[List[models.Website], List[models.WebsiteTypedDict]]
+            Union[Iterable[models.Website], Iterable[models.WebsiteTypedDict]]
         ] = None,
         debtor_id: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1405,6 +1526,7 @@ class ApideckHrisCompanies(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.hris_company, False, False, "json", models.HrisCompanyInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1429,9 +1551,11 @@ class ApideckHrisCompanies(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["hris"],
+                extensions={"x-apideck-api": "hris"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1439,10 +1563,9 @@ class ApideckHrisCompanies(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.HrisCompaniesUpdateResponse(
                 update_hris_company_response=unmarshal_json_response(
-                    Optional[models.UpdateHrisCompanyResponse], http_res
+                    Optional[models.UpdateHrisCompanyResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1483,10 +1606,9 @@ class ApideckHrisCompanies(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.HrisCompaniesUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1553,6 +1675,7 @@ class ApideckHrisCompanies(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1577,9 +1700,11 @@ class ApideckHrisCompanies(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["hris"],
+                extensions={"x-apideck-api": "hris"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1587,10 +1712,9 @@ class ApideckHrisCompanies(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.HrisCompaniesDeleteResponse(
                 delete_hris_company_response=unmarshal_json_response(
-                    Optional[models.DeleteHrisCompanyResponse], http_res
+                    Optional[models.DeleteHrisCompanyResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1631,10 +1755,9 @@ class ApideckHrisCompanies(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.HrisCompaniesDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1701,6 +1824,7 @@ class ApideckHrisCompanies(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1725,9 +1849,11 @@ class ApideckHrisCompanies(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["hris"],
+                extensions={"x-apideck-api": "hris"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1735,10 +1861,9 @@ class ApideckHrisCompanies(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.HrisCompaniesDeleteResponse(
                 delete_hris_company_response=unmarshal_json_response(
-                    Optional[models.DeleteHrisCompanyResponse], http_res
+                    Optional[models.DeleteHrisCompanyResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1779,10 +1904,9 @@ class ApideckHrisCompanies(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.HrisCompaniesDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

@@ -8,7 +8,7 @@ from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from datetime import date
 from jsonpath import JSONPath
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
 
 
 class InvoiceItems(BaseSDK):
@@ -28,7 +28,7 @@ class InvoiceItems(BaseSDK):
         sort: Optional[
             Union[models.InvoiceItemsSort, models.InvoiceItemsSortTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -77,7 +77,7 @@ class InvoiceItems(BaseSDK):
                 filter_, Optional[models.InvoiceItemsFilter]
             ),
             sort=utils.get_pydantic_model(sort, Optional[models.InvoiceItemsSort]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -98,6 +98,7 @@ class InvoiceItems(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -122,9 +123,119 @@ class InvoiceItems(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "`unit_price` and `purchase_details.unit_price` are the product's valuation price in SAP (the standard or moving average price per base unit): a cost price, not a sales price. When a product is valued per plant, the first non-zero valuation found is used. `currency` is the currency of that valuation. `sales_details.unit_price` is not returned.\n\n`quantity` is the unrestricted-use stock summed across all plants and storage locations, in the product's base unit. It needs the **SAP_COM_0164** (Material Stock Integration) communication scenario: without it, or when the stock lookup fails, `quantity` is `null` and the response carries a warning in `meta.warnings`. Service products always return `quantity: null`.\n",
+                        },
+                        {
+                            "connector": "e-conomic",
+                            "description": "Supported filters: `name` (matches anywhere in the name, ignoring case), `ids` and `updated_since`. Sorting is not supported. `type` is `inventory` for products in a product group with inventory enabled and `non_inventory` otherwise; e-conomic does not distinguish services.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "`filter[name]` matches anywhere in the item name, ignoring case. Sorting is not supported:\nMinox items have no created or updated timestamps.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "`filter[type]` accepts `inventory`, `service` and `other`, but the `type` field in the\nresponse can also be `non_inventory` — the unified filter enum is narrower than the\nresponse enum. Two consequences:\n\n- `filter[type]=other` matches every non-inventory Sage item type, so results can\n  include items whose `type` reads `non_inventory` as well as `other`.\n- `filter[type]=service` always returns an empty list. Sage Intacct has no service\n  item type, so there is nothing for it to match.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite uses the same underlying QuickBooks API. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "The minimun page size accepted for Netsuite is 5. The cursor for Netsuite expires if they have not been used within 15 minutes after its creation.\n`filter[subsidiary_id]` returns only items assigned to (or shared with) the given subsidiary, and is only supported on NetSuite OneWorld accounts; on standard (single-entity) accounts it is ignored. When a filter or sort triggers the SuiteQL path, `currency` and `tax_schedule_id` are not available (SOAP-only fields, absent from the SuiteQL `item` table) and `quantity` reflects total quantity on hand.\n`filter[name]` matches the item's name by case-insensitive substring (contains); the value is matched literally, so `%` and `_` are not treated as wildcards. NetSuite does not enforce unique item names the way QuickBooks does, so a name filter can legitimately return more than one item — check `id` before assuming a single match.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "We use **price list items** from FreeAgent to support invoice items. \nTo access stock items, please use the [Proxy API](https://developers.apideck.com/apis/proxy/reference).\n\n**Related resources:**\n- [Price List Items](https://dev.freeagent.com/docs/price_list_items)\n- [Stock Items](https://dev.freeagent.com/docs/stock_items) \n- [Stock Items via Proxy API](https://developers.apideck.com/apis/proxy/reference)\n",
+                        },
+                        {
+                            "connector": "myob-acumatica",
+                            "description": "The Apideck service type is used for MYOB Acumatica non-stock items, and inventory is used for stock items.\n",
+                        },
+                        {
+                            "connector": "acumatica",
+                            "description": "The Apideck service type is used for Acumatica non-stock items, and inventory is used for stock items.\n",
+                        },
+                        {
+                            "connector": "workday",
+                            "description": "It is required to provide `transaction_type` filter in the request parameters. If `transaction_type` is `purchase`, purchase-items will be returned. If `transaction_type` is `sale`, sales-items will be returned.\n",
+                        },
+                        {
+                            "connector": "alegra",
+                            "description": "The Mexican SAT product key (`productKey`) has no unified field — set it on create via `pass_through` and read it back via the Proxy. On create/update only `name`, `description`, `code`, `unit_price` and `type` are written; inventory levels, accounts and taxes are managed in Alegra.\n",
+                        },
+                        {
+                            "connector": "dualentry",
+                            "description": "Invoice items (the product catalog) are tenant-wide in DualEntry and cannot be scoped by company.\nThe `x-apideck-company-id` header is accepted but has no effect — all items across the tenant are\nreturned regardless of the company ID.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Zoho Books does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "stripe",
+                            "description": "Stripe removed `total_count` from list responses in March 2025 (API version 2025-03-31.basil). `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": "Moneybird does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "rillet",
+                            "description": "Rillet does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "pennylane",
+                            "description": "Pennylane does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "procountor-fi",
+                            "description": "Procountor does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "If you encounter a '400 Bad Request' error indicating \"Control 'fieldName' is read-only\" it means the 'editable' property for this field in Microsoft Dynamics 365 Business Central is currently set to false. To resolve this issue and make the field writable, simply update the 'editable' property to true in Microsoft Dynamics 365 Business Central. Additionally, line item tax rates must be specified by tax rate *code* (e.g., \"G3\"), not by ID. In U.S.-regionalized Business Central tenants, the `tax_inclusive` field cannot be set to `true`.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Xero limits to 10 attachments per resource (invoices/bills) of 3.5MB each.",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "AFAS does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "freshbooks",
+                            "description": "The Freshbooks Bills api is currently in beta.",
+                        },
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "QuickBooks Desktop does not expose a reliable cross-page total record count. Getting `total_count` requires a separate COUNT query — an extra API call that is not currently implemented. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "oracle-fusion",
+                            "description": "Invoice items are Oracle Receivables **standard memo lines** — the construct Oracle\ndocuments for invoice lines that are not inventory items. Inventory items from the Product\nManagement item master are not returned, so `filter[type]` is not supported and `type` is\nalways `non_inventory`.\n\n`name` and `code` both carry the memo line's name, and `code` is the value to use when\nreferencing the item on an invoice line: Receivables matches a memo line on its exact\nname, case-sensitively, and rejects the invoice item `id`.\n\nNot every memo line can be used on a customer invoice. Receivables refuses the ones\nreserved for other document types — the chargeback and debit-memo-reversal lines among the\nseeded set — with an error naming an invalid memo line. `Goods and Services` is the general\npurpose line in a default Oracle configuration.\n\nFiltering and sorting are not supported: `filter[name]`, `filter[ids]`,\n`filter[updated_since]`, `filter[transaction_type]`, `filter[subsidiary_id]` and `sort` are\nall rejected rather than silently ignored. The list pages like any other on this\nconnector, so filtering client-side means walking every page.\n\nOnly `id`, `name`, `code`, `description`, `type`, `sold`, `purchased` and `tracked` are\npopulated. Prices, quantities, currency, accounts, categories, tax schedules, tracking\ndimensions, `active` and the audit fields have no source on a memo line. A memo line's\ndefault tax classification, tax product category, unit of measure and reference data set\nare available via `raw=true`.\n\nCreate, update and delete are not supported: memo lines are read-only over the API and are\nmaintained in Oracle's Setup and Maintenance work area (Manage Standard Memo Lines).\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -152,17 +263,19 @@ class InvoiceItems(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingInvoiceItemsAllResponse(
                 get_invoice_items_response=unmarshal_json_response(
-                    Optional[models.GetInvoiceItemsResponse], http_res
+                    Optional[models.GetInvoiceItemsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -203,11 +316,10 @@ class InvoiceItems(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingInvoiceItemsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -228,7 +340,7 @@ class InvoiceItems(BaseSDK):
         sort: Optional[
             Union[models.InvoiceItemsSort, models.InvoiceItemsSortTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -277,7 +389,7 @@ class InvoiceItems(BaseSDK):
                 filter_, Optional[models.InvoiceItemsFilter]
             ),
             sort=utils.get_pydantic_model(sort, Optional[models.InvoiceItemsSort]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -298,6 +410,7 @@ class InvoiceItems(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -322,9 +435,119 @@ class InvoiceItems(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "`unit_price` and `purchase_details.unit_price` are the product's valuation price in SAP (the standard or moving average price per base unit): a cost price, not a sales price. When a product is valued per plant, the first non-zero valuation found is used. `currency` is the currency of that valuation. `sales_details.unit_price` is not returned.\n\n`quantity` is the unrestricted-use stock summed across all plants and storage locations, in the product's base unit. It needs the **SAP_COM_0164** (Material Stock Integration) communication scenario: without it, or when the stock lookup fails, `quantity` is `null` and the response carries a warning in `meta.warnings`. Service products always return `quantity: null`.\n",
+                        },
+                        {
+                            "connector": "e-conomic",
+                            "description": "Supported filters: `name` (matches anywhere in the name, ignoring case), `ids` and `updated_since`. Sorting is not supported. `type` is `inventory` for products in a product group with inventory enabled and `non_inventory` otherwise; e-conomic does not distinguish services.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "`filter[name]` matches anywhere in the item name, ignoring case. Sorting is not supported:\nMinox items have no created or updated timestamps.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "`filter[type]` accepts `inventory`, `service` and `other`, but the `type` field in the\nresponse can also be `non_inventory` — the unified filter enum is narrower than the\nresponse enum. Two consequences:\n\n- `filter[type]=other` matches every non-inventory Sage item type, so results can\n  include items whose `type` reads `non_inventory` as well as `other`.\n- `filter[type]=service` always returns an empty list. Sage Intacct has no service\n  item type, so there is nothing for it to match.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite uses the same underlying QuickBooks API. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "The minimun page size accepted for Netsuite is 5. The cursor for Netsuite expires if they have not been used within 15 minutes after its creation.\n`filter[subsidiary_id]` returns only items assigned to (or shared with) the given subsidiary, and is only supported on NetSuite OneWorld accounts; on standard (single-entity) accounts it is ignored. When a filter or sort triggers the SuiteQL path, `currency` and `tax_schedule_id` are not available (SOAP-only fields, absent from the SuiteQL `item` table) and `quantity` reflects total quantity on hand.\n`filter[name]` matches the item's name by case-insensitive substring (contains); the value is matched literally, so `%` and `_` are not treated as wildcards. NetSuite does not enforce unique item names the way QuickBooks does, so a name filter can legitimately return more than one item — check `id` before assuming a single match.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "We use **price list items** from FreeAgent to support invoice items. \nTo access stock items, please use the [Proxy API](https://developers.apideck.com/apis/proxy/reference).\n\n**Related resources:**\n- [Price List Items](https://dev.freeagent.com/docs/price_list_items)\n- [Stock Items](https://dev.freeagent.com/docs/stock_items) \n- [Stock Items via Proxy API](https://developers.apideck.com/apis/proxy/reference)\n",
+                        },
+                        {
+                            "connector": "myob-acumatica",
+                            "description": "The Apideck service type is used for MYOB Acumatica non-stock items, and inventory is used for stock items.\n",
+                        },
+                        {
+                            "connector": "acumatica",
+                            "description": "The Apideck service type is used for Acumatica non-stock items, and inventory is used for stock items.\n",
+                        },
+                        {
+                            "connector": "workday",
+                            "description": "It is required to provide `transaction_type` filter in the request parameters. If `transaction_type` is `purchase`, purchase-items will be returned. If `transaction_type` is `sale`, sales-items will be returned.\n",
+                        },
+                        {
+                            "connector": "alegra",
+                            "description": "The Mexican SAT product key (`productKey`) has no unified field — set it on create via `pass_through` and read it back via the Proxy. On create/update only `name`, `description`, `code`, `unit_price` and `type` are written; inventory levels, accounts and taxes are managed in Alegra.\n",
+                        },
+                        {
+                            "connector": "dualentry",
+                            "description": "Invoice items (the product catalog) are tenant-wide in DualEntry and cannot be scoped by company.\nThe `x-apideck-company-id` header is accepted but has no effect — all items across the tenant are\nreturned regardless of the company ID.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Zoho Books does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "stripe",
+                            "description": "Stripe removed `total_count` from list responses in March 2025 (API version 2025-03-31.basil). `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": "Moneybird does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "rillet",
+                            "description": "Rillet does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "pennylane",
+                            "description": "Pennylane does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "procountor-fi",
+                            "description": "Procountor does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "If you encounter a '400 Bad Request' error indicating \"Control 'fieldName' is read-only\" it means the 'editable' property for this field in Microsoft Dynamics 365 Business Central is currently set to false. To resolve this issue and make the field writable, simply update the 'editable' property to true in Microsoft Dynamics 365 Business Central. Additionally, line item tax rates must be specified by tax rate *code* (e.g., \"G3\"), not by ID. In U.S.-regionalized Business Central tenants, the `tax_inclusive` field cannot be set to `true`.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Xero limits to 10 attachments per resource (invoices/bills) of 3.5MB each.",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "AFAS does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "freshbooks",
+                            "description": "The Freshbooks Bills api is currently in beta.",
+                        },
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "QuickBooks Desktop does not expose a reliable cross-page total record count. Getting `total_count` requires a separate COUNT query — an extra API call that is not currently implemented. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "oracle-fusion",
+                            "description": "Invoice items are Oracle Receivables **standard memo lines** — the construct Oracle\ndocuments for invoice lines that are not inventory items. Inventory items from the Product\nManagement item master are not returned, so `filter[type]` is not supported and `type` is\nalways `non_inventory`.\n\n`name` and `code` both carry the memo line's name, and `code` is the value to use when\nreferencing the item on an invoice line: Receivables matches a memo line on its exact\nname, case-sensitively, and rejects the invoice item `id`.\n\nNot every memo line can be used on a customer invoice. Receivables refuses the ones\nreserved for other document types — the chargeback and debit-memo-reversal lines among the\nseeded set — with an error naming an invalid memo line. `Goods and Services` is the general\npurpose line in a default Oracle configuration.\n\nFiltering and sorting are not supported: `filter[name]`, `filter[ids]`,\n`filter[updated_since]`, `filter[transaction_type]`, `filter[subsidiary_id]` and `sort` are\nall rejected rather than silently ignored. The list pages like any other on this\nconnector, so filtering client-side means walking every page.\n\nOnly `id`, `name`, `code`, `description`, `type`, `sold`, `purchased` and `tracked` are\npopulated. Prices, quantities, currency, accounts, categories, tax schedules, tracking\ndimensions, `active` and the audit fields have no source on a memo line. A memo line's\ndefault tax classification, tax product category, unit of measure and reference data set\nare available via `raw=true`.\n\nCreate, update and delete are not supported: memo lines are read-only over the API and are\nmaintained in Oracle's Setup and Maintenance work area (Manage Standard Memo Lines).\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -352,17 +575,19 @@ class InvoiceItems(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingInvoiceItemsAllResponse(
                 get_invoice_items_response=unmarshal_json_response(
-                    Optional[models.GetInvoiceItemsResponse], http_res
+                    Optional[models.GetInvoiceItemsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -403,11 +628,10 @@ class InvoiceItems(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingInvoiceItemsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -462,8 +686,8 @@ class InvoiceItems(BaseSDK):
         ] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         active: OptionalNullable[bool] = UNSET,
@@ -474,7 +698,10 @@ class InvoiceItems(BaseSDK):
         tax_schedule_id: OptionalNullable[str] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -500,7 +727,7 @@ class InvoiceItems(BaseSDK):
         :param tracked: Item is inventoried
         :param taxable: If true, transactions for this item are taxable
         :param inventory_date: The date of opening balance if inventory item is tracked - YYYY-MM-DD.
-        :param type: Item type
+        :param type_: Item type
         :param sales_details:
         :param purchase_details:
         :param quantity:
@@ -611,6 +838,7 @@ class InvoiceItems(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.invoice_item, False, False, "json", models.InvoiceItemInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -635,9 +863,63 @@ class InvoiceItems(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": 'A service item needs its posting account by name: send `income_account.name` (the QuickBooks account name). An account `id` alone is not resolved, and QuickBooks rejects the item without a posting account ("A posting account must be specified", error 3180).\n\nWrites are applied on the Web Connector\'s next run, so a create can return a `504` timeout after 28 seconds while QuickBooks still creates the item. List items to find it before retrying.\n',
+                        },
+                        {
+                            "connector": "e-conomic",
+                            "description": "`code` is required: e-conomic products are identified by a product number that you choose, and `code` becomes both the product number and the `id`. A create puts the product in product group 1, which determines its sales accounts and VAT; to use another group, send `pass_through` with `productGroup.productGroupNumber`. An update changes only the fields you send.\nSend an `Idempotency-Key` to make retrying a create safe: Unify sends e-conomic a 32-character key derived from it as e-conomic's own `Idempotency-Key` header, and e-conomic answers a repeat with the original item instead of creating a second one. e-conomic keeps a key for one hour, and Unify remembers it for the same hour. Reusing a key with a different body returns 422, from Unify within its hour and from e-conomic while e-conomic still remembers the key; after both have forgotten it, the same key is treated as a new request. Use a new key for every item.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "`code` and `category_id` are required. `code` becomes the item id (letters, digits, dot, dash\nor underscore); a code that is already in use is rejected with a `409` instead of replacing that\nitem. `category_id` is the item group.\n\nPrices are per single unit. An item Minox prices per a larger quantity (for example per 100)\nkeeps that quantity: a unit price sent on update is stored scaled to it, and the price that is\nnot sent keeps its value.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Date-only fields need no configuration: NetSuite converts the datetime it receives into the\nSOAP/integration user's time zone before storing the date part, and these fields are anchored so\nthey store on the intended calendar day for any integration user between UTC-10 and UTC+13.\n\nFour zones fall outside that range and need the optional `timezone` connection setting:\n`Pacific/Pago_Pago`, `Pacific/Niue` and `Pacific/Midway` (UTC-11) store one day early without it,\nand `Pacific/Kiritimati` (UTC+14) stores one day late. Set it to the IANA zone of the NetSuite user\nthis connection authenticates as, read from that user's Home > Set Preferences > Time Zone — Setup >\nCompany > Company Information only supplies the default, so a user who overrode it needs their own\nzone.\n\nWhen the setting is used its value must be within 12 hours of that user's real zone in either\ndirection: more than ~12h east stores dates one day early, more than ~12h west stores them one day\nlate.\n\nThis applies to every NetSuite date-only write field across the accounting resources.\n\n`sales_details.unit_price` is stored on the item's Base Price level, and NetSuite requires a currency for it. When `currency` is omitted, the price is put in the currency of the subsidiary the request is scoped to (the `x-apideck-company-id` header or the connection's Default Subsidiary), otherwise in the account's base currency. On a OneWorld account with several base currencies and no subsidiary scope, neither applies and NetSuite rejects the request with \"Missing required field: currency\" — send `currency` in that case.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "The `taxable` field is applicable to US companies only and should be sent in the request body if your QuickBooks account is in the US region.\n\nSend an `Idempotency-Key` to make retrying a create safe: it reaches QuickBooks as its `requestid`. QuickBooks keeps a `requestid` for at least 24 hours and can keep it longer, so after the 24-hour window a key reused for a different invoice item may get the original invoice item back, with the new body ignored. Use a new key for every invoice item. Your key can be 1-255 characters: Unify sends QuickBooks a 32-character `requestid` derived from it, so QuickBooks' 50-character `requestid` limit never applies.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "The `taxable` field is applicable to US companies only and should be sent in the request body if your Intuit Enterprise Suite account is in the US region.\n\nSend an `Idempotency-Key` to make retrying a create safe: it reaches Intuit Enterprise Suite as its `requestid`. Intuit Enterprise Suite keeps a `requestid` for at least 24 hours and can keep it longer, so after the 24-hour window a key reused for a different invoice item may get the original invoice item back, with the new body ignored. Use a new key for every invoice item. Your key can be 1-255 characters: Unify sends Intuit Enterprise Suite a 32-character `requestid` derived from it, so Intuit Enterprise Suite's 50-character `requestid` limit never applies.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "We use **price list items** from FreeAgent to support invoice items. \nTo access stock items, please use the [Proxy API](https://developers.apideck.com/apis/proxy/reference).\n\n**Related resources:**\n- [Price List Items](https://dev.freeagent.com/docs/price_list_items)\n- [Stock Items](https://dev.freeagent.com/docs/stock_items) \n- [Stock Items via Proxy API](https://developers.apideck.com/apis/proxy/reference)\n",
+                        },
+                        {
+                            "connector": "workday",
+                            "description": "It is required to provide `sold` and `purchased` fields in the request body. If `sold` is true, sales-item will be created. If `purchased` is true, purchase-item will be created.\n",
+                        },
+                        {
+                            "connector": "acumatica",
+                            "description": "For `sales_details.tax_rate.id`, you must provide the Tax Category ID from the Acumatica not from our tax rates resource.\n",
+                        },
+                        {
+                            "connector": "myob-acumatica",
+                            "description": "For `sales_details.tax_rate.id`, you must provide the Tax Category ID from the MYOB Acumatica not from our tax rates resource.\n",
+                        },
+                        {
+                            "connector": "dualentry",
+                            "description": "Creating an item requires `code` (used as the DualEntry SKU) and an income account (`income_account.id`).\nOmitting `code` returns `400 ... missing sku`.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Fiken requires an `income_account.id` (for example `3000`) and a `sales_details.tax_rate.id` that is a Fiken VAT code such as `HIGH`, `MEDIUM`, `LOW`, `NONE` or `EXEMPT`. A request without them is rejected.\n\nFiken creates every item active: `active: false` is ignored on create. To add an inactive item, create it and then update it with `active: false`.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -645,10 +927,9 @@ class InvoiceItems(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingInvoiceItemsAddResponse(
                 create_invoice_item_response=unmarshal_json_response(
-                    Optional[models.CreateInvoiceItemResponse], http_res
+                    Optional[models.CreateInvoiceItemResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -689,10 +970,9 @@ class InvoiceItems(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingInvoiceItemsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -747,8 +1027,8 @@ class InvoiceItems(BaseSDK):
         ] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         active: OptionalNullable[bool] = UNSET,
@@ -759,7 +1039,10 @@ class InvoiceItems(BaseSDK):
         tax_schedule_id: OptionalNullable[str] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -785,7 +1068,7 @@ class InvoiceItems(BaseSDK):
         :param tracked: Item is inventoried
         :param taxable: If true, transactions for this item are taxable
         :param inventory_date: The date of opening balance if inventory item is tracked - YYYY-MM-DD.
-        :param type: Item type
+        :param type_: Item type
         :param sales_details:
         :param purchase_details:
         :param quantity:
@@ -896,6 +1179,7 @@ class InvoiceItems(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.invoice_item, False, False, "json", models.InvoiceItemInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -920,9 +1204,63 @@ class InvoiceItems(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": 'A service item needs its posting account by name: send `income_account.name` (the QuickBooks account name). An account `id` alone is not resolved, and QuickBooks rejects the item without a posting account ("A posting account must be specified", error 3180).\n\nWrites are applied on the Web Connector\'s next run, so a create can return a `504` timeout after 28 seconds while QuickBooks still creates the item. List items to find it before retrying.\n',
+                        },
+                        {
+                            "connector": "e-conomic",
+                            "description": "`code` is required: e-conomic products are identified by a product number that you choose, and `code` becomes both the product number and the `id`. A create puts the product in product group 1, which determines its sales accounts and VAT; to use another group, send `pass_through` with `productGroup.productGroupNumber`. An update changes only the fields you send.\nSend an `Idempotency-Key` to make retrying a create safe: Unify sends e-conomic a 32-character key derived from it as e-conomic's own `Idempotency-Key` header, and e-conomic answers a repeat with the original item instead of creating a second one. e-conomic keeps a key for one hour, and Unify remembers it for the same hour. Reusing a key with a different body returns 422, from Unify within its hour and from e-conomic while e-conomic still remembers the key; after both have forgotten it, the same key is treated as a new request. Use a new key for every item.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "`code` and `category_id` are required. `code` becomes the item id (letters, digits, dot, dash\nor underscore); a code that is already in use is rejected with a `409` instead of replacing that\nitem. `category_id` is the item group.\n\nPrices are per single unit. An item Minox prices per a larger quantity (for example per 100)\nkeeps that quantity: a unit price sent on update is stored scaled to it, and the price that is\nnot sent keeps its value.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Date-only fields need no configuration: NetSuite converts the datetime it receives into the\nSOAP/integration user's time zone before storing the date part, and these fields are anchored so\nthey store on the intended calendar day for any integration user between UTC-10 and UTC+13.\n\nFour zones fall outside that range and need the optional `timezone` connection setting:\n`Pacific/Pago_Pago`, `Pacific/Niue` and `Pacific/Midway` (UTC-11) store one day early without it,\nand `Pacific/Kiritimati` (UTC+14) stores one day late. Set it to the IANA zone of the NetSuite user\nthis connection authenticates as, read from that user's Home > Set Preferences > Time Zone — Setup >\nCompany > Company Information only supplies the default, so a user who overrode it needs their own\nzone.\n\nWhen the setting is used its value must be within 12 hours of that user's real zone in either\ndirection: more than ~12h east stores dates one day early, more than ~12h west stores them one day\nlate.\n\nThis applies to every NetSuite date-only write field across the accounting resources.\n\n`sales_details.unit_price` is stored on the item's Base Price level, and NetSuite requires a currency for it. When `currency` is omitted, the price is put in the currency of the subsidiary the request is scoped to (the `x-apideck-company-id` header or the connection's Default Subsidiary), otherwise in the account's base currency. On a OneWorld account with several base currencies and no subsidiary scope, neither applies and NetSuite rejects the request with \"Missing required field: currency\" — send `currency` in that case.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "The `taxable` field is applicable to US companies only and should be sent in the request body if your QuickBooks account is in the US region.\n\nSend an `Idempotency-Key` to make retrying a create safe: it reaches QuickBooks as its `requestid`. QuickBooks keeps a `requestid` for at least 24 hours and can keep it longer, so after the 24-hour window a key reused for a different invoice item may get the original invoice item back, with the new body ignored. Use a new key for every invoice item. Your key can be 1-255 characters: Unify sends QuickBooks a 32-character `requestid` derived from it, so QuickBooks' 50-character `requestid` limit never applies.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "The `taxable` field is applicable to US companies only and should be sent in the request body if your Intuit Enterprise Suite account is in the US region.\n\nSend an `Idempotency-Key` to make retrying a create safe: it reaches Intuit Enterprise Suite as its `requestid`. Intuit Enterprise Suite keeps a `requestid` for at least 24 hours and can keep it longer, so after the 24-hour window a key reused for a different invoice item may get the original invoice item back, with the new body ignored. Use a new key for every invoice item. Your key can be 1-255 characters: Unify sends Intuit Enterprise Suite a 32-character `requestid` derived from it, so Intuit Enterprise Suite's 50-character `requestid` limit never applies.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "We use **price list items** from FreeAgent to support invoice items. \nTo access stock items, please use the [Proxy API](https://developers.apideck.com/apis/proxy/reference).\n\n**Related resources:**\n- [Price List Items](https://dev.freeagent.com/docs/price_list_items)\n- [Stock Items](https://dev.freeagent.com/docs/stock_items) \n- [Stock Items via Proxy API](https://developers.apideck.com/apis/proxy/reference)\n",
+                        },
+                        {
+                            "connector": "workday",
+                            "description": "It is required to provide `sold` and `purchased` fields in the request body. If `sold` is true, sales-item will be created. If `purchased` is true, purchase-item will be created.\n",
+                        },
+                        {
+                            "connector": "acumatica",
+                            "description": "For `sales_details.tax_rate.id`, you must provide the Tax Category ID from the Acumatica not from our tax rates resource.\n",
+                        },
+                        {
+                            "connector": "myob-acumatica",
+                            "description": "For `sales_details.tax_rate.id`, you must provide the Tax Category ID from the MYOB Acumatica not from our tax rates resource.\n",
+                        },
+                        {
+                            "connector": "dualentry",
+                            "description": "Creating an item requires `code` (used as the DualEntry SKU) and an income account (`income_account.id`).\nOmitting `code` returns `400 ... missing sku`.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Fiken requires an `income_account.id` (for example `3000`) and a `sales_details.tax_rate.id` that is a Fiken VAT code such as `HIGH`, `MEDIUM`, `LOW`, `NONE` or `EXEMPT`. A request without them is rejected.\n\nFiken creates every item active: `active: false` is ignored on create. To add an inactive item, create it and then update it with `active: false`.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -930,10 +1268,9 @@ class InvoiceItems(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingInvoiceItemsAddResponse(
                 create_invoice_item_response=unmarshal_json_response(
-                    Optional[models.CreateInvoiceItemResponse], http_res
+                    Optional[models.CreateInvoiceItemResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -974,10 +1311,9 @@ class InvoiceItems(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingInvoiceItemsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1057,6 +1393,7 @@ class InvoiceItems(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1081,9 +1418,31 @@ class InvoiceItems(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "`unit_price`, `purchase_details.unit_price`, `currency` and `quantity` are derived the same way as when listing invoice items: the price is the product's valuation (cost) price, and `quantity` is unrestricted-use stock that needs the **SAP_COM_0164** communication scenario (otherwise `null`, with a warning in `meta.warnings`). See the gotcha on listing invoice items.\n",
+                        },
+                        {
+                            "connector": "sage-business-cloud-accounting",
+                            "description": "To fetch service items, you must include filter[type]=service in your request parameters\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "We use **price list items** from FreeAgent to support invoice items. \nTo access stock items, please use the [Proxy API](https://developers.apideck.com/apis/proxy/reference).\n\n**Related resources:**\n- [Price List Items](https://dev.freeagent.com/docs/price_list_items)\n- [Stock Items](https://dev.freeagent.com/docs/stock_items) \n- [Stock Items via Proxy API](https://developers.apideck.com/apis/proxy/reference)\n",
+                        },
+                        {
+                            "connector": "workday",
+                            "description": "It is required to provide `transaction_type` filter in the request parameters. If `transaction_type` is `purchase`, purchase-item will be returned. If `transaction_type` is `sale`, sales-item will be returned.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1091,10 +1450,9 @@ class InvoiceItems(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingInvoiceItemsOneResponse(
                 get_invoice_item_response=unmarshal_json_response(
-                    Optional[models.GetInvoiceItemResponse], http_res
+                    Optional[models.GetInvoiceItemResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1135,10 +1493,9 @@ class InvoiceItems(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingInvoiceItemsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1218,6 +1575,7 @@ class InvoiceItems(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1242,9 +1600,31 @@ class InvoiceItems(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "`unit_price`, `purchase_details.unit_price`, `currency` and `quantity` are derived the same way as when listing invoice items: the price is the product's valuation (cost) price, and `quantity` is unrestricted-use stock that needs the **SAP_COM_0164** communication scenario (otherwise `null`, with a warning in `meta.warnings`). See the gotcha on listing invoice items.\n",
+                        },
+                        {
+                            "connector": "sage-business-cloud-accounting",
+                            "description": "To fetch service items, you must include filter[type]=service in your request parameters\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "We use **price list items** from FreeAgent to support invoice items. \nTo access stock items, please use the [Proxy API](https://developers.apideck.com/apis/proxy/reference).\n\n**Related resources:**\n- [Price List Items](https://dev.freeagent.com/docs/price_list_items)\n- [Stock Items](https://dev.freeagent.com/docs/stock_items) \n- [Stock Items via Proxy API](https://developers.apideck.com/apis/proxy/reference)\n",
+                        },
+                        {
+                            "connector": "workday",
+                            "description": "It is required to provide `transaction_type` filter in the request parameters. If `transaction_type` is `purchase`, purchase-item will be returned. If `transaction_type` is `sale`, sales-item will be returned.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1252,10 +1632,9 @@ class InvoiceItems(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingInvoiceItemsOneResponse(
                 get_invoice_item_response=unmarshal_json_response(
-                    Optional[models.GetInvoiceItemResponse], http_res
+                    Optional[models.GetInvoiceItemResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1296,10 +1675,9 @@ class InvoiceItems(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingInvoiceItemsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1353,8 +1731,8 @@ class InvoiceItems(BaseSDK):
         ] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         active: OptionalNullable[bool] = UNSET,
@@ -1365,7 +1743,10 @@ class InvoiceItems(BaseSDK):
         tax_schedule_id: OptionalNullable[str] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1390,7 +1771,7 @@ class InvoiceItems(BaseSDK):
         :param tracked: Item is inventoried
         :param taxable: If true, transactions for this item are taxable
         :param inventory_date: The date of opening balance if inventory item is tracked - YYYY-MM-DD.
-        :param type: Item type
+        :param type_: Item type
         :param sales_details:
         :param purchase_details:
         :param quantity:
@@ -1500,6 +1881,7 @@ class InvoiceItems(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.invoice_item, False, False, "json", models.InvoiceItemInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1524,9 +1906,51 @@ class InvoiceItems(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Updates need `row_version` from a prior read of the record: without it the update is rejected with `Missing required field: data.editSequence`.\n\nWrites are applied on the Web Connector's next run, so an update can return a `504` timeout after 28 seconds while QuickBooks still applies it. Read the record back before retrying.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Fiken replaces the whole item on update, so one extra call reads the current item and the\nfields you send are applied over it; fields you leave out, including `active`, keep their\nvalue.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "Prices are per single unit. An item Minox prices per a larger quantity (for example per 100)\nkeeps that quantity: a sales price (`unit_price` or `sales_details.unit_price`) or\n`purchase_details.unit_price` sent on update is stored scaled to it, and the price that is\nnot sent keeps its value. The item's code cannot be changed; sending a different `code` is\nrejected with a `400`.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Date-only fields need no configuration: NetSuite converts the datetime it receives into the\nSOAP/integration user's time zone before storing the date part, and these fields are anchored so\nthey store on the intended calendar day for any integration user between UTC-10 and UTC+13.\n\nFour zones fall outside that range and need the optional `timezone` connection setting:\n`Pacific/Pago_Pago`, `Pacific/Niue` and `Pacific/Midway` (UTC-11) store one day early without it,\nand `Pacific/Kiritimati` (UTC+14) stores one day late. Set it to the IANA zone of the NetSuite user\nthis connection authenticates as, read from that user's Home > Set Preferences > Time Zone — Setup >\nCompany > Company Information only supplies the default, so a user who overrode it needs their own\nzone.\n\nWhen the setting is used its value must be within 12 hours of that user's real zone in either\ndirection: more than ~12h east stores dates one day early, more than ~12h west stores them one day\nlate.\n\nThis applies to every NetSuite date-only write field across the accounting resources.\n\n`sales_details.unit_price` is stored on the item's Base Price level, and NetSuite requires a currency for it. When `currency` is omitted, the price is put in the currency the item is already priced in, otherwise in the currency of the subsidiary the request is scoped to (the `x-apideck-company-id` header or the connection's Default Subsidiary), otherwise in the account's base currency. On a OneWorld account with several base currencies and no subsidiary scope, none of these apply and NetSuite rejects the request with \"Missing required field: currency\" — send `currency` in that case.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "The `taxable` field is applicable to US companies only and should be sent in the request body if your QuickBooks account is in the US region.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "The `taxable` field is applicable to US companies only and should be sent in the request body if your Intuit Enterprise Suite account is in the US region.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Please ensure that status updates are sent separately from other invoice item updates.\n",
+                        },
+                        {
+                            "connector": "workday",
+                            "description": "It is required to provide `sold` and `purchased` fields in the request body. If `sold` is true, sales-item will be created. If `purchased` is true, purchase-item will be created.\n",
+                        },
+                        {
+                            "connector": "visma-netvisor",
+                            "description": "Always send `active` (`true` or `false`): Netvisor rejects an item update without it. Fields you leave out keep their current values, so to change only the name, send `name` and the item's current `active` value.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1534,10 +1958,11 @@ class InvoiceItems(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingInvoiceItemsUpdateResponse(
                 update_invoice_items_response=unmarshal_json_response(
-                    Optional[models.UpdateInvoiceItemsResponse], http_res
+                    Optional[models.UpdateInvoiceItemsResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1578,10 +2003,9 @@ class InvoiceItems(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingInvoiceItemsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1635,8 +2059,8 @@ class InvoiceItems(BaseSDK):
         ] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         active: OptionalNullable[bool] = UNSET,
@@ -1647,7 +2071,10 @@ class InvoiceItems(BaseSDK):
         tax_schedule_id: OptionalNullable[str] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1672,7 +2099,7 @@ class InvoiceItems(BaseSDK):
         :param tracked: Item is inventoried
         :param taxable: If true, transactions for this item are taxable
         :param inventory_date: The date of opening balance if inventory item is tracked - YYYY-MM-DD.
-        :param type: Item type
+        :param type_: Item type
         :param sales_details:
         :param purchase_details:
         :param quantity:
@@ -1782,6 +2209,7 @@ class InvoiceItems(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.invoice_item, False, False, "json", models.InvoiceItemInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1806,9 +2234,51 @@ class InvoiceItems(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Updates need `row_version` from a prior read of the record: without it the update is rejected with `Missing required field: data.editSequence`.\n\nWrites are applied on the Web Connector's next run, so an update can return a `504` timeout after 28 seconds while QuickBooks still applies it. Read the record back before retrying.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Fiken replaces the whole item on update, so one extra call reads the current item and the\nfields you send are applied over it; fields you leave out, including `active`, keep their\nvalue.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "Prices are per single unit. An item Minox prices per a larger quantity (for example per 100)\nkeeps that quantity: a sales price (`unit_price` or `sales_details.unit_price`) or\n`purchase_details.unit_price` sent on update is stored scaled to it, and the price that is\nnot sent keeps its value. The item's code cannot be changed; sending a different `code` is\nrejected with a `400`.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Date-only fields need no configuration: NetSuite converts the datetime it receives into the\nSOAP/integration user's time zone before storing the date part, and these fields are anchored so\nthey store on the intended calendar day for any integration user between UTC-10 and UTC+13.\n\nFour zones fall outside that range and need the optional `timezone` connection setting:\n`Pacific/Pago_Pago`, `Pacific/Niue` and `Pacific/Midway` (UTC-11) store one day early without it,\nand `Pacific/Kiritimati` (UTC+14) stores one day late. Set it to the IANA zone of the NetSuite user\nthis connection authenticates as, read from that user's Home > Set Preferences > Time Zone — Setup >\nCompany > Company Information only supplies the default, so a user who overrode it needs their own\nzone.\n\nWhen the setting is used its value must be within 12 hours of that user's real zone in either\ndirection: more than ~12h east stores dates one day early, more than ~12h west stores them one day\nlate.\n\nThis applies to every NetSuite date-only write field across the accounting resources.\n\n`sales_details.unit_price` is stored on the item's Base Price level, and NetSuite requires a currency for it. When `currency` is omitted, the price is put in the currency the item is already priced in, otherwise in the currency of the subsidiary the request is scoped to (the `x-apideck-company-id` header or the connection's Default Subsidiary), otherwise in the account's base currency. On a OneWorld account with several base currencies and no subsidiary scope, none of these apply and NetSuite rejects the request with \"Missing required field: currency\" — send `currency` in that case.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "The `taxable` field is applicable to US companies only and should be sent in the request body if your QuickBooks account is in the US region.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "The `taxable` field is applicable to US companies only and should be sent in the request body if your Intuit Enterprise Suite account is in the US region.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Please ensure that status updates are sent separately from other invoice item updates.\n",
+                        },
+                        {
+                            "connector": "workday",
+                            "description": "It is required to provide `sold` and `purchased` fields in the request body. If `sold` is true, sales-item will be created. If `purchased` is true, purchase-item will be created.\n",
+                        },
+                        {
+                            "connector": "visma-netvisor",
+                            "description": "Always send `active` (`true` or `false`): Netvisor rejects an item update without it. Fields you leave out keep their current values, so to change only the name, send `name` and the item's current `active` value.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1816,10 +2286,11 @@ class InvoiceItems(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingInvoiceItemsUpdateResponse(
                 update_invoice_items_response=unmarshal_json_response(
-                    Optional[models.UpdateInvoiceItemsResponse], http_res
+                    Optional[models.UpdateInvoiceItemsResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1860,10 +2331,9 @@ class InvoiceItems(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingInvoiceItemsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1930,6 +2400,7 @@ class InvoiceItems(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1954,9 +2425,19 @@ class InvoiceItems(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "freshbooks",
+                            "description": "Delete will set the invoice item to inactive and will soft delete it, meaning it will stop appearing in the list API call. However, it can still be found via the get by id call.\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1964,10 +2445,9 @@ class InvoiceItems(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingInvoiceItemsDeleteResponse(
                 delete_tax_rate_response=unmarshal_json_response(
-                    Optional[models.DeleteTaxRateResponse], http_res
+                    Optional[models.DeleteTaxRateResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2008,10 +2488,9 @@ class InvoiceItems(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingInvoiceItemsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2078,6 +2557,7 @@ class InvoiceItems(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2102,9 +2582,19 @@ class InvoiceItems(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "freshbooks",
+                            "description": "Delete will set the invoice item to inactive and will soft delete it, meaning it will stop appearing in the list API call. However, it can still be found via the get by id call.\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2112,10 +2602,9 @@ class InvoiceItems(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingInvoiceItemsDeleteResponse(
                 delete_tax_rate_response=unmarshal_json_response(
-                    Optional[models.DeleteTaxRateResponse], http_res
+                    Optional[models.DeleteTaxRateResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2156,10 +2645,9 @@ class InvoiceItems(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingInvoiceItemsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

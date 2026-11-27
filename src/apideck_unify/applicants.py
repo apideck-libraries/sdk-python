@@ -8,7 +8,7 @@ from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from datetime import date
 from jsonpath import JSONPath
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
 
 
 class Applicants(BaseSDK):
@@ -24,7 +24,7 @@ class Applicants(BaseSDK):
         filter_: Optional[
             Union[models.ApplicantsFilter, models.ApplicantsFilterTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -69,7 +69,7 @@ class Applicants(BaseSDK):
             filter_=utils.get_pydantic_model(
                 filter_, Optional[models.ApplicantsFilter]
             ),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -90,6 +90,7 @@ class Applicants(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -114,9 +115,31 @@ class Applicants(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["ats"],
+                extensions={
+                    "x-apideck-api": "ats",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "greenhouse",
+                            "description": 'Greenhouse does not expose a total record count in list responses. `meta.total_count` will not appear.\n\nApplications data and the `recruiter`/`coordinator` fields are no longer returned on applicants. Harvest V3 moved this data to the separate Application object (`/v3/applications`); the connector only calls it to create applications when `application_ids` is sent on applicant create.\n\n`recruiter_id`/`coordinator_id` and `photo_url` sent on candidate create or update are silently ignored, and `application_ids`/`applications` sent on update are silently ignored as well (on create, `application_ids` is supported and attaches the new applicant to those jobs).\n\nA Greenhouse connection whose OAuth refresh token is unused for more than 24 hours will expire and must be re-authorized in Vault before it can be used again.\n\nHarvest V3 strictly validates query parameters and rejects unknown ones with HTTP 422 on any page, including the first. V1-era list filters such as `created_after`/`updated_after` were removed in V3, so sending them via `pass_through` fails immediately. On cursor-based follow-up pages (page 2+), Greenhouse additionally requires the cursor to be the only query parameter, so `pass_through` parameters cause an HTTP 422 there as well.\n\nHarvest V3 cursor pagination is forward-only — Link headers carry only `rel="next"` — so `meta.cursors.previous` is always `null` and paging backwards is not possible.\n',
+                        },
+                        {
+                            "connector": "lever",
+                            "description": "Lever does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "recruitee",
+                            "description": "Recruitee does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "workable",
+                            "description": "Workable does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -142,17 +165,19 @@ class Applicants(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AtsApplicantsAllResponse(
                 get_applicants_response=unmarshal_json_response(
-                    Optional[models.GetApplicantsResponse], http_res
+                    Optional[models.GetApplicantsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -193,11 +218,10 @@ class Applicants(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AtsApplicantsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -214,7 +238,7 @@ class Applicants(BaseSDK):
         filter_: Optional[
             Union[models.ApplicantsFilter, models.ApplicantsFilterTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -259,7 +283,7 @@ class Applicants(BaseSDK):
             filter_=utils.get_pydantic_model(
                 filter_, Optional[models.ApplicantsFilter]
             ),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -280,6 +304,7 @@ class Applicants(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -304,9 +329,31 @@ class Applicants(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["ats"],
+                extensions={
+                    "x-apideck-api": "ats",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "greenhouse",
+                            "description": 'Greenhouse does not expose a total record count in list responses. `meta.total_count` will not appear.\n\nApplications data and the `recruiter`/`coordinator` fields are no longer returned on applicants. Harvest V3 moved this data to the separate Application object (`/v3/applications`); the connector only calls it to create applications when `application_ids` is sent on applicant create.\n\n`recruiter_id`/`coordinator_id` and `photo_url` sent on candidate create or update are silently ignored, and `application_ids`/`applications` sent on update are silently ignored as well (on create, `application_ids` is supported and attaches the new applicant to those jobs).\n\nA Greenhouse connection whose OAuth refresh token is unused for more than 24 hours will expire and must be re-authorized in Vault before it can be used again.\n\nHarvest V3 strictly validates query parameters and rejects unknown ones with HTTP 422 on any page, including the first. V1-era list filters such as `created_after`/`updated_after` were removed in V3, so sending them via `pass_through` fails immediately. On cursor-based follow-up pages (page 2+), Greenhouse additionally requires the cursor to be the only query parameter, so `pass_through` parameters cause an HTTP 422 there as well.\n\nHarvest V3 cursor pagination is forward-only — Link headers carry only `rel="next"` — so `meta.cursors.previous` is always `null` and paging backwards is not possible.\n',
+                        },
+                        {
+                            "connector": "lever",
+                            "description": "Lever does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "recruitee",
+                            "description": "Recruitee does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "workable",
+                            "description": "Workable does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -332,17 +379,19 @@ class Applicants(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AtsApplicantsAllResponse(
                 get_applicants_response=unmarshal_json_response(
-                    Optional[models.GetApplicantsResponse], http_res
+                    Optional[models.GetApplicantsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -383,11 +432,10 @@ class Applicants(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AtsApplicantsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -413,38 +461,43 @@ class Applicants(BaseSDK):
         photo_url: OptionalNullable[str] = UNSET,
         headline: Optional[str] = None,
         title: OptionalNullable[str] = UNSET,
-        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        emails: Optional[
+            Union[Iterable[models.Email], Iterable[models.EmailTypedDict]]
+        ] = None,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         phone_numbers: Optional[
-            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+            Union[Iterable[models.PhoneNumber], Iterable[models.PhoneNumberTypedDict]]
         ] = None,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         websites: Optional[
-            Union[List[models.Websites], List[models.WebsitesTypedDict]]
+            Union[Iterable[models.Websites], Iterable[models.WebsitesTypedDict]]
         ] = None,
         social_links: Optional[
-            Union[List[models.SocialLinks], List[models.SocialLinksTypedDict]]
+            Union[Iterable[models.SocialLinks], Iterable[models.SocialLinksTypedDict]]
         ] = None,
         stage_id: Optional[str] = None,
         recruiter_id: Optional[str] = None,
         coordinator_id: Optional[str] = None,
-        application_ids: OptionalNullable[List[str]] = UNSET,
-        applications: OptionalNullable[List[str]] = UNSET,
-        followers: OptionalNullable[List[str]] = UNSET,
-        sources: OptionalNullable[List[str]] = UNSET,
+        application_ids: OptionalNullable[Iterable[str]] = UNSET,
+        applications: OptionalNullable[Iterable[str]] = UNSET,
+        followers: OptionalNullable[Iterable[str]] = UNSET,
+        sources: OptionalNullable[Iterable[str]] = UNSET,
         confidential: Optional[bool] = None,
         anonymized: Optional[bool] = None,
-        tags: OptionalNullable[List[str]] = UNSET,
+        tags: OptionalNullable[Iterable[str]] = UNSET,
         archived: OptionalNullable[bool] = UNSET,
         owner_id: OptionalNullable[str] = UNSET,
         record_url: OptionalNullable[str] = UNSET,
         deleted: OptionalNullable[bool] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -468,7 +521,7 @@ class Applicants(BaseSDK):
         :param birthday: The date of birth of the person.
         :param gender: The gender represents the gender identity of a person.
         :param social_security_number: A unique identifier assigned by the government. This field is considered sensitive information and may be subject to special security and privacy restrictions.
-        :param type:
+        :param type_:
         :param cover_letter:
         :param photo_url: The URL of the photo of a person.
         :param headline: Typically a list of previous companies where the contact has worked or schools that the contact has attended
@@ -548,13 +601,15 @@ class Applicants(BaseSDK):
                 stage_id=stage_id,
                 recruiter_id=recruiter_id,
                 coordinator_id=coordinator_id,
-                application_ids=application_ids,
-                applications=applications,
-                followers=followers,
-                sources=sources,
+                application_ids=utils.unmarshal(
+                    application_ids, OptionalNullable[List[str]]
+                ),
+                applications=utils.unmarshal(applications, OptionalNullable[List[str]]),
+                followers=utils.unmarshal(followers, OptionalNullable[List[str]]),
+                sources=utils.unmarshal(sources, OptionalNullable[List[str]]),
                 confidential=confidential,
                 anonymized=anonymized,
-                tags=tags,
+                tags=utils.unmarshal(tags, OptionalNullable[List[str]]),
                 archived=archived,
                 owner_id=owner_id,
                 record_url=record_url,
@@ -585,6 +640,7 @@ class Applicants(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.applicant, False, False, "json", models.ApplicantInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -609,9 +665,23 @@ class Applicants(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["ats"],
+                extensions={
+                    "x-apideck-api": "ats",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "greenhouse",
+                            "description": 'The `confidential` field is ignored on applicant create. Harvest V3 rejects a privacy flag in the create body under either name — `is_private` and `private` both return HTTP 422 "disallowed additional property" (verified live 2026-08-05, despite the official V3 reference documenting `private` on create) — so the connector does not send it and new applicants are always created non-confidential. To mark an applicant confidential, update the applicant after creation — `confidential` is supported on update.\n\n`application_ids` attaches the new applicant to those jobs: after the candidate is created, the connector creates one Greenhouse application per id via `/v3/applications` (requires the `harvest:applications:create` OAuth scope — connections authorized before this scope was added must be re-authorized in Vault). If an application create fails, the request returns an error naming the created candidate id — the applicant then exists in Greenhouse without (all of) the job associations.\n\n`recruiter_id`/`coordinator_id` and `photo_url` sent on applicant create are silently ignored.\n',
+                        },
+                        {
+                            "connector": "lever",
+                            "description": "Send `owner_id`. Lever creates every applicant on behalf of a Lever user (its `perform_as` parameter); the connector sends `owner_id` as that user, who becomes the applicant's creator and owner.\n\nLever matches candidates by email: an email that belongs to an existing candidate adds the new applicant to that candidate's contact, and that contact's details take precedence over the ones sent.\n\n`archived` is not sent on create: Lever needs an archive reason, which the unified boolean does not carry.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -619,10 +689,9 @@ class Applicants(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AtsApplicantsAddResponse(
                 create_applicant_response=unmarshal_json_response(
-                    Optional[models.CreateApplicantResponse], http_res
+                    Optional[models.CreateApplicantResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -663,10 +732,9 @@ class Applicants(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AtsApplicantsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -692,38 +760,43 @@ class Applicants(BaseSDK):
         photo_url: OptionalNullable[str] = UNSET,
         headline: Optional[str] = None,
         title: OptionalNullable[str] = UNSET,
-        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        emails: Optional[
+            Union[Iterable[models.Email], Iterable[models.EmailTypedDict]]
+        ] = None,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         phone_numbers: Optional[
-            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+            Union[Iterable[models.PhoneNumber], Iterable[models.PhoneNumberTypedDict]]
         ] = None,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         websites: Optional[
-            Union[List[models.Websites], List[models.WebsitesTypedDict]]
+            Union[Iterable[models.Websites], Iterable[models.WebsitesTypedDict]]
         ] = None,
         social_links: Optional[
-            Union[List[models.SocialLinks], List[models.SocialLinksTypedDict]]
+            Union[Iterable[models.SocialLinks], Iterable[models.SocialLinksTypedDict]]
         ] = None,
         stage_id: Optional[str] = None,
         recruiter_id: Optional[str] = None,
         coordinator_id: Optional[str] = None,
-        application_ids: OptionalNullable[List[str]] = UNSET,
-        applications: OptionalNullable[List[str]] = UNSET,
-        followers: OptionalNullable[List[str]] = UNSET,
-        sources: OptionalNullable[List[str]] = UNSET,
+        application_ids: OptionalNullable[Iterable[str]] = UNSET,
+        applications: OptionalNullable[Iterable[str]] = UNSET,
+        followers: OptionalNullable[Iterable[str]] = UNSET,
+        sources: OptionalNullable[Iterable[str]] = UNSET,
         confidential: Optional[bool] = None,
         anonymized: Optional[bool] = None,
-        tags: OptionalNullable[List[str]] = UNSET,
+        tags: OptionalNullable[Iterable[str]] = UNSET,
         archived: OptionalNullable[bool] = UNSET,
         owner_id: OptionalNullable[str] = UNSET,
         record_url: OptionalNullable[str] = UNSET,
         deleted: OptionalNullable[bool] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -747,7 +820,7 @@ class Applicants(BaseSDK):
         :param birthday: The date of birth of the person.
         :param gender: The gender represents the gender identity of a person.
         :param social_security_number: A unique identifier assigned by the government. This field is considered sensitive information and may be subject to special security and privacy restrictions.
-        :param type:
+        :param type_:
         :param cover_letter:
         :param photo_url: The URL of the photo of a person.
         :param headline: Typically a list of previous companies where the contact has worked or schools that the contact has attended
@@ -827,13 +900,15 @@ class Applicants(BaseSDK):
                 stage_id=stage_id,
                 recruiter_id=recruiter_id,
                 coordinator_id=coordinator_id,
-                application_ids=application_ids,
-                applications=applications,
-                followers=followers,
-                sources=sources,
+                application_ids=utils.unmarshal(
+                    application_ids, OptionalNullable[List[str]]
+                ),
+                applications=utils.unmarshal(applications, OptionalNullable[List[str]]),
+                followers=utils.unmarshal(followers, OptionalNullable[List[str]]),
+                sources=utils.unmarshal(sources, OptionalNullable[List[str]]),
                 confidential=confidential,
                 anonymized=anonymized,
-                tags=tags,
+                tags=utils.unmarshal(tags, OptionalNullable[List[str]]),
                 archived=archived,
                 owner_id=owner_id,
                 record_url=record_url,
@@ -864,6 +939,7 @@ class Applicants(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.applicant, False, False, "json", models.ApplicantInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -888,9 +964,23 @@ class Applicants(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["ats"],
+                extensions={
+                    "x-apideck-api": "ats",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "greenhouse",
+                            "description": 'The `confidential` field is ignored on applicant create. Harvest V3 rejects a privacy flag in the create body under either name — `is_private` and `private` both return HTTP 422 "disallowed additional property" (verified live 2026-08-05, despite the official V3 reference documenting `private` on create) — so the connector does not send it and new applicants are always created non-confidential. To mark an applicant confidential, update the applicant after creation — `confidential` is supported on update.\n\n`application_ids` attaches the new applicant to those jobs: after the candidate is created, the connector creates one Greenhouse application per id via `/v3/applications` (requires the `harvest:applications:create` OAuth scope — connections authorized before this scope was added must be re-authorized in Vault). If an application create fails, the request returns an error naming the created candidate id — the applicant then exists in Greenhouse without (all of) the job associations.\n\n`recruiter_id`/`coordinator_id` and `photo_url` sent on applicant create are silently ignored.\n',
+                        },
+                        {
+                            "connector": "lever",
+                            "description": "Send `owner_id`. Lever creates every applicant on behalf of a Lever user (its `perform_as` parameter); the connector sends `owner_id` as that user, who becomes the applicant's creator and owner.\n\nLever matches candidates by email: an email that belongs to an existing candidate adds the new applicant to that candidate's contact, and that contact's details take precedence over the ones sent.\n\n`archived` is not sent on create: Lever needs an archive reason, which the unified boolean does not carry.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -898,10 +988,9 @@ class Applicants(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AtsApplicantsAddResponse(
                 create_applicant_response=unmarshal_json_response(
-                    Optional[models.CreateApplicantResponse], http_res
+                    Optional[models.CreateApplicantResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -942,10 +1031,9 @@ class Applicants(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AtsApplicantsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1015,6 +1103,7 @@ class Applicants(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1039,9 +1128,19 @@ class Applicants(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["ats"],
+                extensions={
+                    "x-apideck-api": "ats",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "greenhouse",
+                            "description": 'An applicant id that does not exist — including candidates deleted in Greenhouse — returns an error (HTTP 400, "Applicant not found") rather than an empty 200 response. Harvest V3 has no per-id endpoint; the connector fetches via `/candidates?ids={id}` and translates the empty result into this error.\n',
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1049,10 +1148,9 @@ class Applicants(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AtsApplicantsOneResponse(
                 get_applicant_response=unmarshal_json_response(
-                    Optional[models.GetApplicantResponse], http_res
+                    Optional[models.GetApplicantResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1093,10 +1191,9 @@ class Applicants(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AtsApplicantsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1166,6 +1263,7 @@ class Applicants(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1190,9 +1288,19 @@ class Applicants(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["ats"],
+                extensions={
+                    "x-apideck-api": "ats",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "greenhouse",
+                            "description": 'An applicant id that does not exist — including candidates deleted in Greenhouse — returns an error (HTTP 400, "Applicant not found") rather than an empty 200 response. Harvest V3 has no per-id endpoint; the connector fetches via `/candidates?ids={id}` and translates the empty result into this error.\n',
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1200,10 +1308,9 @@ class Applicants(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AtsApplicantsOneResponse(
                 get_applicant_response=unmarshal_json_response(
-                    Optional[models.GetApplicantResponse], http_res
+                    Optional[models.GetApplicantResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1244,10 +1351,9 @@ class Applicants(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AtsApplicantsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1274,38 +1380,43 @@ class Applicants(BaseSDK):
         photo_url: OptionalNullable[str] = UNSET,
         headline: Optional[str] = None,
         title: OptionalNullable[str] = UNSET,
-        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        emails: Optional[
+            Union[Iterable[models.Email], Iterable[models.EmailTypedDict]]
+        ] = None,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         phone_numbers: Optional[
-            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+            Union[Iterable[models.PhoneNumber], Iterable[models.PhoneNumberTypedDict]]
         ] = None,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         websites: Optional[
-            Union[List[models.Websites], List[models.WebsitesTypedDict]]
+            Union[Iterable[models.Websites], Iterable[models.WebsitesTypedDict]]
         ] = None,
         social_links: Optional[
-            Union[List[models.SocialLinks], List[models.SocialLinksTypedDict]]
+            Union[Iterable[models.SocialLinks], Iterable[models.SocialLinksTypedDict]]
         ] = None,
         stage_id: Optional[str] = None,
         recruiter_id: Optional[str] = None,
         coordinator_id: Optional[str] = None,
-        application_ids: OptionalNullable[List[str]] = UNSET,
-        applications: OptionalNullable[List[str]] = UNSET,
-        followers: OptionalNullable[List[str]] = UNSET,
-        sources: OptionalNullable[List[str]] = UNSET,
+        application_ids: OptionalNullable[Iterable[str]] = UNSET,
+        applications: OptionalNullable[Iterable[str]] = UNSET,
+        followers: OptionalNullable[Iterable[str]] = UNSET,
+        sources: OptionalNullable[Iterable[str]] = UNSET,
         confidential: Optional[bool] = None,
         anonymized: Optional[bool] = None,
-        tags: OptionalNullable[List[str]] = UNSET,
+        tags: OptionalNullable[Iterable[str]] = UNSET,
         archived: OptionalNullable[bool] = UNSET,
         owner_id: OptionalNullable[str] = UNSET,
         record_url: OptionalNullable[str] = UNSET,
         deleted: OptionalNullable[bool] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1330,7 +1441,7 @@ class Applicants(BaseSDK):
         :param birthday: The date of birth of the person.
         :param gender: The gender represents the gender identity of a person.
         :param social_security_number: A unique identifier assigned by the government. This field is considered sensitive information and may be subject to special security and privacy restrictions.
-        :param type:
+        :param type_:
         :param cover_letter:
         :param photo_url: The URL of the photo of a person.
         :param headline: Typically a list of previous companies where the contact has worked or schools that the contact has attended
@@ -1411,13 +1522,15 @@ class Applicants(BaseSDK):
                 stage_id=stage_id,
                 recruiter_id=recruiter_id,
                 coordinator_id=coordinator_id,
-                application_ids=application_ids,
-                applications=applications,
-                followers=followers,
-                sources=sources,
+                application_ids=utils.unmarshal(
+                    application_ids, OptionalNullable[List[str]]
+                ),
+                applications=utils.unmarshal(applications, OptionalNullable[List[str]]),
+                followers=utils.unmarshal(followers, OptionalNullable[List[str]]),
+                sources=utils.unmarshal(sources, OptionalNullable[List[str]]),
                 confidential=confidential,
                 anonymized=anonymized,
-                tags=tags,
+                tags=utils.unmarshal(tags, OptionalNullable[List[str]]),
                 archived=archived,
                 owner_id=owner_id,
                 record_url=record_url,
@@ -1448,6 +1561,7 @@ class Applicants(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.applicant, False, False, "json", models.ApplicantInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1472,9 +1586,19 @@ class Applicants(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["ats"],
+                extensions={
+                    "x-apideck-api": "ats",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "greenhouse",
+                            "description": "`application_ids`/`applications`, `recruiter_id`/`coordinator_id`, and `photo_url` sent on applicant update are silently ignored (200 OK, no write, no error). Harvest V3 moved applications and recruiter/coordinator assignment to the separate Application object (`/v3/applications`); the connector only creates applications from `application_ids` on applicant create, not on update.\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1482,10 +1606,9 @@ class Applicants(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AtsApplicantsUpdateResponse(
                 update_applicant_response=unmarshal_json_response(
-                    Optional[models.UpdateApplicantResponse], http_res
+                    Optional[models.UpdateApplicantResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1526,10 +1649,9 @@ class Applicants(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AtsApplicantsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1556,38 +1678,43 @@ class Applicants(BaseSDK):
         photo_url: OptionalNullable[str] = UNSET,
         headline: Optional[str] = None,
         title: OptionalNullable[str] = UNSET,
-        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        emails: Optional[
+            Union[Iterable[models.Email], Iterable[models.EmailTypedDict]]
+        ] = None,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         phone_numbers: Optional[
-            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+            Union[Iterable[models.PhoneNumber], Iterable[models.PhoneNumberTypedDict]]
         ] = None,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         websites: Optional[
-            Union[List[models.Websites], List[models.WebsitesTypedDict]]
+            Union[Iterable[models.Websites], Iterable[models.WebsitesTypedDict]]
         ] = None,
         social_links: Optional[
-            Union[List[models.SocialLinks], List[models.SocialLinksTypedDict]]
+            Union[Iterable[models.SocialLinks], Iterable[models.SocialLinksTypedDict]]
         ] = None,
         stage_id: Optional[str] = None,
         recruiter_id: Optional[str] = None,
         coordinator_id: Optional[str] = None,
-        application_ids: OptionalNullable[List[str]] = UNSET,
-        applications: OptionalNullable[List[str]] = UNSET,
-        followers: OptionalNullable[List[str]] = UNSET,
-        sources: OptionalNullable[List[str]] = UNSET,
+        application_ids: OptionalNullable[Iterable[str]] = UNSET,
+        applications: OptionalNullable[Iterable[str]] = UNSET,
+        followers: OptionalNullable[Iterable[str]] = UNSET,
+        sources: OptionalNullable[Iterable[str]] = UNSET,
         confidential: Optional[bool] = None,
         anonymized: Optional[bool] = None,
-        tags: OptionalNullable[List[str]] = UNSET,
+        tags: OptionalNullable[Iterable[str]] = UNSET,
         archived: OptionalNullable[bool] = UNSET,
         owner_id: OptionalNullable[str] = UNSET,
         record_url: OptionalNullable[str] = UNSET,
         deleted: OptionalNullable[bool] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1612,7 +1739,7 @@ class Applicants(BaseSDK):
         :param birthday: The date of birth of the person.
         :param gender: The gender represents the gender identity of a person.
         :param social_security_number: A unique identifier assigned by the government. This field is considered sensitive information and may be subject to special security and privacy restrictions.
-        :param type:
+        :param type_:
         :param cover_letter:
         :param photo_url: The URL of the photo of a person.
         :param headline: Typically a list of previous companies where the contact has worked or schools that the contact has attended
@@ -1693,13 +1820,15 @@ class Applicants(BaseSDK):
                 stage_id=stage_id,
                 recruiter_id=recruiter_id,
                 coordinator_id=coordinator_id,
-                application_ids=application_ids,
-                applications=applications,
-                followers=followers,
-                sources=sources,
+                application_ids=utils.unmarshal(
+                    application_ids, OptionalNullable[List[str]]
+                ),
+                applications=utils.unmarshal(applications, OptionalNullable[List[str]]),
+                followers=utils.unmarshal(followers, OptionalNullable[List[str]]),
+                sources=utils.unmarshal(sources, OptionalNullable[List[str]]),
                 confidential=confidential,
                 anonymized=anonymized,
-                tags=tags,
+                tags=utils.unmarshal(tags, OptionalNullable[List[str]]),
                 archived=archived,
                 owner_id=owner_id,
                 record_url=record_url,
@@ -1730,6 +1859,7 @@ class Applicants(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.applicant, False, False, "json", models.ApplicantInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1754,9 +1884,19 @@ class Applicants(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["ats"],
+                extensions={
+                    "x-apideck-api": "ats",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "greenhouse",
+                            "description": "`application_ids`/`applications`, `recruiter_id`/`coordinator_id`, and `photo_url` sent on applicant update are silently ignored (200 OK, no write, no error). Harvest V3 moved applications and recruiter/coordinator assignment to the separate Application object (`/v3/applications`); the connector only creates applications from `application_ids` on applicant create, not on update.\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1764,10 +1904,9 @@ class Applicants(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AtsApplicantsUpdateResponse(
                 update_applicant_response=unmarshal_json_response(
-                    Optional[models.UpdateApplicantResponse], http_res
+                    Optional[models.UpdateApplicantResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1808,10 +1947,9 @@ class Applicants(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AtsApplicantsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1878,6 +2016,7 @@ class Applicants(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1902,9 +2041,11 @@ class Applicants(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["ats"],
+                extensions={"x-apideck-api": "ats"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1912,10 +2053,9 @@ class Applicants(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AtsApplicantsDeleteResponse(
                 delete_applicant_response=unmarshal_json_response(
-                    Optional[models.DeleteApplicantResponse], http_res
+                    Optional[models.DeleteApplicantResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1956,10 +2096,9 @@ class Applicants(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AtsApplicantsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2026,6 +2165,7 @@ class Applicants(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2050,9 +2190,11 @@ class Applicants(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["ats"],
+                extensions={"x-apideck-api": "ats"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2060,10 +2202,9 @@ class Applicants(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AtsApplicantsDeleteResponse(
                 delete_applicant_response=unmarshal_json_response(
-                    Optional[models.DeleteApplicantResponse], http_res
+                    Optional[models.DeleteApplicantResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2104,10 +2245,9 @@ class Applicants(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AtsApplicantsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

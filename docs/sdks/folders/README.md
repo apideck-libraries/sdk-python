@@ -1,5 +1,4 @@
-# Folders
-(*file_storage.folders*)
+# FileStorage.Folders
 
 ## Overview
 
@@ -26,7 +25,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.file_storage.folders.create(name="Documents", parent_folder_id="1234", raw=False, service_id="salesforce", fields="id,updated_at", description="My Personal Documents", drive_id="1234", pass_through=[
@@ -99,7 +98,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.file_storage.folders.get(id="<id>", service_id="salesforce", raw=False, fields="id,updated_at")
@@ -154,7 +153,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.file_storage.folders.update(id="<id>", service_id="salesforce", raw=False, name="Documents", description="My Personal Documents", parent_folder_id="1234", pass_through=[
@@ -234,7 +233,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.file_storage.folders.delete(id="<id>", service_id="salesforce", raw=False)
@@ -288,7 +287,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.file_storage.folders.copy(id="<id>", parent_folder_id="1234", service_id="salesforce", raw=False, fields="id,updated_at", name="Documents", pass_through=[

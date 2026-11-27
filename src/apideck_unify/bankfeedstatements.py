@@ -8,7 +8,7 @@ from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from datetime import datetime
 from jsonpath import JSONPath
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
 
 
 class BankFeedStatements(BaseSDK):
@@ -28,7 +28,7 @@ class BankFeedStatements(BaseSDK):
                 models.BankFeedStatementsFilterTypedDict,
             ]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -75,7 +75,7 @@ class BankFeedStatements(BaseSDK):
             filter_=utils.get_pydantic_model(
                 filter_, Optional[models.BankFeedStatementsFilter]
             ),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -96,6 +96,7 @@ class BankFeedStatements(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -120,9 +121,75 @@ class BankFeedStatements(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "QuickBooks Desktop has no bank-feed review screen: lines are posted to the register as\nnative transactions on the Web Connector's next run. `status` is `pending` until every\nline posted, then `success`, or `rejected` as soon as QuickBooks rejected a line. Use\n`filter[bank_feed_account_id]` to read one account's statements. Per-line QuickBooks\ntransaction ids and rejection reasons are not part of the unified transaction model;\nread the statement with `raw=true` to see them.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "FreeAgent keeps no statement record: statements are rebuilt from the transactions FreeAgent\nimported into each bank account, one per import, and identified by\n`<bank_feed_account_id>:<first posted date>:<last posted date>`. A statement holds every\nimported transaction of its account between those dates, so imports covering the same\ndates are returned as one statement. Use `filter[bank_feed_account_id]` to read one account.\nEach request reads all imported transactions of the accounts involved before returning a\npage.\n\n`status` is always `success` (only imported transactions exist), and balances and\n`merchant_category_code` are not returned. `transaction_type` is returned when the import\nrecorded one (`credit`, `debit`, `deposit`, `transfer`, `payment`, otherwise `other`).\n",
+                        },
+                        {
+                            "connector": "exact-online-nl",
+                            "description": "Use `filter[bank_feed_account_id]` to read one account's statements; it accepts the account\nid or its short code as shown in Exact Online. An unfiltered read spans every bank account\nin the division.\n",
+                        },
+                        {
+                            "connector": "exact-online",
+                            "description": "Same as `exact-online-nl`.\n",
+                        },
+                        {
+                            "connector": "exact-online-uk",
+                            "description": "Same as `exact-online-nl`.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "`transactions` are only returned when fetching a single statement. Sage's query\nservice cannot return child collections, so the list endpoint omits the array\nentirely — fetch the statement by id to get its transactions.\n\n`start_balance`, `end_balance` and their credit/debit indicators are never populated:\nSage's `cash-management/bank-feed` object does not carry statement balances.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "rillet",
+                            "description": "Rillet does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "pennylane",
+                            "description": "Pennylane does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": "Moneybird has no bank statement list endpoint, so this operation is backed by financial mutations:\neach returned statement contains exactly one transaction, and statement-level balance fields\n(`start_balance`, `end_balance`) are not populated.\n\nResults default to the current financial year and are capped at 100 records per page. To read older\nmutations, pass an explicit period via pass_through: `?pass_through[filter]=period:20250101..20251231`.\n\n`status` reflects Moneybird's bookkeeping reconciliation state, not feed-delivery status: `pending`\nmeans the transaction has not yet been manually reconciled in the Moneybird UI and can remain\n`pending` indefinitely — it does not indicate a delivery problem. Moneybird never returns `rejected`.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "`status` is the staging state in NetSuite: `pending` until the next bank data import of an account linked in\nthe Format Profile, then `success`; from bundle version 1.3.2, `rejected` when the bundle's daily maintenance\nscript finds the statement still not imported after 7 days. There is no webhook for status changes — poll\nthis operation or Get Bank Feed Statement.\n\nPages are offset-based. From bundle version 1.3.2 statements are listed oldest first, so new statements\nare added at the end; with earlier versions the order is not stable, so a statement can repeat or be\nskipped across pages. From 1.3.2 the maintenance script deletes `success` and `rejected` statements 30 days\nafter they were created; reading a deleted statement returns `400 RCRD_DSNT_EXIST`.\n",
+                        },
+                        {
+                            "connector": "intuit-bank-feeds",
+                            "description": "List responses carry statement metadata only — `transactions` is never included, however many\nstatements the page holds. Fetch a single statement by id to read its transactions.\n",
+                        },
+                        {
+                            "connector": "plaid-exchange",
+                            "description": "List responses carry statement metadata only — `transactions` is never included, however many\nstatements the page holds. Fetch a single statement by id to read its transactions.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Each statement is a bank account's current set of transactions awaiting reconciliation, and its\n`id` is that account's own id. Accounts with nothing awaiting reconciliation are absent from the\nlist rather than returned empty. `filter[bank_feed_account_id]` narrows the list to one account.\n\nUnlike most list operations, `transactions` is included on every statement.\n\n`status` always reads `pending`. `start_balance` and `end_balance` are never populated.\n`start_date` and `end_date` are the earliest and latest transaction date currently awaiting\nreconciliation, not a range supplied on create.\n",
+                        },
+                        {
+                            "connector": "yuki",
+                            "description": "Lists the bank statement files in the administration's archive, newest first, including files a\nbookkeeper uploaded directly. `id` is the archive document id. `status` is `success` once Yuki has\nbooked the file and `pending` otherwise; Yuki never reports a rejection, so a file it could not\nprocess, or a duplicate of an already imported period, stays `pending`.\n\nFor a statement created through this API, `bank_feed_account_id`, `start_date` and `end_date` are\nthe IBAN and period it was sent with. For a file uploaded by other means they are read from Yuki\nonce it has booked the file, and `start_date` and `end_date` are then the first and last booking\ndates in it rather than the statement period; they are absent while such a file is pending.\nA statement appears on the list once Yuki has picked up the uploaded file, usually within a\nminute; until then read it by id. Balances and `transactions` are not included on the list;\nfetch a statement by id to get them. `filter[bank_feed_account_id]` is not supported.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -149,17 +216,21 @@ class BankFeedStatements(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingBankFeedStatementsAllResponse(
                 get_bank_feed_statements_response=unmarshal_json_response(
-                    Optional[models.GetBankFeedStatementsResponse], http_res
+                    Optional[models.GetBankFeedStatementsResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -200,11 +271,10 @@ class BankFeedStatements(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingBankFeedStatementsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -225,7 +295,7 @@ class BankFeedStatements(BaseSDK):
                 models.BankFeedStatementsFilterTypedDict,
             ]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -272,7 +342,7 @@ class BankFeedStatements(BaseSDK):
             filter_=utils.get_pydantic_model(
                 filter_, Optional[models.BankFeedStatementsFilter]
             ),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -293,6 +363,7 @@ class BankFeedStatements(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -317,9 +388,75 @@ class BankFeedStatements(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "QuickBooks Desktop has no bank-feed review screen: lines are posted to the register as\nnative transactions on the Web Connector's next run. `status` is `pending` until every\nline posted, then `success`, or `rejected` as soon as QuickBooks rejected a line. Use\n`filter[bank_feed_account_id]` to read one account's statements. Per-line QuickBooks\ntransaction ids and rejection reasons are not part of the unified transaction model;\nread the statement with `raw=true` to see them.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "FreeAgent keeps no statement record: statements are rebuilt from the transactions FreeAgent\nimported into each bank account, one per import, and identified by\n`<bank_feed_account_id>:<first posted date>:<last posted date>`. A statement holds every\nimported transaction of its account between those dates, so imports covering the same\ndates are returned as one statement. Use `filter[bank_feed_account_id]` to read one account.\nEach request reads all imported transactions of the accounts involved before returning a\npage.\n\n`status` is always `success` (only imported transactions exist), and balances and\n`merchant_category_code` are not returned. `transaction_type` is returned when the import\nrecorded one (`credit`, `debit`, `deposit`, `transfer`, `payment`, otherwise `other`).\n",
+                        },
+                        {
+                            "connector": "exact-online-nl",
+                            "description": "Use `filter[bank_feed_account_id]` to read one account's statements; it accepts the account\nid or its short code as shown in Exact Online. An unfiltered read spans every bank account\nin the division.\n",
+                        },
+                        {
+                            "connector": "exact-online",
+                            "description": "Same as `exact-online-nl`.\n",
+                        },
+                        {
+                            "connector": "exact-online-uk",
+                            "description": "Same as `exact-online-nl`.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "`transactions` are only returned when fetching a single statement. Sage's query\nservice cannot return child collections, so the list endpoint omits the array\nentirely — fetch the statement by id to get its transactions.\n\n`start_balance`, `end_balance` and their credit/debit indicators are never populated:\nSage's `cash-management/bank-feed` object does not carry statement balances.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "rillet",
+                            "description": "Rillet does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "pennylane",
+                            "description": "Pennylane does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": "Moneybird has no bank statement list endpoint, so this operation is backed by financial mutations:\neach returned statement contains exactly one transaction, and statement-level balance fields\n(`start_balance`, `end_balance`) are not populated.\n\nResults default to the current financial year and are capped at 100 records per page. To read older\nmutations, pass an explicit period via pass_through: `?pass_through[filter]=period:20250101..20251231`.\n\n`status` reflects Moneybird's bookkeeping reconciliation state, not feed-delivery status: `pending`\nmeans the transaction has not yet been manually reconciled in the Moneybird UI and can remain\n`pending` indefinitely — it does not indicate a delivery problem. Moneybird never returns `rejected`.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "`status` is the staging state in NetSuite: `pending` until the next bank data import of an account linked in\nthe Format Profile, then `success`; from bundle version 1.3.2, `rejected` when the bundle's daily maintenance\nscript finds the statement still not imported after 7 days. There is no webhook for status changes — poll\nthis operation or Get Bank Feed Statement.\n\nPages are offset-based. From bundle version 1.3.2 statements are listed oldest first, so new statements\nare added at the end; with earlier versions the order is not stable, so a statement can repeat or be\nskipped across pages. From 1.3.2 the maintenance script deletes `success` and `rejected` statements 30 days\nafter they were created; reading a deleted statement returns `400 RCRD_DSNT_EXIST`.\n",
+                        },
+                        {
+                            "connector": "intuit-bank-feeds",
+                            "description": "List responses carry statement metadata only — `transactions` is never included, however many\nstatements the page holds. Fetch a single statement by id to read its transactions.\n",
+                        },
+                        {
+                            "connector": "plaid-exchange",
+                            "description": "List responses carry statement metadata only — `transactions` is never included, however many\nstatements the page holds. Fetch a single statement by id to read its transactions.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Each statement is a bank account's current set of transactions awaiting reconciliation, and its\n`id` is that account's own id. Accounts with nothing awaiting reconciliation are absent from the\nlist rather than returned empty. `filter[bank_feed_account_id]` narrows the list to one account.\n\nUnlike most list operations, `transactions` is included on every statement.\n\n`status` always reads `pending`. `start_balance` and `end_balance` are never populated.\n`start_date` and `end_date` are the earliest and latest transaction date currently awaiting\nreconciliation, not a range supplied on create.\n",
+                        },
+                        {
+                            "connector": "yuki",
+                            "description": "Lists the bank statement files in the administration's archive, newest first, including files a\nbookkeeper uploaded directly. `id` is the archive document id. `status` is `success` once Yuki has\nbooked the file and `pending` otherwise; Yuki never reports a rejection, so a file it could not\nprocess, or a duplicate of an already imported period, stays `pending`.\n\nFor a statement created through this API, `bank_feed_account_id`, `start_date` and `end_date` are\nthe IBAN and period it was sent with. For a file uploaded by other means they are read from Yuki\nonce it has booked the file, and `start_date` and `end_date` are then the first and last booking\ndates in it rather than the statement period; they are absent while such a file is pending.\nA statement appears on the list once Yuki has picked up the uploaded file, usually within a\nminute; until then read it by id. Balances and `transactions` are not included on the list;\nfetch a statement by id to get them. `filter[bank_feed_account_id]` is not supported.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -346,17 +483,21 @@ class BankFeedStatements(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingBankFeedStatementsAllResponse(
                 get_bank_feed_statements_response=unmarshal_json_response(
-                    Optional[models.GetBankFeedStatementsResponse], http_res
+                    Optional[models.GetBankFeedStatementsResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -397,11 +538,10 @@ class BankFeedStatements(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingBankFeedStatementsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -423,7 +563,7 @@ class BankFeedStatements(BaseSDK):
         end_balance: Optional[float] = None,
         end_balance_credit_or_debit: Optional[models.CreditOrDebit] = None,
         transactions: Optional[
-            Union[List[models.Transactions], List[models.TransactionsTypedDict]]
+            Union[Iterable[models.Transactions], Iterable[models.TransactionsTypedDict]]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -508,6 +648,7 @@ class BankFeedStatements(BaseSDK):
                 "json",
                 models.BankFeedStatementInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -532,9 +673,75 @@ class BankFeedStatements(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Each transaction is written to the register as a native Deposit, Check, Credit Card\nCharge or Credit Card Credit (chosen from the account type and `credit_or_debit`),\ncategorised to the `bank_feed_offset_account` connection setting; leave it blank only if\nthe company file has QuickBooks' Uncategorized Income / Uncategorized Expenses accounts,\notherwise every line is rejected (error 3140). Creating a statement returns its `id` with\nstatus `pending`; poll the statement until `status` is `success` or `rejected`.\n`source_transaction_id` is required and is the dedup key: re-sending a statement never\nposts a line twice. `counterparty`, `currency` and balances are stored but not written.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "FreeAgent imports the statement lines into the bank account `bank_feed_account_id`. The\nimport runs in the background: a successful response means FreeAgent accepted the\nstatement, and the lines appear on the bank account within seconds. The returned `id` is\n`<bank_feed_account_id>:<first posted date>:<last posted date>`, so sending the same\nstatement again returns the same id, and it can be used to read or delete the statement.\n\nA line whose `source_transaction_id` was imported before is skipped, so a statement can\nsafely be sent again after a timeout. Send `amount` as a positive number with\n`credit_or_debit`; `description` falls back to `counterparty`, then `reference`.\nBalances, `merchant_category_code` and `status` are not sent to FreeAgent.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "`source_transaction_id` is only stored as Sage's `txnId` when it is entirely numeric — Sage rejects the\nwhole feed otherwise, with an error that names no field. A non-numeric value is stored as the\ntransaction's bank reference instead, and still reads back as `source_transaction_id`.\n\nSage derives the transaction direction from the sign of the amount, so `credit_or_debit` (falling back to\n`transaction_type`) is what decides it: `debit` is sent as a negative amount and comes back as a\nwithdrawal. Sage ignores any explicit type on write.\n\nStatement-level fields other than the period and the account are not supported: `start_balance`,\n`end_balance` and their credit/debit indicators have no equivalent on Sage's `cash-management/bank-feed`\nobject, and `end_date` is ignored because a Sage feed carries a single feed date (`start_date`).\n\nSage requires at least one transaction — a statement with an empty `transactions` array is rejected.\nSage does not deduplicate on `source_transaction_id`: reposting the same statement creates duplicates.\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": "The `bank_feed_account_id` must be the ID of an existing Moneybird financial account, as returned by the\nBank Feed Accounts (or Bank Accounts) list. Financial accounts cannot be created via the Moneybird API —\nthey must be set up in the Moneybird UI first.\n\nTransaction amounts are sent to Moneybird as signed values derived from `credit_or_debit`\n(`debit` becomes negative).\n\nMoneybird requires a statement reference; since the unified model has no statement-level reference field,\none is generated automatically from the statement period (e.g. `STMT-2026-06-30`) plus the target account\nand a timestamp, to reduce (not guarantee) collisions between statements created in the same request burst.\nMoneybird does not deduplicate transactions by any client-supplied identifier — retrying a timed-out\nrequest will create duplicate transactions with no way to detect the duplication via the API.\n\nMoneybird only stores `posted_date`, a `message` (from `description`, or `reference` when `description`\nis absent), and the signed amount per transaction. `counterparty` and `source_transaction_id` sent on\nwrite are not persisted and will not be returned on reads; if `description` is present, `reference` is\nalso dropped on write. Reads always return a `reference` value, but it is derived from Moneybird's own\ndata (batch reference or transaction id), never the value originally submitted.\n\nThe response `id` is the id of the first transaction created (Moneybird's mutation id), consistent with\nthe ids returned by the list/get-one operations — it is not the id of the underlying Moneybird financial\nstatement, which has no direct read endpoint.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "In Xero, if a transaction ID has been previously used, the API will reject the entire bank feed statement.\nHowever, if the statement includes multiple transactions and at least one transaction ID is unique,\nthe API will return a success response but will not process the transactions with duplicate IDs.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Requires the Apideck Bank Feed bundle in the customer's NetSuite account. `bank_feed_account_id` must be an\nactive Bank or Credit Card account (as listed by `GET /bank-feed-accounts`); a nonexistent or inactive\naccount is rejected with `400 INVALID_FLD_VALUE` and nothing is created. `id` and `status` in the request\nare ignored: NetSuite assigns the id and every new statement starts as `pending`.\n\n`pending` means staged in NetSuite and waiting for the next bank data import of an account linked in the\nFormat Profile (on the profile's import schedule, or when a user clicks **Update Imported Bank Data**). It\nbecomes `success` once imported into Match Bank Data. From bundle version 1.3.2, the bundle's daily\nmaintenance script marks a statement `rejected` once it is 7 days old and still not imported (for example\nbecause its account is not linked in the Format Profile); a `rejected` statement is never imported. Before\n1.3.2 statements are never marked `rejected`, and the maintenance script deletes staging statements older\nthan 30 days whatever their status — set its deployment (Customization → Scripting → Script Deployments →\nApideck Bank Feed Maintenance) to Not Scheduled until the bundle is updated.\n\nDates are stored and returned as the calendar date sent. With bundle versions before 1.3.2, a NetSuite user\nwhose date format is day-first (for example DD/MM/YYYY) gets day and month swapped on write and in list\nresponses, and a rejected statement (or a `null` date when listing) when the day is above 12; update the\nbundle.\n\n`source_transaction_id`, `counterparty` and `reference` are limited to 300 characters and `description` to\n4,000 by NetSuite. From bundle version 1.3.2 a rejected line rolls back the whole statement — nothing is\nsaved — and the error message is prefixed with the failing line, e.g. `transactions[1]: …`; with earlier\nbundle versions the statement and the lines before the failing one stay saved and are imported, so\nresending the corrected statement duplicates them. From 1.3.2 a statement with more transactions than one\nrequest can create and fully roll back (about 490) is rejected with `STATEMENT_TOO_LARGE` before anything\nis saved; split it.\nDeleting a statement is not supported.\n",
+                        },
+                        {
+                            "connector": "intuit-bank-feeds",
+                            "description": "A successful create does **not** mean QuickBooks has the statement. This connector is pull-based:\nthe statement is stored on the Apideck side and waits there for Intuit's scheduled pull. That is a\nfundamental difference from `xero`, where a successful push means Xero already holds the data.\nBecause delivery happens later and out of band, `status` reads back as `pending` and does not\nadvance to `success` in this release; a `status` other than `pending` sent on write is rejected.\n\nStatements are validated on the way in, and a violation is **rejected** — never silently dropped:\n\n- At most 1000 entries in `transactions`.\n- Every `source_transaction_id` must be unique, both within the statement and against transactions\n  already submitted for the same bank feed.\n- Transactions must be in chronological order: `posted_date` must be non-decreasing across the\n  array.\n- Posted transactions only — pending or authorization-hold transactions are not accepted.\n- `description` is limited to 255 characters.\n- Every timestamp needs an explicit timezone offset: `start_date`, `end_date` and each\n  transaction's `posted_date` must end in `Z` or `±hh:mm`. A bare local datetime such as\n  `2026-01-15T12:00:00` is rejected, even though the unified `date-time` format permits it.\n- `null` is rejected rather than ignored. Omit an optional field instead of sending `null` for it.\n\nA rejected statement comes back with every violation at once, each naming the rule it broke, so a\nsingle round trip shows all of them.\n\nEach transaction's `transaction_type` reaches QuickBooks as its transaction type; when it\ncontradicts `credit_or_debit` (for example `deposit` on a `debit` line), `credit_or_debit` decides.\n`merchant_category_code` is sent as the merchant category, and `counterparty` as the payee on\n`bank` accounts only — it is not sent for `credit_card` accounts.\n",
+                        },
+                        {
+                            "connector": "plaid-exchange",
+                            "description": "A successful create does **not** mean Plaid has the statement. This connector is pull-based: the\nstatement is stored on the Apideck side and waits there for Plaid to read it. Because delivery\nhappens later and out of band, `status` reads back as `pending` and does not advance to `success`\nin this release; a `status` other than `pending` sent on write is rejected.\n\nStatements are validated on the way in, with the same rules as `intuit-bank-feeds`: at most 1000\n`transactions`, unique `source_transaction_id`s, non-decreasing `posted_date`, posted transactions\nonly, `description` up to 255 characters, an explicit timezone offset on every timestamp, and\n`null` rejected rather than ignored. A rejected statement comes back with every violation at once.\n",
+                        },
+                        {
+                            "connector": "snelstart",
+                            "description": 'SnelStart has no structured bank-statement-import API: the statement is encoded into an MT940\n("MT940 structured") file and uploaded via `POST /v2/bankafschriftbestanden`. `bank_feed_account_id` must\nbe a real bank account number/IBAN already registered in the Bankrekeningen (Bank Accounts) window in the\nSnelStart UI — accounts cannot be listed or registered via the API (bank-feed-accounts is unsupported for\nthis reason), so a mistyped or unregistered account cannot be validated in advance.\n\n`end_balance` and `end_balance_credit_or_debit` are computed from `start_balance` plus the transactions\n(not taken from the request) so the uploaded file is internally consistent; a caller-supplied end balance\nthat disagrees with the transaction total is silently overridden in the response.\n\nThe upload is synchronous, so `status` only ever comes back as `success` or `rejected` — `pending` is not\nreachable. On rejection SnelStart returns a human-readable Dutch explanation (e.g. the account not being\nregistered yet), but the unified response has no field to carry it — a `rejected` status gives no reason.\n\nThere is no read access to previously imported statements: bank-feed-statements list/get is unsupported.\n\nThe encoded MT940 file always declares `EUR` as the statement currency; the unified schema has no\ncurrency field to source a different value from, and non-EUR bank accounts are not supported.\n',
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": "Only `create` is supported. `update` and `delete` are not implemented and are not possible —\nonce a bank statement is created in Twinfield, it cannot be changed.\n\nThere is no endpoint to list bank feed accounts, so `bank_feed_account_id` must be supplied\nby the caller as the target account's IBAN, with no way to validate it beforehand.\n\nThe statement currency defaults to `EUR` when not set on the connection — the unified model\ncarries no per-statement or per-transaction currency field to source it from instead.\nStatements for a non-EUR bank account must have the connection's currency setting configured\naccordingly.\n\n`source_transaction_id` on read is a synthesized composite value (not a Twinfield-native id),\nsince Twinfield's statement transaction lines carry no identifier of their own.\n\nReading a bank feed statement by id (`bank-feed-statements.one`) is currently non-functional —\nevery request fails with a generic server error regardless of request shape. Treat this\noperation as unsupported until further notice.\n",
+                        },
+                        {
+                            "connector": "exact-online-nl",
+                            "description": "Every line is posted to the unallocated account configured on the target bank feed account,\nwhich is what puts it in the bookkeeper's reconciliation queue. An account with no\nunallocated account configured is rejected with a `400` — set one via the `journals`\nresource's `clearing_account`.\n\n`status` always reads as `success`; Exact has no delivery state. `start_balance`/`end_balance`\nare ignored on write, since Exact computes them. `counterparty` and `merchant_category_code`\nare not persisted. Reposting a statement creates a duplicate — Exact does not deduplicate on\n`source_transaction_id`.\n\n`source_transaction_id` is kept in the line's free-text notes field, which the bookkeeper can\nedit in Exact Online. A line edited there reads back with whatever they typed, so treat the\nvalue as advisory when matching against your own records.\n",
+                        },
+                        {
+                            "connector": "exact-online",
+                            "description": "Same as `exact-online-nl`.\n",
+                        },
+                        {
+                            "connector": "exact-online-uk",
+                            "description": "Same as `exact-online-nl`.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Transactions are imported awaiting reconciliation, not posted to the ledger, and multiple\ntransactions per call are supported. The response `id` is the `bank_feed_account_id` supplied,\nso two imports against one account return the same id.\n\nNot every field survives. `transactions[].source_transaction_id` and `.merchant_category_code`\nare accepted but not returned, `.posted_date` keeps the date and drops the time of day, and\n`.transaction_type` reads back derived from the direction rather than as sent. `.description`,\n`.counterparty`, `.reference`, `.amount` and `.credit_or_debit` round-trip unchanged, which\nmakes `reference` the only caller-supplied value available for correlation.\n\nSend `.amount` as a positive number and let `.credit_or_debit` carry the direction — a sign on\nthe amount is ignored in favour of `.credit_or_debit`. A zero amount is rejected. `status`,\n`start_balance`, `end_balance` and `start_date`/`end_date` are not sent; the statement's date\nrange is derived from the transactions themselves.\n\nA statement is imported in the bank account's own currency. A per-transaction currency is\nignored rather than rejected, so send each currency to its own account.\n\nImports are not deduplicated: sending the same statement twice imports every transaction twice,\nand no caller-supplied identifier can prevent it. Within a single import, two transactions\nidentical on every field are collapsed into one without warning — giving them distinct\n`reference` values keeps them apart.\n",
+                        },
+                        {
+                            "connector": "yuki",
+                            "description": "`bank_feed_account_id` is the IBAN of the bank account. The statement is delivered to Yuki as a\nbank file in the administration's archive, which Yuki recognises and books on its own, usually\nwithin a minute. The response carries only `id`, the id of that archive document. Because Yuki\nbooks the file after the response, a successful response means Yuki accepted the file, not that\nthe transactions are booked. Once booked, the lines appear on the\nbank ledger account with their contra entries waiting in Yuki's \"bank transactions to be\nprocessed\" queue for the bookkeeper to match.\n\nThe IBAN does not have to exist in Yuki beforehand: on first import Yuki links it to the bank\nledger account (or creates one), after which the accountant assigns its ledger. Because Yuki never\nrejects an unknown IBAN, the API checks it first and returns a 400 when its check digits are\ninvalid or, for a SEPA country, its length is wrong. A typo that still forms a valid IBAN is not caught.\nThere is no way to list bank accounts through the API, so bank feed accounts are not supported.\n\nA statement for the same IBAN and period as one already imported is accepted and stored, but its\ntransactions are silently skipped, and the response cannot tell the two cases apart — send each\nperiod once. A period that only overlaps an imported one is not treated as a duplicate and is\nbooked, so avoid overlapping periods. Dates are taken as the calendar date they are written in,\noffset included: `2026-06-01T00:00:00+02:00` is 1 June, and a date that does not exist returns\na 400. `start_balance` and `start_balance_credit_or_debit` are required; `end_balance` is\nwritten to the file as the start balance plus the transactions, and a supplied `end_balance` that\ndoes not match is rejected with a 400. Amounts are sent as positive numbers with `credit_or_debit`\ncarrying the direction. The statement currency is always `EUR`.\n\nOnly `description` (falling back to `reference`, then `counterparty`) is visible on the booked\nlines; `source_transaction_id`, `reference` and `counterparty` are carried in the file but not\nshown. `transaction_type` and `merchant_category_code` are not sent. Characters outside the\nLatin-1 range are replaced with `?`, control characters are removed, and line breaks become\nspaces.\n\nA created statement can be listed and read back by its `id` to follow its `status`, which is\n`pending` until Yuki has booked the file and `success` after (see those operations). Poll the\nlist rather than each statement: a list page costs two calls against the domain's daily\nallowance (1,000 on Yuki's free tier) however many statements it holds, and a read by id three. Statements cannot be updated or deleted\nthrough the API; removing one is a bookkeeper action in Yuki.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -542,10 +749,11 @@ class BankFeedStatements(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingBankFeedStatementsAddResponse(
                 create_bank_feed_statement_response=unmarshal_json_response(
-                    Optional[models.CreateBankFeedStatementResponse], http_res
+                    Optional[models.CreateBankFeedStatementResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -586,10 +794,9 @@ class BankFeedStatements(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingBankFeedStatementsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -611,7 +818,7 @@ class BankFeedStatements(BaseSDK):
         end_balance: Optional[float] = None,
         end_balance_credit_or_debit: Optional[models.CreditOrDebit] = None,
         transactions: Optional[
-            Union[List[models.Transactions], List[models.TransactionsTypedDict]]
+            Union[Iterable[models.Transactions], Iterable[models.TransactionsTypedDict]]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -696,6 +903,7 @@ class BankFeedStatements(BaseSDK):
                 "json",
                 models.BankFeedStatementInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -720,9 +928,75 @@ class BankFeedStatements(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Each transaction is written to the register as a native Deposit, Check, Credit Card\nCharge or Credit Card Credit (chosen from the account type and `credit_or_debit`),\ncategorised to the `bank_feed_offset_account` connection setting; leave it blank only if\nthe company file has QuickBooks' Uncategorized Income / Uncategorized Expenses accounts,\notherwise every line is rejected (error 3140). Creating a statement returns its `id` with\nstatus `pending`; poll the statement until `status` is `success` or `rejected`.\n`source_transaction_id` is required and is the dedup key: re-sending a statement never\nposts a line twice. `counterparty`, `currency` and balances are stored but not written.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "FreeAgent imports the statement lines into the bank account `bank_feed_account_id`. The\nimport runs in the background: a successful response means FreeAgent accepted the\nstatement, and the lines appear on the bank account within seconds. The returned `id` is\n`<bank_feed_account_id>:<first posted date>:<last posted date>`, so sending the same\nstatement again returns the same id, and it can be used to read or delete the statement.\n\nA line whose `source_transaction_id` was imported before is skipped, so a statement can\nsafely be sent again after a timeout. Send `amount` as a positive number with\n`credit_or_debit`; `description` falls back to `counterparty`, then `reference`.\nBalances, `merchant_category_code` and `status` are not sent to FreeAgent.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "`source_transaction_id` is only stored as Sage's `txnId` when it is entirely numeric — Sage rejects the\nwhole feed otherwise, with an error that names no field. A non-numeric value is stored as the\ntransaction's bank reference instead, and still reads back as `source_transaction_id`.\n\nSage derives the transaction direction from the sign of the amount, so `credit_or_debit` (falling back to\n`transaction_type`) is what decides it: `debit` is sent as a negative amount and comes back as a\nwithdrawal. Sage ignores any explicit type on write.\n\nStatement-level fields other than the period and the account are not supported: `start_balance`,\n`end_balance` and their credit/debit indicators have no equivalent on Sage's `cash-management/bank-feed`\nobject, and `end_date` is ignored because a Sage feed carries a single feed date (`start_date`).\n\nSage requires at least one transaction — a statement with an empty `transactions` array is rejected.\nSage does not deduplicate on `source_transaction_id`: reposting the same statement creates duplicates.\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": "The `bank_feed_account_id` must be the ID of an existing Moneybird financial account, as returned by the\nBank Feed Accounts (or Bank Accounts) list. Financial accounts cannot be created via the Moneybird API —\nthey must be set up in the Moneybird UI first.\n\nTransaction amounts are sent to Moneybird as signed values derived from `credit_or_debit`\n(`debit` becomes negative).\n\nMoneybird requires a statement reference; since the unified model has no statement-level reference field,\none is generated automatically from the statement period (e.g. `STMT-2026-06-30`) plus the target account\nand a timestamp, to reduce (not guarantee) collisions between statements created in the same request burst.\nMoneybird does not deduplicate transactions by any client-supplied identifier — retrying a timed-out\nrequest will create duplicate transactions with no way to detect the duplication via the API.\n\nMoneybird only stores `posted_date`, a `message` (from `description`, or `reference` when `description`\nis absent), and the signed amount per transaction. `counterparty` and `source_transaction_id` sent on\nwrite are not persisted and will not be returned on reads; if `description` is present, `reference` is\nalso dropped on write. Reads always return a `reference` value, but it is derived from Moneybird's own\ndata (batch reference or transaction id), never the value originally submitted.\n\nThe response `id` is the id of the first transaction created (Moneybird's mutation id), consistent with\nthe ids returned by the list/get-one operations — it is not the id of the underlying Moneybird financial\nstatement, which has no direct read endpoint.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "In Xero, if a transaction ID has been previously used, the API will reject the entire bank feed statement.\nHowever, if the statement includes multiple transactions and at least one transaction ID is unique,\nthe API will return a success response but will not process the transactions with duplicate IDs.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Requires the Apideck Bank Feed bundle in the customer's NetSuite account. `bank_feed_account_id` must be an\nactive Bank or Credit Card account (as listed by `GET /bank-feed-accounts`); a nonexistent or inactive\naccount is rejected with `400 INVALID_FLD_VALUE` and nothing is created. `id` and `status` in the request\nare ignored: NetSuite assigns the id and every new statement starts as `pending`.\n\n`pending` means staged in NetSuite and waiting for the next bank data import of an account linked in the\nFormat Profile (on the profile's import schedule, or when a user clicks **Update Imported Bank Data**). It\nbecomes `success` once imported into Match Bank Data. From bundle version 1.3.2, the bundle's daily\nmaintenance script marks a statement `rejected` once it is 7 days old and still not imported (for example\nbecause its account is not linked in the Format Profile); a `rejected` statement is never imported. Before\n1.3.2 statements are never marked `rejected`, and the maintenance script deletes staging statements older\nthan 30 days whatever their status — set its deployment (Customization → Scripting → Script Deployments →\nApideck Bank Feed Maintenance) to Not Scheduled until the bundle is updated.\n\nDates are stored and returned as the calendar date sent. With bundle versions before 1.3.2, a NetSuite user\nwhose date format is day-first (for example DD/MM/YYYY) gets day and month swapped on write and in list\nresponses, and a rejected statement (or a `null` date when listing) when the day is above 12; update the\nbundle.\n\n`source_transaction_id`, `counterparty` and `reference` are limited to 300 characters and `description` to\n4,000 by NetSuite. From bundle version 1.3.2 a rejected line rolls back the whole statement — nothing is\nsaved — and the error message is prefixed with the failing line, e.g. `transactions[1]: …`; with earlier\nbundle versions the statement and the lines before the failing one stay saved and are imported, so\nresending the corrected statement duplicates them. From 1.3.2 a statement with more transactions than one\nrequest can create and fully roll back (about 490) is rejected with `STATEMENT_TOO_LARGE` before anything\nis saved; split it.\nDeleting a statement is not supported.\n",
+                        },
+                        {
+                            "connector": "intuit-bank-feeds",
+                            "description": "A successful create does **not** mean QuickBooks has the statement. This connector is pull-based:\nthe statement is stored on the Apideck side and waits there for Intuit's scheduled pull. That is a\nfundamental difference from `xero`, where a successful push means Xero already holds the data.\nBecause delivery happens later and out of band, `status` reads back as `pending` and does not\nadvance to `success` in this release; a `status` other than `pending` sent on write is rejected.\n\nStatements are validated on the way in, and a violation is **rejected** — never silently dropped:\n\n- At most 1000 entries in `transactions`.\n- Every `source_transaction_id` must be unique, both within the statement and against transactions\n  already submitted for the same bank feed.\n- Transactions must be in chronological order: `posted_date` must be non-decreasing across the\n  array.\n- Posted transactions only — pending or authorization-hold transactions are not accepted.\n- `description` is limited to 255 characters.\n- Every timestamp needs an explicit timezone offset: `start_date`, `end_date` and each\n  transaction's `posted_date` must end in `Z` or `±hh:mm`. A bare local datetime such as\n  `2026-01-15T12:00:00` is rejected, even though the unified `date-time` format permits it.\n- `null` is rejected rather than ignored. Omit an optional field instead of sending `null` for it.\n\nA rejected statement comes back with every violation at once, each naming the rule it broke, so a\nsingle round trip shows all of them.\n\nEach transaction's `transaction_type` reaches QuickBooks as its transaction type; when it\ncontradicts `credit_or_debit` (for example `deposit` on a `debit` line), `credit_or_debit` decides.\n`merchant_category_code` is sent as the merchant category, and `counterparty` as the payee on\n`bank` accounts only — it is not sent for `credit_card` accounts.\n",
+                        },
+                        {
+                            "connector": "plaid-exchange",
+                            "description": "A successful create does **not** mean Plaid has the statement. This connector is pull-based: the\nstatement is stored on the Apideck side and waits there for Plaid to read it. Because delivery\nhappens later and out of band, `status` reads back as `pending` and does not advance to `success`\nin this release; a `status` other than `pending` sent on write is rejected.\n\nStatements are validated on the way in, with the same rules as `intuit-bank-feeds`: at most 1000\n`transactions`, unique `source_transaction_id`s, non-decreasing `posted_date`, posted transactions\nonly, `description` up to 255 characters, an explicit timezone offset on every timestamp, and\n`null` rejected rather than ignored. A rejected statement comes back with every violation at once.\n",
+                        },
+                        {
+                            "connector": "snelstart",
+                            "description": 'SnelStart has no structured bank-statement-import API: the statement is encoded into an MT940\n("MT940 structured") file and uploaded via `POST /v2/bankafschriftbestanden`. `bank_feed_account_id` must\nbe a real bank account number/IBAN already registered in the Bankrekeningen (Bank Accounts) window in the\nSnelStart UI — accounts cannot be listed or registered via the API (bank-feed-accounts is unsupported for\nthis reason), so a mistyped or unregistered account cannot be validated in advance.\n\n`end_balance` and `end_balance_credit_or_debit` are computed from `start_balance` plus the transactions\n(not taken from the request) so the uploaded file is internally consistent; a caller-supplied end balance\nthat disagrees with the transaction total is silently overridden in the response.\n\nThe upload is synchronous, so `status` only ever comes back as `success` or `rejected` — `pending` is not\nreachable. On rejection SnelStart returns a human-readable Dutch explanation (e.g. the account not being\nregistered yet), but the unified response has no field to carry it — a `rejected` status gives no reason.\n\nThere is no read access to previously imported statements: bank-feed-statements list/get is unsupported.\n\nThe encoded MT940 file always declares `EUR` as the statement currency; the unified schema has no\ncurrency field to source a different value from, and non-EUR bank accounts are not supported.\n',
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": "Only `create` is supported. `update` and `delete` are not implemented and are not possible —\nonce a bank statement is created in Twinfield, it cannot be changed.\n\nThere is no endpoint to list bank feed accounts, so `bank_feed_account_id` must be supplied\nby the caller as the target account's IBAN, with no way to validate it beforehand.\n\nThe statement currency defaults to `EUR` when not set on the connection — the unified model\ncarries no per-statement or per-transaction currency field to source it from instead.\nStatements for a non-EUR bank account must have the connection's currency setting configured\naccordingly.\n\n`source_transaction_id` on read is a synthesized composite value (not a Twinfield-native id),\nsince Twinfield's statement transaction lines carry no identifier of their own.\n\nReading a bank feed statement by id (`bank-feed-statements.one`) is currently non-functional —\nevery request fails with a generic server error regardless of request shape. Treat this\noperation as unsupported until further notice.\n",
+                        },
+                        {
+                            "connector": "exact-online-nl",
+                            "description": "Every line is posted to the unallocated account configured on the target bank feed account,\nwhich is what puts it in the bookkeeper's reconciliation queue. An account with no\nunallocated account configured is rejected with a `400` — set one via the `journals`\nresource's `clearing_account`.\n\n`status` always reads as `success`; Exact has no delivery state. `start_balance`/`end_balance`\nare ignored on write, since Exact computes them. `counterparty` and `merchant_category_code`\nare not persisted. Reposting a statement creates a duplicate — Exact does not deduplicate on\n`source_transaction_id`.\n\n`source_transaction_id` is kept in the line's free-text notes field, which the bookkeeper can\nedit in Exact Online. A line edited there reads back with whatever they typed, so treat the\nvalue as advisory when matching against your own records.\n",
+                        },
+                        {
+                            "connector": "exact-online",
+                            "description": "Same as `exact-online-nl`.\n",
+                        },
+                        {
+                            "connector": "exact-online-uk",
+                            "description": "Same as `exact-online-nl`.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Transactions are imported awaiting reconciliation, not posted to the ledger, and multiple\ntransactions per call are supported. The response `id` is the `bank_feed_account_id` supplied,\nso two imports against one account return the same id.\n\nNot every field survives. `transactions[].source_transaction_id` and `.merchant_category_code`\nare accepted but not returned, `.posted_date` keeps the date and drops the time of day, and\n`.transaction_type` reads back derived from the direction rather than as sent. `.description`,\n`.counterparty`, `.reference`, `.amount` and `.credit_or_debit` round-trip unchanged, which\nmakes `reference` the only caller-supplied value available for correlation.\n\nSend `.amount` as a positive number and let `.credit_or_debit` carry the direction — a sign on\nthe amount is ignored in favour of `.credit_or_debit`. A zero amount is rejected. `status`,\n`start_balance`, `end_balance` and `start_date`/`end_date` are not sent; the statement's date\nrange is derived from the transactions themselves.\n\nA statement is imported in the bank account's own currency. A per-transaction currency is\nignored rather than rejected, so send each currency to its own account.\n\nImports are not deduplicated: sending the same statement twice imports every transaction twice,\nand no caller-supplied identifier can prevent it. Within a single import, two transactions\nidentical on every field are collapsed into one without warning — giving them distinct\n`reference` values keeps them apart.\n",
+                        },
+                        {
+                            "connector": "yuki",
+                            "description": "`bank_feed_account_id` is the IBAN of the bank account. The statement is delivered to Yuki as a\nbank file in the administration's archive, which Yuki recognises and books on its own, usually\nwithin a minute. The response carries only `id`, the id of that archive document. Because Yuki\nbooks the file after the response, a successful response means Yuki accepted the file, not that\nthe transactions are booked. Once booked, the lines appear on the\nbank ledger account with their contra entries waiting in Yuki's \"bank transactions to be\nprocessed\" queue for the bookkeeper to match.\n\nThe IBAN does not have to exist in Yuki beforehand: on first import Yuki links it to the bank\nledger account (or creates one), after which the accountant assigns its ledger. Because Yuki never\nrejects an unknown IBAN, the API checks it first and returns a 400 when its check digits are\ninvalid or, for a SEPA country, its length is wrong. A typo that still forms a valid IBAN is not caught.\nThere is no way to list bank accounts through the API, so bank feed accounts are not supported.\n\nA statement for the same IBAN and period as one already imported is accepted and stored, but its\ntransactions are silently skipped, and the response cannot tell the two cases apart — send each\nperiod once. A period that only overlaps an imported one is not treated as a duplicate and is\nbooked, so avoid overlapping periods. Dates are taken as the calendar date they are written in,\noffset included: `2026-06-01T00:00:00+02:00` is 1 June, and a date that does not exist returns\na 400. `start_balance` and `start_balance_credit_or_debit` are required; `end_balance` is\nwritten to the file as the start balance plus the transactions, and a supplied `end_balance` that\ndoes not match is rejected with a 400. Amounts are sent as positive numbers with `credit_or_debit`\ncarrying the direction. The statement currency is always `EUR`.\n\nOnly `description` (falling back to `reference`, then `counterparty`) is visible on the booked\nlines; `source_transaction_id`, `reference` and `counterparty` are carried in the file but not\nshown. `transaction_type` and `merchant_category_code` are not sent. Characters outside the\nLatin-1 range are replaced with `?`, control characters are removed, and line breaks become\nspaces.\n\nA created statement can be listed and read back by its `id` to follow its `status`, which is\n`pending` until Yuki has booked the file and `success` after (see those operations). Poll the\nlist rather than each statement: a list page costs two calls against the domain's daily\nallowance (1,000 on Yuki's free tier) however many statements it holds, and a read by id three. Statements cannot be updated or deleted\nthrough the API; removing one is a bookkeeper action in Yuki.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -730,10 +1004,11 @@ class BankFeedStatements(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingBankFeedStatementsAddResponse(
                 create_bank_feed_statement_response=unmarshal_json_response(
-                    Optional[models.CreateBankFeedStatementResponse], http_res
+                    Optional[models.CreateBankFeedStatementResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -774,10 +1049,9 @@ class BankFeedStatements(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingBankFeedStatementsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -850,6 +1124,7 @@ class BankFeedStatements(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -874,9 +1149,39 @@ class BankFeedStatements(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "freeagent",
+                            "description": "Returns every transaction FreeAgent imported into the bank account between the two dates in\nthe id (`<bank_feed_account_id>:<first posted date>:<last posted date>`), including lines\nfrom other imports covering the same dates. An id in another format, or a range without\nimported transactions, returns 404.\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": "Moneybird has no endpoint to fetch a bank feed statement directly; this operation reads the underlying\nfinancial mutation by id (the same id returned by the list operation and by creating a statement).\n",
+                        },
+                        {
+                            "connector": "intuit-bank-feeds",
+                            "description": "`transactions` **is** returned here, unlike the list operation, which carries statement metadata\nonly. Fetching a statement by id is the only way to read its transactions.\n\n`status` reads back as `pending`. See the create operation for why it does not advance to\n`success` in this release.\n",
+                        },
+                        {
+                            "connector": "plaid-exchange",
+                            "description": "`transactions` **is** returned here, unlike the list operation, which carries statement metadata\nonly. Fetching a statement by id is the only way to read its transactions.\n\n`status` reads back as `pending`. See the create operation for why it does not advance to\n`success` in this release.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "The `id` is the bank account's own id, and the statement is that account's current set of\ntransactions awaiting reconciliation — not a stored copy of an import. It includes transactions\nentered in Zoho Books directly and excludes everything already reconciled, so an account that\nhas been worked through returns `200` with an empty `transactions` array rather than a `404`.\n\n`transactions[].source_transaction_id` is not stored and reads back absent. Correlate on\n`transactions[].reference`, which round-trips unchanged.\n",
+                        },
+                        {
+                            "connector": "yuki",
+                            "description": "`id` is the archive document id returned on create. Balances and `transactions` are read back\nfrom the statement file stored in Yuki's archive, so a statement created through this API comes\nback complete. `source_transaction_id`, `reference`, `counterparty` and `description` read back\nas written to the file: cleaned as described on create and clipped to the CAMT.053 field lengths\n(35 characters for `source_transaction_id` and `reference`, 140 for the others). A transaction\nsent without `description` reads back with its `reference`, or else its `counterparty`, as the\ndescription. A CAMT.053 file a bookkeeper uploaded directly is read the same way, except that a\nbatch line covering several payments has no `counterparty` or `reference`; any other bank file\n(such as CODA or MT940) is returned with its header only.\n\n`status` is `success` once Yuki has booked the file and `pending` otherwise, including straight\nafter create, before Yuki has picked the file up. Yuki never reports a rejection, so a file it\ncould not process, or a duplicate of an already imported period, stays `pending`. An id that is\nnot a bank statement in Yuki's archive returns `404`. Reading the stored file makes each read\nthree web service calls, and Yuki's free tier allows 1,000 calls a day per domain. To follow\n`status` after a create, list statements instead: a list page is two calls however many\nstatements it holds. A statement not on the list yet has not been picked up and is `pending`.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -884,10 +1189,11 @@ class BankFeedStatements(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingBankFeedStatementsOneResponse(
                 get_bank_feed_statement_response=unmarshal_json_response(
-                    Optional[models.GetBankFeedStatementResponse], http_res
+                    Optional[models.GetBankFeedStatementResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -928,10 +1234,9 @@ class BankFeedStatements(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingBankFeedStatementsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1004,6 +1309,7 @@ class BankFeedStatements(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1028,9 +1334,39 @@ class BankFeedStatements(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "freeagent",
+                            "description": "Returns every transaction FreeAgent imported into the bank account between the two dates in\nthe id (`<bank_feed_account_id>:<first posted date>:<last posted date>`), including lines\nfrom other imports covering the same dates. An id in another format, or a range without\nimported transactions, returns 404.\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": "Moneybird has no endpoint to fetch a bank feed statement directly; this operation reads the underlying\nfinancial mutation by id (the same id returned by the list operation and by creating a statement).\n",
+                        },
+                        {
+                            "connector": "intuit-bank-feeds",
+                            "description": "`transactions` **is** returned here, unlike the list operation, which carries statement metadata\nonly. Fetching a statement by id is the only way to read its transactions.\n\n`status` reads back as `pending`. See the create operation for why it does not advance to\n`success` in this release.\n",
+                        },
+                        {
+                            "connector": "plaid-exchange",
+                            "description": "`transactions` **is** returned here, unlike the list operation, which carries statement metadata\nonly. Fetching a statement by id is the only way to read its transactions.\n\n`status` reads back as `pending`. See the create operation for why it does not advance to\n`success` in this release.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "The `id` is the bank account's own id, and the statement is that account's current set of\ntransactions awaiting reconciliation — not a stored copy of an import. It includes transactions\nentered in Zoho Books directly and excludes everything already reconciled, so an account that\nhas been worked through returns `200` with an empty `transactions` array rather than a `404`.\n\n`transactions[].source_transaction_id` is not stored and reads back absent. Correlate on\n`transactions[].reference`, which round-trips unchanged.\n",
+                        },
+                        {
+                            "connector": "yuki",
+                            "description": "`id` is the archive document id returned on create. Balances and `transactions` are read back\nfrom the statement file stored in Yuki's archive, so a statement created through this API comes\nback complete. `source_transaction_id`, `reference`, `counterparty` and `description` read back\nas written to the file: cleaned as described on create and clipped to the CAMT.053 field lengths\n(35 characters for `source_transaction_id` and `reference`, 140 for the others). A transaction\nsent without `description` reads back with its `reference`, or else its `counterparty`, as the\ndescription. A CAMT.053 file a bookkeeper uploaded directly is read the same way, except that a\nbatch line covering several payments has no `counterparty` or `reference`; any other bank file\n(such as CODA or MT940) is returned with its header only.\n\n`status` is `success` once Yuki has booked the file and `pending` otherwise, including straight\nafter create, before Yuki has picked the file up. Yuki never reports a rejection, so a file it\ncould not process, or a duplicate of an already imported period, stays `pending`. An id that is\nnot a bank statement in Yuki's archive returns `404`. Reading the stored file makes each read\nthree web service calls, and Yuki's free tier allows 1,000 calls a day per domain. To follow\n`status` after a create, list statements instead: a list page is two calls however many\nstatements it holds. A statement not on the list yet has not been picked up and is `pending`.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1038,10 +1374,11 @@ class BankFeedStatements(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingBankFeedStatementsOneResponse(
                 get_bank_feed_statement_response=unmarshal_json_response(
-                    Optional[models.GetBankFeedStatementResponse], http_res
+                    Optional[models.GetBankFeedStatementResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1082,10 +1419,9 @@ class BankFeedStatements(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingBankFeedStatementsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1107,7 +1443,7 @@ class BankFeedStatements(BaseSDK):
         end_balance: Optional[float] = None,
         end_balance_credit_or_debit: Optional[models.CreditOrDebit] = None,
         transactions: Optional[
-            Union[List[models.Transactions], List[models.TransactionsTypedDict]]
+            Union[Iterable[models.Transactions], Iterable[models.TransactionsTypedDict]]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1192,6 +1528,7 @@ class BankFeedStatements(BaseSDK):
                 "json",
                 models.BankFeedStatementInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1216,9 +1553,19 @@ class BankFeedStatements(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "freeagent",
+                            "description": "Not supported: a FreeAgent statement is the set of transactions an import created and cannot\nbe changed. Delete it (while none of its transactions has been explained) and create it\nagain.\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1226,10 +1573,11 @@ class BankFeedStatements(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingBankFeedStatementsUpdateResponse(
                 update_bank_feed_statement_response=unmarshal_json_response(
-                    Optional[models.UpdateBankFeedStatementResponse], http_res
+                    Optional[models.UpdateBankFeedStatementResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1270,10 +1618,9 @@ class BankFeedStatements(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingBankFeedStatementsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1295,7 +1642,7 @@ class BankFeedStatements(BaseSDK):
         end_balance: Optional[float] = None,
         end_balance_credit_or_debit: Optional[models.CreditOrDebit] = None,
         transactions: Optional[
-            Union[List[models.Transactions], List[models.TransactionsTypedDict]]
+            Union[Iterable[models.Transactions], Iterable[models.TransactionsTypedDict]]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1380,6 +1727,7 @@ class BankFeedStatements(BaseSDK):
                 "json",
                 models.BankFeedStatementInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1404,9 +1752,19 @@ class BankFeedStatements(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "freeagent",
+                            "description": "Not supported: a FreeAgent statement is the set of transactions an import created and cannot\nbe changed. Delete it (while none of its transactions has been explained) and create it\nagain.\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1414,10 +1772,11 @@ class BankFeedStatements(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingBankFeedStatementsUpdateResponse(
                 update_bank_feed_statement_response=unmarshal_json_response(
-                    Optional[models.UpdateBankFeedStatementResponse], http_res
+                    Optional[models.UpdateBankFeedStatementResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1458,10 +1817,9 @@ class BankFeedStatements(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingBankFeedStatementsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1528,6 +1886,7 @@ class BankFeedStatements(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1552,9 +1911,27 @@ class BankFeedStatements(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "freeagent",
+                            "description": "Deletes every transaction FreeAgent imported into the bank account between the two dates in\nthe id. If any of them has already been explained (matched to an invoice, bill, transfer or\nexpense) the request is refused with 409 and nothing is deleted; remove those explanations\nfirst. Each transaction is deleted with its own FreeAgent request, so a large statement uses\na correspondingly large share of FreeAgent's rate limit; if a delete stops part-way, the\nerror says how many were removed and repeating the request deletes the rest.\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": "Moneybird can only delete an entire bank statement batch, not a single transaction. The connector\nresolves the passed id (a transaction id, as returned by list/get-one/create) to its parent statement\nand deletes that statement — if the statement contains other transactions from the same creation\nrequest, they are deleted too, not just the transaction identified by `id`.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Removes the account's most recent import, whichever `id` is passed; call it again to remove the\none before that. Individual transactions cannot be removed. An account with nothing awaiting\nreconciliation is answered with a 400 naming the account.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1562,10 +1939,11 @@ class BankFeedStatements(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingBankFeedStatementsDeleteResponse(
                 delete_bank_feed_statement_response=unmarshal_json_response(
-                    Optional[models.DeleteBankFeedStatementResponse], http_res
+                    Optional[models.DeleteBankFeedStatementResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1606,10 +1984,9 @@ class BankFeedStatements(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingBankFeedStatementsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1676,6 +2053,7 @@ class BankFeedStatements(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1700,9 +2078,27 @@ class BankFeedStatements(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "freeagent",
+                            "description": "Deletes every transaction FreeAgent imported into the bank account between the two dates in\nthe id. If any of them has already been explained (matched to an invoice, bill, transfer or\nexpense) the request is refused with 409 and nothing is deleted; remove those explanations\nfirst. Each transaction is deleted with its own FreeAgent request, so a large statement uses\na correspondingly large share of FreeAgent's rate limit; if a delete stops part-way, the\nerror says how many were removed and repeating the request deletes the rest.\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": "Moneybird can only delete an entire bank statement batch, not a single transaction. The connector\nresolves the passed id (a transaction id, as returned by list/get-one/create) to its parent statement\nand deletes that statement — if the statement contains other transactions from the same creation\nrequest, they are deleted too, not just the transaction identified by `id`.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Removes the account's most recent import, whichever `id` is passed; call it again to remove the\none before that. Individual transactions cannot be removed. An account with nothing awaiting\nreconciliation is answered with a 400 naming the account.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1710,10 +2106,11 @@ class BankFeedStatements(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingBankFeedStatementsDeleteResponse(
                 delete_bank_feed_statement_response=unmarshal_json_response(
-                    Optional[models.DeleteBankFeedStatementResponse], http_res
+                    Optional[models.DeleteBankFeedStatementResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1754,10 +2151,9 @@ class BankFeedStatements(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingBankFeedStatementsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

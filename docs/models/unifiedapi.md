@@ -2,6 +2,14 @@
 
 Name of Apideck Unified API
 
+## Example Usage
+
+```python
+from apideck_unify.models import UnifiedAPI
+
+value = UnifiedAPI.ACCOUNTING
+```
+
 
 ## Values
 

@@ -1,5 +1,4 @@
-# PurchaseOrders
-(*accounting.purchase_orders*)
+# Accounting.PurchaseOrders
 
 ## Overview
 
@@ -28,7 +27,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.purchase_orders.list(raw=False, service_id="salesforce", company_id="12345", pass_through={
@@ -97,7 +96,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.purchase_orders.create(raw=False, service_id="salesforce", company_id_param="12345", display_id="12345", po_number="90000117", reference="123456", supplier={
@@ -129,7 +128,7 @@ with Apideck(
             "notes": "Address notes or delivery instructions.",
             "row_version": "1-12345",
         },
-    }, subsidiary_id="12345", company_id="12345", location_id="12345", department_id="12345", status=apideck_unify.PurchaseOrderStatus.OPEN, issued_date=date.fromisoformat("2020-09-30"), delivery_date=date.fromisoformat("2020-09-30"), expected_arrival_date=date.fromisoformat("2020-09-30"), currency=apideck_unify.Currency.USD, currency_rate=0.69, sub_total=27500, total_tax=2500, total=27500, tax_inclusive=True, line_items=[
+    }, subsidiary_id="12345", company_id="12345", location_id="12345", department_id="12345", status=apideck_unify.PurchaseOrderStatus.OPEN, issued_date=date.fromisoformat("2020-09-30"), delivery_date=date.fromisoformat("2020-09-30"), expected_arrival_date=date.fromisoformat("2020-09-30"), currency=apideck_unify.Currency.USD, currency_rate=0.69, sub_total=27500.0, total_tax=2500.0, total=27500.0, tax_inclusive=True, line_items=[
         {
             "id": "12345",
             "row_id": "12345",
@@ -137,9 +136,9 @@ with Apideck(
             "line_number": 1,
             "description": "Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.",
             "type": apideck_unify.InvoiceLineItemType.SALES_ITEM,
-            "tax_amount": 27500,
-            "total_amount": 27500,
-            "quantity": 1,
+            "tax_amount": 27500.0,
+            "total_amount": 27500.0,
+            "quantity": 1.0,
             "unit_price": 27500.5,
             "unit_of_measure": "pc.",
             "discount_percentage": 0.01,
@@ -153,7 +152,7 @@ with Apideck(
             },
             "tax_rate": {
                 "id": "123456",
-                "rate": 10,
+                "rate": 10.0,
             },
             "tracking_categories": [
                 {
@@ -179,19 +178,19 @@ with Apideck(
                     "id": "2389328923893298",
                     "name": "employee_level",
                     "description": "Employee Level",
-                    "value": 10,
+                    "value": 10.0,
                 },
                 {
                     "id": "2389328923893298",
                     "name": "employee_level",
                     "description": "Employee Level",
-                    "value": 10,
+                    "value": 10.0,
                 },
                 {
                     "id": "2389328923893298",
                     "name": "employee_level",
                     "description": "Employee Level",
-                    "value": 10,
+                    "value": 10.0,
                 },
             ],
             "row_version": "1-12345",
@@ -281,7 +280,7 @@ with Apideck(
             "id": "2389328923893298",
             "name": "employee_level",
             "description": "Employee Level",
-            "value": 10,
+            "value": 10.0,
         },
     ], row_version="1-12345", pass_through=[
         {
@@ -435,7 +434,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.purchase_orders.get(id="<id>", service_id="salesforce", company_id="12345", raw=False)
@@ -492,7 +491,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.purchase_orders.update(id="<id>", service_id="salesforce", company_id_param="12345", raw=False, display_id="12345", po_number="90000117", reference="123456", supplier={
@@ -524,7 +523,7 @@ with Apideck(
             "notes": "Address notes or delivery instructions.",
             "row_version": "1-12345",
         },
-    }, subsidiary_id="12345", company_id="12345", location_id="12345", department_id="12345", status=apideck_unify.PurchaseOrderStatus.OPEN, issued_date=date.fromisoformat("2020-09-30"), delivery_date=date.fromisoformat("2020-09-30"), expected_arrival_date=date.fromisoformat("2020-09-30"), currency=apideck_unify.Currency.USD, currency_rate=0.69, sub_total=27500, total_tax=2500, total=27500, tax_inclusive=True, line_items=[
+    }, subsidiary_id="12345", company_id="12345", location_id="12345", department_id="12345", status=apideck_unify.PurchaseOrderStatus.OPEN, issued_date=date.fromisoformat("2020-09-30"), delivery_date=date.fromisoformat("2020-09-30"), expected_arrival_date=date.fromisoformat("2020-09-30"), currency=apideck_unify.Currency.USD, currency_rate=0.69, sub_total=27500.0, total_tax=2500.0, total=27500.0, tax_inclusive=True, line_items=[
         {
             "id": "12345",
             "row_id": "12345",
@@ -532,9 +531,9 @@ with Apideck(
             "line_number": 1,
             "description": "Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.",
             "type": apideck_unify.InvoiceLineItemType.SALES_ITEM,
-            "tax_amount": 27500,
-            "total_amount": 27500,
-            "quantity": 1,
+            "tax_amount": 27500.0,
+            "total_amount": 27500.0,
+            "quantity": 1.0,
             "unit_price": 27500.5,
             "unit_of_measure": "pc.",
             "discount_percentage": 0.01,
@@ -548,7 +547,7 @@ with Apideck(
             },
             "tax_rate": {
                 "id": "123456",
-                "rate": 10,
+                "rate": 10.0,
             },
             "tracking_categories": [
                 {
@@ -811,7 +810,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.purchase_orders.delete(id="<id>", service_id="salesforce", company_id="12345", raw=False)

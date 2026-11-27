@@ -1,5 +1,13 @@
 # ConnectorSettingType
 
+## Example Usage
+
+```python
+from apideck_unify.models import ConnectorSettingType
+
+value = ConnectorSettingType.TEXT
+```
+
 
 ## Values
 

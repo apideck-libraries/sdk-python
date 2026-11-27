@@ -19,14 +19,15 @@ from apideck_unify.types import (
     OptionalNullable,
     UNSET,
     UNSET_SENTINEL,
+    current_exclude_none,
+    serialize_with_info,
 )
-from apideck_unify.utils import validate_open_enum
+from apideck_unify.types.basemodel import current_filtered_dump
 from datetime import date, datetime
 from enum import Enum
 from pydantic import field_serializer, model_serializer
-from pydantic.functional_validators import PlainValidator
 from typing import List, Optional
-from typing_extensions import Annotated, NotRequired, TypedDict
+from typing_extensions import NotRequired, TypedDict
 
 
 class ProjectProjectStatus(str, Enum, metaclass=utils.OpenEnumMeta):
@@ -80,6 +81,29 @@ class ProjectDepartment(BaseModel):
     name: Optional[str] = None
     r"""Name of the department"""
 
+    @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
+    def serialize_model(self, handler):
+        optional_fields = set(["id", "name"])
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
+        serialized = handler(self)
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+
+            if val != UNSET_SENTINEL:
+                if val is not None or k not in optional_fields:
+                    m[k] = val
+
+        return m
+
 
 class ParentProjectTypedDict(TypedDict):
     r"""Parent project if this is a subproject"""
@@ -98,6 +122,29 @@ class ParentProject(BaseModel):
 
     name: Optional[str] = None
     r"""Name of the parent project"""
+
+    @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
+    def serialize_model(self, handler):
+        optional_fields = set(["id", "name"])
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
+        serialized = handler(self)
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+
+            if val != UNSET_SENTINEL:
+                if val is not None or k not in optional_fields:
+                    m[k] = val
+
+        return m
 
 
 class BillingMethod(str, Enum, metaclass=utils.OpenEnumMeta):
@@ -240,23 +287,16 @@ class Project(BaseModel):
     description: OptionalNullable[str] = UNSET
     r"""Detailed description of the project"""
 
-    status: Annotated[
-        OptionalNullable[ProjectProjectStatus],
-        PlainValidator(validate_open_enum(False)),
-    ] = UNSET
+    status: OptionalNullable[ProjectProjectStatus] = UNSET
     r"""Current status of the project"""
 
     active: OptionalNullable[bool] = UNSET
     r"""Indicates whether the project is currently active or inactive"""
 
-    project_type: Annotated[
-        OptionalNullable[ProjectType], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    project_type: OptionalNullable[ProjectType] = UNSET
     r"""Type or category of the project"""
 
-    priority: Annotated[
-        OptionalNullable[Priority], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    priority: OptionalNullable[Priority] = UNSET
     r"""Priority level of the project"""
 
     completion_percentage: OptionalNullable[float] = UNSET
@@ -286,9 +326,7 @@ class Project(BaseModel):
     parent_project: OptionalNullable[ParentProject] = UNSET
     r"""Parent project if this is a subproject"""
 
-    currency: Annotated[
-        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    currency: OptionalNullable[Currency] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     budget_amount: OptionalNullable[float] = UNSET
@@ -309,17 +347,13 @@ class Project(BaseModel):
     hourly_rate: OptionalNullable[float] = UNSET
     r"""Default hourly rate for project work"""
 
-    billing_method: Annotated[
-        OptionalNullable[BillingMethod], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    billing_method: OptionalNullable[BillingMethod] = UNSET
     r"""Method used for billing this project"""
 
     is_billable: OptionalNullable[bool] = True
     r"""Indicates if the project is billable to the customer"""
 
-    phase: Annotated[
-        OptionalNullable[ProjectPhase], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    phase: OptionalNullable[ProjectPhase] = UNSET
     r"""Current phase of the project lifecycle"""
 
     tax_rate: Optional[LinkedTaxRate] = None
@@ -341,9 +375,7 @@ class Project(BaseModel):
     profit_margin: OptionalNullable[float] = UNSET
     r"""Expected profit margin percentage for the project"""
 
-    schedule_status: Annotated[
-        OptionalNullable[ScheduleStatus], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    schedule_status: OptionalNullable[ScheduleStatus] = UNSET
     r"""Current status of project schedule compared to plan"""
 
     addresses: Optional[List[Address]] = None
@@ -433,115 +465,121 @@ class Project(BaseModel):
         return value
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = [
-            "id",
-            "downstream_id",
-            "display_id",
-            "reference_id",
-            "description",
-            "status",
-            "active",
-            "project_type",
-            "priority",
-            "completion_percentage",
-            "start_date",
-            "end_date",
-            "completion_date",
-            "customer",
-            "department",
-            "company_id",
-            "owner_id",
-            "parent_project",
-            "currency",
-            "budget_amount",
-            "approved_amount",
-            "actual_amount",
-            "budget_hours",
-            "actual_hours",
-            "hourly_rate",
-            "billing_method",
-            "is_billable",
-            "phase",
-            "tax_rate",
-            "tracking_categories",
-            "tags",
-            "notes",
-            "contract_number",
-            "profit_margin",
-            "schedule_status",
-            "addresses",
-            "team_size",
-            "custom_fields",
-            "row_version",
-            "updated_by",
-            "created_by",
-            "created_at",
-            "updated_at",
-        ]
-        nullable_fields = [
-            "downstream_id",
-            "display_id",
-            "reference_id",
-            "description",
-            "status",
-            "active",
-            "project_type",
-            "priority",
-            "completion_percentage",
-            "start_date",
-            "end_date",
-            "completion_date",
-            "customer",
-            "department",
-            "company_id",
-            "owner_id",
-            "parent_project",
-            "currency",
-            "budget_amount",
-            "approved_amount",
-            "actual_amount",
-            "budget_hours",
-            "actual_hours",
-            "hourly_rate",
-            "billing_method",
-            "is_billable",
-            "phase",
-            "tracking_categories",
-            "notes",
-            "contract_number",
-            "profit_margin",
-            "schedule_status",
-            "team_size",
-            "row_version",
-            "updated_by",
-            "created_by",
-            "created_at",
-            "updated_at",
-        ]
-        null_default_fields = []
-
+        optional_fields = set(
+            [
+                "id",
+                "downstream_id",
+                "display_id",
+                "reference_id",
+                "description",
+                "status",
+                "active",
+                "project_type",
+                "priority",
+                "completion_percentage",
+                "start_date",
+                "end_date",
+                "completion_date",
+                "customer",
+                "department",
+                "company_id",
+                "owner_id",
+                "parent_project",
+                "currency",
+                "budget_amount",
+                "approved_amount",
+                "actual_amount",
+                "budget_hours",
+                "actual_hours",
+                "hourly_rate",
+                "billing_method",
+                "is_billable",
+                "phase",
+                "tax_rate",
+                "tracking_categories",
+                "tags",
+                "notes",
+                "contract_number",
+                "profit_margin",
+                "schedule_status",
+                "addresses",
+                "team_size",
+                "custom_fields",
+                "row_version",
+                "updated_by",
+                "created_by",
+                "created_at",
+                "updated_at",
+            ]
+        )
+        nullable_fields = set(
+            [
+                "downstream_id",
+                "display_id",
+                "reference_id",
+                "description",
+                "status",
+                "active",
+                "project_type",
+                "priority",
+                "completion_percentage",
+                "start_date",
+                "end_date",
+                "completion_date",
+                "customer",
+                "department",
+                "company_id",
+                "owner_id",
+                "parent_project",
+                "currency",
+                "budget_amount",
+                "approved_amount",
+                "actual_amount",
+                "budget_hours",
+                "actual_hours",
+                "hourly_rate",
+                "billing_method",
+                "is_billable",
+                "phase",
+                "tracking_categories",
+                "notes",
+                "contract_number",
+                "profit_margin",
+                "schedule_status",
+                "team_size",
+                "row_version",
+                "updated_by",
+                "created_by",
+                "created_at",
+                "updated_at",
+            ]
+        )
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m
 
@@ -634,23 +672,16 @@ class ProjectInput(BaseModel):
     description: OptionalNullable[str] = UNSET
     r"""Detailed description of the project"""
 
-    status: Annotated[
-        OptionalNullable[ProjectProjectStatus],
-        PlainValidator(validate_open_enum(False)),
-    ] = UNSET
+    status: OptionalNullable[ProjectProjectStatus] = UNSET
     r"""Current status of the project"""
 
     active: OptionalNullable[bool] = UNSET
     r"""Indicates whether the project is currently active or inactive"""
 
-    project_type: Annotated[
-        OptionalNullable[ProjectType], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    project_type: OptionalNullable[ProjectType] = UNSET
     r"""Type or category of the project"""
 
-    priority: Annotated[
-        OptionalNullable[Priority], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    priority: OptionalNullable[Priority] = UNSET
     r"""Priority level of the project"""
 
     completion_percentage: OptionalNullable[float] = UNSET
@@ -680,9 +711,7 @@ class ProjectInput(BaseModel):
     parent_project: OptionalNullable[ParentProject] = UNSET
     r"""Parent project if this is a subproject"""
 
-    currency: Annotated[
-        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    currency: OptionalNullable[Currency] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     budget_amount: OptionalNullable[float] = UNSET
@@ -697,17 +726,13 @@ class ProjectInput(BaseModel):
     hourly_rate: OptionalNullable[float] = UNSET
     r"""Default hourly rate for project work"""
 
-    billing_method: Annotated[
-        OptionalNullable[BillingMethod], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    billing_method: OptionalNullable[BillingMethod] = UNSET
     r"""Method used for billing this project"""
 
     is_billable: OptionalNullable[bool] = True
     r"""Indicates if the project is billable to the customer"""
 
-    phase: Annotated[
-        OptionalNullable[ProjectPhase], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    phase: OptionalNullable[ProjectPhase] = UNSET
     r"""Current phase of the project lifecycle"""
 
     tax_rate: Optional[LinkedTaxRateInput] = None
@@ -729,9 +754,7 @@ class ProjectInput(BaseModel):
     profit_margin: OptionalNullable[float] = UNSET
     r"""Expected profit margin percentage for the project"""
 
-    schedule_status: Annotated[
-        OptionalNullable[ScheduleStatus], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    schedule_status: OptionalNullable[ScheduleStatus] = UNSET
     r"""Current status of project schedule compared to plan"""
 
     addresses: Optional[List[Address]] = None
@@ -809,99 +832,105 @@ class ProjectInput(BaseModel):
         return value
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = [
-            "display_id",
-            "reference_id",
-            "description",
-            "status",
-            "active",
-            "project_type",
-            "priority",
-            "completion_percentage",
-            "start_date",
-            "end_date",
-            "completion_date",
-            "customer",
-            "department",
-            "company_id",
-            "owner_id",
-            "parent_project",
-            "currency",
-            "budget_amount",
-            "approved_amount",
-            "budget_hours",
-            "hourly_rate",
-            "billing_method",
-            "is_billable",
-            "phase",
-            "tax_rate",
-            "tracking_categories",
-            "tags",
-            "notes",
-            "contract_number",
-            "profit_margin",
-            "schedule_status",
-            "addresses",
-            "team_size",
-            "custom_fields",
-            "row_version",
-        ]
-        nullable_fields = [
-            "display_id",
-            "reference_id",
-            "description",
-            "status",
-            "active",
-            "project_type",
-            "priority",
-            "completion_percentage",
-            "start_date",
-            "end_date",
-            "completion_date",
-            "customer",
-            "department",
-            "company_id",
-            "owner_id",
-            "parent_project",
-            "currency",
-            "budget_amount",
-            "approved_amount",
-            "budget_hours",
-            "hourly_rate",
-            "billing_method",
-            "is_billable",
-            "phase",
-            "tracking_categories",
-            "notes",
-            "contract_number",
-            "profit_margin",
-            "schedule_status",
-            "team_size",
-            "row_version",
-        ]
-        null_default_fields = []
-
+        optional_fields = set(
+            [
+                "display_id",
+                "reference_id",
+                "description",
+                "status",
+                "active",
+                "project_type",
+                "priority",
+                "completion_percentage",
+                "start_date",
+                "end_date",
+                "completion_date",
+                "customer",
+                "department",
+                "company_id",
+                "owner_id",
+                "parent_project",
+                "currency",
+                "budget_amount",
+                "approved_amount",
+                "budget_hours",
+                "hourly_rate",
+                "billing_method",
+                "is_billable",
+                "phase",
+                "tax_rate",
+                "tracking_categories",
+                "tags",
+                "notes",
+                "contract_number",
+                "profit_margin",
+                "schedule_status",
+                "addresses",
+                "team_size",
+                "custom_fields",
+                "row_version",
+            ]
+        )
+        nullable_fields = set(
+            [
+                "display_id",
+                "reference_id",
+                "description",
+                "status",
+                "active",
+                "project_type",
+                "priority",
+                "completion_percentage",
+                "start_date",
+                "end_date",
+                "completion_date",
+                "customer",
+                "department",
+                "company_id",
+                "owner_id",
+                "parent_project",
+                "currency",
+                "budget_amount",
+                "approved_amount",
+                "budget_hours",
+                "hourly_rate",
+                "billing_method",
+                "is_billable",
+                "phase",
+                "tracking_categories",
+                "notes",
+                "contract_number",
+                "profit_margin",
+                "schedule_status",
+                "team_size",
+                "row_version",
+            ]
+        )
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m

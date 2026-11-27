@@ -2,6 +2,16 @@
 
 The field on which to sort the Goods Receipts
 
+## Example Usage
+
+```python
+from apideck_unify.models import GoodsReceiptsSortBy
+
+value = GoodsReceiptsSortBy.UPDATED_AT
+
+# Open enum: unrecognized values are captured as UnrecognizedStr
+```
+
 
 ## Values
 

@@ -10,7 +10,13 @@ from .updateuploadsessionresponse import (
     UpdateUploadSessionResponse,
     UpdateUploadSessionResponseTypedDict,
 )
-from apideck_unify.types import BaseModel
+from apideck_unify.types import (
+    BaseModel,
+    UNSET_SENTINEL,
+    current_exclude_none,
+    serialize_with_info,
+)
+from apideck_unify.types.basemodel import current_filtered_dump
 from apideck_unify.utils import (
     FieldMetadata,
     HeaderMetadata,
@@ -20,7 +26,8 @@ from apideck_unify.utils import (
 )
 import io
 import pydantic
-from typing import Dict, IO, List, Optional, Union
+from pydantic import model_serializer
+from typing import IO, Optional, Union
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -51,13 +58,36 @@ class FileStorageUploadSessionsUploadGlobals(BaseModel):
     ] = None
     r"""The ID of your Unify application"""
 
+    @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
+    def serialize_model(self, handler):
+        optional_fields = set(["consumerId", "appId"])
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
+        serialized = handler(self)
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+
+            if val != UNSET_SENTINEL:
+                if val is not None or k not in optional_fields:
+                    m[k] = val
+
+        return m
+
 
 class FileStorageUploadSessionsUploadRequestTypedDict(TypedDict):
     id: str
     r"""ID of the record you are acting upon."""
     part_number: float
     r"""Part number of the file part being uploaded."""
-    request_body: Union[bytes, IO[bytes], io.BufferedReader]
+    request_body: Union[bytes, IO[bytes], io.IOBase]
     consumer_id: NotRequired[str]
     r"""ID of the consumer which you want to get or push data from"""
     app_id: NotRequired[str]
@@ -82,7 +112,7 @@ class FileStorageUploadSessionsUploadRequest(BaseModel):
     r"""Part number of the file part being uploaded."""
 
     request_body: Annotated[
-        Union[bytes, IO[bytes], io.BufferedReader],
+        Union[bytes, IO[bytes], io.IOBase],
         FieldMetadata(request=RequestMetadata(media_type="*/*")),
     ]
 
@@ -119,10 +149,32 @@ class FileStorageUploadSessionsUploadRequest(BaseModel):
     ] = False
     r"""Include raw response. Mostly used for debugging purposes"""
 
+    @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
+    def serialize_model(self, handler):
+        optional_fields = set(["consumerId", "appId", "serviceId", "digest", "raw"])
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
+        serialized = handler(self)
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+
+            if val != UNSET_SENTINEL:
+                if val is not None or k not in optional_fields:
+                    m[k] = val
+
+        return m
+
 
 class FileStorageUploadSessionsUploadResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
-    headers: Dict[str, List[str]]
     update_upload_session_response: NotRequired[UpdateUploadSessionResponseTypedDict]
     r"""UploadSessions"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -132,10 +184,33 @@ class FileStorageUploadSessionsUploadResponseTypedDict(TypedDict):
 class FileStorageUploadSessionsUploadResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
 
-    headers: Dict[str, List[str]]
-
     update_upload_session_response: Optional[UpdateUploadSessionResponse] = None
     r"""UploadSessions"""
 
     unexpected_error_response: Optional[UnexpectedErrorResponse] = None
     r"""Unexpected error"""
+
+    @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
+    def serialize_model(self, handler):
+        optional_fields = set(
+            ["UpdateUploadSessionResponse", "UnexpectedErrorResponse"]
+        )
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
+        serialized = handler(self)
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+
+            if val != UNSET_SENTINEL:
+                if val is not None or k not in optional_fields:
+                    m[k] = val
+
+        return m

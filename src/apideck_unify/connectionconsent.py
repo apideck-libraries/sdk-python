@@ -89,6 +89,7 @@ class ConnectionConsent(BaseSDK):
                 "json",
                 models.UpdateConsentRequest,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -113,9 +114,11 @@ class ConnectionConsent(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["vault"],
+                extensions={"x-apideck-api": "vault"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -123,10 +126,9 @@ class ConnectionConsent(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.VaultConnectionConsentUpdateResponse(
                 update_consent_response=unmarshal_json_response(
-                    Optional[models.UpdateConsentResponse], http_res
+                    Optional[models.UpdateConsentResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -162,10 +164,9 @@ class ConnectionConsent(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.VaultConnectionConsentUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -249,6 +250,7 @@ class ConnectionConsent(BaseSDK):
                 "json",
                 models.UpdateConsentRequest,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -273,9 +275,11 @@ class ConnectionConsent(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["vault"],
+                extensions={"x-apideck-api": "vault"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -283,10 +287,9 @@ class ConnectionConsent(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.VaultConnectionConsentUpdateResponse(
                 update_consent_response=unmarshal_json_response(
-                    Optional[models.UpdateConsentResponse], http_res
+                    Optional[models.UpdateConsentResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -322,10 +325,9 @@ class ConnectionConsent(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.VaultConnectionConsentUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

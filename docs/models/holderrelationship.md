@@ -2,6 +2,16 @@
 
 The holder's relationship to the account.
 
+## Example Usage
+
+```python
+from apideck_unify.models import HolderRelationship
+
+value = HolderRelationship.AUTHORIZED_SIGNER
+
+# Open enum: unrecognized values are captured as UnrecognizedStr
+```
+
 
 ## Values
 

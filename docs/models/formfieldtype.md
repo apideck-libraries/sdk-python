@@ -1,5 +1,13 @@
 # FormFieldType
 
+## Example Usage
+
+```python
+from apideck_unify.models import FormFieldType
+
+value = FormFieldType.TEXT
+```
+
 
 ## Values
 

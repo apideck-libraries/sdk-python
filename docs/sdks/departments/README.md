@@ -1,5 +1,4 @@
-# Departments
-(*accounting.departments*)
+# Accounting.Departments
 
 ## Overview
 
@@ -26,7 +25,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.departments.list(raw=False, service_id="salesforce", company_id="12345", limit=20, fields="id,updated_at", filter_={
@@ -90,7 +89,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.departments.create(raw=False, service_id="salesforce", company_id="12345", parent_id="12345", display_id="123456", name="Sales", status=apideck_unify.DepartmentStatus.ACTIVE, subsidiaries=[
@@ -176,7 +175,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.departments.get(id="<id>", service_id="salesforce", company_id="12345", raw=False, fields="id,updated_at")
@@ -233,7 +232,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.departments.update(id="<id>", service_id="salesforce", raw=False, parent_id="12345", display_id="123456", name="Sales", status=apideck_unify.DepartmentStatus.ACTIVE, subsidiaries=[
@@ -335,7 +334,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.departments.delete(id="<id>", service_id="salesforce", raw=False)

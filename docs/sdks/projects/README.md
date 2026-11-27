@@ -1,5 +1,4 @@
-# Projects
-(*accounting.projects*)
+# Accounting.Projects
 
 ## Overview
 
@@ -28,7 +27,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.projects.list(raw=False, service_id="salesforce", company_id="12345", limit=20, filter_={
@@ -99,7 +98,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.projects.create(name="Website Redesign Project", raw=False, service_id="salesforce", company_id_param="12345", display_id="PROJ-001", reference_id="WD-REF-2024-001", description="Complete redesign of the company website including new branding and improved user experience", status=apideck_unify.ProjectProjectStatus.ACTIVE, active=True, project_type=apideck_unify.ProjectType.CLIENT_PROJECT, priority=apideck_unify.Priority.HIGH, completion_percentage=75.5, start_date=date.fromisoformat("2024-01-15"), end_date=date.fromisoformat("2024-06-30"), completion_date=date.fromisoformat("2024-08-06"), customer={
@@ -112,10 +111,10 @@ with Apideck(
     }, company_id="12345", owner_id="12345", parent_project={
         "id": "PROJ-PARENT-001",
         "name": "Company Website Overhaul",
-    }, currency=apideck_unify.Currency.USD, budget_amount=50000, approved_amount=48000, budget_hours=400, hourly_rate=125, billing_method=apideck_unify.BillingMethod.TIME_AND_MATERIALS, is_billable=True, phase=apideck_unify.ProjectPhase.EXECUTION, tax_rate={
+    }, currency=apideck_unify.Currency.USD, budget_amount=50000.0, approved_amount=48000.0, budget_hours=400.0, hourly_rate=125.0, billing_method=apideck_unify.BillingMethod.TIME_AND_MATERIALS, is_billable=True, phase=apideck_unify.ProjectPhase.EXECUTION, tax_rate={
         "id": "123456",
         "code": "N-T",
-        "rate": 10,
+        "rate": 10.0,
     }, tracking_categories=[
         {
             "id": "123456",
@@ -249,7 +248,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.projects.get(id="<id>", service_id="salesforce", company_id="12345", raw=False)
@@ -306,7 +305,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.projects.update(id="<id>", service_id="salesforce", company_id_param="12345", raw=False, name="Website Redesign Project", display_id="PROJ-001", reference_id="WD-REF-2024-001", description="Complete redesign of the company website including new branding and improved user experience", status=apideck_unify.ProjectUpdateInputProjectStatus.ACTIVE, active=True, project_type=apideck_unify.ProjectUpdateInputProjectType.CLIENT_PROJECT, priority=apideck_unify.ProjectUpdateInputPriority.HIGH, completion_percentage=75.5, start_date=date.fromisoformat("2024-01-15"), end_date=date.fromisoformat("2024-06-30"), completion_date=date.fromisoformat("2024-08-06"), customer=None, department={
@@ -315,10 +314,10 @@ with Apideck(
     }, company_id="12345", owner_id="12345", parent_project={
         "id": "PROJ-PARENT-001",
         "name": "Company Website Overhaul",
-    }, currency=apideck_unify.Currency.USD, budget_amount=50000, approved_amount=48000, budget_hours=400, hourly_rate=125, billing_method=apideck_unify.ProjectUpdateInputBillingMethod.TIME_AND_MATERIALS, is_billable=True, phase=apideck_unify.ProjectUpdateInputProjectPhase.EXECUTION, tax_rate={
+    }, currency=apideck_unify.Currency.USD, budget_amount=50000.0, approved_amount=48000.0, budget_hours=400.0, hourly_rate=125.0, billing_method=apideck_unify.ProjectUpdateInputBillingMethod.TIME_AND_MATERIALS, is_billable=True, phase=apideck_unify.ProjectUpdateInputProjectPhase.EXECUTION, tax_rate={
         "id": "123456",
         "code": "N-T",
-        "rate": 10,
+        "rate": 10.0,
     }, tracking_categories=[
         {
             "id": "123456",
@@ -453,7 +452,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.projects.delete(id="<id>", service_id="salesforce", company_id="12345", raw=False)

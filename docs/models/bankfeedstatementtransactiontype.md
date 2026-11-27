@@ -2,6 +2,16 @@
 
 Type of transaction.
 
+## Example Usage
+
+```python
+from apideck_unify.models import BankFeedStatementTransactionType
+
+value = BankFeedStatementTransactionType.CREDIT
+
+# Open enum: unrecognized values are captured as UnrecognizedStr
+```
+
 
 ## Values
 

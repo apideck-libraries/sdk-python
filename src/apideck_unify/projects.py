@@ -8,7 +8,7 @@ from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from datetime import date
 from jsonpath import JSONPath
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
 
 
 class Projects(BaseSDK):
@@ -26,7 +26,7 @@ class Projects(BaseSDK):
             Union[models.ProjectsFilter, models.ProjectsFilterTypedDict]
         ] = None,
         sort: Optional[Union[models.ProjectsSort, models.ProjectsSortTypedDict]] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -73,7 +73,7 @@ class Projects(BaseSDK):
             limit=limit,
             filter_=utils.get_pydantic_model(filter_, Optional[models.ProjectsFilter]),
             sort=utils.get_pydantic_model(sort, Optional[models.ProjectsSort]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -94,6 +94,7 @@ class Projects(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -118,9 +119,51 @@ class Projects(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Projects are QuickBooks jobs: the customers that belong to another customer (`Customer:Job`), at any depth. `customer` is the customer the job belongs to, with its `id` when the job sits directly under it; a job under another job has `parent_project` and the customer's name only. `status` follows the QuickBooks job status: `approved` (Awarded), `in_progress` (In progress), `completed` (Closed), `draft` (Pending) and `cancelled` (Not awarded); a job without a job status has none. `start_date`, `end_date` and `completion_date` are the job's start date, projected end date and end date. Budgets, amounts, hours and billing settings are not returned. Supported filters: `name`, `status` and `updated_since`; `customer_id` is not supported. `filter[status]` takes the statuses the list returns; `active` is read as `in_progress`, and `on_hold` and `other`, which QuickBooks does not have, match nothing. Supported sort keys: `name`, `start_date`, `end_date`, `created_at` and `updated_at`; `status` is not, because QuickBooks orders by its own status names.\n\nQuickBooks Desktop does not expose a reliable cross-page total record count. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "`status` is `active`, `completed`, `cancelled`, or `other` for FreeAgent's Hidden projects;\n`filter[status]` accepts those four values. `filter[customer_id]` with an id that is not a\nFreeAgent contact returns 404 rather than an empty list. `filter[name]` and\n`filter[updated_since]` are not supported.\n\nFreeAgent keeps one budget per project: `budget_amount` is returned for a monetary budget and\n`budget_hours` for a budget in hours (or days, converted with the project's hours per day).\n",
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": "`status` is not returned by this list call — the underlying vendor list only returns code\nand name per row. Fetch the project by id to read it.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": 'The `priority` field is mapped from QuickBooks integer values (0-9) to unified enum values using ranges: 0-2 → "low", 3-5 → "medium", 6-7 → "high", 8-9 → "critical".\n',
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": 'The `priority` field is mapped from Intuit Enterprise Suite integer values (0-9) to unified enum values using ranges: 0-2 → "low", 3-5 → "medium", 6-7 → "high", 8-9 → "critical".\n',
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "`filter[subsidiary_id]` scopes results to a single subsidiary and is only supported on NetSuite OneWorld accounts; on standard (single-entity) accounts it is ignored.\nWhen a filter or sort triggers the SuiteQL path, `actual_amount`, `is_billable` and `completion_percentage` are not available (those are SOAP-only fields, absent from the SuiteQL `job` table) — use the unfiltered list or the GET one endpoint for those fields.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Zoho Books does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "AFAS does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Projects need Fiken's Project and time tracking modules, which are ordered per company in Fiken. Without them Fiken rejects project requests with a payment required error.\n\n`filter[status]` accepts only `active` and `completed`, the only states Fiken has; any other status is rejected with `400`.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -148,17 +191,19 @@ class Projects(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingProjectsAllResponse(
                 get_projects_response=unmarshal_json_response(
-                    Optional[models.GetProjectsResponse], http_res
+                    Optional[models.GetProjectsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -199,11 +244,10 @@ class Projects(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingProjectsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -222,7 +266,7 @@ class Projects(BaseSDK):
             Union[models.ProjectsFilter, models.ProjectsFilterTypedDict]
         ] = None,
         sort: Optional[Union[models.ProjectsSort, models.ProjectsSortTypedDict]] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -269,7 +313,7 @@ class Projects(BaseSDK):
             limit=limit,
             filter_=utils.get_pydantic_model(filter_, Optional[models.ProjectsFilter]),
             sort=utils.get_pydantic_model(sort, Optional[models.ProjectsSort]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -290,6 +334,7 @@ class Projects(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -314,9 +359,51 @@ class Projects(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Projects are QuickBooks jobs: the customers that belong to another customer (`Customer:Job`), at any depth. `customer` is the customer the job belongs to, with its `id` when the job sits directly under it; a job under another job has `parent_project` and the customer's name only. `status` follows the QuickBooks job status: `approved` (Awarded), `in_progress` (In progress), `completed` (Closed), `draft` (Pending) and `cancelled` (Not awarded); a job without a job status has none. `start_date`, `end_date` and `completion_date` are the job's start date, projected end date and end date. Budgets, amounts, hours and billing settings are not returned. Supported filters: `name`, `status` and `updated_since`; `customer_id` is not supported. `filter[status]` takes the statuses the list returns; `active` is read as `in_progress`, and `on_hold` and `other`, which QuickBooks does not have, match nothing. Supported sort keys: `name`, `start_date`, `end_date`, `created_at` and `updated_at`; `status` is not, because QuickBooks orders by its own status names.\n\nQuickBooks Desktop does not expose a reliable cross-page total record count. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "`status` is `active`, `completed`, `cancelled`, or `other` for FreeAgent's Hidden projects;\n`filter[status]` accepts those four values. `filter[customer_id]` with an id that is not a\nFreeAgent contact returns 404 rather than an empty list. `filter[name]` and\n`filter[updated_since]` are not supported.\n\nFreeAgent keeps one budget per project: `budget_amount` is returned for a monetary budget and\n`budget_hours` for a budget in hours (or days, converted with the project's hours per day).\n",
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": "`status` is not returned by this list call — the underlying vendor list only returns code\nand name per row. Fetch the project by id to read it.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": 'The `priority` field is mapped from QuickBooks integer values (0-9) to unified enum values using ranges: 0-2 → "low", 3-5 → "medium", 6-7 → "high", 8-9 → "critical".\n',
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": 'The `priority` field is mapped from Intuit Enterprise Suite integer values (0-9) to unified enum values using ranges: 0-2 → "low", 3-5 → "medium", 6-7 → "high", 8-9 → "critical".\n',
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "`filter[subsidiary_id]` scopes results to a single subsidiary and is only supported on NetSuite OneWorld accounts; on standard (single-entity) accounts it is ignored.\nWhen a filter or sort triggers the SuiteQL path, `actual_amount`, `is_billable` and `completion_percentage` are not available (those are SOAP-only fields, absent from the SuiteQL `job` table) — use the unfiltered list or the GET one endpoint for those fields.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Zoho Books does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "AFAS does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Projects need Fiken's Project and time tracking modules, which are ordered per company in Fiken. Without them Fiken rejects project requests with a payment required error.\n\n`filter[status]` accepts only `active` and `completed`, the only states Fiken has; any other status is rejected with `400`.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -344,17 +431,19 @@ class Projects(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingProjectsAllResponse(
                 get_projects_response=unmarshal_json_response(
-                    Optional[models.GetProjectsResponse], http_res
+                    Optional[models.GetProjectsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -395,11 +484,10 @@ class Projects(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingProjectsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -448,21 +536,21 @@ class Projects(BaseSDK):
         ] = None,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
-        tags: Optional[List[str]] = None,
+        tags: Optional[Iterable[str]] = None,
         notes: OptionalNullable[str] = UNSET,
         contract_number: OptionalNullable[str] = UNSET,
         profit_margin: OptionalNullable[float] = UNSET,
         schedule_status: OptionalNullable[models.ScheduleStatus] = UNSET,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         team_size: OptionalNullable[int] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -575,7 +663,7 @@ class Projects(BaseSDK):
                     tracking_categories,
                     OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
                 ),
-                tags=tags,
+                tags=utils.unmarshal(tags, Optional[List[str]]),
                 notes=notes,
                 contract_number=contract_number,
                 profit_margin=profit_margin,
@@ -611,6 +699,7 @@ class Projects(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.project, False, False, "json", models.ProjectInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -635,9 +724,39 @@ class Projects(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Creates a QuickBooks job under `parent_project` when one is given, otherwise under `customer`. Either is named by its `id`, or by name (`parent_project.name`, the full `Customer:Job` path, or `customer.display_name`) when no id is sent. One of the two is required: without it the create answers `400`. Written: `name`, `description`, `status`, `active`, `start_date`, `end_date` (the projected end date) and `completion_date`. `status` is written as the QuickBooks job status: `approved` as Awarded, `in_progress` and `active` as In progress, `completed` as Closed, `draft` as Pending and `cancelled` as Not awarded; `on_hold` and `other` have no QuickBooks equivalent and are not written. Budgets, amounts, hours and billing settings are not written.\n\nWrites are applied on the Web Connector's next run, so a create can return a `504` timeout after 28 seconds while QuickBooks still creates the job. List projects to find it before sending the create again.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Fiken requires a project number: send `display_id` (or `reference_id`); a project without one\nis rejected with `400`. Without `start_date`, the project starts today (Europe/Oslo).\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "`customer.id` is required: every FreeAgent project belongs to a contact. When not supplied,\n`status` defaults to `active` and `currency` to the company's currency. Send either\n`budget_amount` or `budget_hours`, not both; `hourly_rate` is billed per hour.\n`on_hold`, `draft`, `in_progress` and `approved` are not FreeAgent statuses and are\nrejected.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "Only `active` and `inactive` are applied on a write. Sage's own status field is an\nenable/disable flag with no other members, so a lifecycle value from the unified enum\n(`in_progress`, `completed`, `on_hold`, …) is ignored and the record keeps its current\nstatus rather than the write being rejected.\n\nOn READ, `status` reflects Sage's Project Status (for example `in_progress`), which is a\ndifferent field. So a lifecycle status can be read but not written.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": 'The `priority` field accepts enum values ("low", "medium", "high", "critical") which are converted to QuickBooks integer values: "low" → 2, "medium" → 5, "high" → 7, "critical" → 9.\n',
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": 'The `priority` field accepts enum values ("low", "medium", "high", "critical") which are converted to Intuit Enterprise Suite integer values: "low" → 2, "medium" → 5, "high" → 7, "critical" → 9.\n',
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -645,10 +764,9 @@ class Projects(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingProjectsAddResponse(
                 create_project_response=unmarshal_json_response(
-                    Optional[models.CreateProjectResponse], http_res
+                    Optional[models.CreateProjectResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -689,10 +807,9 @@ class Projects(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingProjectsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -741,21 +858,21 @@ class Projects(BaseSDK):
         ] = None,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
-        tags: Optional[List[str]] = None,
+        tags: Optional[Iterable[str]] = None,
         notes: OptionalNullable[str] = UNSET,
         contract_number: OptionalNullable[str] = UNSET,
         profit_margin: OptionalNullable[float] = UNSET,
         schedule_status: OptionalNullable[models.ScheduleStatus] = UNSET,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         team_size: OptionalNullable[int] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -868,7 +985,7 @@ class Projects(BaseSDK):
                     tracking_categories,
                     OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
                 ),
-                tags=tags,
+                tags=utils.unmarshal(tags, Optional[List[str]]),
                 notes=notes,
                 contract_number=contract_number,
                 profit_margin=profit_margin,
@@ -904,6 +1021,7 @@ class Projects(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.project, False, False, "json", models.ProjectInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -928,9 +1046,39 @@ class Projects(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Creates a QuickBooks job under `parent_project` when one is given, otherwise under `customer`. Either is named by its `id`, or by name (`parent_project.name`, the full `Customer:Job` path, or `customer.display_name`) when no id is sent. One of the two is required: without it the create answers `400`. Written: `name`, `description`, `status`, `active`, `start_date`, `end_date` (the projected end date) and `completion_date`. `status` is written as the QuickBooks job status: `approved` as Awarded, `in_progress` and `active` as In progress, `completed` as Closed, `draft` as Pending and `cancelled` as Not awarded; `on_hold` and `other` have no QuickBooks equivalent and are not written. Budgets, amounts, hours and billing settings are not written.\n\nWrites are applied on the Web Connector's next run, so a create can return a `504` timeout after 28 seconds while QuickBooks still creates the job. List projects to find it before sending the create again.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Fiken requires a project number: send `display_id` (or `reference_id`); a project without one\nis rejected with `400`. Without `start_date`, the project starts today (Europe/Oslo).\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "`customer.id` is required: every FreeAgent project belongs to a contact. When not supplied,\n`status` defaults to `active` and `currency` to the company's currency. Send either\n`budget_amount` or `budget_hours`, not both; `hourly_rate` is billed per hour.\n`on_hold`, `draft`, `in_progress` and `approved` are not FreeAgent statuses and are\nrejected.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "Only `active` and `inactive` are applied on a write. Sage's own status field is an\nenable/disable flag with no other members, so a lifecycle value from the unified enum\n(`in_progress`, `completed`, `on_hold`, …) is ignored and the record keeps its current\nstatus rather than the write being rejected.\n\nOn READ, `status` reflects Sage's Project Status (for example `in_progress`), which is a\ndifferent field. So a lifecycle status can be read but not written.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": 'The `priority` field accepts enum values ("low", "medium", "high", "critical") which are converted to QuickBooks integer values: "low" → 2, "medium" → 5, "high" → 7, "critical" → 9.\n',
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": 'The `priority` field accepts enum values ("low", "medium", "high", "critical") which are converted to Intuit Enterprise Suite integer values: "low" → 2, "medium" → 5, "high" → 7, "critical" → 9.\n',
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -938,10 +1086,9 @@ class Projects(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingProjectsAddResponse(
                 create_project_response=unmarshal_json_response(
-                    Optional[models.CreateProjectResponse], http_res
+                    Optional[models.CreateProjectResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -982,10 +1129,9 @@ class Projects(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingProjectsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1055,6 +1201,7 @@ class Projects(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1079,9 +1226,27 @@ class Projects(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "A project is a QuickBooks job, a customer that belongs to another customer. The id of a customer that is not a job answers `404`.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": 'The `priority` field is mapped from QuickBooks integer values (0-9) to unified enum values using ranges: 0-2 → "low", 3-5 → "medium", 6-7 → "high", 8-9 → "critical".\n',
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": 'The `priority` field is mapped from Intuit Enterprise Suite integer values (0-9) to unified enum values using ranges: 0-2 → "low", 3-5 → "medium", 6-7 → "high", 8-9 → "critical".\n',
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1089,10 +1254,9 @@ class Projects(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingProjectsOneResponse(
                 get_project_response=unmarshal_json_response(
-                    Optional[models.GetProjectResponse], http_res
+                    Optional[models.GetProjectResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1133,10 +1297,9 @@ class Projects(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingProjectsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1206,6 +1369,7 @@ class Projects(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1230,9 +1394,27 @@ class Projects(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "A project is a QuickBooks job, a customer that belongs to another customer. The id of a customer that is not a job answers `404`.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": 'The `priority` field is mapped from QuickBooks integer values (0-9) to unified enum values using ranges: 0-2 → "low", 3-5 → "medium", 6-7 → "high", 8-9 → "critical".\n',
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": 'The `priority` field is mapped from Intuit Enterprise Suite integer values (0-9) to unified enum values using ranges: 0-2 → "low", 3-5 → "medium", 6-7 → "high", 8-9 → "critical".\n',
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1240,10 +1422,9 @@ class Projects(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingProjectsOneResponse(
                 get_project_response=unmarshal_json_response(
-                    Optional[models.GetProjectResponse], http_res
+                    Optional[models.GetProjectResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1284,10 +1465,9 @@ class Projects(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingProjectsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1345,11 +1525,11 @@ class Projects(BaseSDK):
         ] = None,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
-        tags: Optional[List[str]] = None,
+        tags: Optional[Iterable[str]] = None,
         notes: OptionalNullable[str] = UNSET,
         contract_number: OptionalNullable[str] = UNSET,
         profit_margin: OptionalNullable[float] = UNSET,
@@ -1357,11 +1537,11 @@ class Projects(BaseSDK):
             models.ProjectUpdateInputScheduleStatus
         ] = UNSET,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         team_size: OptionalNullable[int] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -1477,7 +1657,7 @@ class Projects(BaseSDK):
                     tracking_categories,
                     OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
                 ),
-                tags=tags,
+                tags=utils.unmarshal(tags, Optional[List[str]]),
                 notes=notes,
                 contract_number=contract_number,
                 profit_margin=profit_margin,
@@ -1517,6 +1697,7 @@ class Projects(BaseSDK):
                 "json",
                 models.ProjectUpdateInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1541,9 +1722,31 @@ class Projects(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Changes `name`, `description`, `status`, `active`, `start_date`, `end_date` and `completion_date`. `row_version` from a prior read is required. The customer and the parent project cannot be changed, and `status` `on_hold` and `other` are not written.\n\nWrites are applied on the Web Connector's next run, so an update can return a `504` timeout after 28 seconds while QuickBooks still applies it. The change can take a few minutes to show when the record is read back.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "`on_hold`, `draft`, `in_progress` and `approved` are not FreeAgent statuses and are\nrejected. Sending `budget_amount` or `budget_hours` switches the project's budget to that\nunit.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": 'The `priority` field accepts enum values ("low", "medium", "high", "critical") which are converted to QuickBooks integer values: "low" → 2, "medium" → 5, "high" → 7, "critical" → 9.\n',
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": 'The `priority` field accepts enum values ("low", "medium", "high", "critical") which are converted to Intuit Enterprise Suite integer values: "low" → 2, "medium" → 5, "high" → 7, "critical" → 9.\n',
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1551,10 +1754,9 @@ class Projects(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingProjectsUpdateResponse(
                 update_project_response=unmarshal_json_response(
-                    Optional[models.UpdateProjectResponse], http_res
+                    Optional[models.UpdateProjectResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1595,10 +1797,9 @@ class Projects(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingProjectsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1656,11 +1857,11 @@ class Projects(BaseSDK):
         ] = None,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
-        tags: Optional[List[str]] = None,
+        tags: Optional[Iterable[str]] = None,
         notes: OptionalNullable[str] = UNSET,
         contract_number: OptionalNullable[str] = UNSET,
         profit_margin: OptionalNullable[float] = UNSET,
@@ -1668,11 +1869,11 @@ class Projects(BaseSDK):
             models.ProjectUpdateInputScheduleStatus
         ] = UNSET,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         team_size: OptionalNullable[int] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -1788,7 +1989,7 @@ class Projects(BaseSDK):
                     tracking_categories,
                     OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
                 ),
-                tags=tags,
+                tags=utils.unmarshal(tags, Optional[List[str]]),
                 notes=notes,
                 contract_number=contract_number,
                 profit_margin=profit_margin,
@@ -1828,6 +2029,7 @@ class Projects(BaseSDK):
                 "json",
                 models.ProjectUpdateInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1852,9 +2054,31 @@ class Projects(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Changes `name`, `description`, `status`, `active`, `start_date`, `end_date` and `completion_date`. `row_version` from a prior read is required. The customer and the parent project cannot be changed, and `status` `on_hold` and `other` are not written.\n\nWrites are applied on the Web Connector's next run, so an update can return a `504` timeout after 28 seconds while QuickBooks still applies it. The change can take a few minutes to show when the record is read back.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "`on_hold`, `draft`, `in_progress` and `approved` are not FreeAgent statuses and are\nrejected. Sending `budget_amount` or `budget_hours` switches the project's budget to that\nunit.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": 'The `priority` field accepts enum values ("low", "medium", "high", "critical") which are converted to QuickBooks integer values: "low" → 2, "medium" → 5, "high" → 7, "critical" → 9.\n',
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": 'The `priority` field accepts enum values ("low", "medium", "high", "critical") which are converted to Intuit Enterprise Suite integer values: "low" → 2, "medium" → 5, "high" → 7, "critical" → 9.\n',
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1862,10 +2086,9 @@ class Projects(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingProjectsUpdateResponse(
                 update_project_response=unmarshal_json_response(
-                    Optional[models.UpdateProjectResponse], http_res
+                    Optional[models.UpdateProjectResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1906,10 +2129,9 @@ class Projects(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingProjectsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1979,6 +2201,7 @@ class Projects(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2003,9 +2226,19 @@ class Projects(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Writes are applied on the Web Connector's next run, so a delete can return a `504` timeout after 28 seconds while QuickBooks still deletes the job. Read it back before retrying: a `404` means it is gone.\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2013,10 +2246,9 @@ class Projects(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingProjectsDeleteResponse(
                 delete_project_response=unmarshal_json_response(
-                    Optional[models.DeleteProjectResponse], http_res
+                    Optional[models.DeleteProjectResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2057,10 +2289,9 @@ class Projects(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingProjectsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2130,6 +2361,7 @@ class Projects(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2154,9 +2386,19 @@ class Projects(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Writes are applied on the Web Connector's next run, so a delete can return a `504` timeout after 28 seconds while QuickBooks still deletes the job. Read it back before retrying: a `404` means it is gone.\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2164,10 +2406,9 @@ class Projects(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingProjectsDeleteResponse(
                 delete_project_response=unmarshal_json_response(
-                    Optional[models.DeleteProjectResponse], http_res
+                    Optional[models.DeleteProjectResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2208,10 +2449,9 @@ class Projects(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingProjectsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

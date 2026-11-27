@@ -8,7 +8,7 @@ from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from datetime import date
 from jsonpath import JSONPath
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
 
 
 class GoodsReceipts(BaseSDK):
@@ -28,7 +28,7 @@ class GoodsReceipts(BaseSDK):
         sort: Optional[
             Union[models.GoodsReceiptsSort, models.GoodsReceiptsSortTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -77,7 +77,7 @@ class GoodsReceipts(BaseSDK):
                 filter_, Optional[models.GoodsReceiptsFilter]
             ),
             sort=utils.get_pydantic_model(sort, Optional[models.GoodsReceiptsSort]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -98,6 +98,7 @@ class GoodsReceipts(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -122,9 +123,35 @@ class GoodsReceipts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Goods receipts are QuickBooks item receipts, and `status` is always `received`. `purchase_order_id` and `po_number` are set when the receipt is linked to exactly one purchase order; `line_items[].purchase_order` is not returned. `line_items` holds the receipt's item lines only. Only `filter[updated_since]` is supported.\n\nQuickBooks Desktop does not expose a reliable cross-page total record count. Getting `total_count` requires a separate COUNT query — an extra API call that is not currently implemented. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "Receipt lines carry no reference to the purchase order line they fulfil, so\n`purchase_order_id` and `line_items[].purchase_order` are always null. The header\n`po_number` is the only link to the originating purchase order. Business Central also\nposts a receipt when a purchase invoice is posted directly, without a purchase order;\nthose receipts are included in the list and have no `po_number`.\n\n`supplier.id` is null: receipts identify the vendor by number and name only, returned as\n`supplier.display_id` and `supplier.display_name`, and that number is not the id used by\n`accounting/suppliers`. `quantity_ordered`, `created_at`, `reference`, `notes` and\n`location_id` are not available.\n\nOnly posted receipts exist in Business Central, so `status` is always `received`. This\nresource is read-only.\n\nOnly `filter[updated_since]` is supported. Any other filter is rejected with a 400\n`UnsupportedFiltersError` rather than being ignored. Likewise only `sort[by]=updated_at` is\nsupported; `sort[by]=created_at` is rejected with a 400 `UnsupportedSortFieldError`, since\n`created_at` is not available on this connector. `meta.total_count` is not populated;\npaginate on `meta.cursors.next` until it is null.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Only receipts created from a purchase order are returned; receipts for returns, transfer\norders and other inbound movements are excluded. The restriction is applied by the search\nitself, so pages are full and `meta.total_count` is exact. NetSuite rejects a page size\nbelow 5, so `limit` must be at least 5.\n\nFetching a single receipt by id applies the same purchase-order restriction, so a receipt\nthat was not created from a purchase order, or an id that does not exist, returns 404.\n\nReceipt lines carry a unit cost but no line total, so `unit_price` is populated and\n`total_amount` is null. `quantity_ordered`, `po_number`, `reference` and `posted_date` are\nnot available.\n\n`status` is always `received`, because a receipt carries no status of its own. A receipt\nthat has been voided is still returned, and still reports `status: received`, so a voided\nreceipt cannot be told apart from an active one; re-check the originating purchase order if\nthat distinction matters. `supplier.address` is not available either — only `supplier.id`,\n`supplier.display_name` and `supplier.company_name` are populated.\n\nNo filters or sorts are supported in this release: any `filter[...]` is rejected with a 400\n`UnsupportedFiltersError` and any `sort[by]` with a 400 `UnsupportedSortFieldError`;\nreceipts are returned in NetSuite's default search order.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "A receipt is generated per purchase order when the order is confirmed, and a split\ndelivery produces one receipt per delivery, so a single purchase order line can appear on\nseveral receipts, each with its own `quantity_received`. Sum `quantity_received` across\nreceipts sharing the same `line_items[].purchase_order.line_id` to get the total received\nagainst a purchase order line. A purchase order that contains only service products\nproduces no receipt.\n\nWhen a tenant merges deliveries from several purchase orders into one receipt,\n`purchase_order_id` and every line's `purchase_order.id` name the order the receipt was\ngenerated from, while each line's `purchase_order.line_id` is exact. Use `line_id` for\nline-level matching.\n\nA receipt in `draft` status has not been validated yet: `quantity_received` reflects the\nquantity recorded so far and `received_date` falls back to the scheduled date. Receipt lines\nare read from a field introduced in Odoo 17; on Odoo 16 and earlier `line_items` is returned\nempty. `line_items` is also returned empty, with a `meta.warnings` entry describing the\nfailure, if the line-item lookup itself fails. `quantity_ordered`, `unit_of_measure`,\n`currency`, `posted_date` and `total_amount` are not available.\n\n`filter[updated_since]`, `filter[supplier_id]` and `filter[purchase_order_id]` are\nsupported. `filter[purchase_order_id]` matches the order the receipt was generated from\n(the header `purchase_order_id`); a receipt that also carries lines merged in from a second\norder is not returned for that second order. Match on `line_items[].purchase_order.line_id`\nfor line-level lookups.\n",
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "Only goods receipts against a purchase order are returned; other inbound and outbound\ngoods movements recorded in the same document series are excluded from the list. Fetching\nby id is not restricted this way — see the get-one endpoint.\n\n`id` is a composite of the document number and its fiscal year in the form\n`<document>:<year>`, for example `5000000123:2026`. Pass it back unchanged to\n`GET /accounting/goods-receipts/{id}`. `receipt_number`, `display_id` and `downstream_id`\ncarry the bare document number.\n\nNo filters are supported: the accounting system records no last-changed timestamp on a\ngoods receipt, so `filter[updated_since]` cannot be honoured, and `filter[supplier_id]` and\n`filter[purchase_order_id]` are not available either. Any filter is rejected with a 400\n`UnsupportedFiltersError`. Only `sort[by]=created_at` is supported, and `updated_at` is\nnull. `created_at` carries the creation date at midnight UTC — the accounting system\nrecords the creation time in a separate field this release does not read, so the time\ncomponent is always `00:00:00Z` and receipts created on the same day have no guaranteed\norder under `sort[by]=created_at`.\n\nSupplier, purchase order and location are recorded per line. The header `supplier`,\n`purchase_order_id`, `po_number` and `location_id` are populated only when every line\nagrees; when a receipt spans several purchase orders or suppliers they are null and\n`line_items[].purchase_order` carries the link. `location_id` is the plant and storage\nlocation joined as `<plant>/<storage location>`. `quantity_ordered`, `unit_price` and\n`line_items[].purchase_order.line_id` are not available; `line_items[].purchase_order.line_number`\nis populated instead. `line_items[].total_amount` is populated only when an amount was\nentered on the goods movement; the value of a receipt priced from its purchase order is not\nexposed.\n\nGoods receipts are immutable. A cancellation is posted as a separate reversal document: the\nreversal is returned as its own receipt with `status: cancelled`, and the original document\nis also reported as `cancelled`. `meta.total_count` is populated.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -152,17 +179,19 @@ class GoodsReceipts(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingGoodsReceiptsAllResponse(
                 get_goods_receipts_response=unmarshal_json_response(
-                    Optional[models.GetGoodsReceiptsResponse], http_res
+                    Optional[models.GetGoodsReceiptsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -203,11 +232,10 @@ class GoodsReceipts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingGoodsReceiptsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -228,7 +256,7 @@ class GoodsReceipts(BaseSDK):
         sort: Optional[
             Union[models.GoodsReceiptsSort, models.GoodsReceiptsSortTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -277,7 +305,7 @@ class GoodsReceipts(BaseSDK):
                 filter_, Optional[models.GoodsReceiptsFilter]
             ),
             sort=utils.get_pydantic_model(sort, Optional[models.GoodsReceiptsSort]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -298,6 +326,7 @@ class GoodsReceipts(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -322,9 +351,35 @@ class GoodsReceipts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Goods receipts are QuickBooks item receipts, and `status` is always `received`. `purchase_order_id` and `po_number` are set when the receipt is linked to exactly one purchase order; `line_items[].purchase_order` is not returned. `line_items` holds the receipt's item lines only. Only `filter[updated_since]` is supported.\n\nQuickBooks Desktop does not expose a reliable cross-page total record count. Getting `total_count` requires a separate COUNT query — an extra API call that is not currently implemented. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "Receipt lines carry no reference to the purchase order line they fulfil, so\n`purchase_order_id` and `line_items[].purchase_order` are always null. The header\n`po_number` is the only link to the originating purchase order. Business Central also\nposts a receipt when a purchase invoice is posted directly, without a purchase order;\nthose receipts are included in the list and have no `po_number`.\n\n`supplier.id` is null: receipts identify the vendor by number and name only, returned as\n`supplier.display_id` and `supplier.display_name`, and that number is not the id used by\n`accounting/suppliers`. `quantity_ordered`, `created_at`, `reference`, `notes` and\n`location_id` are not available.\n\nOnly posted receipts exist in Business Central, so `status` is always `received`. This\nresource is read-only.\n\nOnly `filter[updated_since]` is supported. Any other filter is rejected with a 400\n`UnsupportedFiltersError` rather than being ignored. Likewise only `sort[by]=updated_at` is\nsupported; `sort[by]=created_at` is rejected with a 400 `UnsupportedSortFieldError`, since\n`created_at` is not available on this connector. `meta.total_count` is not populated;\npaginate on `meta.cursors.next` until it is null.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Only receipts created from a purchase order are returned; receipts for returns, transfer\norders and other inbound movements are excluded. The restriction is applied by the search\nitself, so pages are full and `meta.total_count` is exact. NetSuite rejects a page size\nbelow 5, so `limit` must be at least 5.\n\nFetching a single receipt by id applies the same purchase-order restriction, so a receipt\nthat was not created from a purchase order, or an id that does not exist, returns 404.\n\nReceipt lines carry a unit cost but no line total, so `unit_price` is populated and\n`total_amount` is null. `quantity_ordered`, `po_number`, `reference` and `posted_date` are\nnot available.\n\n`status` is always `received`, because a receipt carries no status of its own. A receipt\nthat has been voided is still returned, and still reports `status: received`, so a voided\nreceipt cannot be told apart from an active one; re-check the originating purchase order if\nthat distinction matters. `supplier.address` is not available either — only `supplier.id`,\n`supplier.display_name` and `supplier.company_name` are populated.\n\nNo filters or sorts are supported in this release: any `filter[...]` is rejected with a 400\n`UnsupportedFiltersError` and any `sort[by]` with a 400 `UnsupportedSortFieldError`;\nreceipts are returned in NetSuite's default search order.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "A receipt is generated per purchase order when the order is confirmed, and a split\ndelivery produces one receipt per delivery, so a single purchase order line can appear on\nseveral receipts, each with its own `quantity_received`. Sum `quantity_received` across\nreceipts sharing the same `line_items[].purchase_order.line_id` to get the total received\nagainst a purchase order line. A purchase order that contains only service products\nproduces no receipt.\n\nWhen a tenant merges deliveries from several purchase orders into one receipt,\n`purchase_order_id` and every line's `purchase_order.id` name the order the receipt was\ngenerated from, while each line's `purchase_order.line_id` is exact. Use `line_id` for\nline-level matching.\n\nA receipt in `draft` status has not been validated yet: `quantity_received` reflects the\nquantity recorded so far and `received_date` falls back to the scheduled date. Receipt lines\nare read from a field introduced in Odoo 17; on Odoo 16 and earlier `line_items` is returned\nempty. `line_items` is also returned empty, with a `meta.warnings` entry describing the\nfailure, if the line-item lookup itself fails. `quantity_ordered`, `unit_of_measure`,\n`currency`, `posted_date` and `total_amount` are not available.\n\n`filter[updated_since]`, `filter[supplier_id]` and `filter[purchase_order_id]` are\nsupported. `filter[purchase_order_id]` matches the order the receipt was generated from\n(the header `purchase_order_id`); a receipt that also carries lines merged in from a second\norder is not returned for that second order. Match on `line_items[].purchase_order.line_id`\nfor line-level lookups.\n",
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "Only goods receipts against a purchase order are returned; other inbound and outbound\ngoods movements recorded in the same document series are excluded from the list. Fetching\nby id is not restricted this way — see the get-one endpoint.\n\n`id` is a composite of the document number and its fiscal year in the form\n`<document>:<year>`, for example `5000000123:2026`. Pass it back unchanged to\n`GET /accounting/goods-receipts/{id}`. `receipt_number`, `display_id` and `downstream_id`\ncarry the bare document number.\n\nNo filters are supported: the accounting system records no last-changed timestamp on a\ngoods receipt, so `filter[updated_since]` cannot be honoured, and `filter[supplier_id]` and\n`filter[purchase_order_id]` are not available either. Any filter is rejected with a 400\n`UnsupportedFiltersError`. Only `sort[by]=created_at` is supported, and `updated_at` is\nnull. `created_at` carries the creation date at midnight UTC — the accounting system\nrecords the creation time in a separate field this release does not read, so the time\ncomponent is always `00:00:00Z` and receipts created on the same day have no guaranteed\norder under `sort[by]=created_at`.\n\nSupplier, purchase order and location are recorded per line. The header `supplier`,\n`purchase_order_id`, `po_number` and `location_id` are populated only when every line\nagrees; when a receipt spans several purchase orders or suppliers they are null and\n`line_items[].purchase_order` carries the link. `location_id` is the plant and storage\nlocation joined as `<plant>/<storage location>`. `quantity_ordered`, `unit_price` and\n`line_items[].purchase_order.line_id` are not available; `line_items[].purchase_order.line_number`\nis populated instead. `line_items[].total_amount` is populated only when an amount was\nentered on the goods movement; the value of a receipt priced from its purchase order is not\nexposed.\n\nGoods receipts are immutable. A cancellation is posted as a separate reversal document: the\nreversal is returned as its own receipt with `status: cancelled`, and the original document\nis also reported as `cancelled`. `meta.total_count` is populated.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -352,17 +407,19 @@ class GoodsReceipts(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingGoodsReceiptsAllResponse(
                 get_goods_receipts_response=unmarshal_json_response(
-                    Optional[models.GetGoodsReceiptsResponse], http_res
+                    Optional[models.GetGoodsReceiptsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -403,11 +460,10 @@ class GoodsReceipts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingGoodsReceiptsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -417,8 +473,8 @@ class GoodsReceipts(BaseSDK):
         *,
         purchase_order_id: str,
         line_items: Union[
-            List[models.GoodsReceiptLineCreateInput],
-            List[models.GoodsReceiptLineCreateInputTypedDict],
+            Iterable[models.GoodsReceiptLineCreateInput],
+            Iterable[models.GoodsReceiptLineCreateInputTypedDict],
         ],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
@@ -431,7 +487,10 @@ class GoodsReceipts(BaseSDK):
         notes: OptionalNullable[str] = UNSET,
         location_id: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -516,6 +575,7 @@ class GoodsReceipts(BaseSDK):
                 "json",
                 models.GoodsReceiptCreateInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -540,9 +600,31 @@ class GoodsReceipts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "Not supported: this operation returns a 405. Business Central exposes purchase receipts\nread-only, and the only action that produces a receipt, receive and invoice on the\npurchase order, receives and invoices the whole order in one step, with no receive-only\noption and no partial quantities. Creating a goods receipt through this operation would\nmean posting a supplier invoice too, so it is not offered. Receiving goods from outside\nBusiness Central needs an API extension in the customer's tenant.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Not supported yet: this connector does not support creating goods receipts, and this\noperation returns a 405. Goods receipts can be read.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Not supported yet: this connector does not support creating goods receipts, and this\noperation returns a 405. Goods receipts can be read. (Odoo generates the receipt itself\nwhen an incoming purchase order is confirmed; what is missing here is recording the\nreceived quantities on it.)\n",
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "Posts a material document for a goods receipt against a purchase order. Required:\n`purchase_order_id` and, on every line, `purchase_order.line_number` (the purchase order\nitem, for example `10`; `purchase_order.line_id` is accepted with the same value) and\n`quantity_received`, which must be greater than zero and have at most 3 decimals. Send\n`purchase_order` as a goods receipt read returns it; from a purchase order read, send the\nline's `id` (a string, for example `\"10\"`) as `line_id`. A receipt is against one purchase\norder: a line whose `purchase_order.id` is another order is rejected with a `400`, so\ncreate one receipt per purchase order.\n\nA partial receipt is a `quantity_received` below what is still open on the purchase order\nitem; receive the rest with a later request. Each line is its own receipt line, so one\nrequest can receive several items, partly or in full. What the order allows (over-delivery\ntolerance, an item already received in full) is decided by SAP, and its message is\nreturned.\n\nMaterial, plant and unit are taken from the purchase order item, which is read before\nanything is posted; a purchase order or item that does not exist is rejected with a `400`.\n`unit_of_measure` replaces the order unit of a line. The storage location is the line's\n`location_id`, else the receipt's `location_id`, else the one on the purchase order item.\nSend `location_id` as `<plant>/<storage location>` or as the storage location alone. A\nread returns the plant alone (for example `1710`) for an item without a storage\nlocation; that value is accepted too, as \"plant only\", when it equals the order item's\nplant (a storage location that has the same code as the plant has to be sent as\n`<plant>/<storage location>`). A plant other than the order item's is rejected. When none of the\nthree gives a storage location, SAP decides, and refuses a stock-managed material without\none: send `location_id`.\n\n`received_date` is the document date and `posted_date` the posting date; each defaults to\nthe other, and when neither is sent SAP applies its own default. `reference` (at most 16\ncharacters), `notes` (25), `line_items[].description` (50) and `unit_of_measure` (3) are\nrefused with a `400` when longer, never shortened. Fields that are not part of the create\ninput, such as `supplier`, `status`, `currency` and amounts, are rejected: the supplier\nand the valuation come from the purchase order.\n\nThe response carries the `id` of the posted receipt in the form `<document>:<year>`, which\n`GET /accounting/goods-receipts/{id}` takes unchanged. A posted receipt cannot be changed\nor deleted through this API; a correction is a reversal posted in SAP. Nothing stops a\nrepeated request from posting a second receipt, so after a timeout check the existing\nreceipts before sending it again.\n\nThe connection's communication arrangement must include Communication Scenario\n`SAP_COM_0108` (material documents) with write access, and `SAP_COM_0053` (purchase\norders) for the read of the order. Without write access on `SAP_COM_0108`, SAP answers\nthe create with `403`. Without `SAP_COM_0053` the purchase order read fails and the\nrequest returns a `400` naming it; nothing is posted either way.\n\n`pass_through` may add header properties, but one that would set or change what the\nrequest builds (`GoodsMovementCode`, the dates, `to_MaterialDocumentItem`) is rejected\nwith a `400`. `ReferenceDocument` and `MaterialDocumentHeaderText` set through\n`pass_through` keep the limits of `reference` (16) and `notes` (25). An order item that is\na returns item, a service item, or an item without a material (such as a text item) is\nrejected with a `400` too. SAP does not return an item that is deleted or blocked for\ndelivery, so one is rejected as not on the order.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -550,10 +632,11 @@ class GoodsReceipts(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingGoodsReceiptsAddResponse(
                 create_goods_receipt_response=unmarshal_json_response(
-                    Optional[models.CreateGoodsReceiptResponse], http_res
+                    Optional[models.CreateGoodsReceiptResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -594,10 +677,9 @@ class GoodsReceipts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingGoodsReceiptsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -607,8 +689,8 @@ class GoodsReceipts(BaseSDK):
         *,
         purchase_order_id: str,
         line_items: Union[
-            List[models.GoodsReceiptLineCreateInput],
-            List[models.GoodsReceiptLineCreateInputTypedDict],
+            Iterable[models.GoodsReceiptLineCreateInput],
+            Iterable[models.GoodsReceiptLineCreateInputTypedDict],
         ],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
@@ -621,7 +703,10 @@ class GoodsReceipts(BaseSDK):
         notes: OptionalNullable[str] = UNSET,
         location_id: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -706,6 +791,7 @@ class GoodsReceipts(BaseSDK):
                 "json",
                 models.GoodsReceiptCreateInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -730,9 +816,31 @@ class GoodsReceipts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "Not supported: this operation returns a 405. Business Central exposes purchase receipts\nread-only, and the only action that produces a receipt, receive and invoice on the\npurchase order, receives and invoices the whole order in one step, with no receive-only\noption and no partial quantities. Creating a goods receipt through this operation would\nmean posting a supplier invoice too, so it is not offered. Receiving goods from outside\nBusiness Central needs an API extension in the customer's tenant.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Not supported yet: this connector does not support creating goods receipts, and this\noperation returns a 405. Goods receipts can be read.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Not supported yet: this connector does not support creating goods receipts, and this\noperation returns a 405. Goods receipts can be read. (Odoo generates the receipt itself\nwhen an incoming purchase order is confirmed; what is missing here is recording the\nreceived quantities on it.)\n",
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "Posts a material document for a goods receipt against a purchase order. Required:\n`purchase_order_id` and, on every line, `purchase_order.line_number` (the purchase order\nitem, for example `10`; `purchase_order.line_id` is accepted with the same value) and\n`quantity_received`, which must be greater than zero and have at most 3 decimals. Send\n`purchase_order` as a goods receipt read returns it; from a purchase order read, send the\nline's `id` (a string, for example `\"10\"`) as `line_id`. A receipt is against one purchase\norder: a line whose `purchase_order.id` is another order is rejected with a `400`, so\ncreate one receipt per purchase order.\n\nA partial receipt is a `quantity_received` below what is still open on the purchase order\nitem; receive the rest with a later request. Each line is its own receipt line, so one\nrequest can receive several items, partly or in full. What the order allows (over-delivery\ntolerance, an item already received in full) is decided by SAP, and its message is\nreturned.\n\nMaterial, plant and unit are taken from the purchase order item, which is read before\nanything is posted; a purchase order or item that does not exist is rejected with a `400`.\n`unit_of_measure` replaces the order unit of a line. The storage location is the line's\n`location_id`, else the receipt's `location_id`, else the one on the purchase order item.\nSend `location_id` as `<plant>/<storage location>` or as the storage location alone. A\nread returns the plant alone (for example `1710`) for an item without a storage\nlocation; that value is accepted too, as \"plant only\", when it equals the order item's\nplant (a storage location that has the same code as the plant has to be sent as\n`<plant>/<storage location>`). A plant other than the order item's is rejected. When none of the\nthree gives a storage location, SAP decides, and refuses a stock-managed material without\none: send `location_id`.\n\n`received_date` is the document date and `posted_date` the posting date; each defaults to\nthe other, and when neither is sent SAP applies its own default. `reference` (at most 16\ncharacters), `notes` (25), `line_items[].description` (50) and `unit_of_measure` (3) are\nrefused with a `400` when longer, never shortened. Fields that are not part of the create\ninput, such as `supplier`, `status`, `currency` and amounts, are rejected: the supplier\nand the valuation come from the purchase order.\n\nThe response carries the `id` of the posted receipt in the form `<document>:<year>`, which\n`GET /accounting/goods-receipts/{id}` takes unchanged. A posted receipt cannot be changed\nor deleted through this API; a correction is a reversal posted in SAP. Nothing stops a\nrepeated request from posting a second receipt, so after a timeout check the existing\nreceipts before sending it again.\n\nThe connection's communication arrangement must include Communication Scenario\n`SAP_COM_0108` (material documents) with write access, and `SAP_COM_0053` (purchase\norders) for the read of the order. Without write access on `SAP_COM_0108`, SAP answers\nthe create with `403`. Without `SAP_COM_0053` the purchase order read fails and the\nrequest returns a `400` naming it; nothing is posted either way.\n\n`pass_through` may add header properties, but one that would set or change what the\nrequest builds (`GoodsMovementCode`, the dates, `to_MaterialDocumentItem`) is rejected\nwith a `400`. `ReferenceDocument` and `MaterialDocumentHeaderText` set through\n`pass_through` keep the limits of `reference` (16) and `notes` (25). An order item that is\na returns item, a service item, or an item without a material (such as a text item) is\nrejected with a `400` too. SAP does not return an item that is deleted or blocked for\ndelivery, so one is rejected as not on the order.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -740,10 +848,11 @@ class GoodsReceipts(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingGoodsReceiptsAddResponse(
                 create_goods_receipt_response=unmarshal_json_response(
-                    Optional[models.CreateGoodsReceiptResponse], http_res
+                    Optional[models.CreateGoodsReceiptResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -784,10 +893,9 @@ class GoodsReceipts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingGoodsReceiptsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -860,6 +968,7 @@ class GoodsReceipts(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -884,9 +993,35 @@ class GoodsReceipts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Goods receipts are QuickBooks item receipts, and `status` is always `received`. `purchase_order_id` and `po_number` are set when the receipt is linked to exactly one purchase order; `line_items[].purchase_order` is not returned. `line_items` holds the receipt's item lines only.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "`purchase_order_id`, `line_items[].purchase_order` and `supplier.id` are always null, and\n`status` is always `received`; see the list endpoint for the full set of fields this\nconnector cannot supply. The header `po_number` is the only link to the originating\npurchase order, and it is absent for a receipt posted from a purchase invoice without a\npurchase order.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Fetching by id applies the same purchase-order restriction as the list endpoint: a receipt\nthat was not created from a purchase order, or an id that does not exist, returns 404.\n`x-apideck-company-id` narrows the list only; a receipt that belongs to another subsidiary\ncan still be fetched by its id. `total_amount` is null, and `status` is always `received`\neven for a voided receipt — see the list endpoint.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Only receipts created from a purchase order are addressable. Requesting the id of any other\ninbound or outbound stock movement returns a 404.\n\nA receipt that has not been validated yet (`status` `draft`) reports the scheduled date as\n`received_date`, because the actual date is only recorded once the receipt is validated.\nCheck `status` before treating `received_date` as an actual arrival date.\n",
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "`id` must be the composite `<document>:<year>` value returned by the list endpoint, for\nexample `5000000123:2026`. A bare document number, or any other shape, is rejected with a\n400. Fetching by id returns the document whether or not it is a purchase-order receipt; the\npurchase-order scope applies to the list endpoint only.\n\n`created_at` carries the document's creation date at midnight UTC: the accounting system\nrecords the creation time in a separate field that this release does not read, so the time\ncomponent is always `00:00:00Z`.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -894,10 +1029,9 @@ class GoodsReceipts(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingGoodsReceiptsOneResponse(
                 get_goods_receipt_response=unmarshal_json_response(
-                    Optional[models.GetGoodsReceiptResponse], http_res
+                    Optional[models.GetGoodsReceiptResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -938,10 +1072,9 @@ class GoodsReceipts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingGoodsReceiptsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1014,6 +1147,7 @@ class GoodsReceipts(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1038,9 +1172,35 @@ class GoodsReceipts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Goods receipts are QuickBooks item receipts, and `status` is always `received`. `purchase_order_id` and `po_number` are set when the receipt is linked to exactly one purchase order; `line_items[].purchase_order` is not returned. `line_items` holds the receipt's item lines only.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "`purchase_order_id`, `line_items[].purchase_order` and `supplier.id` are always null, and\n`status` is always `received`; see the list endpoint for the full set of fields this\nconnector cannot supply. The header `po_number` is the only link to the originating\npurchase order, and it is absent for a receipt posted from a purchase invoice without a\npurchase order.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Fetching by id applies the same purchase-order restriction as the list endpoint: a receipt\nthat was not created from a purchase order, or an id that does not exist, returns 404.\n`x-apideck-company-id` narrows the list only; a receipt that belongs to another subsidiary\ncan still be fetched by its id. `total_amount` is null, and `status` is always `received`\neven for a voided receipt — see the list endpoint.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Only receipts created from a purchase order are addressable. Requesting the id of any other\ninbound or outbound stock movement returns a 404.\n\nA receipt that has not been validated yet (`status` `draft`) reports the scheduled date as\n`received_date`, because the actual date is only recorded once the receipt is validated.\nCheck `status` before treating `received_date` as an actual arrival date.\n",
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "`id` must be the composite `<document>:<year>` value returned by the list endpoint, for\nexample `5000000123:2026`. A bare document number, or any other shape, is rejected with a\n400. Fetching by id returns the document whether or not it is a purchase-order receipt; the\npurchase-order scope applies to the list endpoint only.\n\n`created_at` carries the document's creation date at midnight UTC: the accounting system\nrecords the creation time in a separate field that this release does not read, so the time\ncomponent is always `00:00:00Z`.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1048,10 +1208,9 @@ class GoodsReceipts(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingGoodsReceiptsOneResponse(
                 get_goods_receipt_response=unmarshal_json_response(
-                    Optional[models.GetGoodsReceiptResponse], http_res
+                    Optional[models.GetGoodsReceiptResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1092,10 +1251,9 @@ class GoodsReceipts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingGoodsReceiptsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

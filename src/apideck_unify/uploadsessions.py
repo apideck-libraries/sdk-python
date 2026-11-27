@@ -7,7 +7,7 @@ from apideck_unify.types import Nullable, OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 import io
-from typing import Any, IO, List, Mapping, Optional, Union
+from typing import Any, IO, Iterable, List, Mapping, Optional, Union
 
 
 class UploadSessions(BaseSDK):
@@ -23,7 +23,10 @@ class UploadSessions(BaseSDK):
         service_id: Optional[str] = None,
         drive_id: Optional[str] = None,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -98,6 +101,7 @@ class UploadSessions(BaseSDK):
                 "json",
                 models.CreateUploadSessionRequest,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -122,9 +126,11 @@ class UploadSessions(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["fileStorage"],
+                extensions={"x-apideck-api": "fileStorage"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -132,10 +138,11 @@ class UploadSessions(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.FileStorageUploadSessionsAddResponse(
                 create_upload_session_response=unmarshal_json_response(
-                    Optional[models.CreateUploadSessionResponse], http_res
+                    Optional[models.CreateUploadSessionResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -176,10 +183,9 @@ class UploadSessions(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.FileStorageUploadSessionsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -196,7 +202,10 @@ class UploadSessions(BaseSDK):
         service_id: Optional[str] = None,
         drive_id: Optional[str] = None,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -271,6 +280,7 @@ class UploadSessions(BaseSDK):
                 "json",
                 models.CreateUploadSessionRequest,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -295,9 +305,11 @@ class UploadSessions(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["fileStorage"],
+                extensions={"x-apideck-api": "fileStorage"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -305,10 +317,11 @@ class UploadSessions(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.FileStorageUploadSessionsAddResponse(
                 create_upload_session_response=unmarshal_json_response(
-                    Optional[models.CreateUploadSessionResponse], http_res
+                    Optional[models.CreateUploadSessionResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -349,10 +362,9 @@ class UploadSessions(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.FileStorageUploadSessionsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -422,6 +434,7 @@ class UploadSessions(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -446,9 +459,11 @@ class UploadSessions(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["fileStorage"],
+                extensions={"x-apideck-api": "fileStorage"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -456,10 +471,9 @@ class UploadSessions(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.FileStorageUploadSessionsOneResponse(
                 get_upload_session_response=unmarshal_json_response(
-                    Optional[models.GetUploadSessionResponse], http_res
+                    Optional[models.GetUploadSessionResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -500,10 +514,9 @@ class UploadSessions(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.FileStorageUploadSessionsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -573,6 +586,7 @@ class UploadSessions(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -597,9 +611,11 @@ class UploadSessions(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["fileStorage"],
+                extensions={"x-apideck-api": "fileStorage"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -607,10 +623,9 @@ class UploadSessions(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.FileStorageUploadSessionsOneResponse(
                 get_upload_session_response=unmarshal_json_response(
-                    Optional[models.GetUploadSessionResponse], http_res
+                    Optional[models.GetUploadSessionResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -651,10 +666,9 @@ class UploadSessions(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.FileStorageUploadSessionsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -664,7 +678,7 @@ class UploadSessions(BaseSDK):
         *,
         id: str,
         part_number: float,
-        request_body: Union[bytes, IO[bytes], io.BufferedReader],
+        request_body: Union[bytes, IO[bytes], io.IOBase],
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
@@ -735,8 +749,9 @@ class UploadSessions(BaseSDK):
                 False,
                 False,
                 "raw",
-                Union[bytes, IO[bytes], io.BufferedReader],
+                Union[bytes, IO[bytes], io.IOBase],
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -761,9 +776,20 @@ class UploadSessions(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["fileStorage"],
+                extensions={
+                    "x-apideck-api": "fileStorage",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "box",
+                            "description": "Box requires a SHA1 digest of the uploaded chunk to be sent. More info in the Box API documentation [here](https://developer.box.com/reference/put-files-upload-sessions-id/#param-digest).",
+                        }
+                    ],
+                    "x-sdk-exclude": True,
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -771,10 +797,11 @@ class UploadSessions(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.FileStorageUploadSessionsUploadResponse(
                 update_upload_session_response=unmarshal_json_response(
-                    Optional[models.UpdateUploadSessionResponse], http_res
+                    Optional[models.UpdateUploadSessionResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -815,10 +842,9 @@ class UploadSessions(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.FileStorageUploadSessionsUploadResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -828,7 +854,7 @@ class UploadSessions(BaseSDK):
         *,
         id: str,
         part_number: float,
-        request_body: Union[bytes, IO[bytes], io.BufferedReader],
+        request_body: Union[bytes, IO[bytes], io.IOBase],
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
@@ -899,8 +925,9 @@ class UploadSessions(BaseSDK):
                 False,
                 False,
                 "raw",
-                Union[bytes, IO[bytes], io.BufferedReader],
+                Union[bytes, IO[bytes], io.IOBase],
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -925,9 +952,20 @@ class UploadSessions(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["fileStorage"],
+                extensions={
+                    "x-apideck-api": "fileStorage",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "box",
+                            "description": "Box requires a SHA1 digest of the uploaded chunk to be sent. More info in the Box API documentation [here](https://developer.box.com/reference/put-files-upload-sessions-id/#param-digest).",
+                        }
+                    ],
+                    "x-sdk-exclude": True,
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -935,10 +973,11 @@ class UploadSessions(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.FileStorageUploadSessionsUploadResponse(
                 update_upload_session_response=unmarshal_json_response(
-                    Optional[models.UpdateUploadSessionResponse], http_res
+                    Optional[models.UpdateUploadSessionResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -979,10 +1018,9 @@ class UploadSessions(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.FileStorageUploadSessionsUploadResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1049,6 +1087,7 @@ class UploadSessions(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1073,9 +1112,11 @@ class UploadSessions(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["fileStorage"],
+                extensions={"x-apideck-api": "fileStorage"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1083,10 +1124,11 @@ class UploadSessions(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.FileStorageUploadSessionsDeleteResponse(
                 delete_upload_session_response=unmarshal_json_response(
-                    Optional[models.DeleteUploadSessionResponse], http_res
+                    Optional[models.DeleteUploadSessionResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1127,10 +1169,9 @@ class UploadSessions(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.FileStorageUploadSessionsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1197,6 +1238,7 @@ class UploadSessions(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1221,9 +1263,11 @@ class UploadSessions(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["fileStorage"],
+                extensions={"x-apideck-api": "fileStorage"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1231,10 +1275,11 @@ class UploadSessions(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.FileStorageUploadSessionsDeleteResponse(
                 delete_upload_session_response=unmarshal_json_response(
-                    Optional[models.DeleteUploadSessionResponse], http_res
+                    Optional[models.DeleteUploadSessionResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1275,10 +1320,9 @@ class UploadSessions(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.FileStorageUploadSessionsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1360,12 +1404,13 @@ class UploadSessions(BaseSDK):
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request.request_body,
+                request.request_body if request is not None else None,
                 False,
                 True,
                 "json",
                 Optional[models.FileStorageUploadSessionsFinishRequestBody],
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1390,9 +1435,19 @@ class UploadSessions(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["fileStorage"],
+                extensions={
+                    "x-apideck-api": "fileStorage",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "box",
+                            "description": "Box requires a SHA1 digest of the whole file to be sent when committing the upload session. More info in the Box API documentation [here](https://developer.box.com/reference/post-files-upload-sessions-id-commit/#param-digest).",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1400,10 +1455,9 @@ class UploadSessions(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.FileStorageUploadSessionsFinishResponse(
                 get_file_response=unmarshal_json_response(
-                    Optional[models.GetFileResponse], http_res
+                    Optional[models.GetFileResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1444,10 +1498,9 @@ class UploadSessions(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.FileStorageUploadSessionsFinishResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1529,12 +1582,13 @@ class UploadSessions(BaseSDK):
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request.request_body,
+                request.request_body if request is not None else None,
                 False,
                 True,
                 "json",
                 Optional[models.FileStorageUploadSessionsFinishRequestBody],
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1559,9 +1613,19 @@ class UploadSessions(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["fileStorage"],
+                extensions={
+                    "x-apideck-api": "fileStorage",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "box",
+                            "description": "Box requires a SHA1 digest of the whole file to be sent when committing the upload session. More info in the Box API documentation [here](https://developer.box.com/reference/post-files-upload-sessions-id-commit/#param-digest).",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1569,10 +1633,9 @@ class UploadSessions(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.FileStorageUploadSessionsFinishResponse(
                 get_file_response=unmarshal_json_response(
-                    Optional[models.GetFileResponse], http_res
+                    Optional[models.GetFileResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1613,10 +1676,9 @@ class UploadSessions(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.FileStorageUploadSessionsFinishResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

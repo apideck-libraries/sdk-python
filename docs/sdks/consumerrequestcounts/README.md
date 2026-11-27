@@ -1,5 +1,4 @@
-# ConsumerRequestCounts
-(*vault.consumer_request_counts*)
+# Vault.ConsumerRequestCounts
 
 ## Overview
 
@@ -22,7 +21,7 @@ import os
 
 with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.vault.consumer_request_counts.list(consumer_id="test_user_id", start_datetime="2021-05-01T12:00:00.000Z", end_datetime="2021-05-30T12:00:00.000Z")

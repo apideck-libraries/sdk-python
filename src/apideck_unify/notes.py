@@ -7,7 +7,7 @@ from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from jsonpath import JSONPath
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
 
 
 class Notes(BaseSDK):
@@ -23,7 +23,7 @@ class Notes(BaseSDK):
         filter_: Optional[
             Union[models.NotesFilter, models.NotesFilterTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -66,7 +66,7 @@ class Notes(BaseSDK):
             cursor=cursor,
             limit=limit,
             filter_=utils.get_pydantic_model(filter_, Optional[models.NotesFilter]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -87,6 +87,7 @@ class Notes(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -111,9 +112,47 @@ class Notes(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "pipedrive",
+                            "description": "Pipedrive does not expose a cross-page total record count in standard list responses. `meta.total_count` will not appear. Surfacing the total requires additional request parameters or a separate API call — not currently implemented.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics",
+                            "description": "Microsoft Dynamics 365 does not include a total record count in default list responses. `meta.total_count` will not appear. Surfacing the total requires adding `$count=true` to the OData query or calling a separate `$count` endpoint — not currently implemented.\n",
+                        },
+                        {
+                            "connector": "salesforce",
+                            "description": "Salesforce imposes a maximum offset limit of 2000. Exceeding this offset will result in an error from Salesforce. For result sets larger than 2000 items, it is necessary to set the pagination limit to 200, as this will enforce the use of batchSize for pagination. Note that setting a limit lower than 200 will not reduce the batchSize due to Salesforce's minimum batch size policy of 200, as detailed in their documentation [here](https://developer.salesforce.com/docs/atlas.en-us.250.0.api_rest.meta/api_rest/headers_queryoptions.htm) and will have no effect.",
+                        },
+                        {
+                            "connector": "zoho-crm",
+                            "description": "Zoho CRM's `info.count` in list responses is a per-page count only, not a cross-page total. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "attio",
+                            "description": "Attio does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "hubspot",
+                            "description": "Hubspot will only return activities from the last 30 days when using the `filter[updated_since]` parameter, with a maximum of 10.000 records. More info [here](https://legacydocs.hubspot.com/docs/methods/engagements/get-recent-engagements). Use `filter[type]=call` to get custom fields for call activities. When using both `filter[type]=call` and `filter[updated_since]` together, you will get partial response data as the calls search endpoint does not support many data fields. Use only one filter to get better data fields.",
+                        },
+                        {
+                            "connector": "teamleader",
+                            "description": 'Teamleader only lists the notes of a single parent record, so one of `filter[contact_id]`, `filter[company_id]` or `filter[opportunity_id]` is required. Without one, Teamleader returns a `400` error ("filter must be present"). When more than one of these filters is sent, only one is used, in this order: `contact_id`, then `company_id`, then `opportunity_id`. Teamleader does not return a total record count, so `meta.total_count` will not appear. Notes are returned newest first. Note `content` is stored as Markdown, so special characters such as `[`, `]`, `*` and `_` are returned escaped (for example `\\[text\\]`), leading and trailing whitespace is trimmed, and line breaks are normalised. Notes attached to other Teamleader records (for example invoices or meetings) are not returned, because they can only be listed through those records. Leads in this connector are Teamleader contacts, so use `filter[contact_id]` with the lead id; `lead_id` is not returned on notes.\n',
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -139,17 +178,19 @@ class Notes(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmNotesAllResponse(
                 get_notes_response=unmarshal_json_response(
-                    Optional[models.GetNotesResponse], http_res
+                    Optional[models.GetNotesResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -190,11 +231,10 @@ class Notes(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmNotesAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -211,7 +251,7 @@ class Notes(BaseSDK):
         filter_: Optional[
             Union[models.NotesFilter, models.NotesFilterTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -254,7 +294,7 @@ class Notes(BaseSDK):
             cursor=cursor,
             limit=limit,
             filter_=utils.get_pydantic_model(filter_, Optional[models.NotesFilter]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -275,6 +315,7 @@ class Notes(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -299,9 +340,47 @@ class Notes(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "pipedrive",
+                            "description": "Pipedrive does not expose a cross-page total record count in standard list responses. `meta.total_count` will not appear. Surfacing the total requires additional request parameters or a separate API call — not currently implemented.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics",
+                            "description": "Microsoft Dynamics 365 does not include a total record count in default list responses. `meta.total_count` will not appear. Surfacing the total requires adding `$count=true` to the OData query or calling a separate `$count` endpoint — not currently implemented.\n",
+                        },
+                        {
+                            "connector": "salesforce",
+                            "description": "Salesforce imposes a maximum offset limit of 2000. Exceeding this offset will result in an error from Salesforce. For result sets larger than 2000 items, it is necessary to set the pagination limit to 200, as this will enforce the use of batchSize for pagination. Note that setting a limit lower than 200 will not reduce the batchSize due to Salesforce's minimum batch size policy of 200, as detailed in their documentation [here](https://developer.salesforce.com/docs/atlas.en-us.250.0.api_rest.meta/api_rest/headers_queryoptions.htm) and will have no effect.",
+                        },
+                        {
+                            "connector": "zoho-crm",
+                            "description": "Zoho CRM's `info.count` in list responses is a per-page count only, not a cross-page total. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "attio",
+                            "description": "Attio does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "hubspot",
+                            "description": "Hubspot will only return activities from the last 30 days when using the `filter[updated_since]` parameter, with a maximum of 10.000 records. More info [here](https://legacydocs.hubspot.com/docs/methods/engagements/get-recent-engagements). Use `filter[type]=call` to get custom fields for call activities. When using both `filter[type]=call` and `filter[updated_since]` together, you will get partial response data as the calls search endpoint does not support many data fields. Use only one filter to get better data fields.",
+                        },
+                        {
+                            "connector": "teamleader",
+                            "description": 'Teamleader only lists the notes of a single parent record, so one of `filter[contact_id]`, `filter[company_id]` or `filter[opportunity_id]` is required. Without one, Teamleader returns a `400` error ("filter must be present"). When more than one of these filters is sent, only one is used, in this order: `contact_id`, then `company_id`, then `opportunity_id`. Teamleader does not return a total record count, so `meta.total_count` will not appear. Notes are returned newest first. Note `content` is stored as Markdown, so special characters such as `[`, `]`, `*` and `_` are returned escaped (for example `\\[text\\]`), leading and trailing whitespace is trimmed, and line breaks are normalised. Notes attached to other Teamleader records (for example invoices or meetings) are not returned, because they can only be listed through those records. Leads in this connector are Teamleader contacts, so use `filter[contact_id]` with the lead id; `lead_id` is not returned on notes.\n',
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -327,17 +406,19 @@ class Notes(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmNotesAllResponse(
                 get_notes_response=unmarshal_json_response(
-                    Optional[models.GetNotesResponse], http_res
+                    Optional[models.GetNotesResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -378,11 +459,10 @@ class Notes(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmNotesAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -404,7 +484,10 @@ class Notes(BaseSDK):
         lead_id: OptionalNullable[str] = UNSET,
         active: OptionalNullable[bool] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -485,6 +568,7 @@ class Notes(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.note, False, False, "json", models.NoteInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -509,9 +593,31 @@ class Notes(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "salesforce",
+                            "description": "When creating a note in Salesforce, you can only associate it with one resource (such as a lead, company or opportunity) at a time. You cannot combine multiple resources or associate the note with more than one resource in a single API call.",
+                        },
+                        {
+                            "connector": "hubspot",
+                            "description": "HubSpot leads are Contacts, so `lead_id` and `contact_id` both associate the note with a HubSpot contact. When both are sent with different ids, the note is associated with both contacts.",
+                        },
+                        {
+                            "connector": "close",
+                            "description": "When creating a note in Close, the content of the note should be sent in html surrounded by the <body> tags and at least other inner element. If these tags are not sent, unify will surround the note with <body> and <p> tags.",
+                        },
+                        {
+                            "connector": "teamleader",
+                            "description": 'A Teamleader note is attached to exactly one parent record. When more than one of `contact_id`, `company_id` and `opportunity_id` is set, `contact_id` is used first, then `company_id`, then `opportunity_id`. One of `contact_id`, `company_id` or `opportunity_id` is required; without one, Teamleader returns a `400` error ("subject must be present"). Leads in this connector are Teamleader contacts, so pass a lead id as `contact_id`; `lead_id` is ignored. Only `content` is stored: `title`, `owner_id`, `activity_id` and `active` are ignored. `content` is required. Teamleader treats `content` as HTML and stores it as Markdown. A `<` directly followed by a letter (for example `a<b` or `List<String>`) is read as the start of an HTML tag, so the rest of the text can be cut off or altered even though the request succeeds. A `<` followed by a space or a number (for example `price < 5`) is kept. HTML tags such as `<b>` are converted to Markdown, whitespace is trimmed and special characters are returned escaped when the note is read back.\n',
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -519,10 +625,9 @@ class Notes(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.CrmNotesAddResponse(
                 create_note_response=unmarshal_json_response(
-                    Optional[models.CreateNoteResponse], http_res
+                    Optional[models.CreateNoteResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -563,10 +668,9 @@ class Notes(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmNotesAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -588,7 +692,10 @@ class Notes(BaseSDK):
         lead_id: OptionalNullable[str] = UNSET,
         active: OptionalNullable[bool] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -669,6 +776,7 @@ class Notes(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.note, False, False, "json", models.NoteInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -693,9 +801,31 @@ class Notes(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "salesforce",
+                            "description": "When creating a note in Salesforce, you can only associate it with one resource (such as a lead, company or opportunity) at a time. You cannot combine multiple resources or associate the note with more than one resource in a single API call.",
+                        },
+                        {
+                            "connector": "hubspot",
+                            "description": "HubSpot leads are Contacts, so `lead_id` and `contact_id` both associate the note with a HubSpot contact. When both are sent with different ids, the note is associated with both contacts.",
+                        },
+                        {
+                            "connector": "close",
+                            "description": "When creating a note in Close, the content of the note should be sent in html surrounded by the <body> tags and at least other inner element. If these tags are not sent, unify will surround the note with <body> and <p> tags.",
+                        },
+                        {
+                            "connector": "teamleader",
+                            "description": 'A Teamleader note is attached to exactly one parent record. When more than one of `contact_id`, `company_id` and `opportunity_id` is set, `contact_id` is used first, then `company_id`, then `opportunity_id`. One of `contact_id`, `company_id` or `opportunity_id` is required; without one, Teamleader returns a `400` error ("subject must be present"). Leads in this connector are Teamleader contacts, so pass a lead id as `contact_id`; `lead_id` is ignored. Only `content` is stored: `title`, `owner_id`, `activity_id` and `active` are ignored. `content` is required. Teamleader treats `content` as HTML and stores it as Markdown. A `<` directly followed by a letter (for example `a<b` or `List<String>`) is read as the start of an HTML tag, so the rest of the text can be cut off or altered even though the request succeeds. A `<` followed by a space or a number (for example `price < 5`) is kept. HTML tags such as `<b>` are converted to Markdown, whitespace is trimmed and special characters are returned escaped when the note is read back.\n',
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -703,10 +833,9 @@ class Notes(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.CrmNotesAddResponse(
                 create_note_response=unmarshal_json_response(
-                    Optional[models.CreateNoteResponse], http_res
+                    Optional[models.CreateNoteResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -747,10 +876,9 @@ class Notes(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmNotesAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -820,6 +948,7 @@ class Notes(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -844,9 +973,11 @@ class Notes(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={"x-apideck-api": "crm"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -854,10 +985,9 @@ class Notes(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmNotesOneResponse(
                 get_note_response=unmarshal_json_response(
-                    Optional[models.GetNoteResponse], http_res
+                    Optional[models.GetNoteResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -898,10 +1028,9 @@ class Notes(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmNotesOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -971,6 +1100,7 @@ class Notes(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -995,9 +1125,11 @@ class Notes(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={"x-apideck-api": "crm"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1005,10 +1137,9 @@ class Notes(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmNotesOneResponse(
                 get_note_response=unmarshal_json_response(
-                    Optional[models.GetNoteResponse], http_res
+                    Optional[models.GetNoteResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1049,10 +1180,9 @@ class Notes(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmNotesOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1075,7 +1205,10 @@ class Notes(BaseSDK):
         lead_id: OptionalNullable[str] = UNSET,
         active: OptionalNullable[bool] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1158,6 +1291,7 @@ class Notes(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.note, False, False, "json", models.NoteInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1182,9 +1316,23 @@ class Notes(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "close",
+                            "description": "When updating a note in Close, the content of the note should be sent in html surrounded by the <body> tags and at least other inner element. If these tags are not sent, unify will surround the note with <body> and <p> tags.",
+                        },
+                        {
+                            "connector": "teamleader",
+                            "description": "Only `content` can be updated. A note cannot be moved to another parent record: `contact_id`, `company_id` and `opportunity_id` are ignored on update, as are `title`, `owner_id`, `activity_id` and `active`. An update without `content` succeeds without changing the note; an empty `content` returns Teamleader's `400` error. Teamleader treats `content` as HTML and stores it as Markdown. A `<` directly followed by a letter (for example `a<b` or `List<String>`) is read as the start of an HTML tag, so the rest of the text can be cut off or altered even though the request succeeds.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1192,10 +1340,9 @@ class Notes(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmNotesUpdateResponse(
                 update_note_response=unmarshal_json_response(
-                    Optional[models.UpdateNoteResponse], http_res
+                    Optional[models.UpdateNoteResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1236,10 +1383,9 @@ class Notes(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmNotesUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1262,7 +1408,10 @@ class Notes(BaseSDK):
         lead_id: OptionalNullable[str] = UNSET,
         active: OptionalNullable[bool] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1345,6 +1494,7 @@ class Notes(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.note, False, False, "json", models.NoteInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1369,9 +1519,23 @@ class Notes(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "close",
+                            "description": "When updating a note in Close, the content of the note should be sent in html surrounded by the <body> tags and at least other inner element. If these tags are not sent, unify will surround the note with <body> and <p> tags.",
+                        },
+                        {
+                            "connector": "teamleader",
+                            "description": "Only `content` can be updated. A note cannot be moved to another parent record: `contact_id`, `company_id` and `opportunity_id` are ignored on update, as are `title`, `owner_id`, `activity_id` and `active`. An update without `content` succeeds without changing the note; an empty `content` returns Teamleader's `400` error. Teamleader treats `content` as HTML and stores it as Markdown. A `<` directly followed by a letter (for example `a<b` or `List<String>`) is read as the start of an HTML tag, so the rest of the text can be cut off or altered even though the request succeeds.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1379,10 +1543,9 @@ class Notes(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmNotesUpdateResponse(
                 update_note_response=unmarshal_json_response(
-                    Optional[models.UpdateNoteResponse], http_res
+                    Optional[models.UpdateNoteResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1423,10 +1586,9 @@ class Notes(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmNotesUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1493,6 +1655,7 @@ class Notes(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1517,9 +1680,11 @@ class Notes(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={"x-apideck-api": "crm"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1527,10 +1692,9 @@ class Notes(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmNotesDeleteResponse(
                 delete_note_response=unmarshal_json_response(
-                    Optional[models.DeleteNoteResponse], http_res
+                    Optional[models.DeleteNoteResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1571,10 +1735,9 @@ class Notes(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmNotesDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1641,6 +1804,7 @@ class Notes(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1665,9 +1829,11 @@ class Notes(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={"x-apideck-api": "crm"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1675,10 +1841,9 @@ class Notes(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmNotesDeleteResponse(
                 delete_note_response=unmarshal_json_response(
-                    Optional[models.DeleteNoteResponse], http_res
+                    Optional[models.DeleteNoteResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1719,10 +1884,9 @@ class Notes(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmNotesDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

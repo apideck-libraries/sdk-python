@@ -20,7 +20,7 @@ class Payrolls(BaseSDK):
         filter_: Optional[
             Union[models.PayrollsFilter, models.PayrollsFilterTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -59,7 +59,7 @@ class Payrolls(BaseSDK):
             app_id=app_id,
             service_id=service_id,
             filter_=utils.get_pydantic_model(filter_, Optional[models.PayrollsFilter]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -80,6 +80,7 @@ class Payrolls(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -104,9 +105,11 @@ class Payrolls(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["hris"],
+                extensions={"x-apideck-api": "hris"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -114,10 +117,9 @@ class Payrolls(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.HrisPayrollsAllResponse(
                 get_payrolls_response=unmarshal_json_response(
-                    Optional[models.GetPayrollsResponse], http_res
+                    Optional[models.GetPayrollsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -158,10 +160,9 @@ class Payrolls(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.HrisPayrollsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -176,7 +177,7 @@ class Payrolls(BaseSDK):
         filter_: Optional[
             Union[models.PayrollsFilter, models.PayrollsFilterTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -215,7 +216,7 @@ class Payrolls(BaseSDK):
             app_id=app_id,
             service_id=service_id,
             filter_=utils.get_pydantic_model(filter_, Optional[models.PayrollsFilter]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -236,6 +237,7 @@ class Payrolls(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -260,9 +262,11 @@ class Payrolls(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["hris"],
+                extensions={"x-apideck-api": "hris"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -270,10 +274,9 @@ class Payrolls(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.HrisPayrollsAllResponse(
                 get_payrolls_response=unmarshal_json_response(
-                    Optional[models.GetPayrollsResponse], http_res
+                    Optional[models.GetPayrollsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -314,10 +317,9 @@ class Payrolls(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.HrisPayrollsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -387,6 +389,7 @@ class Payrolls(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -411,9 +414,11 @@ class Payrolls(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["hris"],
+                extensions={"x-apideck-api": "hris"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -421,10 +426,9 @@ class Payrolls(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.HrisPayrollsOneResponse(
                 get_payroll_response=unmarshal_json_response(
-                    Optional[models.GetPayrollResponse], http_res
+                    Optional[models.GetPayrollResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -465,10 +469,9 @@ class Payrolls(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.HrisPayrollsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -538,6 +541,7 @@ class Payrolls(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -562,9 +566,11 @@ class Payrolls(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["hris"],
+                extensions={"x-apideck-api": "hris"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -572,10 +578,9 @@ class Payrolls(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.HrisPayrollsOneResponse(
                 get_payroll_response=unmarshal_json_response(
-                    Optional[models.GetPayrollResponse], http_res
+                    Optional[models.GetPayrollResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -616,10 +621,9 @@ class Payrolls(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.HrisPayrollsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

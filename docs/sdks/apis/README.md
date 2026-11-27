@@ -1,5 +1,4 @@
-# Apis
-(*connector.apis*)
+# Connector.Apis
 
 ## Overview
 
@@ -23,7 +22,7 @@ import os
 
 with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.connector.apis.list(limit=20, filter_={
@@ -74,7 +73,7 @@ import os
 
 with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.connector.apis.get(id="<id>")

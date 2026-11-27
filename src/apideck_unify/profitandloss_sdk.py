@@ -21,7 +21,7 @@ class ProfitAndLossSDK(BaseSDK):
         filter_: Optional[
             Union[models.ProfitAndLossFilter, models.ProfitAndLossFilterTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -64,7 +64,7 @@ class ProfitAndLossSDK(BaseSDK):
             filter_=utils.get_pydantic_model(
                 filter_, Optional[models.ProfitAndLossFilter]
             ),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -85,6 +85,7 @@ class ProfitAndLossSDK(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -109,9 +110,43 @@ class ProfitAndLossSDK(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "The report is generated live by QuickBooks Desktop on every request: the call waits up\nto 25 seconds for the next Web Connector run (it polls about once a minute, occasionally\nskipping a cycle). If the run does not happen in time the call returns 408 and the report\njob stays queued, so repeat the same request a little later and it returns the finished\nreport. `filter[start_date]` and `filter[end_date]` map to the report period (omit both\nfor the calendar year to date; a start date alone runs to today, an end date alone runs from 1970-01-01, i.e. all history),\n`filter[accounting_method]` selects the Accrual or Cash basis and\n`filter[customer_id]` restricts the report to one customer or job; `filter[location_id]`\nis not supported. Sections follow QuickBooks' own captions (Income, Cost of Goods Sold,\nExpense, Other Income, Other Expense); when a caption is missing (renamed or non-English\ncompany file) the section is rebuilt flat from the lines whose account has the matching\nQuickBooks account type. Record titles are the account captions as QuickBooks prints\nthem (`40110 · Design Income`) and a parent account with sub-accounts becomes a nested\nsection. Each record's `id` is the ledger account id and `code` its account number,\njoined from the synced chart of accounts; until the first accounts sync has run they\nare absent, and a file that prints neither an `Income` nor an `Expense` caption (renamed\nor localised) returns `502` until then, since its sections can only be rebuilt from the\nsynced account types. `currency` is not reported. When QuickBooks chooses the period (a date\nmacro, or a single bound), `start_date` / `end_date` are read from the report subtitle.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "Amounts are kept per accounting period: `filter[start_date]` and `filter[end_date]` are widened to the periods they fall in and must fall in the same fiscal year. With monthly periods (most administrations) the report's `start_date` and `end_date` are the dates it actually covers. Minox does not expose the dates of other period layouts (quarters, 13 periods), so there the report covers the whole fiscal year: the filters must be the fiscal year's first and last day or left out, and any other range is rejected with a `400`. Without filters the report covers the current or latest fiscal year up to the end of the current period. Accounts are classified by their RGS code (the Dutch reference chart of accounts), as Minox's RGS trial balance assigns it, which includes accounts created through the API. An account without one that is in a profit-and-loss group in Minox is listed under `uncategorized_accounts` and counts towards net income; one without any group is left out (the balance sheet lists it as uncategorized). Over a fiscal year from its first period, net income equals the balance sheet's result for that year.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "Sage Intacct's Profit and Loss report is structured around account groups.  To retrieve accurate data, all income statement accounts must be mapped to one  of the following categories: Revenue, Cost of Revenue, Operating Expense, or Other Expenses.  Any income statement accounts that are not mapped to one of these categories  will appear under the `uncategorized_accounts` property.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "FreeAgent's Profit and Loss API has a date range limitation. The specified period must be **12 months or less, or contained within a single accounting year**. Periods that exceed 12 months and span multiple accounting years will return an error.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "NetSuite date filtering resolves `filter[start_date]` and `filter[end_date]` to accounting period IDs via SuiteQL, then filters the SOAP request by those periods. This requires the SuiteAnalytics Workbook permission for period resolution. If the permission is unavailable, the report returns all-time data as a fallback. For best results, keep date ranges under 16 years (200 monthly periods).\nIf the connection's Default Subsidiary names a subsidiary that no longer exists, this report returns every figure at zero with a 200 rather than an error — that is indistinguishable from an entity with no activity. A statement of zeros for a company you expect to have data means the selected subsidiary is stale.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Zoho Books does not publish a documented reporting API for this report. This connector\nreads it from a working but undocumented endpoint, which may change without notice.\nOnly the date filters listed for this connector are supported: accounting method,\nperiod count, period type and location filters are not available.\n\nBoth `filter[start_date]` and `filter[end_date]` are required together. Omitting\neither one returns an error rather than a default period.\n\nAccounts with a zero balance in the requested period are omitted from the response\nentirely rather than returned with a zero total.\n",
+                        },
+                        {
+                            "connector": "wave",
+                            "description": "Wave exposes no period-bounded balances, so the report covers the business's lifetime up to today: `start_date` is `null`, `end_date` is today, and `filter[start_date]`, `filter[end_date]` and any other filter are rejected with a `400` (Unsupported Filters). Amounts are the accounts' current balances in the business currency, grouped by Wave account type and subtype. Archived accounts are left out.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -119,10 +154,9 @@ class ProfitAndLossSDK(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingProfitAndLossOneResponse(
                 get_profit_and_loss_response=unmarshal_json_response(
-                    Optional[models.GetProfitAndLossResponse], http_res
+                    Optional[models.GetProfitAndLossResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -163,10 +197,9 @@ class ProfitAndLossSDK(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingProfitAndLossOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -182,7 +215,7 @@ class ProfitAndLossSDK(BaseSDK):
         filter_: Optional[
             Union[models.ProfitAndLossFilter, models.ProfitAndLossFilterTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -225,7 +258,7 @@ class ProfitAndLossSDK(BaseSDK):
             filter_=utils.get_pydantic_model(
                 filter_, Optional[models.ProfitAndLossFilter]
             ),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -246,6 +279,7 @@ class ProfitAndLossSDK(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -270,9 +304,43 @@ class ProfitAndLossSDK(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "The report is generated live by QuickBooks Desktop on every request: the call waits up\nto 25 seconds for the next Web Connector run (it polls about once a minute, occasionally\nskipping a cycle). If the run does not happen in time the call returns 408 and the report\njob stays queued, so repeat the same request a little later and it returns the finished\nreport. `filter[start_date]` and `filter[end_date]` map to the report period (omit both\nfor the calendar year to date; a start date alone runs to today, an end date alone runs from 1970-01-01, i.e. all history),\n`filter[accounting_method]` selects the Accrual or Cash basis and\n`filter[customer_id]` restricts the report to one customer or job; `filter[location_id]`\nis not supported. Sections follow QuickBooks' own captions (Income, Cost of Goods Sold,\nExpense, Other Income, Other Expense); when a caption is missing (renamed or non-English\ncompany file) the section is rebuilt flat from the lines whose account has the matching\nQuickBooks account type. Record titles are the account captions as QuickBooks prints\nthem (`40110 · Design Income`) and a parent account with sub-accounts becomes a nested\nsection. Each record's `id` is the ledger account id and `code` its account number,\njoined from the synced chart of accounts; until the first accounts sync has run they\nare absent, and a file that prints neither an `Income` nor an `Expense` caption (renamed\nor localised) returns `502` until then, since its sections can only be rebuilt from the\nsynced account types. `currency` is not reported. When QuickBooks chooses the period (a date\nmacro, or a single bound), `start_date` / `end_date` are read from the report subtitle.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "Amounts are kept per accounting period: `filter[start_date]` and `filter[end_date]` are widened to the periods they fall in and must fall in the same fiscal year. With monthly periods (most administrations) the report's `start_date` and `end_date` are the dates it actually covers. Minox does not expose the dates of other period layouts (quarters, 13 periods), so there the report covers the whole fiscal year: the filters must be the fiscal year's first and last day or left out, and any other range is rejected with a `400`. Without filters the report covers the current or latest fiscal year up to the end of the current period. Accounts are classified by their RGS code (the Dutch reference chart of accounts), as Minox's RGS trial balance assigns it, which includes accounts created through the API. An account without one that is in a profit-and-loss group in Minox is listed under `uncategorized_accounts` and counts towards net income; one without any group is left out (the balance sheet lists it as uncategorized). Over a fiscal year from its first period, net income equals the balance sheet's result for that year.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "Sage Intacct's Profit and Loss report is structured around account groups.  To retrieve accurate data, all income statement accounts must be mapped to one  of the following categories: Revenue, Cost of Revenue, Operating Expense, or Other Expenses.  Any income statement accounts that are not mapped to one of these categories  will appear under the `uncategorized_accounts` property.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "FreeAgent's Profit and Loss API has a date range limitation. The specified period must be **12 months or less, or contained within a single accounting year**. Periods that exceed 12 months and span multiple accounting years will return an error.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "NetSuite date filtering resolves `filter[start_date]` and `filter[end_date]` to accounting period IDs via SuiteQL, then filters the SOAP request by those periods. This requires the SuiteAnalytics Workbook permission for period resolution. If the permission is unavailable, the report returns all-time data as a fallback. For best results, keep date ranges under 16 years (200 monthly periods).\nIf the connection's Default Subsidiary names a subsidiary that no longer exists, this report returns every figure at zero with a 200 rather than an error — that is indistinguishable from an entity with no activity. A statement of zeros for a company you expect to have data means the selected subsidiary is stale.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Zoho Books does not publish a documented reporting API for this report. This connector\nreads it from a working but undocumented endpoint, which may change without notice.\nOnly the date filters listed for this connector are supported: accounting method,\nperiod count, period type and location filters are not available.\n\nBoth `filter[start_date]` and `filter[end_date]` are required together. Omitting\neither one returns an error rather than a default period.\n\nAccounts with a zero balance in the requested period are omitted from the response\nentirely rather than returned with a zero total.\n",
+                        },
+                        {
+                            "connector": "wave",
+                            "description": "Wave exposes no period-bounded balances, so the report covers the business's lifetime up to today: `start_date` is `null`, `end_date` is today, and `filter[start_date]`, `filter[end_date]` and any other filter are rejected with a `400` (Unsupported Filters). Amounts are the accounts' current balances in the business currency, grouped by Wave account type and subtype. Archived accounts are left out.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -280,10 +348,9 @@ class ProfitAndLossSDK(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingProfitAndLossOneResponse(
                 get_profit_and_loss_response=unmarshal_json_response(
-                    Optional[models.GetProfitAndLossResponse], http_res
+                    Optional[models.GetProfitAndLossResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -324,10 +391,9 @@ class ProfitAndLossSDK(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingProfitAndLossOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

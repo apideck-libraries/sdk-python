@@ -7,7 +7,7 @@ from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from jsonpath import JSONPath
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
 
 
 class Customers(BaseSDK):
@@ -27,7 +27,7 @@ class Customers(BaseSDK):
         sort: Optional[
             Union[models.CustomersSort, models.CustomersSortTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -74,7 +74,7 @@ class Customers(BaseSDK):
             limit=limit,
             filter_=utils.get_pydantic_model(filter_, Optional[models.CustomersFilter]),
             sort=utils.get_pydantic_model(sort, Optional[models.CustomersSort]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -95,6 +95,7 @@ class Customers(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -119,9 +120,147 @@ class Customers(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "`filter[updated_since]` compares on whole days: SAP keeps only the date of the last change, so the time\npart is ignored and the filter is inclusive of the given day (in UTC). Records changed earlier that day are\nreturned again; dedupe by `id`. A customer that has never been changed matches on its creation date.\n\n`emails`, `phone_numbers` and `websites` combine the entries SAP keeps on each of the customer's addresses\nwith the ones kept on the customer itself: the standard address's entries first, then the other addresses' in\nSAP's order, then the customer's own. `phone_numbers` lists the landlines first, then the mobile numbers, each in\nthat order. Every entry has an `id` that is unique within its list. At most one entry per list is\n`primary`: the entry SAP marks as default on the standard address or, when that address has none, the\nfirst entry SAP marks as default. Every other entry is `secondary`; mobile numbers are `mobile`, so a list with only mobile numbers has no `primary`.\n`phone_numbers[].extension` is returned when SAP holds one.\n\n`addresses[].type` is `primary` for the customer's standard address in SAP and `secondary` for every other\naddress. `line1` is the street, `street_number` the house number, and `line2` and `line3` are SAP's\nStreet 4 and Street 5 fields.\n",
+                        },
+                        {
+                            "connector": "e-conomic",
+                            "description": "Supported filters: `company_name`, `display_name` (both match anywhere in the name, ignoring case), `email`, `ids` and `updated_since`. Sorting is not supported. e-conomic customers have no creation timestamp, and custom fields are not supported.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "Supported filters: `company_name`, `display_name`, `email` and `status`. Name filters match anywhere in the name, ignoring case.\n`filter[email]` returns the customers that have that email address. Sorting is not supported:\nMinox customers have no created or updated timestamps.\n",
+                        },
+                        {
+                            "connector": "e-boekhouden",
+                            "description": "`customers` and `suppliers` both list the same underlying set of relations. e-Boekhouden\ndoes not store a customer/supplier flag on a relation record — a relation only becomes one\nor the other through how it is later referenced on an invoice or a bill, not through any\nfield on the relation itself. There is no server-side filter this connector can apply to\nseparate the two, so both resources return every relation, and a record created through\neither resource shows up in both. If you need to tell them apart, classify client-side\nfrom your own business context — note that invoice/bill history only works for relations\nthat already have transactions, so a newly created customer or a supplier with no bills yet\ncannot be classified that way.\n",
+                        },
+                        {
+                            "connector": "snelstart",
+                            "description": "`addresses[].country` always returns `NL`. SnelStart stores an address's country as a\nreference to an internal country record rather than an ISO code, and this connector does\nnot resolve that reference — consistent with SnelStart being a Netherlands-only accounting\nplatform.\n",
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": 'By default, listing customers makes one Twinfield request per page (a `limit` above 100 can take two) and\nreturns only `id`, `display_id`, `company_name` and `display_name`. Use Get Customer for the full record.\n\nTo get the Get Customer details in the list as well, set "Include full details when listing customers" to\nYes in the connection\'s Customers configuration settings. Through the Vault API, this is the customers\nresource config `enrich_customer_list` set to `"true"`. The list then also returns `emails`,\n`phone_numbers`, `addresses`, `status`, `updated_at`, `websites`, `bank_accounts`, `tax_number` and\n`account`.\n\nTwinfield returns these details one customer at a time, so with the setting on every page makes one extra\nrequest for each customer on it: a page of 200 customers makes 200 extra requests. Every extra request\ncounts as an Apideck API request, the same as a Get Customer call, and against the connection\'s\nTwinfield rate limit.\n\nWith the setting on, `fields` limits the extra requests to lists that need them: a list that asks only for\n`id`, `display_id`, `company_name` and `display_name` makes no extra requests. With the setting off,\n`fields` cannot turn the extra details on.\n\nWhen the setting is on, a failed extra request does not fail the list. The response is still a 200, those\ncustomers are returned without the extra details, and `meta.warnings` has an entry whose `operation` is\n`customersOne`. If Twinfield refuses access or rate-limits the connection, no further extra requests are\nmade for that page and its remaining customers are returned without the extra details.\n\nThe whole list request has about 20 seconds, counted from when it starts, so the time the list itself\ntakes is included. Customers not reached in that time are returned without the extra details, and a\n`meta.warnings` entry says how many. If you see that warning, request smaller pages with `limit`\n(default 20, maximum 200).\n\nThe setting applies to list requests only; it does not change webhook events.\n',
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "The minimum page size accepted for Netsuite is 5. The cursor for Netsuite expires if it has not been used within 15 minutes after its creation.\n\nThe `taxable` field is read directly from the NetSuite `customer.taxable` boolean in both Legacy Tax and SuiteTax accounts. Under SuiteTax, `customer.taxable` continues to be readable but does not reflect per-jurisdiction tax exemptions — the meaningful per-nexus tax state lives in NetSuite's `customerTaxRegistration` records, which the unified API does not currently surface as first-class fields. Consumers needing per-nexus tax registration data should gate their logic on `connection.suitetax_enabled` and query `customerTaxRegistration` via pass-through SuiteQL, e.g. `?pass_through[q]=SELECT entity, nexus, taxRegistrationNumber FROM customerTaxRegistration WHERE entity = {customer_id}`.\n\nWhen `filter`, `sort`, or `pass_through` parameters are applied to `GET /accounting/customers`, `addresses[]` returns only the default billing and default shipping addresses, each with `type` and `string` (a multi-line formatted address). Structured fields like `line1`, `city`, `state`, `postal_code`, and `country`, and any additional custom-labeled addresses, are returned only on unfiltered list calls and on `GET /accounting/customers/{id}`.\n`filter[subsidiary_id]` scopes results to customers assigned to (or shared with) the given subsidiary, and is only supported on NetSuite OneWorld accounts; on standard (single-entity) accounts it is ignored.\n\n`filter[company_name]`, `filter[display_name]`, `filter[first_name]` and `filter[last_name]` match by case-insensitive substring (contains); the value is matched literally, so `%` and `_` are not treated as wildcards. `filter[email]` matches exactly.\n\n`filter[status]` maps to NetSuite's `isinactive` column: `active` returns customers that are not inactive, `inactive` returns those that are. NetSuite has no archived state, so `archived` and `all` both apply no status filter and return every customer.\n\nBecause any `filter` reroutes the call to NetSuite's SuiteQL path, `filter[status]=archived` and `filter[status]=all` return the same records as an unfiltered call but with the reduced `addresses[]` shape described above — structured address fields are not returned. If you want every customer *with* structured addresses, omit `filter[status]` entirely rather than passing `all`.\n",
+                        },
+                        {
+                            "connector": "clearbooks-uk",
+                            "description": "Clearbooks does not support setting the pagination size.",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "In Xero, contacts are not strictly separated into customers or suppliers until linked to a transaction. Apideck's approach is to return customers as `IsCustomer=true||IsSupplier=false` and suppliers as `IsSupplier=true||IsCustomer=false`. If you need other cases, use pass-through, e.g. `?pass_through[where]=IsCustomer=false AND IsSupplier=false` for uncategorized contacts. See the [Pass-through guide](https://developers.apideck.com/guides/pass-through) for more details.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "In FreeAgent, newly created customers will not appear in customer list responses until an invoice has been assigned to them. This is because FreeAgent only classifies contacts as customers once they have associated invoices. See [Set up a contact as a customer or a supplier](https://support.freeagent.com/hc/en-gb/articles/115001217850-Set-up-a-contact-as-a-customer-or-a-supplier) for more details.\n\n`balance` reflects the contact's net position across both sales invoices and purchase bills. FreeAgent does not keep a separate ledger balance for a contact's customer role versus its supplier role, so if the same contact is also used as a supplier, an outstanding bill against them lowers `balance` (or makes it negative) rather than being excluded. Draft invoices and bills are not included until posted.\n",
+                        },
+                        {
+                            "connector": "wafeq",
+                            "description": "Wafeq does not separate customers and suppliers as distinct API resources — both share `/v1/contacts/`. The unified `customers` resource sends `relationship[]=customer` to filter, and `suppliers` sends `relationship[]=supplier`. However, Wafeq's `relationship` field is internal and is NOT settable via the API on contact create/update — it is populated by Wafeq based on UI classification or transaction history. Newly-created contacts and contacts with no transactions will appear in BOTH the customers and suppliers lists until Wafeq tags them. To enforce strict customer/supplier separation, manage contact classification in the Wafeq UI.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks Online does not expose a reliable cross-page total record count. The `QueryResponse.totalCount` field in list responses reflects the count for that page only, not the full dataset. `meta.total_count` will not appear in list responses. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite uses the same underlying QuickBooks API. The `QueryResponse.totalCount` field in list responses reflects the per-page count only. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "`balance` reflects only the customer's own outstanding balance — it excludes the balances\nof any sub-customers or jobs, which are returned as separate customer records linked\nthrough `parent.id`. The value is denominated in the customer's own `currency`, which may\ndiffer from the company's home currency. It can be negative when the customer holds\nunapplied credits or overpayments.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "`balance` reflects only the customer's own outstanding balance — it excludes the balances\nof any sub-customers or jobs, which are returned as separate customer records linked\nthrough `parent.id`. The value is denominated in the customer's own `currency`, which may\ndiffer from the company's home currency. It can be negative when the customer holds\nunapplied credits or overpayments.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics",
+                            "description": "Microsoft Dynamics 365 does not include a total record count in default list responses. `meta.total_count` will not appear. Surfacing the total requires adding `$count=true` to the OData query or calling a separate `$count` endpoint — not currently implemented.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Zoho Books does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "`balance` is the customer's full outstanding receivable total — their opening balance\nplus any unpaid invoices, minus payments applied — in the customer's currency. It does not\ninclude unapplied credits (Zoho Books' separate `unused_credits_receivable_amount`), and\nis populated on both this list endpoint and the single-customer read with no extra\nparameter required.\n",
+                        },
+                        {
+                            "connector": "stripe",
+                            "description": "Stripe removed `total_count` from list responses in March 2025 (API version 2025-03-31.basil). `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": "Moneybird does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "rillet",
+                            "description": "Rillet does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "pennylane",
+                            "description": "Pennylane does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "AFAS does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "procountor-fi",
+                            "description": "Procountor does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "access-financials",
+                            "description": "Access Financials does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "dualentry",
+                            "description": "DualEntry customers are org-level master data and are not scoped to any company. The `x-apideck-company-id` header has no effect on customer list or lookup results — all customers belong to the organisation, not to individual subsidiary companies.\n\n`filter[ids]` returns at most 100 records per page. A list of more than 100 ids is not\ntruncated — the filter is preserved across pages, so page through the cursor to collect\nthem all.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "If you encounter a '400 Bad Request' error indicating \"Control 'fieldName' is read-only\" it means the 'editable' property for this field in Microsoft Dynamics 365 Business Central is currently set to false. To resolve this issue and make the field writable, simply update the 'editable' property to true in Microsoft Dynamics 365 Business Central. Additionally, line item tax rates must be specified by tax rate *code* (e.g., \"G3\"), not by ID. In U.S.-regionalized Business Central tenants, the `tax_inclusive` field cannot be set to `true`.\n",
+                        },
+                        {
+                            "connector": "myob-acumatica",
+                            "description": "The Apideck service type is used for MYOB Acumatica non-stock items, and inventory is used for stock items.\n",
+                        },
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "QuickBooks Desktop does not expose a reliable cross-page total record count. Getting `total_count` requires a separate COUNT query — an extra API call that is not currently implemented. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "acumatica",
+                            "description": "The Apideck service type is used for Acumatica non-stock items, and inventory is used for stock items.\n",
+                        },
+                        {
+                            "connector": "lexware-office",
+                            "description": "The vendor emits a single, undifferentiated contact-change webhook event for both\ncustomers and suppliers, with no role information in the notification payload. Every\nsuch event is delivered as `customer.updated`, including a change to a vendor-only\ncontact (no customer role at all) — there is currently no way to distinguish or\nsubscribe to supplier-only contact changes separately.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Countries are returned as ISO 3166-1 alpha-2 codes. Fiken stores a country as free text, normally its Norwegian name; a stored value that is not a recognised country name is returned as stored.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -149,17 +288,19 @@ class Customers(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingCustomersAllResponse(
                 get_customers_response=unmarshal_json_response(
-                    Optional[models.GetCustomersResponse], http_res
+                    Optional[models.GetCustomersResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -200,11 +341,10 @@ class Customers(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingCustomersAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -225,7 +365,7 @@ class Customers(BaseSDK):
         sort: Optional[
             Union[models.CustomersSort, models.CustomersSortTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -272,7 +412,7 @@ class Customers(BaseSDK):
             limit=limit,
             filter_=utils.get_pydantic_model(filter_, Optional[models.CustomersFilter]),
             sort=utils.get_pydantic_model(sort, Optional[models.CustomersSort]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -293,6 +433,7 @@ class Customers(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -317,9 +458,147 @@ class Customers(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "`filter[updated_since]` compares on whole days: SAP keeps only the date of the last change, so the time\npart is ignored and the filter is inclusive of the given day (in UTC). Records changed earlier that day are\nreturned again; dedupe by `id`. A customer that has never been changed matches on its creation date.\n\n`emails`, `phone_numbers` and `websites` combine the entries SAP keeps on each of the customer's addresses\nwith the ones kept on the customer itself: the standard address's entries first, then the other addresses' in\nSAP's order, then the customer's own. `phone_numbers` lists the landlines first, then the mobile numbers, each in\nthat order. Every entry has an `id` that is unique within its list. At most one entry per list is\n`primary`: the entry SAP marks as default on the standard address or, when that address has none, the\nfirst entry SAP marks as default. Every other entry is `secondary`; mobile numbers are `mobile`, so a list with only mobile numbers has no `primary`.\n`phone_numbers[].extension` is returned when SAP holds one.\n\n`addresses[].type` is `primary` for the customer's standard address in SAP and `secondary` for every other\naddress. `line1` is the street, `street_number` the house number, and `line2` and `line3` are SAP's\nStreet 4 and Street 5 fields.\n",
+                        },
+                        {
+                            "connector": "e-conomic",
+                            "description": "Supported filters: `company_name`, `display_name` (both match anywhere in the name, ignoring case), `email`, `ids` and `updated_since`. Sorting is not supported. e-conomic customers have no creation timestamp, and custom fields are not supported.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "Supported filters: `company_name`, `display_name`, `email` and `status`. Name filters match anywhere in the name, ignoring case.\n`filter[email]` returns the customers that have that email address. Sorting is not supported:\nMinox customers have no created or updated timestamps.\n",
+                        },
+                        {
+                            "connector": "e-boekhouden",
+                            "description": "`customers` and `suppliers` both list the same underlying set of relations. e-Boekhouden\ndoes not store a customer/supplier flag on a relation record — a relation only becomes one\nor the other through how it is later referenced on an invoice or a bill, not through any\nfield on the relation itself. There is no server-side filter this connector can apply to\nseparate the two, so both resources return every relation, and a record created through\neither resource shows up in both. If you need to tell them apart, classify client-side\nfrom your own business context — note that invoice/bill history only works for relations\nthat already have transactions, so a newly created customer or a supplier with no bills yet\ncannot be classified that way.\n",
+                        },
+                        {
+                            "connector": "snelstart",
+                            "description": "`addresses[].country` always returns `NL`. SnelStart stores an address's country as a\nreference to an internal country record rather than an ISO code, and this connector does\nnot resolve that reference — consistent with SnelStart being a Netherlands-only accounting\nplatform.\n",
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": 'By default, listing customers makes one Twinfield request per page (a `limit` above 100 can take two) and\nreturns only `id`, `display_id`, `company_name` and `display_name`. Use Get Customer for the full record.\n\nTo get the Get Customer details in the list as well, set "Include full details when listing customers" to\nYes in the connection\'s Customers configuration settings. Through the Vault API, this is the customers\nresource config `enrich_customer_list` set to `"true"`. The list then also returns `emails`,\n`phone_numbers`, `addresses`, `status`, `updated_at`, `websites`, `bank_accounts`, `tax_number` and\n`account`.\n\nTwinfield returns these details one customer at a time, so with the setting on every page makes one extra\nrequest for each customer on it: a page of 200 customers makes 200 extra requests. Every extra request\ncounts as an Apideck API request, the same as a Get Customer call, and against the connection\'s\nTwinfield rate limit.\n\nWith the setting on, `fields` limits the extra requests to lists that need them: a list that asks only for\n`id`, `display_id`, `company_name` and `display_name` makes no extra requests. With the setting off,\n`fields` cannot turn the extra details on.\n\nWhen the setting is on, a failed extra request does not fail the list. The response is still a 200, those\ncustomers are returned without the extra details, and `meta.warnings` has an entry whose `operation` is\n`customersOne`. If Twinfield refuses access or rate-limits the connection, no further extra requests are\nmade for that page and its remaining customers are returned without the extra details.\n\nThe whole list request has about 20 seconds, counted from when it starts, so the time the list itself\ntakes is included. Customers not reached in that time are returned without the extra details, and a\n`meta.warnings` entry says how many. If you see that warning, request smaller pages with `limit`\n(default 20, maximum 200).\n\nThe setting applies to list requests only; it does not change webhook events.\n',
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "The minimum page size accepted for Netsuite is 5. The cursor for Netsuite expires if it has not been used within 15 minutes after its creation.\n\nThe `taxable` field is read directly from the NetSuite `customer.taxable` boolean in both Legacy Tax and SuiteTax accounts. Under SuiteTax, `customer.taxable` continues to be readable but does not reflect per-jurisdiction tax exemptions — the meaningful per-nexus tax state lives in NetSuite's `customerTaxRegistration` records, which the unified API does not currently surface as first-class fields. Consumers needing per-nexus tax registration data should gate their logic on `connection.suitetax_enabled` and query `customerTaxRegistration` via pass-through SuiteQL, e.g. `?pass_through[q]=SELECT entity, nexus, taxRegistrationNumber FROM customerTaxRegistration WHERE entity = {customer_id}`.\n\nWhen `filter`, `sort`, or `pass_through` parameters are applied to `GET /accounting/customers`, `addresses[]` returns only the default billing and default shipping addresses, each with `type` and `string` (a multi-line formatted address). Structured fields like `line1`, `city`, `state`, `postal_code`, and `country`, and any additional custom-labeled addresses, are returned only on unfiltered list calls and on `GET /accounting/customers/{id}`.\n`filter[subsidiary_id]` scopes results to customers assigned to (or shared with) the given subsidiary, and is only supported on NetSuite OneWorld accounts; on standard (single-entity) accounts it is ignored.\n\n`filter[company_name]`, `filter[display_name]`, `filter[first_name]` and `filter[last_name]` match by case-insensitive substring (contains); the value is matched literally, so `%` and `_` are not treated as wildcards. `filter[email]` matches exactly.\n\n`filter[status]` maps to NetSuite's `isinactive` column: `active` returns customers that are not inactive, `inactive` returns those that are. NetSuite has no archived state, so `archived` and `all` both apply no status filter and return every customer.\n\nBecause any `filter` reroutes the call to NetSuite's SuiteQL path, `filter[status]=archived` and `filter[status]=all` return the same records as an unfiltered call but with the reduced `addresses[]` shape described above — structured address fields are not returned. If you want every customer *with* structured addresses, omit `filter[status]` entirely rather than passing `all`.\n",
+                        },
+                        {
+                            "connector": "clearbooks-uk",
+                            "description": "Clearbooks does not support setting the pagination size.",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "In Xero, contacts are not strictly separated into customers or suppliers until linked to a transaction. Apideck's approach is to return customers as `IsCustomer=true||IsSupplier=false` and suppliers as `IsSupplier=true||IsCustomer=false`. If you need other cases, use pass-through, e.g. `?pass_through[where]=IsCustomer=false AND IsSupplier=false` for uncategorized contacts. See the [Pass-through guide](https://developers.apideck.com/guides/pass-through) for more details.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "In FreeAgent, newly created customers will not appear in customer list responses until an invoice has been assigned to them. This is because FreeAgent only classifies contacts as customers once they have associated invoices. See [Set up a contact as a customer or a supplier](https://support.freeagent.com/hc/en-gb/articles/115001217850-Set-up-a-contact-as-a-customer-or-a-supplier) for more details.\n\n`balance` reflects the contact's net position across both sales invoices and purchase bills. FreeAgent does not keep a separate ledger balance for a contact's customer role versus its supplier role, so if the same contact is also used as a supplier, an outstanding bill against them lowers `balance` (or makes it negative) rather than being excluded. Draft invoices and bills are not included until posted.\n",
+                        },
+                        {
+                            "connector": "wafeq",
+                            "description": "Wafeq does not separate customers and suppliers as distinct API resources — both share `/v1/contacts/`. The unified `customers` resource sends `relationship[]=customer` to filter, and `suppliers` sends `relationship[]=supplier`. However, Wafeq's `relationship` field is internal and is NOT settable via the API on contact create/update — it is populated by Wafeq based on UI classification or transaction history. Newly-created contacts and contacts with no transactions will appear in BOTH the customers and suppliers lists until Wafeq tags them. To enforce strict customer/supplier separation, manage contact classification in the Wafeq UI.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks Online does not expose a reliable cross-page total record count. The `QueryResponse.totalCount` field in list responses reflects the count for that page only, not the full dataset. `meta.total_count` will not appear in list responses. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite uses the same underlying QuickBooks API. The `QueryResponse.totalCount` field in list responses reflects the per-page count only. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "`balance` reflects only the customer's own outstanding balance — it excludes the balances\nof any sub-customers or jobs, which are returned as separate customer records linked\nthrough `parent.id`. The value is denominated in the customer's own `currency`, which may\ndiffer from the company's home currency. It can be negative when the customer holds\nunapplied credits or overpayments.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "`balance` reflects only the customer's own outstanding balance — it excludes the balances\nof any sub-customers or jobs, which are returned as separate customer records linked\nthrough `parent.id`. The value is denominated in the customer's own `currency`, which may\ndiffer from the company's home currency. It can be negative when the customer holds\nunapplied credits or overpayments.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics",
+                            "description": "Microsoft Dynamics 365 does not include a total record count in default list responses. `meta.total_count` will not appear. Surfacing the total requires adding `$count=true` to the OData query or calling a separate `$count` endpoint — not currently implemented.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Zoho Books does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "`balance` is the customer's full outstanding receivable total — their opening balance\nplus any unpaid invoices, minus payments applied — in the customer's currency. It does not\ninclude unapplied credits (Zoho Books' separate `unused_credits_receivable_amount`), and\nis populated on both this list endpoint and the single-customer read with no extra\nparameter required.\n",
+                        },
+                        {
+                            "connector": "stripe",
+                            "description": "Stripe removed `total_count` from list responses in March 2025 (API version 2025-03-31.basil). `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": "Moneybird does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "rillet",
+                            "description": "Rillet does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "pennylane",
+                            "description": "Pennylane does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "AFAS does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "procountor-fi",
+                            "description": "Procountor does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "access-financials",
+                            "description": "Access Financials does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "dualentry",
+                            "description": "DualEntry customers are org-level master data and are not scoped to any company. The `x-apideck-company-id` header has no effect on customer list or lookup results — all customers belong to the organisation, not to individual subsidiary companies.\n\n`filter[ids]` returns at most 100 records per page. A list of more than 100 ids is not\ntruncated — the filter is preserved across pages, so page through the cursor to collect\nthem all.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "If you encounter a '400 Bad Request' error indicating \"Control 'fieldName' is read-only\" it means the 'editable' property for this field in Microsoft Dynamics 365 Business Central is currently set to false. To resolve this issue and make the field writable, simply update the 'editable' property to true in Microsoft Dynamics 365 Business Central. Additionally, line item tax rates must be specified by tax rate *code* (e.g., \"G3\"), not by ID. In U.S.-regionalized Business Central tenants, the `tax_inclusive` field cannot be set to `true`.\n",
+                        },
+                        {
+                            "connector": "myob-acumatica",
+                            "description": "The Apideck service type is used for MYOB Acumatica non-stock items, and inventory is used for stock items.\n",
+                        },
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "QuickBooks Desktop does not expose a reliable cross-page total record count. Getting `total_count` requires a separate COUNT query — an extra API call that is not currently implemented. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "acumatica",
+                            "description": "The Apideck service type is used for Acumatica non-stock items, and inventory is used for stock items.\n",
+                        },
+                        {
+                            "connector": "lexware-office",
+                            "description": "The vendor emits a single, undifferentiated contact-change webhook event for both\ncustomers and suppliers, with no role information in the notification payload. Every\nsuch event is delivered as `customer.updated`, including a change to a vendor-only\ncontact (no customer role at all) — there is currently no way to distinguish or\nsubscribe to supplier-only contact changes separately.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Countries are returned as ISO 3166-1 alpha-2 codes. Fiken stores a country as free text, normally its Norwegian name; a stored value that is not a recognised country name is returned as stored.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -347,17 +626,19 @@ class Customers(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingCustomersAllResponse(
                 get_customers_response=unmarshal_json_response(
-                    Optional[models.GetCustomersResponse], http_res
+                    Optional[models.GetCustomersResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -398,11 +679,10 @@ class Customers(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingCustomersAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -432,17 +712,19 @@ class Customers(BaseSDK):
         individual: OptionalNullable[bool] = UNSET,
         project: OptionalNullable[bool] = UNSET,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         phone_numbers: Optional[
-            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+            Union[Iterable[models.PhoneNumber], Iterable[models.PhoneNumberTypedDict]]
         ] = None,
-        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        emails: Optional[
+            Union[Iterable[models.Email], Iterable[models.EmailTypedDict]]
+        ] = None,
         websites: Optional[
-            Union[List[models.Website], List[models.WebsiteTypedDict]]
+            Union[Iterable[models.Website], Iterable[models.WebsiteTypedDict]]
         ] = None,
         bank_accounts: Optional[
-            Union[List[models.BankAccount], List[models.BankAccountTypedDict]]
+            Union[Iterable[models.BankAccount], Iterable[models.BankAccountTypedDict]]
         ] = None,
         notes: OptionalNullable[str] = UNSET,
         tax_rate: Optional[
@@ -463,11 +745,14 @@ class Customers(BaseSDK):
         terms_id: OptionalNullable[str] = UNSET,
         channel: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -616,6 +901,7 @@ class Customers(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.customer, False, False, "json", models.CustomerInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -640,9 +926,77 @@ class Customers(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": '`currency` is written only when multi-currency is turned on in the company file. On a single-currency file QuickBooks rejects a create that carries `currency` (error 3250, "This feature is not enabled"), so leave `currency` out unless the file uses multi-currency.\n\nWrites are applied on the Web Connector\'s next run, so a create can return a `504` timeout after 28 seconds while QuickBooks still creates the customer. List customers to find it before retrying.\n',
+                        },
+                        {
+                            "connector": "e-conomic",
+                            "description": "`company_name` (or `display_name`) and `currency` are required. e-conomic also requires a customer group, a VAT zone and payment terms on every customer: a create uses customer group 1 and VAT zone 1, the domestic defaults of a new e-conomic agreement, and payment terms 1 unless you send `terms_id`. To use another group or VAT zone, send `pass_through` with `customerGroup.customerGroupNumber` or `vatZone.vatZoneNumber`. An update changes only the fields you send. Only the first email address and the first website are stored. To clear a field, send an empty string; `null` leaves it unchanged.\ne-conomic has only a barred flag: `status` `inactive` or `archived` bars the customer and reads back as `inactive`; any other value leaves it active.\nSend an `Idempotency-Key` to make retrying a create safe: Unify sends e-conomic a 32-character key derived from it as e-conomic's own `Idempotency-Key` header, and e-conomic answers a repeat with the original customer instead of creating a second one. e-conomic keeps a key for one hour, and Unify remembers it for the same hour. Reusing a key with a different body returns 422, from Unify within its hour and from e-conomic while e-conomic still remembers the key; after both have forgotten it, the same key is treated as a new request. Use a new key for every customer.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "`custom_fields` are returned but cannot be written: Minox accepts them without storing them, so they are left out of create and update requests. `tax_number` must be a valid VAT number; Minox rejects an invalid one with a `400`. Customers cannot be deleted.\n\n`currency` must be the administration's own currency; Minox stores a currency together with an exchange rate, which this record has no field for, so any other currency is rejected with a `400`. A customer in another currency (set up in Minox) cannot be updated through the API: Minox resets the currency of a customer to the administration's on every update that does not send it, and does not expose the exchange rate to send it back with, so such an update is rejected with a `400`. Sending `notes` empty or `null` clears them. Minox keeps one free-text contact person per address (often with a title, such as \"De heer G. van der Heiden\"), which is not split into `first_name` and `last_name`; those fields, and `individual`, are not supported. Minox has three address types: `billing` and `primary` are stored as the postal address, `shipping` as the delivery address and any other type as the street address, which reads back as `office`. One address of each Minox type is sent: when several map to the same type, `billing` wins over `primary`, and otherwise the first one is used.\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": "Moneybird rejects an email address on a domain that cannot receive mail (for example `example.com`)\nwith a `422`.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "How much of each array is written depends on whether the customer is a company or an\nindividual — NetSuite keeps different contact fields on each. A company holds four phone\nnumbers (`primary`, `secondary`, `mobile`, `fax`), one email (`primary`) and one website;\nan individual holds five phone numbers (those four plus `home`), two emails (`primary` and\n`secondary`) and one website. Entries of any other type are ignored.\n\n`home` and the `secondary` email exist only on a customer marked as an individual, so send\n`individual: true` in the same request or both are dropped. When two entries share a\ntype, the first one is used.\n\nThe website must be the `primary` entry, start with `http://`, `https://`, `ftp://` or\n`file://` and contain no spaces. For an individual it is saved in a second request to\nNetSuite, after the customer is created. If that request fails, the response is an error\nthat gives the id of the customer that was created without its website; update that\ncustomer instead of creating it again.\n",
+                        },
+                        {
+                            "connector": "snelstart",
+                            "description": "`addresses[].country` is not written. SnelStart requires a country as a reference to an\ninternal country record rather than an ISO code, and this connector does not resolve that\nreference, so the country is left unset on the created record — consistent with SnelStart\nbeing a Netherlands-only accounting platform. `addresses[].street_number` is also not\nwritten separately; SnelStart stores the street name and house number as one combined\nfield, so `line1` and `street_number` are concatenated into it.\n\nA SnelStart contact can be both a customer and a supplier at once. To add the supplier\nrole to an existing customer (or vice versa), call `suppliers.update`/`customers.update`\nwith that contact's id — this connector merges in the new role rather than replacing the\nexisting one, so both survive. There is no field exposing which role(s) a contact has, so\na dual-tagged contact appears, unremarkably, in both `customers.list` and\n`suppliers.list`.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "Only `active` and `inactive` are applied. Sage's status field has no other members, so any\nother value from the unified enum is ignored and the record keeps its current status rather\nthan the write being rejected.\n",
+                        },
+                        {
+                            "Procountor only accepts the following values for the channel field": "EMAIL, MAIL, ELECTRONIC_INVOICE, EDIFACT, PAPER_INVOICE, NO_SENDING.",
+                            "Procountor only accepts the following values for the payment_method field": "BANK_TRANSFER, DIRECT_DEBIT, DIRECT_PAYMENT, CLEARING, CREDIT_CARD_CHARGE, FOREIGN_PAYMENT, OTHER, CASH, DOMESTIC_PAYMENT_PLUSGIRO, DOMESTIC_PAYMENT_BANKGIRO, DOMESTIC_PAYMENT_CREDITOR, DKLMPKRE, NETS.",
+                            "connector": "procountor-fi",
+                            "description": "",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks supports only billing and shipping addresses. Therefore, when creating addresses, it is required to specify the type as 'billing' or 'shipping' in the address object within the addresses array.\n\nSend an `Idempotency-Key` to make retrying a create safe: it reaches QuickBooks as its `requestid`. QuickBooks keeps a `requestid` for at least 24 hours and can keep it longer, so after the 24-hour window a key reused for a different customer may get the original customer back, with the new body ignored. Use a new key for every customer. Your key can be 1-255 characters: Unify sends QuickBooks a 32-character `requestid` derived from it, so QuickBooks' 50-character `requestid` limit never applies.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite supports only billing and shipping addresses. Therefore, when creating addresses, it is required to specify the type as 'billing' or 'shipping' in the address object within the addresses array.\n\nSend an `Idempotency-Key` to make retrying a create safe: it reaches Intuit Enterprise Suite as its `requestid`. Intuit Enterprise Suite keeps a `requestid` for at least 24 hours and can keep it longer, so after the 24-hour window a key reused for a different customer may get the original customer back, with the new body ignored. Use a new key for every customer. Your key can be 1-255 characters: Unify sends Intuit Enterprise Suite a 32-character `requestid` derived from it, so Intuit Enterprise Suite's 50-character `requestid` limit never applies.\n",
+                        },
+                        {
+                            "connector": "freshbooks",
+                            "description": "Freshbooks API set status to active by default for new customers. To change the status, you can use the Update Customer endpoint.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "You can create customer contacts, but they will not be visible in customer list responses until an invoice is assigned to them. FreeAgent only classifies contacts as customers after they have associated transactions. See [Set up a contact as a customer or a supplier](https://support.freeagent.com/hc/en-gb/articles/115001217850-Set-up-a-contact-as-a-customer-or-a-supplier) for more information.\n",
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": 'Creating a customer requires a correspondence language and a business partner grouping. The language\ndefaults to `EN`. The grouping is taken from the connection\'s **Default Business Partner Grouping**\nsetting, or `BP01` when that is empty. Override either one for a single request with `pass_through`\n(`extend_object`), for example:\n\n`"pass_through": [{"service_id": "sap-s4hana-cloud", "extend_object": {"BusinessPartnerGrouping": "BP02", "CorrespondenceLanguage": "DE"}}]`\n\nA request with `first_name` or `last_name` creates a person; otherwise it creates a company. SAP\nbuilds `display_name` from the company name, or from the first and last name. A request that sends a\nnon-empty `company_name` for a person, or a non-empty `display_name` that differs from the name SAP\nbuilds, is rejected with a `400` and no customer is created.\n\n**Tax number.** `tax_number` is stored as the customer\'s tax number. SAP files it under a tax number category\nthat depends on the country: the connector uses the two-letter `country` of the standard address (the\nfirst address written) plus `0`, SAP\'s VAT registration category (`DE0`, `NL0`, `GB0`, `FR0`). SAP\nrejects a category it does not have, such as `US0`, and nothing is created; for such a country, add the\ntax number in SAP. A non-empty `tax_number` needs an address with a two-letter `country` and can have\n20 characters; otherwise the request is rejected with a `400` naming the problem, and nothing is created.\n\n`CorrespondenceLanguage` sets the language of a person. SAP keeps the language of a company on its\naddress, so for a company send `"to_BusinessPartnerAddress": {"results": [{"Language": "DE"}]}` in the\nsame `extend_object` instead.\n\n**Which grouping to use depends on the SAP tenant.** Each tenant configures whether a grouping assigns\nnumbers automatically. If the grouping requires a manually assigned number, SAP returns\n`400 Grouping <code> has external number assignment. Please enter a valid number.` Either use a grouping\nthat assigns numbers automatically, or supply the number in the same `extend_object`, next to the\ngrouping it belongs to, as `"BusinessPartner": "<8–10 digit number, unique in the tenant>"`. A grouping\nthat assigns numbers automatically ignores a supplied number and assigns its own.\n\n**Company code.** A customer can only be used on invoices and payments once it is set up in a company code.\nSend `company_id` together with `account.id` (the reconciliation account, a G/L account number) to create\nthe customer in that company code. When `account.id` is omitted, the connection\'s\n**Default Customer Reconciliation Account** is used. If neither is available the customer is created\nwithout a company code, and `company_id` has no effect. Send `terms` with an SAP payment terms key (for\nexample `0004`) to set the customer\'s payment terms in that company code. `account` and `terms` have no\neffect without `company_id`, `terms` cannot be changed by an update, and none of the three is returned when the customer is read. If SAP does\nnot accept the company code, the account or the payment terms, the request fails with SAP\'s message and\nnothing is created. A customer created without `terms` has no payment terms in SAP, so invoices posted\nfor it are due on their posting date.\n\n**Addresses.** Send at least one address, each with a `country` (e.g. `US`, `DE`). An address without a\n`country` rejects the whole request with a `400` naming it (for example `addresses[1] has no country`) and\nnothing is created. Every address is written: the one with type `primary` (or else the first) first, the\nothers after it in request order. The first one becomes the standard address in SAP and reads back as\n`primary`; the others read back as `secondary`, whatever `type` was sent. `line1` is stored as the street,\n`street_number` as the house number, `line2` and `line3` as SAP\'s Street 4 and Street 5 fields. This\nconnector does not write the address fields `email`, `phone_number`, `website`, `fax`, `name`, `county`,\n`contact_name`, `salutation`, `notes`, `line4`, `line5`, `string`, `latitude` and `longitude`, so an\naddress with a value in any of them rejects the request with a `400` naming every such field (for example\n`addresses[1].fax`) and nothing is created; empty, whitespace-only or `null` values are ignored. Send an\naddress\'s email, phone number or website in the top-level `emails`, `phone_numbers` or `websites` list\ninstead, and the street in `line1` and `street_number` rather than `string`. A value longer than SAP\nstores rejects the request with a `400` naming the field (for example\n`addresses[0].line2 is longer than 40 characters`) and nothing is created. The limits are: `line1` 60,\n`street_number` 10, `line2` 40, `line3` 40, `city` 40, `state` 3, `postal_code` 10 and `country` 3\ncharacters.\n\n**Emails, phone numbers and websites** are stored on the standard address (the first address written), not\non the customer itself, so a request with any of them and no address is rejected with a `400` naming the lists\n(for example `emails and phone_numbers need an address with a country`) and nothing is created. A value\nthat is only whitespace (for example `phone_numbers[1].number is blank`) is rejected the same way. SAP makes\nthe first entry of each kind its default, so the entry typed `primary` is written first and the rest in\nrequest order. With several entries typed `primary`, only the first is written first and becomes SAP\'s\ndefault; the others read back as `secondary`. Mobile numbers are written in request order and always read\nback as `mobile`, so a mobile number is never the `primary` entry. At most one entry per list reads back as\n`primary`, and a list with only mobile numbers has none. SAP stores no label on an email or a website and only landline or\nmobile on a phone: a phone with `type` `mobile` is stored as a mobile number, and every other phone type\n(`home`, `work`, `fax`, ...) is stored as a landline. An email or website of any type, for example\n`billing`, is stored without its type and the request succeeds.\n\n**Phone details.** `extension` is stored (up to 10 characters) and returned. `country_code` and `area_code`\nare folded into `number` as `+<country_code> <area_code> <number>` when `number` does not start with `+`,\nand are not returned separately. A `number` that starts with `00` is already international: it is stored\nwith the `00` replaced by `+`, and `country_code` and `area_code` are not added to it. A leading `0` is\nstored as sent, because whether it is a national trunk prefix depends on the country. With `country_code`,\nsend `area_code` and `number` without the national trunk prefix (`country_code` `31`, `area_code` `20`, not `020`),\nso the number is stored as `+31 20 555 0104`. Without `country_code`, SAP derives the international number from the address country, so a\nnational number such as `020 555 0104` is stored correctly. A number can have 30 characters in SAP; the\nlimit applies to the stored value, dial codes included, and a longer value is rejected naming\n`phone_numbers[i].number`. Emails can have 241 characters and websites 132: SAP keeps\n132 characters of a website address, so a longer one is rejected rather than stored cut short.\n\n**`pass_through`.** `extend_object` for `to_BusinessPartnerAddress` is applied by array position after the\nprimary address has been moved first: `results[0]` is the standard address, and the contacts above are\ninside it. Setting `{"to_BusinessPartnerAddress": {"results": [{"Language": "DE"}]}}` changes the language of\nthat address only and keeps its contacts. A value set at a position the connector also writes, for example\n`to_EmailAddress.results[0].EmailAddress`, overwrites that entry\'s value, and a flag such as\n`IsDefaultEmailAddress` is added to the entry. Send contacts in `emails`, `phone_numbers` and `websites`,\nnot through `pass_through`.\n\n**Status.** `status: inactive` creates the customer blocked. `active`, any other value, or no status creates it\nactive.\n',
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "A country sent as an ISO 3166-1 alpha-2 code is saved under its Norwegian name, as Fiken's own screens save it. A customer saved without a country is stored with Norway.\n",
+                        },
+                        {
+                            "connector": "visma-netvisor",
+                            "description": "`tax_number` is the customer's Finnish Business ID (Y-tunnus, for example `1234567-1`), not the VAT number (`FI12345678`), and reads back the same way. For a private-person customer Netvisor also accepts a Finnish personal identity code in this field. Netvisor stores no separate display name: `display_name` reads back as the company name.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -650,10 +1004,9 @@ class Customers(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingCustomersAddResponse(
                 create_customer_response=unmarshal_json_response(
-                    Optional[models.CreateCustomerResponse], http_res
+                    Optional[models.CreateCustomerResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -694,10 +1047,9 @@ class Customers(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingCustomersAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -727,17 +1079,19 @@ class Customers(BaseSDK):
         individual: OptionalNullable[bool] = UNSET,
         project: OptionalNullable[bool] = UNSET,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         phone_numbers: Optional[
-            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+            Union[Iterable[models.PhoneNumber], Iterable[models.PhoneNumberTypedDict]]
         ] = None,
-        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        emails: Optional[
+            Union[Iterable[models.Email], Iterable[models.EmailTypedDict]]
+        ] = None,
         websites: Optional[
-            Union[List[models.Website], List[models.WebsiteTypedDict]]
+            Union[Iterable[models.Website], Iterable[models.WebsiteTypedDict]]
         ] = None,
         bank_accounts: Optional[
-            Union[List[models.BankAccount], List[models.BankAccountTypedDict]]
+            Union[Iterable[models.BankAccount], Iterable[models.BankAccountTypedDict]]
         ] = None,
         notes: OptionalNullable[str] = UNSET,
         tax_rate: Optional[
@@ -758,11 +1112,14 @@ class Customers(BaseSDK):
         terms_id: OptionalNullable[str] = UNSET,
         channel: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -911,6 +1268,7 @@ class Customers(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.customer, False, False, "json", models.CustomerInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -935,9 +1293,77 @@ class Customers(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": '`currency` is written only when multi-currency is turned on in the company file. On a single-currency file QuickBooks rejects a create that carries `currency` (error 3250, "This feature is not enabled"), so leave `currency` out unless the file uses multi-currency.\n\nWrites are applied on the Web Connector\'s next run, so a create can return a `504` timeout after 28 seconds while QuickBooks still creates the customer. List customers to find it before retrying.\n',
+                        },
+                        {
+                            "connector": "e-conomic",
+                            "description": "`company_name` (or `display_name`) and `currency` are required. e-conomic also requires a customer group, a VAT zone and payment terms on every customer: a create uses customer group 1 and VAT zone 1, the domestic defaults of a new e-conomic agreement, and payment terms 1 unless you send `terms_id`. To use another group or VAT zone, send `pass_through` with `customerGroup.customerGroupNumber` or `vatZone.vatZoneNumber`. An update changes only the fields you send. Only the first email address and the first website are stored. To clear a field, send an empty string; `null` leaves it unchanged.\ne-conomic has only a barred flag: `status` `inactive` or `archived` bars the customer and reads back as `inactive`; any other value leaves it active.\nSend an `Idempotency-Key` to make retrying a create safe: Unify sends e-conomic a 32-character key derived from it as e-conomic's own `Idempotency-Key` header, and e-conomic answers a repeat with the original customer instead of creating a second one. e-conomic keeps a key for one hour, and Unify remembers it for the same hour. Reusing a key with a different body returns 422, from Unify within its hour and from e-conomic while e-conomic still remembers the key; after both have forgotten it, the same key is treated as a new request. Use a new key for every customer.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "`custom_fields` are returned but cannot be written: Minox accepts them without storing them, so they are left out of create and update requests. `tax_number` must be a valid VAT number; Minox rejects an invalid one with a `400`. Customers cannot be deleted.\n\n`currency` must be the administration's own currency; Minox stores a currency together with an exchange rate, which this record has no field for, so any other currency is rejected with a `400`. A customer in another currency (set up in Minox) cannot be updated through the API: Minox resets the currency of a customer to the administration's on every update that does not send it, and does not expose the exchange rate to send it back with, so such an update is rejected with a `400`. Sending `notes` empty or `null` clears them. Minox keeps one free-text contact person per address (often with a title, such as \"De heer G. van der Heiden\"), which is not split into `first_name` and `last_name`; those fields, and `individual`, are not supported. Minox has three address types: `billing` and `primary` are stored as the postal address, `shipping` as the delivery address and any other type as the street address, which reads back as `office`. One address of each Minox type is sent: when several map to the same type, `billing` wins over `primary`, and otherwise the first one is used.\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": "Moneybird rejects an email address on a domain that cannot receive mail (for example `example.com`)\nwith a `422`.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "How much of each array is written depends on whether the customer is a company or an\nindividual — NetSuite keeps different contact fields on each. A company holds four phone\nnumbers (`primary`, `secondary`, `mobile`, `fax`), one email (`primary`) and one website;\nan individual holds five phone numbers (those four plus `home`), two emails (`primary` and\n`secondary`) and one website. Entries of any other type are ignored.\n\n`home` and the `secondary` email exist only on a customer marked as an individual, so send\n`individual: true` in the same request or both are dropped. When two entries share a\ntype, the first one is used.\n\nThe website must be the `primary` entry, start with `http://`, `https://`, `ftp://` or\n`file://` and contain no spaces. For an individual it is saved in a second request to\nNetSuite, after the customer is created. If that request fails, the response is an error\nthat gives the id of the customer that was created without its website; update that\ncustomer instead of creating it again.\n",
+                        },
+                        {
+                            "connector": "snelstart",
+                            "description": "`addresses[].country` is not written. SnelStart requires a country as a reference to an\ninternal country record rather than an ISO code, and this connector does not resolve that\nreference, so the country is left unset on the created record — consistent with SnelStart\nbeing a Netherlands-only accounting platform. `addresses[].street_number` is also not\nwritten separately; SnelStart stores the street name and house number as one combined\nfield, so `line1` and `street_number` are concatenated into it.\n\nA SnelStart contact can be both a customer and a supplier at once. To add the supplier\nrole to an existing customer (or vice versa), call `suppliers.update`/`customers.update`\nwith that contact's id — this connector merges in the new role rather than replacing the\nexisting one, so both survive. There is no field exposing which role(s) a contact has, so\na dual-tagged contact appears, unremarkably, in both `customers.list` and\n`suppliers.list`.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "Only `active` and `inactive` are applied. Sage's status field has no other members, so any\nother value from the unified enum is ignored and the record keeps its current status rather\nthan the write being rejected.\n",
+                        },
+                        {
+                            "Procountor only accepts the following values for the channel field": "EMAIL, MAIL, ELECTRONIC_INVOICE, EDIFACT, PAPER_INVOICE, NO_SENDING.",
+                            "Procountor only accepts the following values for the payment_method field": "BANK_TRANSFER, DIRECT_DEBIT, DIRECT_PAYMENT, CLEARING, CREDIT_CARD_CHARGE, FOREIGN_PAYMENT, OTHER, CASH, DOMESTIC_PAYMENT_PLUSGIRO, DOMESTIC_PAYMENT_BANKGIRO, DOMESTIC_PAYMENT_CREDITOR, DKLMPKRE, NETS.",
+                            "connector": "procountor-fi",
+                            "description": "",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks supports only billing and shipping addresses. Therefore, when creating addresses, it is required to specify the type as 'billing' or 'shipping' in the address object within the addresses array.\n\nSend an `Idempotency-Key` to make retrying a create safe: it reaches QuickBooks as its `requestid`. QuickBooks keeps a `requestid` for at least 24 hours and can keep it longer, so after the 24-hour window a key reused for a different customer may get the original customer back, with the new body ignored. Use a new key for every customer. Your key can be 1-255 characters: Unify sends QuickBooks a 32-character `requestid` derived from it, so QuickBooks' 50-character `requestid` limit never applies.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite supports only billing and shipping addresses. Therefore, when creating addresses, it is required to specify the type as 'billing' or 'shipping' in the address object within the addresses array.\n\nSend an `Idempotency-Key` to make retrying a create safe: it reaches Intuit Enterprise Suite as its `requestid`. Intuit Enterprise Suite keeps a `requestid` for at least 24 hours and can keep it longer, so after the 24-hour window a key reused for a different customer may get the original customer back, with the new body ignored. Use a new key for every customer. Your key can be 1-255 characters: Unify sends Intuit Enterprise Suite a 32-character `requestid` derived from it, so Intuit Enterprise Suite's 50-character `requestid` limit never applies.\n",
+                        },
+                        {
+                            "connector": "freshbooks",
+                            "description": "Freshbooks API set status to active by default for new customers. To change the status, you can use the Update Customer endpoint.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "You can create customer contacts, but they will not be visible in customer list responses until an invoice is assigned to them. FreeAgent only classifies contacts as customers after they have associated transactions. See [Set up a contact as a customer or a supplier](https://support.freeagent.com/hc/en-gb/articles/115001217850-Set-up-a-contact-as-a-customer-or-a-supplier) for more information.\n",
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": 'Creating a customer requires a correspondence language and a business partner grouping. The language\ndefaults to `EN`. The grouping is taken from the connection\'s **Default Business Partner Grouping**\nsetting, or `BP01` when that is empty. Override either one for a single request with `pass_through`\n(`extend_object`), for example:\n\n`"pass_through": [{"service_id": "sap-s4hana-cloud", "extend_object": {"BusinessPartnerGrouping": "BP02", "CorrespondenceLanguage": "DE"}}]`\n\nA request with `first_name` or `last_name` creates a person; otherwise it creates a company. SAP\nbuilds `display_name` from the company name, or from the first and last name. A request that sends a\nnon-empty `company_name` for a person, or a non-empty `display_name` that differs from the name SAP\nbuilds, is rejected with a `400` and no customer is created.\n\n**Tax number.** `tax_number` is stored as the customer\'s tax number. SAP files it under a tax number category\nthat depends on the country: the connector uses the two-letter `country` of the standard address (the\nfirst address written) plus `0`, SAP\'s VAT registration category (`DE0`, `NL0`, `GB0`, `FR0`). SAP\nrejects a category it does not have, such as `US0`, and nothing is created; for such a country, add the\ntax number in SAP. A non-empty `tax_number` needs an address with a two-letter `country` and can have\n20 characters; otherwise the request is rejected with a `400` naming the problem, and nothing is created.\n\n`CorrespondenceLanguage` sets the language of a person. SAP keeps the language of a company on its\naddress, so for a company send `"to_BusinessPartnerAddress": {"results": [{"Language": "DE"}]}` in the\nsame `extend_object` instead.\n\n**Which grouping to use depends on the SAP tenant.** Each tenant configures whether a grouping assigns\nnumbers automatically. If the grouping requires a manually assigned number, SAP returns\n`400 Grouping <code> has external number assignment. Please enter a valid number.` Either use a grouping\nthat assigns numbers automatically, or supply the number in the same `extend_object`, next to the\ngrouping it belongs to, as `"BusinessPartner": "<8–10 digit number, unique in the tenant>"`. A grouping\nthat assigns numbers automatically ignores a supplied number and assigns its own.\n\n**Company code.** A customer can only be used on invoices and payments once it is set up in a company code.\nSend `company_id` together with `account.id` (the reconciliation account, a G/L account number) to create\nthe customer in that company code. When `account.id` is omitted, the connection\'s\n**Default Customer Reconciliation Account** is used. If neither is available the customer is created\nwithout a company code, and `company_id` has no effect. Send `terms` with an SAP payment terms key (for\nexample `0004`) to set the customer\'s payment terms in that company code. `account` and `terms` have no\neffect without `company_id`, `terms` cannot be changed by an update, and none of the three is returned when the customer is read. If SAP does\nnot accept the company code, the account or the payment terms, the request fails with SAP\'s message and\nnothing is created. A customer created without `terms` has no payment terms in SAP, so invoices posted\nfor it are due on their posting date.\n\n**Addresses.** Send at least one address, each with a `country` (e.g. `US`, `DE`). An address without a\n`country` rejects the whole request with a `400` naming it (for example `addresses[1] has no country`) and\nnothing is created. Every address is written: the one with type `primary` (or else the first) first, the\nothers after it in request order. The first one becomes the standard address in SAP and reads back as\n`primary`; the others read back as `secondary`, whatever `type` was sent. `line1` is stored as the street,\n`street_number` as the house number, `line2` and `line3` as SAP\'s Street 4 and Street 5 fields. This\nconnector does not write the address fields `email`, `phone_number`, `website`, `fax`, `name`, `county`,\n`contact_name`, `salutation`, `notes`, `line4`, `line5`, `string`, `latitude` and `longitude`, so an\naddress with a value in any of them rejects the request with a `400` naming every such field (for example\n`addresses[1].fax`) and nothing is created; empty, whitespace-only or `null` values are ignored. Send an\naddress\'s email, phone number or website in the top-level `emails`, `phone_numbers` or `websites` list\ninstead, and the street in `line1` and `street_number` rather than `string`. A value longer than SAP\nstores rejects the request with a `400` naming the field (for example\n`addresses[0].line2 is longer than 40 characters`) and nothing is created. The limits are: `line1` 60,\n`street_number` 10, `line2` 40, `line3` 40, `city` 40, `state` 3, `postal_code` 10 and `country` 3\ncharacters.\n\n**Emails, phone numbers and websites** are stored on the standard address (the first address written), not\non the customer itself, so a request with any of them and no address is rejected with a `400` naming the lists\n(for example `emails and phone_numbers need an address with a country`) and nothing is created. A value\nthat is only whitespace (for example `phone_numbers[1].number is blank`) is rejected the same way. SAP makes\nthe first entry of each kind its default, so the entry typed `primary` is written first and the rest in\nrequest order. With several entries typed `primary`, only the first is written first and becomes SAP\'s\ndefault; the others read back as `secondary`. Mobile numbers are written in request order and always read\nback as `mobile`, so a mobile number is never the `primary` entry. At most one entry per list reads back as\n`primary`, and a list with only mobile numbers has none. SAP stores no label on an email or a website and only landline or\nmobile on a phone: a phone with `type` `mobile` is stored as a mobile number, and every other phone type\n(`home`, `work`, `fax`, ...) is stored as a landline. An email or website of any type, for example\n`billing`, is stored without its type and the request succeeds.\n\n**Phone details.** `extension` is stored (up to 10 characters) and returned. `country_code` and `area_code`\nare folded into `number` as `+<country_code> <area_code> <number>` when `number` does not start with `+`,\nand are not returned separately. A `number` that starts with `00` is already international: it is stored\nwith the `00` replaced by `+`, and `country_code` and `area_code` are not added to it. A leading `0` is\nstored as sent, because whether it is a national trunk prefix depends on the country. With `country_code`,\nsend `area_code` and `number` without the national trunk prefix (`country_code` `31`, `area_code` `20`, not `020`),\nso the number is stored as `+31 20 555 0104`. Without `country_code`, SAP derives the international number from the address country, so a\nnational number such as `020 555 0104` is stored correctly. A number can have 30 characters in SAP; the\nlimit applies to the stored value, dial codes included, and a longer value is rejected naming\n`phone_numbers[i].number`. Emails can have 241 characters and websites 132: SAP keeps\n132 characters of a website address, so a longer one is rejected rather than stored cut short.\n\n**`pass_through`.** `extend_object` for `to_BusinessPartnerAddress` is applied by array position after the\nprimary address has been moved first: `results[0]` is the standard address, and the contacts above are\ninside it. Setting `{"to_BusinessPartnerAddress": {"results": [{"Language": "DE"}]}}` changes the language of\nthat address only and keeps its contacts. A value set at a position the connector also writes, for example\n`to_EmailAddress.results[0].EmailAddress`, overwrites that entry\'s value, and a flag such as\n`IsDefaultEmailAddress` is added to the entry. Send contacts in `emails`, `phone_numbers` and `websites`,\nnot through `pass_through`.\n\n**Status.** `status: inactive` creates the customer blocked. `active`, any other value, or no status creates it\nactive.\n',
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "A country sent as an ISO 3166-1 alpha-2 code is saved under its Norwegian name, as Fiken's own screens save it. A customer saved without a country is stored with Norway.\n",
+                        },
+                        {
+                            "connector": "visma-netvisor",
+                            "description": "`tax_number` is the customer's Finnish Business ID (Y-tunnus, for example `1234567-1`), not the VAT number (`FI12345678`), and reads back the same way. For a private-person customer Netvisor also accepts a Finnish personal identity code in this field. Netvisor stores no separate display name: `display_name` reads back as the company name.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -945,10 +1371,9 @@ class Customers(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingCustomersAddResponse(
                 create_customer_response=unmarshal_json_response(
-                    Optional[models.CreateCustomerResponse], http_res
+                    Optional[models.CreateCustomerResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -989,10 +1414,9 @@ class Customers(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingCustomersAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1065,6 +1489,7 @@ class Customers(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1089,9 +1514,31 @@ class Customers(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "twinfield",
+                            "description": "A Twinfield customer can have several addresses and bank accounts. `addresses`, `phone_numbers` and\n`bank_accounts` return one entry each: the address or bank account marked as default in Twinfield, or\nthe first one when none is marked. `emails` returns one entry: the customer's e-billing\nemail address in Twinfield (the one a create or update through this API sets), or the email of that\nsame address when no e-billing email is set.\n\nIn an address, `contact_name` is Twinfield's first address field and `line1` and `line2` are its second\nand third. That matches Twinfield's standard address layout, where the first field is the attention\nline and the next two hold the street. An administration that renamed those fields in Twinfield gets\nthem in the same positions. Creating or updating a customer writes the same three fields.\n\n`status` is `active`, or `archived` for a customer that was deleted in Twinfield, including one Twinfield\nkeeps hidden because it is used in a transaction.\n",
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "Customers and suppliers are both SAP business partners. A business partner that does not have the\ncustomer role returns `404` here, even if it exists as a supplier.\n\n`emails`, `phone_numbers` and `websites` combine the entries SAP keeps on each of the customer's addresses\nwith the ones kept on the customer itself: the standard address's entries first, then the other addresses' in\nSAP's order, then the customer's own. `phone_numbers` lists the landlines first, then the mobile numbers, each in\nthat order. Every entry has an `id` that is unique within its list. At most one entry per list is\n`primary`: the entry SAP marks as default on the standard address or, when that address has none, the\nfirst entry SAP marks as default. Every other entry is `secondary`; mobile numbers are `mobile`, so a list with only mobile numbers has no `primary`.\n`phone_numbers[].extension` is returned when SAP holds one.\n\n`addresses[].type` is `primary` for the customer's standard address in SAP and `secondary` for every other\naddress. `line1` is the street, `street_number` the house number, and `line2` and `line3` are SAP's\nStreet 4 and Street 5 fields.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "`balance` reflects the contact's net position across both sales invoices and purchase\nbills. FreeAgent does not keep a separate ledger balance for a contact's customer role\nversus its supplier role, so if the same contact is also used as a supplier, an\noutstanding bill against them lowers `balance` (or makes it negative) rather than being\nexcluded. Draft invoices and bills are not included until posted.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Customers and suppliers are both Fiken contacts. A contact that is a supplier but not a customer returns `404` here. Countries are returned as ISO 3166-1 alpha-2 codes. Fiken stores a country as free text, normally its Norwegian name; a stored value that is not a recognised country name is returned as stored.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1099,10 +1546,9 @@ class Customers(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingCustomersOneResponse(
                 get_customer_response=unmarshal_json_response(
-                    Optional[models.GetCustomerResponse], http_res
+                    Optional[models.GetCustomerResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1143,10 +1589,9 @@ class Customers(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingCustomersOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1219,6 +1664,7 @@ class Customers(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1243,9 +1689,31 @@ class Customers(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "twinfield",
+                            "description": "A Twinfield customer can have several addresses and bank accounts. `addresses`, `phone_numbers` and\n`bank_accounts` return one entry each: the address or bank account marked as default in Twinfield, or\nthe first one when none is marked. `emails` returns one entry: the customer's e-billing\nemail address in Twinfield (the one a create or update through this API sets), or the email of that\nsame address when no e-billing email is set.\n\nIn an address, `contact_name` is Twinfield's first address field and `line1` and `line2` are its second\nand third. That matches Twinfield's standard address layout, where the first field is the attention\nline and the next two hold the street. An administration that renamed those fields in Twinfield gets\nthem in the same positions. Creating or updating a customer writes the same three fields.\n\n`status` is `active`, or `archived` for a customer that was deleted in Twinfield, including one Twinfield\nkeeps hidden because it is used in a transaction.\n",
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "Customers and suppliers are both SAP business partners. A business partner that does not have the\ncustomer role returns `404` here, even if it exists as a supplier.\n\n`emails`, `phone_numbers` and `websites` combine the entries SAP keeps on each of the customer's addresses\nwith the ones kept on the customer itself: the standard address's entries first, then the other addresses' in\nSAP's order, then the customer's own. `phone_numbers` lists the landlines first, then the mobile numbers, each in\nthat order. Every entry has an `id` that is unique within its list. At most one entry per list is\n`primary`: the entry SAP marks as default on the standard address or, when that address has none, the\nfirst entry SAP marks as default. Every other entry is `secondary`; mobile numbers are `mobile`, so a list with only mobile numbers has no `primary`.\n`phone_numbers[].extension` is returned when SAP holds one.\n\n`addresses[].type` is `primary` for the customer's standard address in SAP and `secondary` for every other\naddress. `line1` is the street, `street_number` the house number, and `line2` and `line3` are SAP's\nStreet 4 and Street 5 fields.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "`balance` reflects the contact's net position across both sales invoices and purchase\nbills. FreeAgent does not keep a separate ledger balance for a contact's customer role\nversus its supplier role, so if the same contact is also used as a supplier, an\noutstanding bill against them lowers `balance` (or makes it negative) rather than being\nexcluded. Draft invoices and bills are not included until posted.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Customers and suppliers are both Fiken contacts. A contact that is a supplier but not a customer returns `404` here. Countries are returned as ISO 3166-1 alpha-2 codes. Fiken stores a country as free text, normally its Norwegian name; a stored value that is not a recognised country name is returned as stored.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1253,10 +1721,9 @@ class Customers(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingCustomersOneResponse(
                 get_customer_response=unmarshal_json_response(
-                    Optional[models.GetCustomerResponse], http_res
+                    Optional[models.GetCustomerResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1297,10 +1764,9 @@ class Customers(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingCustomersOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1329,17 +1795,19 @@ class Customers(BaseSDK):
         individual: OptionalNullable[bool] = UNSET,
         project: OptionalNullable[bool] = UNSET,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         phone_numbers: Optional[
-            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+            Union[Iterable[models.PhoneNumber], Iterable[models.PhoneNumberTypedDict]]
         ] = None,
-        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        emails: Optional[
+            Union[Iterable[models.Email], Iterable[models.EmailTypedDict]]
+        ] = None,
         websites: Optional[
-            Union[List[models.Website], List[models.WebsiteTypedDict]]
+            Union[Iterable[models.Website], Iterable[models.WebsiteTypedDict]]
         ] = None,
         bank_accounts: Optional[
-            Union[List[models.BankAccount], List[models.BankAccountTypedDict]]
+            Union[Iterable[models.BankAccount], Iterable[models.BankAccountTypedDict]]
         ] = None,
         notes: OptionalNullable[str] = UNSET,
         tax_rate: Optional[
@@ -1360,11 +1828,14 @@ class Customers(BaseSDK):
         terms_id: OptionalNullable[str] = UNSET,
         channel: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1511,6 +1982,7 @@ class Customers(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.customer, False, False, "json", models.CustomerInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1535,9 +2007,57 @@ class Customers(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Updates need `row_version` from a prior read of the record: without it the update is rejected with `Missing required field: data.editSequence`.\n\nWrites are applied on the Web Connector's next run, so an update can return a `504` timeout after 28 seconds while QuickBooks still applies it. Read the record back before retrying.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "A customer in a currency other than the administration's (set up in Minox) cannot be\nupdated: Minox resets a customer's currency to the administration's on every update that\ndoes not send it, and never returns the exchange rate it would have to be sent back with, so\nthe update is rejected with a `400` rather than silently changing the currency. `currency`,\nwhen sent, must be the administration's own. Only the fields sent are changed: addresses and\ncontacts are left alone unless `addresses`, `company_name`, `emails`, `phone_numbers` or\n`websites` are in the body. Sending `notes` empty or `null` clears them.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "How much of each array is written depends on whether the customer is a company or an\nindividual — NetSuite keeps different contact fields on each. A company holds four phone\nnumbers (`primary`, `secondary`, `mobile`, `fax`), one email (`primary`) and one website;\nan individual holds five phone numbers (those four plus `home`), two emails (`primary` and\n`secondary`) and one website. Entries of any other type are ignored.\n\n`home` and the `secondary` email exist only on a customer that is an individual, and are\nignored on a company. On an update you do not need to restate `individual` — the layout\nis read from the existing record when the request touches one of those fields. When two\nentries share a type, the first one is used.\n\nThe website must be the `primary` entry, start with `http://`, `https://`, `ftp://` or\n`file://` and contain no spaces. For an individual it is saved in a second request to\nNetSuite, after the rest of the customer. If that request fails, the response is an error\nthat says the customer was saved but the website was not; a website the customer already had\nstays as it was.\n",
+                        },
+                        {
+                            "Procountor only accepts the following values for the channel field": "EMAIL, MAIL, ELECTRONIC_INVOICE, EDIFACT, PAPER_INVOICE, NO_SENDING.",
+                            "Procountor only accepts the following values for the payment_method field": "BANK_TRANSFER, DIRECT_DEBIT, DIRECT_PAYMENT, CLEARING, CREDIT_CARD_CHARGE, FOREIGN_PAYMENT, OTHER, CASH, DOMESTIC_PAYMENT_PLUSGIRO, DOMESTIC_PAYMENT_BANKGIRO, DOMESTIC_PAYMENT_CREDITOR, DKLMPKRE, NETS.",
+                            "connector": "procountor-fi",
+                            "description": "",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks supports only billing and shipping addresses. Therefore, when creating or updating addresses, it is required to specify the type as 'billing' or 'shipping' in the address object within the addresses array.",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite supports only billing and shipping addresses. Therefore, when creating or updating addresses, it is required to specify the type as 'billing' or 'shipping' in the address object within the addresses array.",
+                        },
+                        {
+                            "connector": "freshbooks",
+                            "description": 'The status field can be updated to either "active" or "archived".\n',
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": 'The status field can be updated to either "active" or "inactive".\nPlease send status updates separately from other updates for the customer.\n',
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "Only `first_name`, `last_name`, `company_name`, `tax_number` and `status` can be updated.\n\nSAP builds `display_name` from the name fields.\n`first_name` and `last_name` don't apply to a company, and `company_name` doesn't apply to a person.\nAn update that sends one of these with a value the record doesn't hold is rejected with a `400` and\nnothing is changed. A `display_name` matching the name the update produces is accepted, so sending\nthe values a read returned works. An update that sends only `display_name` is also\nrejected with a `400`: with the reason above when the value differs from the record, and as having\nnothing to update when it matches.\n\n**Tax number.** A `tax_number` that differs from the one the customer holds is written after the other\nfields, as a request of its own. When the customer holds a tax number, the one a read returns is changed,\nin the category it already has. When it holds none, one is added in the category chosen as on create,\nfrom the `country` of the standard address (`DE0` for a German address); SAP rejects a category it does\nnot have, such as `US0`. Adding one needs the customer's standard address to have a two-letter `country`;\nwithout it the update is rejected with a `400` and nothing is changed. Changing a held tax number does not\nneed the country. A `tax_number` equal to a stored one, or empty, changes nothing. A `tax_number`\ncan have 20 characters. Because the tax\nnumber is a second request, if SAP refuses it the other fields of the update have already been\napplied; the error says so, and sending the request again is safe. When SAP does not answer clearly,\nthe tax number may or may not have been stored: the error says so too, and asks to read the customer\nbefore sending the request again. An update with only `tax_number` changes nothing else.\n\nUpdates that include entries in `addresses`, `bank_accounts`, `emails`, `phone_numbers` or `websites` are\nrejected with a `400` and nothing is updated. Lists can only be set when the record is created, or changed\nin SAP. Leave these fields out, or send them empty, to keep them unchanged: an empty list is ignored and\nclears nothing, because clearing a list is not supported. `terms` is rejected too when it has a value: it\ncan only be set when the record is created.\n\n`company_id` and `account` are ignored on update: a company code cannot be added or changed through this\nendpoint. An update that contains none of the fields that can be updated, and no `pass_through` for\nthis connector, is rejected with a `400`.\n`status` only changes when it is sent, so updating an inactive record leaves it inactive.\n\nA business partner that does not have the customer role returns `404` and nothing is changed. If the\nrole can't be verified (for example SAP is unavailable), the request fails and nothing is changed; a\n`429` or `5xx` can be retried.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Fiken replaces the whole contact on every update, so fields you leave out keep their current value, including the contact persons, language, discount, default payment terms and member number that the unified model does not expose. Send a field as `null` to clear it. An address sent with only some fields changes only those fields. The contact name is taken from `company_name`, then `display_name`, then the name parts, so send the one you want to change. Customers and suppliers are both Fiken contacts. A contact that is a supplier but not a customer returns `404` here. A country sent as an ISO 3166-1 alpha-2 code is saved under its Norwegian name, as Fiken's own screens save it. A customer saved without a country is stored with Norway.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1545,10 +2065,9 @@ class Customers(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingCustomersUpdateResponse(
                 update_customer_response=unmarshal_json_response(
-                    Optional[models.UpdateCustomerResponse], http_res
+                    Optional[models.UpdateCustomerResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1589,10 +2108,9 @@ class Customers(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingCustomersUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1621,17 +2139,19 @@ class Customers(BaseSDK):
         individual: OptionalNullable[bool] = UNSET,
         project: OptionalNullable[bool] = UNSET,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         phone_numbers: Optional[
-            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+            Union[Iterable[models.PhoneNumber], Iterable[models.PhoneNumberTypedDict]]
         ] = None,
-        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        emails: Optional[
+            Union[Iterable[models.Email], Iterable[models.EmailTypedDict]]
+        ] = None,
         websites: Optional[
-            Union[List[models.Website], List[models.WebsiteTypedDict]]
+            Union[Iterable[models.Website], Iterable[models.WebsiteTypedDict]]
         ] = None,
         bank_accounts: Optional[
-            Union[List[models.BankAccount], List[models.BankAccountTypedDict]]
+            Union[Iterable[models.BankAccount], Iterable[models.BankAccountTypedDict]]
         ] = None,
         notes: OptionalNullable[str] = UNSET,
         tax_rate: Optional[
@@ -1652,11 +2172,14 @@ class Customers(BaseSDK):
         terms_id: OptionalNullable[str] = UNSET,
         channel: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1803,6 +2326,7 @@ class Customers(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.customer, False, False, "json", models.CustomerInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1827,9 +2351,57 @@ class Customers(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Updates need `row_version` from a prior read of the record: without it the update is rejected with `Missing required field: data.editSequence`.\n\nWrites are applied on the Web Connector's next run, so an update can return a `504` timeout after 28 seconds while QuickBooks still applies it. Read the record back before retrying.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "A customer in a currency other than the administration's (set up in Minox) cannot be\nupdated: Minox resets a customer's currency to the administration's on every update that\ndoes not send it, and never returns the exchange rate it would have to be sent back with, so\nthe update is rejected with a `400` rather than silently changing the currency. `currency`,\nwhen sent, must be the administration's own. Only the fields sent are changed: addresses and\ncontacts are left alone unless `addresses`, `company_name`, `emails`, `phone_numbers` or\n`websites` are in the body. Sending `notes` empty or `null` clears them.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "How much of each array is written depends on whether the customer is a company or an\nindividual — NetSuite keeps different contact fields on each. A company holds four phone\nnumbers (`primary`, `secondary`, `mobile`, `fax`), one email (`primary`) and one website;\nan individual holds five phone numbers (those four plus `home`), two emails (`primary` and\n`secondary`) and one website. Entries of any other type are ignored.\n\n`home` and the `secondary` email exist only on a customer that is an individual, and are\nignored on a company. On an update you do not need to restate `individual` — the layout\nis read from the existing record when the request touches one of those fields. When two\nentries share a type, the first one is used.\n\nThe website must be the `primary` entry, start with `http://`, `https://`, `ftp://` or\n`file://` and contain no spaces. For an individual it is saved in a second request to\nNetSuite, after the rest of the customer. If that request fails, the response is an error\nthat says the customer was saved but the website was not; a website the customer already had\nstays as it was.\n",
+                        },
+                        {
+                            "Procountor only accepts the following values for the channel field": "EMAIL, MAIL, ELECTRONIC_INVOICE, EDIFACT, PAPER_INVOICE, NO_SENDING.",
+                            "Procountor only accepts the following values for the payment_method field": "BANK_TRANSFER, DIRECT_DEBIT, DIRECT_PAYMENT, CLEARING, CREDIT_CARD_CHARGE, FOREIGN_PAYMENT, OTHER, CASH, DOMESTIC_PAYMENT_PLUSGIRO, DOMESTIC_PAYMENT_BANKGIRO, DOMESTIC_PAYMENT_CREDITOR, DKLMPKRE, NETS.",
+                            "connector": "procountor-fi",
+                            "description": "",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks supports only billing and shipping addresses. Therefore, when creating or updating addresses, it is required to specify the type as 'billing' or 'shipping' in the address object within the addresses array.",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite supports only billing and shipping addresses. Therefore, when creating or updating addresses, it is required to specify the type as 'billing' or 'shipping' in the address object within the addresses array.",
+                        },
+                        {
+                            "connector": "freshbooks",
+                            "description": 'The status field can be updated to either "active" or "archived".\n',
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": 'The status field can be updated to either "active" or "inactive".\nPlease send status updates separately from other updates for the customer.\n',
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "Only `first_name`, `last_name`, `company_name`, `tax_number` and `status` can be updated.\n\nSAP builds `display_name` from the name fields.\n`first_name` and `last_name` don't apply to a company, and `company_name` doesn't apply to a person.\nAn update that sends one of these with a value the record doesn't hold is rejected with a `400` and\nnothing is changed. A `display_name` matching the name the update produces is accepted, so sending\nthe values a read returned works. An update that sends only `display_name` is also\nrejected with a `400`: with the reason above when the value differs from the record, and as having\nnothing to update when it matches.\n\n**Tax number.** A `tax_number` that differs from the one the customer holds is written after the other\nfields, as a request of its own. When the customer holds a tax number, the one a read returns is changed,\nin the category it already has. When it holds none, one is added in the category chosen as on create,\nfrom the `country` of the standard address (`DE0` for a German address); SAP rejects a category it does\nnot have, such as `US0`. Adding one needs the customer's standard address to have a two-letter `country`;\nwithout it the update is rejected with a `400` and nothing is changed. Changing a held tax number does not\nneed the country. A `tax_number` equal to a stored one, or empty, changes nothing. A `tax_number`\ncan have 20 characters. Because the tax\nnumber is a second request, if SAP refuses it the other fields of the update have already been\napplied; the error says so, and sending the request again is safe. When SAP does not answer clearly,\nthe tax number may or may not have been stored: the error says so too, and asks to read the customer\nbefore sending the request again. An update with only `tax_number` changes nothing else.\n\nUpdates that include entries in `addresses`, `bank_accounts`, `emails`, `phone_numbers` or `websites` are\nrejected with a `400` and nothing is updated. Lists can only be set when the record is created, or changed\nin SAP. Leave these fields out, or send them empty, to keep them unchanged: an empty list is ignored and\nclears nothing, because clearing a list is not supported. `terms` is rejected too when it has a value: it\ncan only be set when the record is created.\n\n`company_id` and `account` are ignored on update: a company code cannot be added or changed through this\nendpoint. An update that contains none of the fields that can be updated, and no `pass_through` for\nthis connector, is rejected with a `400`.\n`status` only changes when it is sent, so updating an inactive record leaves it inactive.\n\nA business partner that does not have the customer role returns `404` and nothing is changed. If the\nrole can't be verified (for example SAP is unavailable), the request fails and nothing is changed; a\n`429` or `5xx` can be retried.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Fiken replaces the whole contact on every update, so fields you leave out keep their current value, including the contact persons, language, discount, default payment terms and member number that the unified model does not expose. Send a field as `null` to clear it. An address sent with only some fields changes only those fields. The contact name is taken from `company_name`, then `display_name`, then the name parts, so send the one you want to change. Customers and suppliers are both Fiken contacts. A contact that is a supplier but not a customer returns `404` here. A country sent as an ISO 3166-1 alpha-2 code is saved under its Norwegian name, as Fiken's own screens save it. A customer saved without a country is stored with Norway.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1837,10 +2409,9 @@ class Customers(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingCustomersUpdateResponse(
                 update_customer_response=unmarshal_json_response(
-                    Optional[models.UpdateCustomerResponse], http_res
+                    Optional[models.UpdateCustomerResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1881,10 +2452,9 @@ class Customers(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingCustomersUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1951,6 +2521,7 @@ class Customers(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1975,9 +2546,27 @@ class Customers(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "freshbooks",
+                            "description": "Delete will set the customer to inactive and will soft delete it, meaning it will stop appearing in the list API call. However, it can still be found via the get by id call.\n",
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "SAP does not allow deleting a customer that has been used in transactions. Delete blocks the customer instead:\nthe record stays in SAP and subsequent reads return `status: inactive`. Updating `status` to `active`\nunblocks it.\n\nThe block applies to the whole SAP business partner. If the same business partner is also a supplier,\nit is blocked as a supplier too and reads `status: inactive` under suppliers until it is unblocked.\n\nA business partner that does not have the customer role returns `404` and nothing is blocked. If the\nrole can't be verified (for example SAP is unavailable), the request fails and nothing is blocked; a\n`429` or `5xx` can be retried.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Customers and suppliers are both Fiken contacts. A contact that is a supplier but not a customer returns `404` here.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1985,10 +2574,9 @@ class Customers(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingCustomersDeleteResponse(
                 delete_customer_response=unmarshal_json_response(
-                    Optional[models.DeleteCustomerResponse], http_res
+                    Optional[models.DeleteCustomerResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2029,10 +2617,9 @@ class Customers(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingCustomersDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2099,6 +2686,7 @@ class Customers(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2123,9 +2711,27 @@ class Customers(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "freshbooks",
+                            "description": "Delete will set the customer to inactive and will soft delete it, meaning it will stop appearing in the list API call. However, it can still be found via the get by id call.\n",
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "SAP does not allow deleting a customer that has been used in transactions. Delete blocks the customer instead:\nthe record stays in SAP and subsequent reads return `status: inactive`. Updating `status` to `active`\nunblocks it.\n\nThe block applies to the whole SAP business partner. If the same business partner is also a supplier,\nit is blocked as a supplier too and reads `status: inactive` under suppliers until it is unblocked.\n\nA business partner that does not have the customer role returns `404` and nothing is blocked. If the\nrole can't be verified (for example SAP is unavailable), the request fails and nothing is blocked; a\n`429` or `5xx` can be retried.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Customers and suppliers are both Fiken contacts. A contact that is a supplier but not a customer returns `404` here.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2133,10 +2739,9 @@ class Customers(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingCustomersDeleteResponse(
                 delete_customer_response=unmarshal_json_response(
-                    Optional[models.DeleteCustomerResponse], http_res
+                    Optional[models.DeleteCustomerResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2177,10 +2782,9 @@ class Customers(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingCustomersDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2189,8 +2793,8 @@ class Customers(BaseSDK):
         self,
         *,
         items: Union[
-            List[models.BatchCustomersRequestItems],
-            List[models.BatchCustomersRequestItemsTypedDict],
+            Iterable[models.BatchCustomersRequestItems],
+            Iterable[models.BatchCustomersRequestItemsTypedDict],
         ],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
@@ -2264,6 +2868,7 @@ class Customers(BaseSDK):
                 "json",
                 models.BatchCustomersRequest,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2288,9 +2893,31 @@ class Customers(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "xero",
+                            "description": "The whole request is one call to the provider, so it counts as **one request**\nagainst your plan however many records it carries.\n\nAt most 20 customers per request. A request carrying more is rejected before any\ncustomer is written.\n\nA request that times out may still have created some or all of its customers.\nWhen that happens no ids are returned for them, so treat a timed-out batch as\nuncertain rather than failed: list customers to find what was written before\nretrying, or a retry will duplicate them.\n\nResults are returned in the order the items were sent. Supply `_ref` on every\nitem if you need to tie outcomes back to your own records.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Records are written one at a time, so the request counts as **one request per\nrecord** against your plan — batching saves you round trips, not quota.\n\nAt most 10 records per request.\n\nRecords are written one at a time, so a request of N customers takes about N times as\nlong as a single write and counts as N requests against your plan. Each record\nsucceeds or fails on its own; read the per-item `status` to see which were written.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "The whole request is one call to the provider, so it counts as **one request**\nagainst your plan however many records it carries.\n\nAt most 20 customers per request. A request carrying more is rejected before any\nrecord is written.\n\nResponse time scales with the number of records rather than being a fixed cost,\nso set client timeouts for the size of request you send.\n\nA request that times out may still have written some or all of its records. When\nthat happens no ids are returned for them, so treat a timed-out batch as uncertain\nrather than failed: list the records to find what was written before retrying, or a\nretry will duplicate them.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "The whole request is one call to the provider, so it counts as **one request**\nagainst your plan however many records it carries.\n\nAt most 20 customers per request. A request carrying more is rejected before any\nrecord is written.\n\nResponse time scales with the number of records rather than being a fixed cost,\nso set client timeouts for the size of request you send.\n\nA request that times out may still have written some or all of its records. When\nthat happens no ids are returned for them, so treat a timed-out batch as uncertain\nrather than failed: list the records to find what was written before retrying, or a\nretry will duplicate them.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2298,10 +2925,9 @@ class Customers(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingCustomersBatchAddResponse(
                 batch_customers_response=unmarshal_json_response(
-                    Optional[models.BatchCustomersResponse], http_res
+                    Optional[models.BatchCustomersResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2342,10 +2968,9 @@ class Customers(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingCustomersBatchAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2354,8 +2979,8 @@ class Customers(BaseSDK):
         self,
         *,
         items: Union[
-            List[models.BatchCustomersRequestItems],
-            List[models.BatchCustomersRequestItemsTypedDict],
+            Iterable[models.BatchCustomersRequestItems],
+            Iterable[models.BatchCustomersRequestItemsTypedDict],
         ],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
@@ -2429,6 +3054,7 @@ class Customers(BaseSDK):
                 "json",
                 models.BatchCustomersRequest,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2453,9 +3079,31 @@ class Customers(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "xero",
+                            "description": "The whole request is one call to the provider, so it counts as **one request**\nagainst your plan however many records it carries.\n\nAt most 20 customers per request. A request carrying more is rejected before any\ncustomer is written.\n\nA request that times out may still have created some or all of its customers.\nWhen that happens no ids are returned for them, so treat a timed-out batch as\nuncertain rather than failed: list customers to find what was written before\nretrying, or a retry will duplicate them.\n\nResults are returned in the order the items were sent. Supply `_ref` on every\nitem if you need to tie outcomes back to your own records.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Records are written one at a time, so the request counts as **one request per\nrecord** against your plan — batching saves you round trips, not quota.\n\nAt most 10 records per request.\n\nRecords are written one at a time, so a request of N customers takes about N times as\nlong as a single write and counts as N requests against your plan. Each record\nsucceeds or fails on its own; read the per-item `status` to see which were written.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "The whole request is one call to the provider, so it counts as **one request**\nagainst your plan however many records it carries.\n\nAt most 20 customers per request. A request carrying more is rejected before any\nrecord is written.\n\nResponse time scales with the number of records rather than being a fixed cost,\nso set client timeouts for the size of request you send.\n\nA request that times out may still have written some or all of its records. When\nthat happens no ids are returned for them, so treat a timed-out batch as uncertain\nrather than failed: list the records to find what was written before retrying, or a\nretry will duplicate them.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "The whole request is one call to the provider, so it counts as **one request**\nagainst your plan however many records it carries.\n\nAt most 20 customers per request. A request carrying more is rejected before any\nrecord is written.\n\nResponse time scales with the number of records rather than being a fixed cost,\nso set client timeouts for the size of request you send.\n\nA request that times out may still have written some or all of its records. When\nthat happens no ids are returned for them, so treat a timed-out batch as uncertain\nrather than failed: list the records to find what was written before retrying, or a\nretry will duplicate them.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2463,10 +3111,9 @@ class Customers(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingCustomersBatchAddResponse(
                 batch_customers_response=unmarshal_json_response(
-                    Optional[models.BatchCustomersResponse], http_res
+                    Optional[models.BatchCustomersResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2507,10 +3154,9 @@ class Customers(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingCustomersBatchAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

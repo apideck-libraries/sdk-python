@@ -2,6 +2,16 @@
 
 The type of phone number
 
+## Example Usage
+
+```python
+from apideck_unify.models import PhoneNumberType
+
+value = PhoneNumberType.PRIMARY
+
+# Open enum: unrecognized values are captured as UnrecognizedStr
+```
+
 
 ## Values
 

@@ -1,5 +1,15 @@
 # EmploymentTerms
 
+## Example Usage
+
+```python
+from apideck_unify.models import EmploymentTerms
+
+value = EmploymentTerms.FULL_TIME
+
+# Open enum: unrecognized values are captured as UnrecognizedStr
+```
+
 
 ## Values
 

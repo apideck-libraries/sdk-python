@@ -1,5 +1,4 @@
-# TimeOffRequests
-(*hris.time_off_requests*)
+# Hris.TimeOffRequests
 
 ## Overview
 
@@ -27,7 +26,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.hris.time_off_requests.list(raw=False, service_id="salesforce", limit=20, filter_={
@@ -95,7 +94,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.hris.time_off_requests.create(raw=False, service_id="salesforce", employee_id="12345", policy_id="12345", status=apideck_unify.TimeOffRequestStatusStatus.APPROVED, description="Enjoying some sun.", start_date="2022-04-01", end_date="2022-04-01", request_date="2022-03-21", request_type=apideck_unify.RequestType.VACATION, approval_date="2022-03-21", units=apideck_unify.Units.HOURS, amount=3.5, day_part="morning", notes={
@@ -180,7 +179,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.hris.time_off_requests.get(id="<id>", employee_id="<id>", service_id="salesforce", raw=False, fields="id,updated_at")
@@ -237,7 +236,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.hris.time_off_requests.update(id="<id>", employee_id_param="<value>", service_id="salesforce", raw=False, employee_id="12345", policy_id="12345", status=apideck_unify.TimeOffRequestStatusStatus.APPROVED, description="Enjoying some sun.", start_date="2022-04-01", end_date="2022-04-01", request_date="2022-03-21", request_type=apideck_unify.RequestType.VACATION, approval_date="2022-03-21", units=apideck_unify.Units.HOURS, amount=3.5, day_part="morning", notes={
@@ -340,7 +339,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.hris.time_off_requests.delete(id="<id>", employee_id="<id>", service_id="salesforce", raw=False)

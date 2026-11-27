@@ -2,6 +2,16 @@
 
 Supplier status
 
+## Example Usage
+
+```python
+from apideck_unify.models import SupplierStatus
+
+value = SupplierStatus.ACTIVE
+
+# Open enum: unrecognized values are captured as UnrecognizedStr
+```
+
 
 ## Values
 

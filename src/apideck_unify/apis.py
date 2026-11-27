@@ -69,6 +69,7 @@ class Apis(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -93,9 +94,11 @@ class Apis(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["connector"],
+                extensions={"x-apideck-api": "connector"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -116,17 +119,19 @@ class Apis(BaseSDK):
                 limit=limit,
                 filter_=filter_,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.ConnectorApisAllResponse(
                 get_apis_response=unmarshal_json_response(
-                    Optional[models.GetApisResponse], http_res
+                    Optional[models.GetApisResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -152,11 +157,10 @@ class Apis(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.ConnectorApisAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -219,6 +223,7 @@ class Apis(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -243,9 +248,11 @@ class Apis(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["connector"],
+                extensions={"x-apideck-api": "connector"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -266,17 +273,19 @@ class Apis(BaseSDK):
                 limit=limit,
                 filter_=filter_,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.ConnectorApisAllResponse(
                 get_apis_response=unmarshal_json_response(
-                    Optional[models.GetApisResponse], http_res
+                    Optional[models.GetApisResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -302,11 +311,10 @@ class Apis(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.ConnectorApisAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -363,6 +371,7 @@ class Apis(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -387,9 +396,11 @@ class Apis(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["connector"],
+                extensions={"x-apideck-api": "connector"},
             ),
             request=req,
-            error_status_codes=["401", "402", "404", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -397,10 +408,9 @@ class Apis(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.ConnectorApisOneResponse(
                 get_api_response=unmarshal_json_response(
-                    Optional[models.GetAPIResponse], http_res
+                    Optional[models.GetAPIResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "401", "application/json"):
             response_data = unmarshal_json_response(
@@ -426,10 +436,9 @@ class Apis(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.ConnectorApisOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -486,6 +495,7 @@ class Apis(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -510,9 +520,11 @@ class Apis(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["connector"],
+                extensions={"x-apideck-api": "connector"},
             ),
             request=req,
-            error_status_codes=["401", "402", "404", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -520,10 +532,9 @@ class Apis(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.ConnectorApisOneResponse(
                 get_api_response=unmarshal_json_response(
-                    Optional[models.GetAPIResponse], http_res
+                    Optional[models.GetAPIResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "401", "application/json"):
             response_data = unmarshal_json_response(
@@ -549,10 +560,9 @@ class Apis(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.ConnectorApisOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

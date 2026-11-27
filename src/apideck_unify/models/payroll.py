@@ -9,7 +9,10 @@ from apideck_unify.types import (
     OptionalNullable,
     UNSET,
     UNSET_SENTINEL,
+    current_exclude_none,
+    serialize_with_info,
 )
+from apideck_unify.types.basemodel import current_filtered_dump
 from pydantic import model_serializer
 from typing import Any, Dict, List, Optional
 from typing_extensions import NotRequired, TypedDict
@@ -70,46 +73,52 @@ class Payroll(BaseModel):
     r"""When custom mappings are configured on the resource, the result is included here."""
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = [
-            "company_id",
-            "processed_date",
-            "totals",
-            "compensations",
-            "custom_mappings",
-        ]
-        nullable_fields = [
-            "id",
-            "company_id",
-            "processed",
-            "processed_date",
-            "check_date",
-            "start_date",
-            "end_date",
-            "custom_mappings",
-        ]
-        null_default_fields = []
-
+        optional_fields = set(
+            [
+                "company_id",
+                "processed_date",
+                "totals",
+                "compensations",
+                "custom_mappings",
+            ]
+        )
+        nullable_fields = set(
+            [
+                "id",
+                "company_id",
+                "processed",
+                "processed_date",
+                "check_date",
+                "start_date",
+                "end_date",
+                "custom_mappings",
+            ]
+        )
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m

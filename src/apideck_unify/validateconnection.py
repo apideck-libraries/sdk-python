@@ -86,12 +86,13 @@ class ValidateConnection(BaseSDK):
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request.request_body,
+                request.request_body if request is not None else None,
                 False,
                 True,
                 "json",
                 Optional[models.VaultValidateConnectionStateRequestBody],
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -116,9 +117,11 @@ class ValidateConnection(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["vault"],
+                extensions={"x-apideck-api": "vault"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -126,10 +129,11 @@ class ValidateConnection(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.VaultValidateConnectionStateResponse(
                 validate_connection_state_response=unmarshal_json_response(
-                    Optional[models.ValidateConnectionStateResponse], http_res
+                    Optional[models.ValidateConnectionStateResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -165,10 +169,9 @@ class ValidateConnection(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.VaultValidateConnectionStateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -249,12 +252,13 @@ class ValidateConnection(BaseSDK):
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request.request_body,
+                request.request_body if request is not None else None,
                 False,
                 True,
                 "json",
                 Optional[models.VaultValidateConnectionStateRequestBody],
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -279,9 +283,11 @@ class ValidateConnection(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["vault"],
+                extensions={"x-apideck-api": "vault"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -289,10 +295,11 @@ class ValidateConnection(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.VaultValidateConnectionStateResponse(
                 validate_connection_state_response=unmarshal_json_response(
-                    Optional[models.ValidateConnectionStateResponse], http_res
+                    Optional[models.ValidateConnectionStateResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -328,10 +335,9 @@ class ValidateConnection(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.VaultValidateConnectionStateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

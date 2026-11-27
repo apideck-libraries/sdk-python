@@ -8,7 +8,7 @@ from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from datetime import date
 from jsonpath import JSONPath
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
 
 
 class SalesOrders(BaseSDK):
@@ -25,7 +25,7 @@ class SalesOrders(BaseSDK):
         filter_: Optional[
             Union[models.SalesOrdersFilter, models.SalesOrdersFilterTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -70,7 +70,7 @@ class SalesOrders(BaseSDK):
             filter_=utils.get_pydantic_model(
                 filter_, Optional[models.SalesOrdersFilter]
             ),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
         )
 
         req = self._build_request(
@@ -90,6 +90,7 @@ class SalesOrders(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -114,9 +115,47 @@ class SalesOrders(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "`status` is `closed` when the order was closed by hand in QuickBooks, `invoiced` when it is fully invoiced, otherwise `open`. `delivery_date` and `currency` are not returned. Supported filters: `number`, `updated_since` and `created_since`; `customer_id` is not supported.\n\nQuickBooks Desktop does not expose a reliable cross-page total record count. Getting `total_count` requires a separate COUNT query — an extra API call that is not currently implemented. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "sap-business-one",
+                            "description": "Sales orders are SAP Business One sales orders (Service Layer `Orders`). `status` is `cancelled` when the order is cancelled, `closed` once it is closed (fully delivered or invoiced, or closed by hand), otherwise `open`; SAP Business One does not tell a closed order's reason apart, so `invoiced` is not returned. `po_number` is the customer's reference number (*Customer Ref. No.*).\nSupported filters: `updated_since`, `created_since`, `number`, `customer_id` and `po_number`. `number` is the SAP Business One document number: a whole number from 0 to 2,147,483,647, and any other value returns a 400. `po_number` matches exactly and can match more than one order: send your own order number as `po_number` on create to find the order again.\n",
+                        },
+                        {
+                            "connector": "e-conomic",
+                            "description": "Only draft orders are returned, and the list returns them without `line_items`: fetch a single one to get its lines. Sent and archived orders are not included. Supported filters: `number`, `customer_id` and `updated_since`.\n",
+                        },
+                        {
+                            "connector": "acumatica",
+                            "description": 'Sales orders are read from the `SalesOrder` entity, so the API user of the connection needs access to the Sales Orders screen (SO301000); without it every request fails with "insufficient rights". The list returns every order type on the tenant, and `order_type` carries the type of each order: besides sales orders (`SO` and custom types) that includes invoice-type orders (`IN`), quotes (`QT`) and the return and credit types (`RC`, `RR`, `CM`, `CR`), whose amounts flow in the opposite direction, so filter on `order_type` client-side when you only want sales. Order numbers are only unique within an order type, so `filter[number]` can match more than one order. `line_items` are included on list results. `unbilled_amount` is the order\'s unbilled amount, not its unpaid balance.\n',
+                        },
+                        {
+                            "connector": "myob-acumatica",
+                            "description": 'Sales orders are read from the `SalesOrder` entity, so the API user of the connection needs access to the Sales Orders screen (SO301000); without it every request fails with "insufficient rights". The list returns every order type on the tenant, and `order_type` carries the type of each order: besides sales orders (`SO` and custom types) that includes invoice-type orders (`IN`), quotes (`QT`) and the return and credit types (`RC`, `RR`, `CM`, `CR`), whose amounts flow in the opposite direction, so filter on `order_type` client-side when you only want sales. Order numbers are only unique within an order type, so `filter[number]` can match more than one order. `line_items` are included on list results. `unbilled_amount` is the order\'s unbilled amount, not its unpaid balance.\n',
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "Sage Intacct has no distinct sales order object: sales orders are order-entry documents, and that same object also holds quotes, shippers, invoices and credit memos. Apideck restricts the list to the document types your company defines as order-class, so `total_count` reflects sales orders only. Sage's own system-generated `SYS-` definitions (for example `SYS-Fulfillment Order`, the fulfilment document created behind a customer order) are excluded.\nThose type names are defined per company, so Apideck resolves them from your Order Entry transaction definitions on each request. If none can be resolved the list returns empty rather than returning every order-entry document. Line items are attached with one extra query per page. `line_items[].total_amount` is quantity x unit price, because Sage returns no extended amount. `total_tax` is the sum of line tax and is omitted when no line carries tax. Addresses are not returned. The warehouse of an inventory line is returned as the `warehouse_id` entry of `line_items[].custom_fields`. `delivery_date` is Sage's requested shipping date. `po_number` is the customer PO number and `reference` the document's reference number.\n`customer.id` is the Sage customer record key (as on every resource of this connector), and `filter[customer_id]` takes that same key — it is translated to the customer's display id with one extra lookup, because Sage cannot filter order-entry documents by record key. An unknown key returns an empty list.\n",
+                        },
+                        {
+                            "connector": "fortnox",
+                            "description": "Sales orders are Fortnox customer orders (`/3/orders`, scope `order`). `status` is derived: `cancelled` when the order is cancelled, `invoiced` once an invoice has been created from it (`invoice_id` then carries that invoice's number), `open` when it has been sent or marked not completed, otherwise `draft`. `quote_id` is the offer the order was created from, when any. Fortnox has no timestamps on orders, so `created_at`/`updated_at` are not returned; `filter[updated_since]` uses Fortnox's `lastmodified` and is accurate to the minute.\nThe list returns Fortnox's order headers only: `line_items`, amounts other than `total`, addresses, references and memos come back on get-by-id. On the list `status` can only be `cancelled`, `open` or `draft`; whether an order has been invoiced is visible on get-by-id (`invoiced`, with `invoice_id`). `po_number` is the customer's order number (*Your order number*); `reference` is not returned.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "Sales orders are Order Entry documents (`SODOCUMENT`) of the Order class. System-generated fulfilment documents (transaction definitions starting with `SYS-`) are not returned. The list returns order headers only — `line_items` are returned when you retrieve a single sales order. `delivery_date` is the order's need-by date and is null when none was entered. `po_number` is the customer PO number and `reference` the document's reference number. `status` is `back_ordered` when the order is flagged as back-ordered and still open; `invoiced` means the order is fully converted. Sage Intacct does not record the invoice created from an order, so `invoice_id` is not returned. The document the order was converted from is exposed by its record number as the `source_document_key` custom field rather than as `quote_id`, because it is not necessarily a quote.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -142,17 +181,19 @@ class SalesOrders(BaseSDK):
                 filter_=filter_,
                 pass_through=pass_through,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingSalesOrdersAllResponse(
                 get_sales_orders_response=unmarshal_json_response(
-                    Optional[models.GetSalesOrdersResponse], http_res
+                    Optional[models.GetSalesOrdersResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -193,11 +234,10 @@ class SalesOrders(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSalesOrdersAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -215,7 +255,7 @@ class SalesOrders(BaseSDK):
         filter_: Optional[
             Union[models.SalesOrdersFilter, models.SalesOrdersFilterTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -260,7 +300,7 @@ class SalesOrders(BaseSDK):
             filter_=utils.get_pydantic_model(
                 filter_, Optional[models.SalesOrdersFilter]
             ),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
         )
 
         req = self._build_request_async(
@@ -280,6 +320,7 @@ class SalesOrders(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -304,9 +345,47 @@ class SalesOrders(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "`status` is `closed` when the order was closed by hand in QuickBooks, `invoiced` when it is fully invoiced, otherwise `open`. `delivery_date` and `currency` are not returned. Supported filters: `number`, `updated_since` and `created_since`; `customer_id` is not supported.\n\nQuickBooks Desktop does not expose a reliable cross-page total record count. Getting `total_count` requires a separate COUNT query — an extra API call that is not currently implemented. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "sap-business-one",
+                            "description": "Sales orders are SAP Business One sales orders (Service Layer `Orders`). `status` is `cancelled` when the order is cancelled, `closed` once it is closed (fully delivered or invoiced, or closed by hand), otherwise `open`; SAP Business One does not tell a closed order's reason apart, so `invoiced` is not returned. `po_number` is the customer's reference number (*Customer Ref. No.*).\nSupported filters: `updated_since`, `created_since`, `number`, `customer_id` and `po_number`. `number` is the SAP Business One document number: a whole number from 0 to 2,147,483,647, and any other value returns a 400. `po_number` matches exactly and can match more than one order: send your own order number as `po_number` on create to find the order again.\n",
+                        },
+                        {
+                            "connector": "e-conomic",
+                            "description": "Only draft orders are returned, and the list returns them without `line_items`: fetch a single one to get its lines. Sent and archived orders are not included. Supported filters: `number`, `customer_id` and `updated_since`.\n",
+                        },
+                        {
+                            "connector": "acumatica",
+                            "description": 'Sales orders are read from the `SalesOrder` entity, so the API user of the connection needs access to the Sales Orders screen (SO301000); without it every request fails with "insufficient rights". The list returns every order type on the tenant, and `order_type` carries the type of each order: besides sales orders (`SO` and custom types) that includes invoice-type orders (`IN`), quotes (`QT`) and the return and credit types (`RC`, `RR`, `CM`, `CR`), whose amounts flow in the opposite direction, so filter on `order_type` client-side when you only want sales. Order numbers are only unique within an order type, so `filter[number]` can match more than one order. `line_items` are included on list results. `unbilled_amount` is the order\'s unbilled amount, not its unpaid balance.\n',
+                        },
+                        {
+                            "connector": "myob-acumatica",
+                            "description": 'Sales orders are read from the `SalesOrder` entity, so the API user of the connection needs access to the Sales Orders screen (SO301000); without it every request fails with "insufficient rights". The list returns every order type on the tenant, and `order_type` carries the type of each order: besides sales orders (`SO` and custom types) that includes invoice-type orders (`IN`), quotes (`QT`) and the return and credit types (`RC`, `RR`, `CM`, `CR`), whose amounts flow in the opposite direction, so filter on `order_type` client-side when you only want sales. Order numbers are only unique within an order type, so `filter[number]` can match more than one order. `line_items` are included on list results. `unbilled_amount` is the order\'s unbilled amount, not its unpaid balance.\n',
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "Sage Intacct has no distinct sales order object: sales orders are order-entry documents, and that same object also holds quotes, shippers, invoices and credit memos. Apideck restricts the list to the document types your company defines as order-class, so `total_count` reflects sales orders only. Sage's own system-generated `SYS-` definitions (for example `SYS-Fulfillment Order`, the fulfilment document created behind a customer order) are excluded.\nThose type names are defined per company, so Apideck resolves them from your Order Entry transaction definitions on each request. If none can be resolved the list returns empty rather than returning every order-entry document. Line items are attached with one extra query per page. `line_items[].total_amount` is quantity x unit price, because Sage returns no extended amount. `total_tax` is the sum of line tax and is omitted when no line carries tax. Addresses are not returned. The warehouse of an inventory line is returned as the `warehouse_id` entry of `line_items[].custom_fields`. `delivery_date` is Sage's requested shipping date. `po_number` is the customer PO number and `reference` the document's reference number.\n`customer.id` is the Sage customer record key (as on every resource of this connector), and `filter[customer_id]` takes that same key — it is translated to the customer's display id with one extra lookup, because Sage cannot filter order-entry documents by record key. An unknown key returns an empty list.\n",
+                        },
+                        {
+                            "connector": "fortnox",
+                            "description": "Sales orders are Fortnox customer orders (`/3/orders`, scope `order`). `status` is derived: `cancelled` when the order is cancelled, `invoiced` once an invoice has been created from it (`invoice_id` then carries that invoice's number), `open` when it has been sent or marked not completed, otherwise `draft`. `quote_id` is the offer the order was created from, when any. Fortnox has no timestamps on orders, so `created_at`/`updated_at` are not returned; `filter[updated_since]` uses Fortnox's `lastmodified` and is accurate to the minute.\nThe list returns Fortnox's order headers only: `line_items`, amounts other than `total`, addresses, references and memos come back on get-by-id. On the list `status` can only be `cancelled`, `open` or `draft`; whether an order has been invoiced is visible on get-by-id (`invoiced`, with `invoice_id`). `po_number` is the customer's order number (*Your order number*); `reference` is not returned.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "Sales orders are Order Entry documents (`SODOCUMENT`) of the Order class. System-generated fulfilment documents (transaction definitions starting with `SYS-`) are not returned. The list returns order headers only — `line_items` are returned when you retrieve a single sales order. `delivery_date` is the order's need-by date and is null when none was entered. `po_number` is the customer PO number and `reference` the document's reference number. `status` is `back_ordered` when the order is flagged as back-ordered and still open; `invoiced` means the order is fully converted. Sage Intacct does not record the invoice created from an order, so `invoice_id` is not returned. The document the order was converted from is exposed by its record number as the `source_document_key` custom field rather than as `quote_id`, because it is not necessarily a quote.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -332,17 +411,19 @@ class SalesOrders(BaseSDK):
                 filter_=filter_,
                 pass_through=pass_through,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingSalesOrdersAllResponse(
                 get_sales_orders_response=unmarshal_json_response(
-                    Optional[models.GetSalesOrdersResponse], http_res
+                    Optional[models.GetSalesOrdersResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -383,11 +464,10 @@ class SalesOrders(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSalesOrdersAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -434,8 +514,8 @@ class SalesOrders(BaseSDK):
         notes: OptionalNullable[str] = UNSET,
         line_items: Optional[
             Union[
-                List[models.InvoiceLineItemInput],
-                List[models.InvoiceLineItemInputTypedDict],
+                Iterable[models.InvoiceLineItemInput],
+                Iterable[models.InvoiceLineItemInputTypedDict],
             ]
         ] = None,
         billing_address: Optional[
@@ -446,18 +526,21 @@ class SalesOrders(BaseSDK):
         ] = None,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         template_id: OptionalNullable[str] = UNSET,
         source_document_url: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -611,6 +694,7 @@ class SalesOrders(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.sales_order, False, False, "json", models.SalesOrderInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -635,9 +719,51 @@ class SalesOrders(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "A `line_items[]` entry sends `unit_price`, or `total_amount` when no unit price is given. `status`, `line_items[].tax_rate` and `currency` are not written. `customer_memo` is not written either: QuickBooks holds it as a reference to its Customer Message list and refuses the document for any other text.\n\nWrites are applied on the Web Connector's next run, so a create can return a `504` timeout after 28 seconds while QuickBooks still creates the sales order. List sales orders to find it before retrying: sending the create again adds a second sales order.\n",
+                        },
+                        {
+                            "connector": "sap-business-one",
+                            "description": "`customer.id` is the business partner's CardCode, and each line needs an `item.id` (ItemCode) or a `ledger_account.id` for service lines. `order_date` and `delivery_date` map to the posting and delivery dates. `reference` cannot be written: SAP Business One sets it to the document number; `po_number` holds the customer's reference (*Customer Ref. No.*).\n",
+                        },
+                        {
+                            "connector": "e-conomic",
+                            "description": "Only `customer.id` is required: the recipient (name, address and VAT zone), payment terms, layout and currency are taken from the customer unless you send them. `line_items[].item.id` is the product number. Orders are created as drafts; an update changes only the fields you send, and `line_items`, when sent, replace all lines. An update cannot clear a field: empty values are ignored. Changing `customer.id` readdresses the order to the new customer.\nA `status` other than `draft` is rejected with a 400, because e-conomic sales orders are written as drafts only.\ne-conomic numbers a new draft one above the highest number in use by draft invoices, credit notes, quotes and orders, so deleting the most recent draft frees its number for the next draft of any of these types: a stored id can later point at a different document. Keep your own reference (for example in `reference`) rather than relying on the id alone.\nSend an `Idempotency-Key` to make retrying a create safe: Unify sends e-conomic a 32-character key derived from it as e-conomic's own `Idempotency-Key` header, and e-conomic answers a repeat with the original sales order instead of creating a second one. e-conomic keeps a key for one hour, and Unify remembers it for the same hour. Reusing a key with a different body returns 422, from Unify within its hour and from e-conomic while e-conomic still remembers the key; after both have forgotten it, the same key is treated as a new request. Use a new key for every sales order. Unify builds the e-conomic request again on a retry, from what it reads from e-conomic and from today's date in Copenhagen when you leave the date out. If either changed between the attempts, e-conomic refuses the retry as a reused key and Unify returns 422 instead of creating a second sales order. The first attempt may have created the sales order: look it up before resending with a new key. Send the date to keep a retry identical across midnight.\n",
+                        },
+                        {
+                            "connector": "acumatica",
+                            "description": "`customer.id` and at least one line are required. Every line needs an inventory item: send `line_items[].item.id` (or `code`) with the Acumatica `InventoryID`; a line without one is rejected by Acumatica. `order_type` selects the Acumatica order type and defaults to `SO`. Totals, tax and `status` are computed by Acumatica — `sub_total`, `total_tax`, `total` and `status` sent on create are ignored, except `status: on_hold`, which places the order on hold. `number` is only honoured when the order type is configured for manual numbering; otherwise Acumatica assigns it. Address fields are only written when at least one address field is sent, and then override the customer's default address on the order.\n",
+                        },
+                        {
+                            "connector": "myob-acumatica",
+                            "description": "`customer.id` and at least one line are required. Every line needs an inventory item: send `line_items[].item.id` (or `code`) with the MYOB Acumatica `InventoryID`; a line without one is rejected. `order_type` selects the order type and defaults to `SO`. Totals, tax and `status` are computed by MYOB Acumatica — `sub_total`, `total_tax`, `total` and `status` sent on create are ignored, except `status: on_hold`, which places the order on hold. `number` is only honoured when the order type is configured for manual numbering; otherwise it is assigned. Address fields are only written when at least one address field is sent, and then override the customer's default address on the order.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": 'Sage writes order-entry documents only against a named transaction definition\n(`document::{definition}`), and those definitions are created per company — there is\nno universal "sales order" type. The connector resolves one for you:\n\n- `order_type` on the request, if sent, takes precedence. It must be one of the\n  company\'s active sales order definitions, otherwise the create is rejected with an\n  error naming them.\n- Else the **Sales Order Transaction Definition** (`sales_order_document_type`)\n  setting on the connection.\n- Else the company\'s single active sales order definition (`SYS-` definitions do not\n  count). If there are several, the create is rejected with an error naming them\n  rather than guessing — the definition determines the document\'s downstream workflow.\n\n`line_items[].item` is a real order-entry item reference. Sage requires a unit on\nevery line, so send `unit_of_measure` — omitting it fails with "Missing unit Select a\nvalid Unit in line no. N". An inventory definition (for example `Sales Order-Inventory`)\nalso requires a warehouse on every line: send it as the `warehouse_id` entry of\n`line_items[].custom_fields` (the warehouse id, such as `WH1`), or the create fails\nwith "The required field warehouse is missing". `po_number` is written as the\ncustomer PO number and `reference` as the document reference number. `status`,\n`currency`, `total_tax`, `customer_memo`, `notes` and addresses are not written.\n',
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "Sage Intacct creates a sales order against a named Order transaction definition.\nSend it as `order_type` (for example `Sales Order-Inventory`). If you omit it, the\nconnection setting **Sales Order Transaction Definition** (`sales_order_document_type`)\nis used, and if that is blank the company's single active Order definition is used.\nIf the company has several active Order definitions the request fails and lists\nthem; set `order_type` or the connection setting.\n\nEvery line needs `item.id` (or `item.code`) and `unit_of_measure`, and the customer,\nitem and location must exist; on a multi-entity company each line also needs\n`location_id`. A sales order needs at least one line. `status` accepts `draft` or\n`open`; other values are ignored. `delivery_date` is written as the need-by date.\n`currency` is written with `currency_rate` when given, otherwise Intacct's daily rate\nis used. Address `contact_name` must match an existing contact; other address fields\nare not written. `po_number` is written as the customer PO number, `reference` as\nthe document reference number; `notes` is not written. `warehouse_id` and\n`discount_memo` are accepted as line `custom_fields`.\n",
+                        },
+                        {
+                            "connector": "fortnox",
+                            "description": "`customer.id` (the Fortnox customer number) is required; Fortnox assigns `number`. Lines take `item.id` (or `code`) as the article number, `quantity`, `unit_price`, `unit_of_measure`, `tax_rate.rate` (the VAT percentage) and `discount_percentage`; a line without an article needs `description` and `ledger_account.code`. Totals and tax are computed by Fortnox. `po_number` is written as the customer's order number (*Your order number*); `reference` is not written. `status` is not written on create — an order starts as a draft; cancel it with `DELETE`. Address `string` holds the street line, as on Invoices.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Fiken creates an order confirmation in two steps, a draft and then the finished order confirmation, and the `id` returned is the finished order confirmation's. `delivery_date` is only used to set the number of days until the due date (14 days when it is missing or not after `order_date`). Every line needs a `tax_rate.id` that is a Fiken VAT code such as `HIGH`.\n\n`discount_percentage` is a percentage (`10` is 10%), and `unit_price` is read back as the price before the discount. With `tax_inclusive: true`, each `unit_price` is taken to include VAT and is converted to Fiken's price excluding VAT with the rate of the line's `tax_rate` (its `rate`, or the standard rate of its Fiken VAT code), rounded to øre; a line whose VAT rate cannot be determined that way is rejected. Lines take a Fiken VAT type, so a `tax_rate` with a `rate` but no `id` is rejected. Records are always read back with prices excluding VAT.\n\nA new Fiken company has no order confirmation counter, and creating one is rejected until it exists. Create one order confirmation in Fiken, or set the starting number once through the Proxy API (`POST /orderConfirmations/counter` with an empty body starts at 10001).\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -645,10 +771,9 @@ class SalesOrders(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingSalesOrdersAddResponse(
                 create_sales_order_response=unmarshal_json_response(
-                    Optional[models.CreateSalesOrderResponse], http_res
+                    Optional[models.CreateSalesOrderResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -689,10 +814,9 @@ class SalesOrders(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSalesOrdersAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -739,8 +863,8 @@ class SalesOrders(BaseSDK):
         notes: OptionalNullable[str] = UNSET,
         line_items: Optional[
             Union[
-                List[models.InvoiceLineItemInput],
-                List[models.InvoiceLineItemInputTypedDict],
+                Iterable[models.InvoiceLineItemInput],
+                Iterable[models.InvoiceLineItemInputTypedDict],
             ]
         ] = None,
         billing_address: Optional[
@@ -751,18 +875,21 @@ class SalesOrders(BaseSDK):
         ] = None,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         template_id: OptionalNullable[str] = UNSET,
         source_document_url: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -916,6 +1043,7 @@ class SalesOrders(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.sales_order, False, False, "json", models.SalesOrderInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -940,9 +1068,51 @@ class SalesOrders(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "A `line_items[]` entry sends `unit_price`, or `total_amount` when no unit price is given. `status`, `line_items[].tax_rate` and `currency` are not written. `customer_memo` is not written either: QuickBooks holds it as a reference to its Customer Message list and refuses the document for any other text.\n\nWrites are applied on the Web Connector's next run, so a create can return a `504` timeout after 28 seconds while QuickBooks still creates the sales order. List sales orders to find it before retrying: sending the create again adds a second sales order.\n",
+                        },
+                        {
+                            "connector": "sap-business-one",
+                            "description": "`customer.id` is the business partner's CardCode, and each line needs an `item.id` (ItemCode) or a `ledger_account.id` for service lines. `order_date` and `delivery_date` map to the posting and delivery dates. `reference` cannot be written: SAP Business One sets it to the document number; `po_number` holds the customer's reference (*Customer Ref. No.*).\n",
+                        },
+                        {
+                            "connector": "e-conomic",
+                            "description": "Only `customer.id` is required: the recipient (name, address and VAT zone), payment terms, layout and currency are taken from the customer unless you send them. `line_items[].item.id` is the product number. Orders are created as drafts; an update changes only the fields you send, and `line_items`, when sent, replace all lines. An update cannot clear a field: empty values are ignored. Changing `customer.id` readdresses the order to the new customer.\nA `status` other than `draft` is rejected with a 400, because e-conomic sales orders are written as drafts only.\ne-conomic numbers a new draft one above the highest number in use by draft invoices, credit notes, quotes and orders, so deleting the most recent draft frees its number for the next draft of any of these types: a stored id can later point at a different document. Keep your own reference (for example in `reference`) rather than relying on the id alone.\nSend an `Idempotency-Key` to make retrying a create safe: Unify sends e-conomic a 32-character key derived from it as e-conomic's own `Idempotency-Key` header, and e-conomic answers a repeat with the original sales order instead of creating a second one. e-conomic keeps a key for one hour, and Unify remembers it for the same hour. Reusing a key with a different body returns 422, from Unify within its hour and from e-conomic while e-conomic still remembers the key; after both have forgotten it, the same key is treated as a new request. Use a new key for every sales order. Unify builds the e-conomic request again on a retry, from what it reads from e-conomic and from today's date in Copenhagen when you leave the date out. If either changed between the attempts, e-conomic refuses the retry as a reused key and Unify returns 422 instead of creating a second sales order. The first attempt may have created the sales order: look it up before resending with a new key. Send the date to keep a retry identical across midnight.\n",
+                        },
+                        {
+                            "connector": "acumatica",
+                            "description": "`customer.id` and at least one line are required. Every line needs an inventory item: send `line_items[].item.id` (or `code`) with the Acumatica `InventoryID`; a line without one is rejected by Acumatica. `order_type` selects the Acumatica order type and defaults to `SO`. Totals, tax and `status` are computed by Acumatica — `sub_total`, `total_tax`, `total` and `status` sent on create are ignored, except `status: on_hold`, which places the order on hold. `number` is only honoured when the order type is configured for manual numbering; otherwise Acumatica assigns it. Address fields are only written when at least one address field is sent, and then override the customer's default address on the order.\n",
+                        },
+                        {
+                            "connector": "myob-acumatica",
+                            "description": "`customer.id` and at least one line are required. Every line needs an inventory item: send `line_items[].item.id` (or `code`) with the MYOB Acumatica `InventoryID`; a line without one is rejected. `order_type` selects the order type and defaults to `SO`. Totals, tax and `status` are computed by MYOB Acumatica — `sub_total`, `total_tax`, `total` and `status` sent on create are ignored, except `status: on_hold`, which places the order on hold. `number` is only honoured when the order type is configured for manual numbering; otherwise it is assigned. Address fields are only written when at least one address field is sent, and then override the customer's default address on the order.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": 'Sage writes order-entry documents only against a named transaction definition\n(`document::{definition}`), and those definitions are created per company — there is\nno universal "sales order" type. The connector resolves one for you:\n\n- `order_type` on the request, if sent, takes precedence. It must be one of the\n  company\'s active sales order definitions, otherwise the create is rejected with an\n  error naming them.\n- Else the **Sales Order Transaction Definition** (`sales_order_document_type`)\n  setting on the connection.\n- Else the company\'s single active sales order definition (`SYS-` definitions do not\n  count). If there are several, the create is rejected with an error naming them\n  rather than guessing — the definition determines the document\'s downstream workflow.\n\n`line_items[].item` is a real order-entry item reference. Sage requires a unit on\nevery line, so send `unit_of_measure` — omitting it fails with "Missing unit Select a\nvalid Unit in line no. N". An inventory definition (for example `Sales Order-Inventory`)\nalso requires a warehouse on every line: send it as the `warehouse_id` entry of\n`line_items[].custom_fields` (the warehouse id, such as `WH1`), or the create fails\nwith "The required field warehouse is missing". `po_number` is written as the\ncustomer PO number and `reference` as the document reference number. `status`,\n`currency`, `total_tax`, `customer_memo`, `notes` and addresses are not written.\n',
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "Sage Intacct creates a sales order against a named Order transaction definition.\nSend it as `order_type` (for example `Sales Order-Inventory`). If you omit it, the\nconnection setting **Sales Order Transaction Definition** (`sales_order_document_type`)\nis used, and if that is blank the company's single active Order definition is used.\nIf the company has several active Order definitions the request fails and lists\nthem; set `order_type` or the connection setting.\n\nEvery line needs `item.id` (or `item.code`) and `unit_of_measure`, and the customer,\nitem and location must exist; on a multi-entity company each line also needs\n`location_id`. A sales order needs at least one line. `status` accepts `draft` or\n`open`; other values are ignored. `delivery_date` is written as the need-by date.\n`currency` is written with `currency_rate` when given, otherwise Intacct's daily rate\nis used. Address `contact_name` must match an existing contact; other address fields\nare not written. `po_number` is written as the customer PO number, `reference` as\nthe document reference number; `notes` is not written. `warehouse_id` and\n`discount_memo` are accepted as line `custom_fields`.\n",
+                        },
+                        {
+                            "connector": "fortnox",
+                            "description": "`customer.id` (the Fortnox customer number) is required; Fortnox assigns `number`. Lines take `item.id` (or `code`) as the article number, `quantity`, `unit_price`, `unit_of_measure`, `tax_rate.rate` (the VAT percentage) and `discount_percentage`; a line without an article needs `description` and `ledger_account.code`. Totals and tax are computed by Fortnox. `po_number` is written as the customer's order number (*Your order number*); `reference` is not written. `status` is not written on create — an order starts as a draft; cancel it with `DELETE`. Address `string` holds the street line, as on Invoices.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Fiken creates an order confirmation in two steps, a draft and then the finished order confirmation, and the `id` returned is the finished order confirmation's. `delivery_date` is only used to set the number of days until the due date (14 days when it is missing or not after `order_date`). Every line needs a `tax_rate.id` that is a Fiken VAT code such as `HIGH`.\n\n`discount_percentage` is a percentage (`10` is 10%), and `unit_price` is read back as the price before the discount. With `tax_inclusive: true`, each `unit_price` is taken to include VAT and is converted to Fiken's price excluding VAT with the rate of the line's `tax_rate` (its `rate`, or the standard rate of its Fiken VAT code), rounded to øre; a line whose VAT rate cannot be determined that way is rejected. Lines take a Fiken VAT type, so a `tax_rate` with a `rate` but no `id` is rejected. Records are always read back with prices excluding VAT.\n\nA new Fiken company has no order confirmation counter, and creating one is rejected until it exists. Create one order confirmation in Fiken, or set the starting number once through the Proxy API (`POST /orderConfirmations/counter` with an empty body starts at 10001).\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -950,10 +1120,9 @@ class SalesOrders(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingSalesOrdersAddResponse(
                 create_sales_order_response=unmarshal_json_response(
-                    Optional[models.CreateSalesOrderResponse], http_res
+                    Optional[models.CreateSalesOrderResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -994,10 +1163,9 @@ class SalesOrders(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSalesOrdersAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1067,6 +1235,7 @@ class SalesOrders(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1091,9 +1260,23 @@ class SalesOrders(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "Sage keeps sales orders, quotes, shippers, invoices and credit memos in one order-entry object. An id that is not an order-class document (or is a system `SYS-` fulfilment order) returns 404 rather than being rendered as a sales order.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "Returns the full sales order including `line_items`. Line `line_number` is 0-based, as Sage Intacct numbers Order Entry lines; use it to address lines on update.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1101,10 +1284,9 @@ class SalesOrders(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingSalesOrdersOneResponse(
                 get_sales_order_response=unmarshal_json_response(
-                    Optional[models.GetSalesOrderResponse], http_res
+                    Optional[models.GetSalesOrderResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1145,10 +1327,9 @@ class SalesOrders(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSalesOrdersOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1218,6 +1399,7 @@ class SalesOrders(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1242,9 +1424,23 @@ class SalesOrders(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "Sage keeps sales orders, quotes, shippers, invoices and credit memos in one order-entry object. An id that is not an order-class document (or is a system `SYS-` fulfilment order) returns 404 rather than being rendered as a sales order.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "Returns the full sales order including `line_items`. Line `line_number` is 0-based, as Sage Intacct numbers Order Entry lines; use it to address lines on update.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1252,10 +1448,9 @@ class SalesOrders(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingSalesOrdersOneResponse(
                 get_sales_order_response=unmarshal_json_response(
-                    Optional[models.GetSalesOrderResponse], http_res
+                    Optional[models.GetSalesOrderResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1296,10 +1491,9 @@ class SalesOrders(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSalesOrdersOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1346,8 +1540,8 @@ class SalesOrders(BaseSDK):
         notes: OptionalNullable[str] = UNSET,
         line_items: Optional[
             Union[
-                List[models.InvoiceLineItemInput],
-                List[models.InvoiceLineItemInputTypedDict],
+                Iterable[models.InvoiceLineItemInput],
+                Iterable[models.InvoiceLineItemInputTypedDict],
             ]
         ] = None,
         billing_address: Optional[
@@ -1358,18 +1552,21 @@ class SalesOrders(BaseSDK):
         ] = None,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         template_id: OptionalNullable[str] = UNSET,
         source_document_url: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1523,6 +1720,7 @@ class SalesOrders(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.sales_order, False, False, "json", models.SalesOrderInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1547,9 +1745,47 @@ class SalesOrders(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Only `customer`, `number`, `order_date` and `notes` change. `line_items` sent on update are ignored; delete and recreate the sales order to change its lines.\n\nUpdates need `row_version` from a prior read of the record. Writes are applied on the Web Connector's next run, so an update can return a `504` timeout after 28 seconds while QuickBooks still applies it, and the change can take a few minutes to show when the record is read back.\n",
+                        },
+                        {
+                            "connector": "sap-business-one",
+                            "description": "To change a line, send it with the `id` from a read: SAP Business One updates the line with that number. A line without an `id` is matched by its position in `line_items`, so it is added only when it comes after all of the document's existing lines; otherwise it replaces the line at that position. To add lines safely, send every existing line with its `id` followed by the new ones. Lines left out of the request are kept.\n",
+                        },
+                        {
+                            "connector": "sap-business-one",
+                            "description": "Updates are a PATCH of the fields you send. An order that is closed or cancelled cannot be updated.\n",
+                        },
+                        {
+                            "connector": "acumatica",
+                            "description": "Updates are a PUT of the fields you send. To change an existing line include its `line_items[].id` (the Acumatica line id returned on read); a line without an `id` is added as a new line, and lines you omit are left untouched. `order_type` cannot be changed after creation.\n",
+                        },
+                        {
+                            "connector": "myob-acumatica",
+                            "description": "Updates are a PUT of the fields you send. To change an existing line include its `line_items[].id` (the line id returned on read); a line without an `id` is added as a new line, and lines you omit are left untouched. `order_type` cannot be changed after creation.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "Sage writes order-entry documents only against a named transaction definition and enforces it. The connector reads the definition off the sales order being written, so this needs no configuration, and `order_type` is ignored on update. An id that is not a sales order (a quote, shipper or invoice, or a system `SYS-` fulfilment order) is refused instead of being modified.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "The customer, `order_type`, `status` and totals cannot be changed on update. Lines are matched by `line_number`; lines without a `line_number` are appended. Orders that have been converted to an invoice (status `invoiced`, or partially converted) are rejected by Sage Intacct and cannot be updated or deleted.\n",
+                        },
+                        {
+                            "connector": "fortnox",
+                            "description": "Updates are a PUT of the fields you send, and Fortnox replaces the whole row list with the `line_items` you send: include every line you want to keep (with its `line_items[].id`, the Fortnox row id), because lines you omit are removed. An order that has been invoiced or cancelled cannot be updated.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1557,10 +1793,9 @@ class SalesOrders(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingSalesOrdersUpdateResponse(
                 update_sales_order_response=unmarshal_json_response(
-                    Optional[models.UpdateSalesOrderResponse], http_res
+                    Optional[models.UpdateSalesOrderResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1601,10 +1836,9 @@ class SalesOrders(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSalesOrdersUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1651,8 +1885,8 @@ class SalesOrders(BaseSDK):
         notes: OptionalNullable[str] = UNSET,
         line_items: Optional[
             Union[
-                List[models.InvoiceLineItemInput],
-                List[models.InvoiceLineItemInputTypedDict],
+                Iterable[models.InvoiceLineItemInput],
+                Iterable[models.InvoiceLineItemInputTypedDict],
             ]
         ] = None,
         billing_address: Optional[
@@ -1663,18 +1897,21 @@ class SalesOrders(BaseSDK):
         ] = None,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         template_id: OptionalNullable[str] = UNSET,
         source_document_url: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1828,6 +2065,7 @@ class SalesOrders(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.sales_order, False, False, "json", models.SalesOrderInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1852,9 +2090,47 @@ class SalesOrders(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Only `customer`, `number`, `order_date` and `notes` change. `line_items` sent on update are ignored; delete and recreate the sales order to change its lines.\n\nUpdates need `row_version` from a prior read of the record. Writes are applied on the Web Connector's next run, so an update can return a `504` timeout after 28 seconds while QuickBooks still applies it, and the change can take a few minutes to show when the record is read back.\n",
+                        },
+                        {
+                            "connector": "sap-business-one",
+                            "description": "To change a line, send it with the `id` from a read: SAP Business One updates the line with that number. A line without an `id` is matched by its position in `line_items`, so it is added only when it comes after all of the document's existing lines; otherwise it replaces the line at that position. To add lines safely, send every existing line with its `id` followed by the new ones. Lines left out of the request are kept.\n",
+                        },
+                        {
+                            "connector": "sap-business-one",
+                            "description": "Updates are a PATCH of the fields you send. An order that is closed or cancelled cannot be updated.\n",
+                        },
+                        {
+                            "connector": "acumatica",
+                            "description": "Updates are a PUT of the fields you send. To change an existing line include its `line_items[].id` (the Acumatica line id returned on read); a line without an `id` is added as a new line, and lines you omit are left untouched. `order_type` cannot be changed after creation.\n",
+                        },
+                        {
+                            "connector": "myob-acumatica",
+                            "description": "Updates are a PUT of the fields you send. To change an existing line include its `line_items[].id` (the line id returned on read); a line without an `id` is added as a new line, and lines you omit are left untouched. `order_type` cannot be changed after creation.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "Sage writes order-entry documents only against a named transaction definition and enforces it. The connector reads the definition off the sales order being written, so this needs no configuration, and `order_type` is ignored on update. An id that is not a sales order (a quote, shipper or invoice, or a system `SYS-` fulfilment order) is refused instead of being modified.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "The customer, `order_type`, `status` and totals cannot be changed on update. Lines are matched by `line_number`; lines without a `line_number` are appended. Orders that have been converted to an invoice (status `invoiced`, or partially converted) are rejected by Sage Intacct and cannot be updated or deleted.\n",
+                        },
+                        {
+                            "connector": "fortnox",
+                            "description": "Updates are a PUT of the fields you send, and Fortnox replaces the whole row list with the `line_items` you send: include every line you want to keep (with its `line_items[].id`, the Fortnox row id), because lines you omit are removed. An order that has been invoiced or cancelled cannot be updated.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1862,10 +2138,9 @@ class SalesOrders(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingSalesOrdersUpdateResponse(
                 update_sales_order_response=unmarshal_json_response(
-                    Optional[models.UpdateSalesOrderResponse], http_res
+                    Optional[models.UpdateSalesOrderResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1906,10 +2181,9 @@ class SalesOrders(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSalesOrdersUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1979,6 +2253,7 @@ class SalesOrders(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2003,9 +2278,27 @@ class SalesOrders(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "A delete can return a `504` timeout after 28 seconds while QuickBooks still deletes the sales order. Read it back before retrying: a `404` means it is gone.\n",
+                        },
+                        {
+                            "connector": "sap-business-one",
+                            "description": "SAP Business One cannot delete sales orders. `DELETE` cancels the order (it stays readable with `status: cancelled`). Only an order nothing has been delivered or invoiced from can be cancelled; SAP Business One rejects the others.\n",
+                        },
+                        {
+                            "connector": "fortnox",
+                            "description": "Fortnox does not delete orders. `DELETE` cancels the order (it stays readable with `status: cancelled`), as with Invoices on this connector.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2013,10 +2306,9 @@ class SalesOrders(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingSalesOrdersDeleteResponse(
                 delete_sales_order_response=unmarshal_json_response(
-                    Optional[models.DeleteSalesOrderResponse], http_res
+                    Optional[models.DeleteSalesOrderResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2057,10 +2349,9 @@ class SalesOrders(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSalesOrdersDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2130,6 +2421,7 @@ class SalesOrders(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2154,9 +2446,27 @@ class SalesOrders(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "A delete can return a `504` timeout after 28 seconds while QuickBooks still deletes the sales order. Read it back before retrying: a `404` means it is gone.\n",
+                        },
+                        {
+                            "connector": "sap-business-one",
+                            "description": "SAP Business One cannot delete sales orders. `DELETE` cancels the order (it stays readable with `status: cancelled`). Only an order nothing has been delivered or invoiced from can be cancelled; SAP Business One rejects the others.\n",
+                        },
+                        {
+                            "connector": "fortnox",
+                            "description": "Fortnox does not delete orders. `DELETE` cancels the order (it stays readable with `status: cancelled`), as with Invoices on this connector.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2164,10 +2474,9 @@ class SalesOrders(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingSalesOrdersDeleteResponse(
                 delete_sales_order_response=unmarshal_json_response(
-                    Optional[models.DeleteSalesOrderResponse], http_res
+                    Optional[models.DeleteSalesOrderResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2208,10 +2517,9 @@ class SalesOrders(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSalesOrdersDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

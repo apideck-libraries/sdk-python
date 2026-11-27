@@ -6,7 +6,7 @@ from apideck_unify._hooks import HookContext
 from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
 
 
 class Connections(BaseSDK):
@@ -72,6 +72,7 @@ class Connections(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -96,9 +97,11 @@ class Connections(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["vault"],
+                extensions={"x-apideck-api": "vault"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -106,10 +109,9 @@ class Connections(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.VaultConnectionsAllResponse(
                 get_connections_response=unmarshal_json_response(
-                    Optional[models.GetConnectionsResponse], http_res
+                    Optional[models.GetConnectionsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -145,10 +147,9 @@ class Connections(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.VaultConnectionsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -215,6 +216,7 @@ class Connections(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -239,9 +241,11 @@ class Connections(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["vault"],
+                extensions={"x-apideck-api": "vault"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -249,10 +253,9 @@ class Connections(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.VaultConnectionsAllResponse(
                 get_connections_response=unmarshal_json_response(
-                    Optional[models.GetConnectionsResponse], http_res
+                    Optional[models.GetConnectionsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -288,10 +291,9 @@ class Connections(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.VaultConnectionsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -355,6 +357,7 @@ class Connections(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -379,9 +382,11 @@ class Connections(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["vault"],
+                extensions={"x-apideck-api": "vault"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -389,10 +394,9 @@ class Connections(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.VaultConnectionsOneResponse(
                 get_connection_response=unmarshal_json_response(
-                    Optional[models.GetConnectionResponse], http_res
+                    Optional[models.GetConnectionResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -428,10 +432,9 @@ class Connections(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.VaultConnectionsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -495,6 +498,7 @@ class Connections(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -519,9 +523,11 @@ class Connections(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["vault"],
+                extensions={"x-apideck-api": "vault"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -529,10 +535,9 @@ class Connections(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.VaultConnectionsOneResponse(
                 get_connection_response=unmarshal_json_response(
-                    Optional[models.GetConnectionResponse], http_res
+                    Optional[models.GetConnectionResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -568,10 +573,9 @@ class Connections(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.VaultConnectionsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -584,7 +588,7 @@ class Connections(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         enabled: Optional[bool] = None,
-        settings: OptionalNullable[Dict[str, Any]] = UNSET,
+        settings: OptionalNullable[Mapping[str, Any]] = UNSET,
         metadata: OptionalNullable[
             Union[
                 models.ConnectionMetadataInput, models.ConnectionMetadataInputTypedDict
@@ -592,14 +596,14 @@ class Connections(BaseSDK):
         ] = UNSET,
         configuration: Optional[
             Union[
-                List[models.ConnectionConfiguration],
-                List[models.ConnectionConfigurationTypedDict],
+                Iterable[models.ConnectionConfiguration],
+                Iterable[models.ConnectionConfigurationTypedDict],
             ]
         ] = None,
         custom_mappings: Optional[
             Union[
-                List[models.CustomMappingInput],
-                List[models.CustomMappingInputTypedDict],
+                Iterable[models.CustomMappingInput],
+                Iterable[models.CustomMappingInputTypedDict],
             ]
         ] = None,
         consent_state: Optional[models.ConsentState] = None,
@@ -652,7 +656,7 @@ class Connections(BaseSDK):
             unified_api=unified_api,
             connection=models.ConnectionInput(
                 enabled=enabled,
-                settings=settings,
+                settings=utils.unmarshal(settings, OptionalNullable[Dict[str, Any]]),
                 metadata=utils.get_pydantic_model(
                     metadata, OptionalNullable[models.ConnectionMetadataInput]
                 ),
@@ -692,6 +696,7 @@ class Connections(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.connection, False, False, "json", models.ConnectionInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -716,9 +721,11 @@ class Connections(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["vault"],
+                extensions={"x-apideck-api": "vault"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -726,10 +733,9 @@ class Connections(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.VaultConnectionsUpdateResponse(
                 update_connection_response=unmarshal_json_response(
-                    Optional[models.UpdateConnectionResponse], http_res
+                    Optional[models.UpdateConnectionResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -765,10 +771,9 @@ class Connections(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.VaultConnectionsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -781,7 +786,7 @@ class Connections(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         enabled: Optional[bool] = None,
-        settings: OptionalNullable[Dict[str, Any]] = UNSET,
+        settings: OptionalNullable[Mapping[str, Any]] = UNSET,
         metadata: OptionalNullable[
             Union[
                 models.ConnectionMetadataInput, models.ConnectionMetadataInputTypedDict
@@ -789,14 +794,14 @@ class Connections(BaseSDK):
         ] = UNSET,
         configuration: Optional[
             Union[
-                List[models.ConnectionConfiguration],
-                List[models.ConnectionConfigurationTypedDict],
+                Iterable[models.ConnectionConfiguration],
+                Iterable[models.ConnectionConfigurationTypedDict],
             ]
         ] = None,
         custom_mappings: Optional[
             Union[
-                List[models.CustomMappingInput],
-                List[models.CustomMappingInputTypedDict],
+                Iterable[models.CustomMappingInput],
+                Iterable[models.CustomMappingInputTypedDict],
             ]
         ] = None,
         consent_state: Optional[models.ConsentState] = None,
@@ -849,7 +854,7 @@ class Connections(BaseSDK):
             unified_api=unified_api,
             connection=models.ConnectionInput(
                 enabled=enabled,
-                settings=settings,
+                settings=utils.unmarshal(settings, OptionalNullable[Dict[str, Any]]),
                 metadata=utils.get_pydantic_model(
                     metadata, OptionalNullable[models.ConnectionMetadataInput]
                 ),
@@ -889,6 +894,7 @@ class Connections(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.connection, False, False, "json", models.ConnectionInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -913,9 +919,11 @@ class Connections(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["vault"],
+                extensions={"x-apideck-api": "vault"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -923,10 +931,9 @@ class Connections(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.VaultConnectionsUpdateResponse(
                 update_connection_response=unmarshal_json_response(
-                    Optional[models.UpdateConnectionResponse], http_res
+                    Optional[models.UpdateConnectionResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -962,10 +969,9 @@ class Connections(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.VaultConnectionsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1029,6 +1035,7 @@ class Connections(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1053,17 +1060,18 @@ class Connections(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["vault"],
+                extensions={"x-apideck-api": "vault"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
         response_data: Any = None
         if utils.match_response(http_res, "204", "*"):
             return models.VaultConnectionsDeleteResponse(
-                http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
+                http_meta=models.HTTPMetadata(request=req, response=http_res)
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1099,10 +1107,9 @@ class Connections(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.VaultConnectionsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1166,6 +1173,7 @@ class Connections(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1190,17 +1198,18 @@ class Connections(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["vault"],
+                extensions={"x-apideck-api": "vault"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
         response_data: Any = None
         if utils.match_response(http_res, "204", "*"):
             return models.VaultConnectionsDeleteResponse(
-                http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
+                http_meta=models.HTTPMetadata(request=req, response=http_res)
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1236,10 +1245,9 @@ class Connections(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.VaultConnectionsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1254,8 +1262,8 @@ class Connections(BaseSDK):
         credentials: Optional[
             Union[models.Credentials, models.CredentialsTypedDict]
         ] = None,
-        settings: OptionalNullable[Dict[str, Any]] = UNSET,
-        metadata: OptionalNullable[Dict[str, Any]] = UNSET,
+        settings: OptionalNullable[Mapping[str, Any]] = UNSET,
+        metadata: OptionalNullable[Mapping[str, Any]] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -1297,8 +1305,8 @@ class Connections(BaseSDK):
                 credentials=utils.get_pydantic_model(
                     credentials, Optional[models.Credentials]
                 ),
-                settings=settings,
-                metadata=metadata,
+                settings=utils.unmarshal(settings, OptionalNullable[Dict[str, Any]]),
+                metadata=utils.unmarshal(metadata, OptionalNullable[Dict[str, Any]]),
             ),
         )
 
@@ -1326,6 +1334,7 @@ class Connections(BaseSDK):
                 "json",
                 models.ConnectionImportData,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1350,9 +1359,11 @@ class Connections(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["vault"],
+                extensions={"x-apideck-api": "vault"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1360,10 +1371,9 @@ class Connections(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.VaultConnectionsImportResponse(
                 create_connection_response=unmarshal_json_response(
-                    Optional[models.CreateConnectionResponse], http_res
+                    Optional[models.CreateConnectionResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1399,10 +1409,9 @@ class Connections(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.VaultConnectionsImportResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1417,8 +1426,8 @@ class Connections(BaseSDK):
         credentials: Optional[
             Union[models.Credentials, models.CredentialsTypedDict]
         ] = None,
-        settings: OptionalNullable[Dict[str, Any]] = UNSET,
-        metadata: OptionalNullable[Dict[str, Any]] = UNSET,
+        settings: OptionalNullable[Mapping[str, Any]] = UNSET,
+        metadata: OptionalNullable[Mapping[str, Any]] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -1460,8 +1469,8 @@ class Connections(BaseSDK):
                 credentials=utils.get_pydantic_model(
                     credentials, Optional[models.Credentials]
                 ),
-                settings=settings,
-                metadata=metadata,
+                settings=utils.unmarshal(settings, OptionalNullable[Dict[str, Any]]),
+                metadata=utils.unmarshal(metadata, OptionalNullable[Dict[str, Any]]),
             ),
         )
 
@@ -1489,6 +1498,7 @@ class Connections(BaseSDK):
                 "json",
                 models.ConnectionImportData,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1513,9 +1523,11 @@ class Connections(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["vault"],
+                extensions={"x-apideck-api": "vault"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1523,10 +1535,9 @@ class Connections(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.VaultConnectionsImportResponse(
                 create_connection_response=unmarshal_json_response(
-                    Optional[models.CreateConnectionResponse], http_res
+                    Optional[models.CreateConnectionResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1562,10 +1573,9 @@ class Connections(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.VaultConnectionsImportResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1652,6 +1662,7 @@ class Connections(BaseSDK):
                 "json",
                 models.ConnectionMigrateData,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1676,9 +1687,11 @@ class Connections(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["vault"],
+                extensions={"x-apideck-api": "vault"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "409", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1686,10 +1699,9 @@ class Connections(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.VaultConnectionsMigrateResponse(
                 create_connection_response=unmarshal_json_response(
-                    Optional[models.CreateConnectionResponse], http_res
+                    Optional[models.CreateConnectionResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1730,10 +1742,9 @@ class Connections(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.VaultConnectionsMigrateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1820,6 +1831,7 @@ class Connections(BaseSDK):
                 "json",
                 models.ConnectionMigrateData,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1844,9 +1856,11 @@ class Connections(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["vault"],
+                extensions={"x-apideck-api": "vault"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "409", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1854,10 +1868,9 @@ class Connections(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.VaultConnectionsMigrateResponse(
                 create_connection_response=unmarshal_json_response(
-                    Optional[models.CreateConnectionResponse], http_res
+                    Optional[models.CreateConnectionResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1898,10 +1911,9 @@ class Connections(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.VaultConnectionsMigrateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1982,12 +1994,13 @@ class Connections(BaseSDK):
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request.request_body,
+                request.request_body if request is not None else None,
                 False,
                 True,
                 "json",
                 Optional[models.VaultConnectionsTokenRequestBody],
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2012,9 +2025,11 @@ class Connections(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["vault"],
+                extensions={"x-apideck-api": "vault"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2022,10 +2037,9 @@ class Connections(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.VaultConnectionsTokenResponse(
                 get_connection_response=unmarshal_json_response(
-                    Optional[models.GetConnectionResponse], http_res
+                    Optional[models.GetConnectionResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2061,10 +2075,9 @@ class Connections(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.VaultConnectionsTokenResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2145,12 +2158,13 @@ class Connections(BaseSDK):
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request.request_body,
+                request.request_body if request is not None else None,
                 False,
                 True,
                 "json",
                 Optional[models.VaultConnectionsTokenRequestBody],
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2175,9 +2189,11 @@ class Connections(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["vault"],
+                extensions={"x-apideck-api": "vault"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2185,10 +2201,9 @@ class Connections(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.VaultConnectionsTokenResponse(
                 get_connection_response=unmarshal_json_response(
-                    Optional[models.GetConnectionResponse], http_res
+                    Optional[models.GetConnectionResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2224,10 +2239,9 @@ class Connections(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.VaultConnectionsTokenResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2325,6 +2339,7 @@ class Connections(BaseSDK):
                 "json",
                 models.ConfirmConnection,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2349,9 +2364,11 @@ class Connections(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["vault"],
+                extensions={"x-apideck-api": "vault"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2359,10 +2376,9 @@ class Connections(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.VaultConnectionsConfirmResponse(
                 confirm_connection_response=unmarshal_json_response(
-                    Optional[models.ConfirmConnectionResponse], http_res
+                    Optional[models.ConfirmConnectionResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2398,10 +2414,9 @@ class Connections(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.VaultConnectionsConfirmResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2499,6 +2514,7 @@ class Connections(BaseSDK):
                 "json",
                 models.ConfirmConnection,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2523,9 +2539,11 @@ class Connections(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["vault"],
+                extensions={"x-apideck-api": "vault"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2533,10 +2551,9 @@ class Connections(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.VaultConnectionsConfirmResponse(
                 confirm_connection_response=unmarshal_json_response(
-                    Optional[models.ConfirmConnectionResponse], http_res
+                    Optional[models.ConfirmConnectionResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2572,10 +2589,9 @@ class Connections(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.VaultConnectionsConfirmResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

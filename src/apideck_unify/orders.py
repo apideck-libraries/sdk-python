@@ -24,7 +24,7 @@ class Orders(BaseSDK):
             Union[models.EcommerceOrdersFilter, models.EcommerceOrdersFilterTypedDict]
         ] = None,
         sort: Optional[Union[models.OrdersSort, models.OrdersSortTypedDict]] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -71,7 +71,7 @@ class Orders(BaseSDK):
                 filter_, Optional[models.EcommerceOrdersFilter]
             ),
             sort=utils.get_pydantic_model(sort, Optional[models.OrdersSort]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -92,6 +92,7 @@ class Orders(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -116,9 +117,75 @@ class Orders(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["ecommerce"],
+                extensions={
+                    "x-apideck-api": "ecommerce",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "tiktok",
+                            "description": "To retrieve customer details, if they are hidden in the order response, use `seller shipping` instead of the default `TikTok shipping` in Tiktok. Please refer to our [integration guide](https://developers.apideck.com/connectors/tiktok/docs/application_owner+oauth_credentials) for more details.",
+                        },
+                        {
+                            "connector": "amazon-seller-central",
+                            "description": "**Filter parameters:** Either the `created_since` parameter or the `updated_since` parameter is required. Both cannot be empty. `updated_since` cannot be set when `created_since` is set.\n\n**Order history limits:** For the JP, AU, and SG marketplaces, the Orders API supports orders from 2016 onward. For all other marketplaces, the Orders API supports orders for the last two years (orders older than this don't show up in the response).\n",
+                        },
+                        {
+                            "connector": "walmart",
+                            "description": "When the `created_since` filter is not provided, Walmart only returns orders from the last 7 days. To retrieve older orders, supply `filter[created_since]` with the desired start date (e.g. `?filter[created_since]=2024-01-01T00:00:00Z`).\n\nWalmart applies markdowns before serializing orders. `line_items[].total_amount` is the PRODUCT charge amount plus applicable tax (`chargeAmount.amount + tax.taxAmount.amount` on the charge where `chargeType === 'PRODUCT'`). Walmart only exposes two charge types (`PRODUCT` and `SHIPPING`); discounts are pre-applied and not broken out separately in the order response.\n\nWalmart's order API does not expose a payment status. `payment_status` is inferred from the order line status: active orders (Created/Acknowledged/Shipped/Delivered) report `paid` because Walmart Marketplace collects customer payment upfront; `Cancelled` reports `voided` and `Refund` reports `refunded`. `total_amount` is derived by summing line-item charges (incl. tax) when Walmart omits the order-level `orderSummary`.\n",
+                        },
+                        {
+                            "connector": "shopify",
+                            "description": "The `line_items[].discounts[]` array reflects each line item's allocated share from every\ndiscount application on the order, including order-wide discounts. Shopify's\n`discountAllocations` field does not distinguish between product-specific and order-wide\ndiscount sources — all allocations for a given line item are returned together.\n\nShopify list responses do not include a total record count.\n",
+                        },
+                        {
+                            "connector": "shopify-public-app",
+                            "description": "The `line_items[].discounts[]` array reflects each line item's allocated share from every\ndiscount application on the order, including order-wide discounts. Shopify's\n`discountAllocations` field does not distinguish between product-specific and order-wide\ndiscount sources — all allocations for a given line item are returned together.\n\n`meta.total_count` will not appear. Surfacing the total requires a separate GET request to the `/admin/api/{version}/{resource}/count.json` endpoint — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "wix",
+                            "description": "Wix does not expose a native cross-page total record count in list responses. `meta.total_count` will not appear. Surfacing the total requires a POST to the Wix Stores query endpoint (`/wix-stores/v1/{resource}/query`) which returns a `totalResults` field — an extra API call not currently implemented.\n",
+                        },
+                        {
+                            "connector": "shopware",
+                            "description": "Shopware does not expose a native cross-page total record count in default list responses. `meta.total_count` will not appear. Surfacing the total requires setting `total-count-mode: 1` in the request criteria when calling the Shopware Admin search API — an extra requirement not currently implemented.\n\nShopware applies order-level promotions as separate `type: promotion` line items with negative `totalPrice`, rather than reducing the price on individual product lines. As a result, `line_items[].total_amount` reflects each product line's price before order-level promotion allocation. Use the top-level `discounts[]` array to access promotion codes and applied amounts.\n\nLine items with `type` of `promotion`, `credit`, or `discount` are excluded from `line_items[]`. Items with a `null` or unknown `type` are retained.\n",
+                        },
+                        {
+                            "connector": "bol-com",
+                            "description": "Bol.com does not expose a total record count in list responses. `meta.total_count` will not appear.\n\nThe list endpoint (`GET /retailer/orders`) returns a reduced order schema with no pricing data. `line_items[].unit_price`, `line_items[].total_amount`, `line_items[].discounts[]`, and the order-level `total_amount` are populated only on single-order retrieval (`GET /orders/{id}`). `line_items[].discounts[]` reflects per-item promotions; Bol.com does not expose order-level discount codes separately.\n\nCustomer and address fields (`customer`, `shipping_address`, `billing_address`) are likewise absent from list responses. Fetch the single-order endpoint to retrieve these fields.\n",
+                        },
+                        {
+                            "connector": "amazon-seller-central",
+                            "description": "Amazon Seller Central does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "prestashop",
+                            "description": "PrestaShop does not expose a total record count in list responses. `meta.total_count` will not appear.\n\n`line_items[].total_amount` is the tax-inclusive per-item total after proportional allocation of order-level cart rule coupon discounts. PrestaShop does not attribute coupon amounts to individual line items in its API; coupons are distributed proportionally across lines by each line's share of the pre-coupon subtotal. This is an approximation — the exact order-level coupon total is available in the `total_discount` field.\n",
+                        },
+                        {
+                            "connector": "picqer",
+                            "description": "Picqer does not expose a total record count in list responses. `meta.total_count` will not appear.\n\n`line_items[].total_amount` is computed as `products[].price × products[].amount`. Picqer's API exposes per-unit price and quantity separately but does not return a precomputed line total.\n\n`line_items[].unit_price` and `line_items[].total_amount` are based on `products[].price`, which is the per-unit price **excluding VAT**. Picqer does not return tax amounts on order line items; the VAT rate is only available as a VAT group reference (`idvatgroup`). If your integration requires tax-inclusive totals, apply the applicable VAT rate from the Picqer VAT Groups API.\n",
+                        },
+                        {
+                            "connector": "lightspeed-ecommerce",
+                            "description": "Lightspeed Ecommerce does not expose a total record count in list responses. `meta.total_count` will not appear.\n\n`line_items[].total_amount` is computed as `(price × quantity) − sum(discounts[].total) + tax`. When the store uses gross pricing (`pricesIncludeTax: true`), `items[].price` already includes tax and `items[].tax` is not added to avoid double-counting. `line_items[].unit_price` uses `items[].price`, which includes option-modifier surcharges over the base SKU price (`productPrice` is not used because it omits modifiers).\n\nThe list endpoint (`GET /orders`) does not embed order products, so `line_items[]` is not populated on list responses. Fetch the single-order endpoint (`GET /orders/{id}`) to retrieve `line_items[]` with per-item pricing, tax, and discounts.\n",
+                        },
+                        {
+                            "connector": "bigcommerce",
+                            "description": 'The `line_items[].discounts[]` array includes every `applied_discounts[]` entry BigCommerce\nreturns for the line — both `target: "order"` (cart-level) and `target: "product"`\n(product-specific) allocations are returned together, with no field that reliably\ndistinguishes the original discount source. This is the same class of behavior as the\ndocumented Shopify `discountAllocations` limitation.\n\nBigCommerce has no order-deletion webhook event. The unified `ecommerce.order.deleted`\nwebhook is emitted when an order is archived in BigCommerce (`store/order/archived`),\nwhich is BigCommerce\'s soft-delete — the order may still exist downstream and a\nsubsequent get-one may still return it.\n',
+                        },
+                        {
+                            "connector": "magento",
+                            "description": "`line_items[].total_amount` is computed as `items[].row_total_incl_tax − items[].discount_amount`. Magento does not expose a single post-discount, tax-inclusive line total in its REST API; the unified field is derived from these two fields (both are positive values at the item level per Adobe Commerce REST API).\n",
+                        },
+                        {
+                            "connector": "clover",
+                            "description": "All Clover monetary values are integers in cents (`1099` = $10.99). `line_items[].total_amount` and `line_items[].unit_price` are divided by 100 to produce decimal currency values. `total_amount` uses `priceWithModifiersAndItemAndOrderDiscounts`, which includes both item-level and order-level discounts and requires the `lineItems.discounts,lineItems.orderLevelDiscounts` expand parameters — handled automatically by the connector. Order-level discount codes and amounts appear in the top-level `discounts[]` array; per-line allocation is not broken out individually.\n\nNote: the order-level `total_amount` and other Clover monetary fields (payment amounts, order-level discount amounts) also return integers in cents. This is a known limitation of the Clover connector.\n\n`customer.name`, `customer.emails`, `customer.phone_numbers`, `billing_address`, and `shipping_address` are not available in list responses. Clover's list orders endpoint returns only the customer ID reference — full customer details are only returned by the single order endpoint (`GET /pos/orders/{id}`).\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -145,17 +212,21 @@ class Orders(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.EcommerceOrdersAllResponse(
                 get_ecommerce_orders_response=unmarshal_json_response(
-                    Optional[models.GetEcommerceOrdersResponse], http_res
+                    Optional[models.GetEcommerceOrdersResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -196,11 +267,10 @@ class Orders(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.EcommerceOrdersAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -218,7 +288,7 @@ class Orders(BaseSDK):
             Union[models.EcommerceOrdersFilter, models.EcommerceOrdersFilterTypedDict]
         ] = None,
         sort: Optional[Union[models.OrdersSort, models.OrdersSortTypedDict]] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -265,7 +335,7 @@ class Orders(BaseSDK):
                 filter_, Optional[models.EcommerceOrdersFilter]
             ),
             sort=utils.get_pydantic_model(sort, Optional[models.OrdersSort]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -286,6 +356,7 @@ class Orders(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -310,9 +381,75 @@ class Orders(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["ecommerce"],
+                extensions={
+                    "x-apideck-api": "ecommerce",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "tiktok",
+                            "description": "To retrieve customer details, if they are hidden in the order response, use `seller shipping` instead of the default `TikTok shipping` in Tiktok. Please refer to our [integration guide](https://developers.apideck.com/connectors/tiktok/docs/application_owner+oauth_credentials) for more details.",
+                        },
+                        {
+                            "connector": "amazon-seller-central",
+                            "description": "**Filter parameters:** Either the `created_since` parameter or the `updated_since` parameter is required. Both cannot be empty. `updated_since` cannot be set when `created_since` is set.\n\n**Order history limits:** For the JP, AU, and SG marketplaces, the Orders API supports orders from 2016 onward. For all other marketplaces, the Orders API supports orders for the last two years (orders older than this don't show up in the response).\n",
+                        },
+                        {
+                            "connector": "walmart",
+                            "description": "When the `created_since` filter is not provided, Walmart only returns orders from the last 7 days. To retrieve older orders, supply `filter[created_since]` with the desired start date (e.g. `?filter[created_since]=2024-01-01T00:00:00Z`).\n\nWalmart applies markdowns before serializing orders. `line_items[].total_amount` is the PRODUCT charge amount plus applicable tax (`chargeAmount.amount + tax.taxAmount.amount` on the charge where `chargeType === 'PRODUCT'`). Walmart only exposes two charge types (`PRODUCT` and `SHIPPING`); discounts are pre-applied and not broken out separately in the order response.\n\nWalmart's order API does not expose a payment status. `payment_status` is inferred from the order line status: active orders (Created/Acknowledged/Shipped/Delivered) report `paid` because Walmart Marketplace collects customer payment upfront; `Cancelled` reports `voided` and `Refund` reports `refunded`. `total_amount` is derived by summing line-item charges (incl. tax) when Walmart omits the order-level `orderSummary`.\n",
+                        },
+                        {
+                            "connector": "shopify",
+                            "description": "The `line_items[].discounts[]` array reflects each line item's allocated share from every\ndiscount application on the order, including order-wide discounts. Shopify's\n`discountAllocations` field does not distinguish between product-specific and order-wide\ndiscount sources — all allocations for a given line item are returned together.\n\nShopify list responses do not include a total record count.\n",
+                        },
+                        {
+                            "connector": "shopify-public-app",
+                            "description": "The `line_items[].discounts[]` array reflects each line item's allocated share from every\ndiscount application on the order, including order-wide discounts. Shopify's\n`discountAllocations` field does not distinguish between product-specific and order-wide\ndiscount sources — all allocations for a given line item are returned together.\n\n`meta.total_count` will not appear. Surfacing the total requires a separate GET request to the `/admin/api/{version}/{resource}/count.json` endpoint — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "wix",
+                            "description": "Wix does not expose a native cross-page total record count in list responses. `meta.total_count` will not appear. Surfacing the total requires a POST to the Wix Stores query endpoint (`/wix-stores/v1/{resource}/query`) which returns a `totalResults` field — an extra API call not currently implemented.\n",
+                        },
+                        {
+                            "connector": "shopware",
+                            "description": "Shopware does not expose a native cross-page total record count in default list responses. `meta.total_count` will not appear. Surfacing the total requires setting `total-count-mode: 1` in the request criteria when calling the Shopware Admin search API — an extra requirement not currently implemented.\n\nShopware applies order-level promotions as separate `type: promotion` line items with negative `totalPrice`, rather than reducing the price on individual product lines. As a result, `line_items[].total_amount` reflects each product line's price before order-level promotion allocation. Use the top-level `discounts[]` array to access promotion codes and applied amounts.\n\nLine items with `type` of `promotion`, `credit`, or `discount` are excluded from `line_items[]`. Items with a `null` or unknown `type` are retained.\n",
+                        },
+                        {
+                            "connector": "bol-com",
+                            "description": "Bol.com does not expose a total record count in list responses. `meta.total_count` will not appear.\n\nThe list endpoint (`GET /retailer/orders`) returns a reduced order schema with no pricing data. `line_items[].unit_price`, `line_items[].total_amount`, `line_items[].discounts[]`, and the order-level `total_amount` are populated only on single-order retrieval (`GET /orders/{id}`). `line_items[].discounts[]` reflects per-item promotions; Bol.com does not expose order-level discount codes separately.\n\nCustomer and address fields (`customer`, `shipping_address`, `billing_address`) are likewise absent from list responses. Fetch the single-order endpoint to retrieve these fields.\n",
+                        },
+                        {
+                            "connector": "amazon-seller-central",
+                            "description": "Amazon Seller Central does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "prestashop",
+                            "description": "PrestaShop does not expose a total record count in list responses. `meta.total_count` will not appear.\n\n`line_items[].total_amount` is the tax-inclusive per-item total after proportional allocation of order-level cart rule coupon discounts. PrestaShop does not attribute coupon amounts to individual line items in its API; coupons are distributed proportionally across lines by each line's share of the pre-coupon subtotal. This is an approximation — the exact order-level coupon total is available in the `total_discount` field.\n",
+                        },
+                        {
+                            "connector": "picqer",
+                            "description": "Picqer does not expose a total record count in list responses. `meta.total_count` will not appear.\n\n`line_items[].total_amount` is computed as `products[].price × products[].amount`. Picqer's API exposes per-unit price and quantity separately but does not return a precomputed line total.\n\n`line_items[].unit_price` and `line_items[].total_amount` are based on `products[].price`, which is the per-unit price **excluding VAT**. Picqer does not return tax amounts on order line items; the VAT rate is only available as a VAT group reference (`idvatgroup`). If your integration requires tax-inclusive totals, apply the applicable VAT rate from the Picqer VAT Groups API.\n",
+                        },
+                        {
+                            "connector": "lightspeed-ecommerce",
+                            "description": "Lightspeed Ecommerce does not expose a total record count in list responses. `meta.total_count` will not appear.\n\n`line_items[].total_amount` is computed as `(price × quantity) − sum(discounts[].total) + tax`. When the store uses gross pricing (`pricesIncludeTax: true`), `items[].price` already includes tax and `items[].tax` is not added to avoid double-counting. `line_items[].unit_price` uses `items[].price`, which includes option-modifier surcharges over the base SKU price (`productPrice` is not used because it omits modifiers).\n\nThe list endpoint (`GET /orders`) does not embed order products, so `line_items[]` is not populated on list responses. Fetch the single-order endpoint (`GET /orders/{id}`) to retrieve `line_items[]` with per-item pricing, tax, and discounts.\n",
+                        },
+                        {
+                            "connector": "bigcommerce",
+                            "description": 'The `line_items[].discounts[]` array includes every `applied_discounts[]` entry BigCommerce\nreturns for the line — both `target: "order"` (cart-level) and `target: "product"`\n(product-specific) allocations are returned together, with no field that reliably\ndistinguishes the original discount source. This is the same class of behavior as the\ndocumented Shopify `discountAllocations` limitation.\n\nBigCommerce has no order-deletion webhook event. The unified `ecommerce.order.deleted`\nwebhook is emitted when an order is archived in BigCommerce (`store/order/archived`),\nwhich is BigCommerce\'s soft-delete — the order may still exist downstream and a\nsubsequent get-one may still return it.\n',
+                        },
+                        {
+                            "connector": "magento",
+                            "description": "`line_items[].total_amount` is computed as `items[].row_total_incl_tax − items[].discount_amount`. Magento does not expose a single post-discount, tax-inclusive line total in its REST API; the unified field is derived from these two fields (both are positive values at the item level per Adobe Commerce REST API).\n",
+                        },
+                        {
+                            "connector": "clover",
+                            "description": "All Clover monetary values are integers in cents (`1099` = $10.99). `line_items[].total_amount` and `line_items[].unit_price` are divided by 100 to produce decimal currency values. `total_amount` uses `priceWithModifiersAndItemAndOrderDiscounts`, which includes both item-level and order-level discounts and requires the `lineItems.discounts,lineItems.orderLevelDiscounts` expand parameters — handled automatically by the connector. Order-level discount codes and amounts appear in the top-level `discounts[]` array; per-line allocation is not broken out individually.\n\nNote: the order-level `total_amount` and other Clover monetary fields (payment amounts, order-level discount amounts) also return integers in cents. This is a known limitation of the Clover connector.\n\n`customer.name`, `customer.emails`, `customer.phone_numbers`, `billing_address`, and `shipping_address` are not available in list responses. Clover's list orders endpoint returns only the customer ID reference — full customer details are only returned by the single order endpoint (`GET /pos/orders/{id}`).\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -339,17 +476,21 @@ class Orders(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.EcommerceOrdersAllResponse(
                 get_ecommerce_orders_response=unmarshal_json_response(
-                    Optional[models.GetEcommerceOrdersResponse], http_res
+                    Optional[models.GetEcommerceOrdersResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -390,11 +531,10 @@ class Orders(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.EcommerceOrdersAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -464,6 +604,7 @@ class Orders(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -488,9 +629,51 @@ class Orders(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["ecommerce"],
+                extensions={
+                    "x-apideck-api": "ecommerce",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "woocommerce",
+                            "description": "Woocommerce returns the customer_id as '0' when an order was completed without registration. In this scenario, the customer data on order reflects a 'Guest Checkout'.\n",
+                        },
+                        {
+                            "connector": "shopify",
+                            "description": "The `line_items[].discounts[]` array reflects each line item's allocated share from every\ndiscount application on the order, including order-wide discounts. Shopify's\n`discountAllocations` field does not distinguish between product-specific and order-wide\ndiscount sources — all allocations for a given line item are returned together.\n",
+                        },
+                        {
+                            "connector": "shopify-public-app",
+                            "description": "The `line_items[].discounts[]` array reflects each line item's allocated share from every\ndiscount application on the order, including order-wide discounts. Shopify's\n`discountAllocations` field does not distinguish between product-specific and order-wide\ndiscount sources — all allocations for a given line item are returned together.\n",
+                        },
+                        {
+                            "connector": "bigcommerce",
+                            "description": 'The `line_items[].discounts[]` array includes every `applied_discounts[]` entry BigCommerce\nreturns for the line — both `target: "order"` (cart-level) and `target: "product"`\n(product-specific) allocations are returned together, with no field that reliably\ndistinguishes the original discount source. This is the same class of behavior as the\ndocumented Shopify `discountAllocations` limitation.\n',
+                        },
+                        {
+                            "connector": "magento",
+                            "description": "`line_items[].total_amount` is computed as `items[].row_total_incl_tax − items[].discount_amount`. Magento does not expose a single post-discount, tax-inclusive line total in its REST API; the unified field is derived from these two fields (both are positive values at the item level per Adobe Commerce REST API).\n",
+                        },
+                        {
+                            "connector": "clover",
+                            "description": "All Clover monetary values are integers in cents (`1099` = $10.99). `line_items[].total_amount` and `line_items[].unit_price` are divided by 100 to produce decimal currency values. `total_amount` uses `priceWithModifiersAndItemAndOrderDiscounts`, which includes both item-level and order-level discounts and requires the `lineItems.discounts,lineItems.orderLevelDiscounts` expand parameters — handled automatically by the connector. Order-level discount codes and amounts appear in the top-level `discounts[]` array; per-line allocation is not broken out individually.\n\nNote: the order-level `total_amount` and other Clover monetary fields (payment amounts, order-level discount amounts) also return integers in cents. This is a known limitation of the Clover connector.\n",
+                        },
+                        {
+                            "connector": "shopware",
+                            "description": "Shopware applies order-level promotions as separate `type: promotion` line items with negative `totalPrice`, rather than reducing the price on individual product lines. As a result, `line_items[].total_amount` reflects each product line's price before order-level promotion allocation. Use the top-level `discounts[]` array to access promotion codes and applied amounts.\n\nLine items with `type` of `promotion`, `credit`, or `discount` are excluded from `line_items[]`. Items with a `null` or unknown `type` are retained.\n",
+                        },
+                        {
+                            "connector": "walmart",
+                            "description": "Walmart applies markdowns before serializing orders. `line_items[].total_amount` is the PRODUCT charge amount plus applicable tax (`chargeAmount.amount + tax.taxAmount.amount` on the charge where `chargeType === 'PRODUCT'`). Walmart only exposes two charge types (`PRODUCT` and `SHIPPING`); discounts are pre-applied and not broken out separately in the order response.\n\nWalmart's order API does not expose a payment status. `payment_status` is inferred from the order line status: active orders (Created/Acknowledged/Shipped/Delivered) report `paid` because Walmart Marketplace collects customer payment upfront; `Cancelled` reports `voided` and `Refund` reports `refunded`. `total_amount` is derived by summing line-item charges (incl. tax) when Walmart omits the order-level `orderSummary`.\n",
+                        },
+                        {
+                            "connector": "lightspeed-ecommerce",
+                            "description": "`line_items[].total_amount` is computed as `(price × quantity) − sum(discounts[].total) + tax`. When the store uses gross pricing (`pricesIncludeTax: true`), `items[].price` already includes tax and `items[].tax` is not added to avoid double-counting. `line_items[].unit_price` uses `items[].price`, which includes option-modifier surcharges over the base SKU price (`productPrice` is not used because it omits modifiers).\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -498,10 +681,9 @@ class Orders(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.EcommerceOrdersOneResponse(
                 get_ecommerce_order_response=unmarshal_json_response(
-                    Optional[models.GetEcommerceOrderResponse], http_res
+                    Optional[models.GetEcommerceOrderResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -542,10 +724,9 @@ class Orders(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.EcommerceOrdersOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -615,6 +796,7 @@ class Orders(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -639,9 +821,51 @@ class Orders(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["ecommerce"],
+                extensions={
+                    "x-apideck-api": "ecommerce",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "woocommerce",
+                            "description": "Woocommerce returns the customer_id as '0' when an order was completed without registration. In this scenario, the customer data on order reflects a 'Guest Checkout'.\n",
+                        },
+                        {
+                            "connector": "shopify",
+                            "description": "The `line_items[].discounts[]` array reflects each line item's allocated share from every\ndiscount application on the order, including order-wide discounts. Shopify's\n`discountAllocations` field does not distinguish between product-specific and order-wide\ndiscount sources — all allocations for a given line item are returned together.\n",
+                        },
+                        {
+                            "connector": "shopify-public-app",
+                            "description": "The `line_items[].discounts[]` array reflects each line item's allocated share from every\ndiscount application on the order, including order-wide discounts. Shopify's\n`discountAllocations` field does not distinguish between product-specific and order-wide\ndiscount sources — all allocations for a given line item are returned together.\n",
+                        },
+                        {
+                            "connector": "bigcommerce",
+                            "description": 'The `line_items[].discounts[]` array includes every `applied_discounts[]` entry BigCommerce\nreturns for the line — both `target: "order"` (cart-level) and `target: "product"`\n(product-specific) allocations are returned together, with no field that reliably\ndistinguishes the original discount source. This is the same class of behavior as the\ndocumented Shopify `discountAllocations` limitation.\n',
+                        },
+                        {
+                            "connector": "magento",
+                            "description": "`line_items[].total_amount` is computed as `items[].row_total_incl_tax − items[].discount_amount`. Magento does not expose a single post-discount, tax-inclusive line total in its REST API; the unified field is derived from these two fields (both are positive values at the item level per Adobe Commerce REST API).\n",
+                        },
+                        {
+                            "connector": "clover",
+                            "description": "All Clover monetary values are integers in cents (`1099` = $10.99). `line_items[].total_amount` and `line_items[].unit_price` are divided by 100 to produce decimal currency values. `total_amount` uses `priceWithModifiersAndItemAndOrderDiscounts`, which includes both item-level and order-level discounts and requires the `lineItems.discounts,lineItems.orderLevelDiscounts` expand parameters — handled automatically by the connector. Order-level discount codes and amounts appear in the top-level `discounts[]` array; per-line allocation is not broken out individually.\n\nNote: the order-level `total_amount` and other Clover monetary fields (payment amounts, order-level discount amounts) also return integers in cents. This is a known limitation of the Clover connector.\n",
+                        },
+                        {
+                            "connector": "shopware",
+                            "description": "Shopware applies order-level promotions as separate `type: promotion` line items with negative `totalPrice`, rather than reducing the price on individual product lines. As a result, `line_items[].total_amount` reflects each product line's price before order-level promotion allocation. Use the top-level `discounts[]` array to access promotion codes and applied amounts.\n\nLine items with `type` of `promotion`, `credit`, or `discount` are excluded from `line_items[]`. Items with a `null` or unknown `type` are retained.\n",
+                        },
+                        {
+                            "connector": "walmart",
+                            "description": "Walmart applies markdowns before serializing orders. `line_items[].total_amount` is the PRODUCT charge amount plus applicable tax (`chargeAmount.amount + tax.taxAmount.amount` on the charge where `chargeType === 'PRODUCT'`). Walmart only exposes two charge types (`PRODUCT` and `SHIPPING`); discounts are pre-applied and not broken out separately in the order response.\n\nWalmart's order API does not expose a payment status. `payment_status` is inferred from the order line status: active orders (Created/Acknowledged/Shipped/Delivered) report `paid` because Walmart Marketplace collects customer payment upfront; `Cancelled` reports `voided` and `Refund` reports `refunded`. `total_amount` is derived by summing line-item charges (incl. tax) when Walmart omits the order-level `orderSummary`.\n",
+                        },
+                        {
+                            "connector": "lightspeed-ecommerce",
+                            "description": "`line_items[].total_amount` is computed as `(price × quantity) − sum(discounts[].total) + tax`. When the store uses gross pricing (`pricesIncludeTax: true`), `items[].price` already includes tax and `items[].tax` is not added to avoid double-counting. `line_items[].unit_price` uses `items[].price`, which includes option-modifier surcharges over the base SKU price (`productPrice` is not used because it omits modifiers).\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -649,10 +873,9 @@ class Orders(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.EcommerceOrdersOneResponse(
                 get_ecommerce_order_response=unmarshal_json_response(
-                    Optional[models.GetEcommerceOrderResponse], http_res
+                    Optional[models.GetEcommerceOrderResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -693,10 +916,9 @@ class Orders(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.EcommerceOrdersOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

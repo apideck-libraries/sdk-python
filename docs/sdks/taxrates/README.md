@@ -1,5 +1,4 @@
-# TaxRates
-(*accounting.tax_rates*)
+# Accounting.TaxRates
 
 ## Overview
 
@@ -27,7 +26,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.tax_rates.list(raw=False, service_id="salesforce", company_id="12345", limit=20, filter_={
@@ -95,26 +94,26 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
-    res = apideck.accounting.tax_rates.create(raw=False, service_id="salesforce", company_id="12345", id="1234", display_id="12345", name="GST on Purchases", code="ABN", description="Reduced rate GST Purchases", effective_tax_rate=10, country="US", total_tax_rate=10, tax_payable_account_id="123456", tax_remitted_account_id="123456", components=[
+    res = apideck.accounting.tax_rates.create(raw=False, service_id="salesforce", company_id="12345", id="1234", display_id="12345", name="GST on Purchases", code="ABN", description="Reduced rate GST Purchases", effective_tax_rate=10.0, country="US", total_tax_rate=10.0, tax_payable_account_id="123456", tax_remitted_account_id="123456", components=[
         {
             "id": "10",
             "name": "GST",
-            "rate": 10,
+            "rate": 10.0,
             "compound": True,
         },
         {
             "id": "10",
             "name": "GST",
-            "rate": 10,
+            "rate": 10.0,
             "compound": True,
         },
         {
             "id": "10",
             "name": "GST",
-            "rate": 10,
+            "rate": 10.0,
             "compound": True,
         },
     ], type_="NONE", report_tax_type="NONE", original_tax_rate_id="12345", status=apideck_unify.TaxRateStatus.ACTIVE, row_version="1-12345", pass_through=[
@@ -152,7 +151,7 @@ with Apideck(
             "id": "2389328923893298",
             "name": "employee_level",
             "description": "Employee Level",
-            "value": 10,
+            "value": 10.0,
         },
     ])
 
@@ -183,7 +182,7 @@ with Apideck(
 | `tax_payable_account_id`                                                                                                                                     | *OptionalNullable[str]*                                                                                                                                      | :heavy_minus_sign:                                                                                                                                           | Unique identifier for the account for tax collected.                                                                                                         | 123456                                                                                                                                                       |
 | `tax_remitted_account_id`                                                                                                                                    | *OptionalNullable[str]*                                                                                                                                      | :heavy_minus_sign:                                                                                                                                           | Unique identifier for the account for tax remitted.                                                                                                          | 123456                                                                                                                                                       |
 | `components`                                                                                                                                                 | List[[models.Components](../../models/components.md)]                                                                                                        | :heavy_minus_sign:                                                                                                                                           | N/A                                                                                                                                                          |                                                                                                                                                              |
-| `type`                                                                                                                                                       | *OptionalNullable[str]*                                                                                                                                      | :heavy_minus_sign:                                                                                                                                           | Tax type used to indicate the source of tax collected or paid                                                                                                | NONE                                                                                                                                                         |
+| `type_`                                                                                                                                                      | *OptionalNullable[str]*                                                                                                                                      | :heavy_minus_sign:                                                                                                                                           | Tax type used to indicate the source of tax collected or paid                                                                                                | NONE                                                                                                                                                         |
 | `report_tax_type`                                                                                                                                            | *OptionalNullable[str]*                                                                                                                                      | :heavy_minus_sign:                                                                                                                                           | Report Tax type to aggregate tax collected or paid for reporting purposes                                                                                    | NONE                                                                                                                                                         |
 | `original_tax_rate_id`                                                                                                                                       | *OptionalNullable[str]*                                                                                                                                      | :heavy_minus_sign:                                                                                                                                           | ID of the original tax rate from which the new tax rate is derived. Helps to understand the relationship between corresponding tax rate entities.            | 12345                                                                                                                                                        |
 | `status`                                                                                                                                                     | [OptionalNullable[models.TaxRateStatus]](../../models/taxratestatus.md)                                                                                      | :heavy_minus_sign:                                                                                                                                           | Tax rate status                                                                                                                                              | active                                                                                                                                                       |
@@ -225,7 +224,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.tax_rates.get(id="<id>", service_id="salesforce", company_id="12345", raw=False, fields="id,updated_at")
@@ -282,14 +281,14 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
-    res = apideck.accounting.tax_rates.update(id_param="<value>", service_id="salesforce", company_id="12345", raw=False, id="1234", display_id="12345", name="GST on Purchases", code="ABN", description="Reduced rate GST Purchases", effective_tax_rate=10, country="US", total_tax_rate=10, tax_payable_account_id="123456", tax_remitted_account_id="123456", components=[
+    res = apideck.accounting.tax_rates.update(id_param="<value>", service_id="salesforce", company_id="12345", raw=False, id="1234", display_id="12345", name="GST on Purchases", code="ABN", description="Reduced rate GST Purchases", effective_tax_rate=10.0, country="US", total_tax_rate=10.0, tax_payable_account_id="123456", tax_remitted_account_id="123456", components=[
         {
             "id": "10",
             "name": "GST",
-            "rate": 10,
+            "rate": 10.0,
             "compound": True,
         },
     ], type_="NONE", report_tax_type="NONE", original_tax_rate_id="12345", status=apideck_unify.TaxRateStatus.ACTIVE, row_version="1-12345", pass_through=[
@@ -411,7 +410,7 @@ with Apideck(
 | `tax_payable_account_id`                                                                                                                                     | *OptionalNullable[str]*                                                                                                                                      | :heavy_minus_sign:                                                                                                                                           | Unique identifier for the account for tax collected.                                                                                                         | 123456                                                                                                                                                       |
 | `tax_remitted_account_id`                                                                                                                                    | *OptionalNullable[str]*                                                                                                                                      | :heavy_minus_sign:                                                                                                                                           | Unique identifier for the account for tax remitted.                                                                                                          | 123456                                                                                                                                                       |
 | `components`                                                                                                                                                 | List[[models.Components](../../models/components.md)]                                                                                                        | :heavy_minus_sign:                                                                                                                                           | N/A                                                                                                                                                          |                                                                                                                                                              |
-| `type`                                                                                                                                                       | *OptionalNullable[str]*                                                                                                                                      | :heavy_minus_sign:                                                                                                                                           | Tax type used to indicate the source of tax collected or paid                                                                                                | NONE                                                                                                                                                         |
+| `type_`                                                                                                                                                      | *OptionalNullable[str]*                                                                                                                                      | :heavy_minus_sign:                                                                                                                                           | Tax type used to indicate the source of tax collected or paid                                                                                                | NONE                                                                                                                                                         |
 | `report_tax_type`                                                                                                                                            | *OptionalNullable[str]*                                                                                                                                      | :heavy_minus_sign:                                                                                                                                           | Report Tax type to aggregate tax collected or paid for reporting purposes                                                                                    | NONE                                                                                                                                                         |
 | `original_tax_rate_id`                                                                                                                                       | *OptionalNullable[str]*                                                                                                                                      | :heavy_minus_sign:                                                                                                                                           | ID of the original tax rate from which the new tax rate is derived. Helps to understand the relationship between corresponding tax rate entities.            | 12345                                                                                                                                                        |
 | `status`                                                                                                                                                     | [OptionalNullable[models.TaxRateStatus]](../../models/taxratestatus.md)                                                                                      | :heavy_minus_sign:                                                                                                                                           | Tax rate status                                                                                                                                              | active                                                                                                                                                       |
@@ -452,7 +451,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.tax_rates.delete(id="<id>", service_id="salesforce", company_id="12345", raw=False)

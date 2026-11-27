@@ -1,5 +1,4 @@
-# ConnectionSettings
-(*vault.connection_settings*)
+# Vault.ConnectionSettings
 
 ## Overview
 
@@ -24,7 +23,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.vault.connection_settings.list(unified_api="crm", service_id="pipedrive", resource="leads")
@@ -78,7 +77,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.vault.connection_settings.update(service_id="pipedrive", unified_api="crm", resource="leads", enabled=True, settings={

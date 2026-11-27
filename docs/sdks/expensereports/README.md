@@ -1,5 +1,4 @@
-# ExpenseReports
-(*accounting.expense_reports*)
+# Accounting.ExpenseReports
 
 ## Overview
 
@@ -28,7 +27,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.expense_reports.list(raw=False, service_id="salesforce", limit=20, fields="id,updated_at", filter_={
@@ -94,13 +93,13 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.expense_reports.create(employee={
         "id": "12345",
         "display_name": "John Doe",
-    }, transaction_date=parse_datetime("2021-05-01T12:00:00.000Z"), line_items=[], raw=False, service_id="salesforce", display_id="123456", number="ER-001", title="Q1 Business Travel", status=apideck_unify.ExpenseReportStatus.SUBMITTED, posting_date=date.fromisoformat("2024-06-01"), due_date=date.fromisoformat("2024-06-15"), currency=apideck_unify.Currency.USD, currency_rate=0.69, sub_total=250, total_tax=25, total_amount=1250.75, reimbursable_amount=1100, memo="Business travel expenses for Q1 client meetings", department={
+    }, transaction_date=parse_datetime("2021-05-01T12:00:00.000Z"), line_items=[], raw=False, service_id="salesforce", display_id="123456", number="ER-001", title="Q1 Business Travel", status=apideck_unify.ExpenseReportStatus.SUBMITTED, posting_date=date.fromisoformat("2024-06-01"), due_date=date.fromisoformat("2024-06-15"), currency=apideck_unify.Currency.USD, currency_rate=0.69, sub_total=250.0, total_tax=25.0, total_amount=1250.75, reimbursable_amount=1100.0, memo="Business travel expenses for Q1 client meetings", department={
         "display_id": "123456",
         "name": "Acme Inc.",
     }, location={
@@ -223,7 +222,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.expense_reports.get(id="<id>", service_id="salesforce", raw=False, fields="id,updated_at")
@@ -281,13 +280,13 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.expense_reports.update(id="<id>", service_id="salesforce", raw=False, display_id="123456", number="ER-001", title="Q1 Business Travel", employee={
         "id": "12345",
         "display_name": "John Doe",
-    }, status=apideck_unify.ExpenseReportUpdateInputStatus.SUBMITTED, transaction_date=parse_datetime("2021-05-01T12:00:00.000Z"), posting_date=date.fromisoformat("2024-06-01"), due_date=date.fromisoformat("2024-06-15"), currency=apideck_unify.Currency.USD, currency_rate=0.69, sub_total=250, total_tax=25, total_amount=1250.75, reimbursable_amount=1100, memo="Business travel expenses for Q1 client meetings", department={
+    }, status=apideck_unify.ExpenseReportUpdateInputStatus.SUBMITTED, transaction_date=parse_datetime("2021-05-01T12:00:00.000Z"), posting_date=date.fromisoformat("2024-06-01"), due_date=date.fromisoformat("2024-06-15"), currency=apideck_unify.Currency.USD, currency_rate=0.69, sub_total=250.0, total_tax=25.0, total_amount=1250.75, reimbursable_amount=1100.0, memo="Business travel expenses for Q1 client meetings", department={
         "display_id": "123456",
         "name": "Acme Inc.",
     }, location={
@@ -410,7 +409,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.expense_reports.delete(id="<id>", service_id="salesforce", raw=False)

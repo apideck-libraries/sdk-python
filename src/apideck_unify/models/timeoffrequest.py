@@ -9,14 +9,15 @@ from apideck_unify.types import (
     OptionalNullable,
     UNSET,
     UNSET_SENTINEL,
+    current_exclude_none,
+    serialize_with_info,
 )
-from apideck_unify.utils import validate_open_enum
+from apideck_unify.types.basemodel import current_filtered_dump
 from datetime import datetime
 from enum import Enum
 from pydantic import field_serializer, model_serializer
-from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
-from typing_extensions import Annotated, NotRequired, TypedDict
+from typing_extensions import NotRequired, TypedDict
 
 
 class TimeOffRequestStatusStatus(str, Enum, metaclass=utils.OpenEnumMeta):
@@ -61,32 +62,34 @@ class NotesModel(BaseModel):
     manager: OptionalNullable[str] = UNSET
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = ["employee", "manager"]
-        nullable_fields = ["employee", "manager"]
-        null_default_fields = []
-
+        optional_fields = set(["employee", "manager"])
+        nullable_fields = set(["employee", "manager"])
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m
 
@@ -145,10 +148,7 @@ class TimeOffRequest(BaseModel):
     policy_id: OptionalNullable[str] = UNSET
     r"""ID of the policy"""
 
-    status: Annotated[
-        OptionalNullable[TimeOffRequestStatusStatus],
-        PlainValidator(validate_open_enum(False)),
-    ] = UNSET
+    status: OptionalNullable[TimeOffRequestStatusStatus] = UNSET
     r"""The status of the time off request."""
 
     description: OptionalNullable[str] = UNSET
@@ -163,17 +163,13 @@ class TimeOffRequest(BaseModel):
     request_date: OptionalNullable[str] = UNSET
     r"""The date the request was made."""
 
-    request_type: Annotated[
-        OptionalNullable[RequestType], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    request_type: OptionalNullable[RequestType] = UNSET
     r"""The type of request"""
 
     approval_date: OptionalNullable[str] = UNSET
     r"""The date the request was approved"""
 
-    units: Annotated[
-        OptionalNullable[Units], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    units: OptionalNullable[Units] = UNSET
     r"""The unit of time off requested. Possible values include: `hours`, `days`, or `other`."""
 
     amount: OptionalNullable[float] = UNSET
@@ -233,72 +229,78 @@ class TimeOffRequest(BaseModel):
         return value
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = [
-            "id",
-            "employee_id",
-            "policy_id",
-            "status",
-            "description",
-            "start_date",
-            "end_date",
-            "request_date",
-            "request_type",
-            "approval_date",
-            "units",
-            "amount",
-            "day_part",
-            "notes",
-            "custom_mappings",
-            "updated_by",
-            "created_by",
-            "updated_at",
-            "created_at",
-            "pass_through",
-            "policy_type",
-        ]
-        nullable_fields = [
-            "employee_id",
-            "policy_id",
-            "status",
-            "description",
-            "start_date",
-            "end_date",
-            "request_date",
-            "request_type",
-            "approval_date",
-            "units",
-            "amount",
-            "day_part",
-            "custom_mappings",
-            "updated_by",
-            "created_by",
-            "updated_at",
-            "created_at",
-        ]
-        null_default_fields = []
-
+        optional_fields = set(
+            [
+                "id",
+                "employee_id",
+                "policy_id",
+                "status",
+                "description",
+                "start_date",
+                "end_date",
+                "request_date",
+                "request_type",
+                "approval_date",
+                "units",
+                "amount",
+                "day_part",
+                "notes",
+                "custom_mappings",
+                "updated_by",
+                "created_by",
+                "updated_at",
+                "created_at",
+                "pass_through",
+                "policy_type",
+            ]
+        )
+        nullable_fields = set(
+            [
+                "employee_id",
+                "policy_id",
+                "status",
+                "description",
+                "start_date",
+                "end_date",
+                "request_date",
+                "request_type",
+                "approval_date",
+                "units",
+                "amount",
+                "day_part",
+                "custom_mappings",
+                "updated_by",
+                "created_by",
+                "updated_at",
+                "created_at",
+            ]
+        )
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m
 
@@ -342,10 +344,7 @@ class TimeOffRequestInput(BaseModel):
     policy_id: OptionalNullable[str] = UNSET
     r"""ID of the policy"""
 
-    status: Annotated[
-        OptionalNullable[TimeOffRequestStatusStatus],
-        PlainValidator(validate_open_enum(False)),
-    ] = UNSET
+    status: OptionalNullable[TimeOffRequestStatusStatus] = UNSET
     r"""The status of the time off request."""
 
     description: OptionalNullable[str] = UNSET
@@ -360,17 +359,13 @@ class TimeOffRequestInput(BaseModel):
     request_date: OptionalNullable[str] = UNSET
     r"""The date the request was made."""
 
-    request_type: Annotated[
-        OptionalNullable[RequestType], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    request_type: OptionalNullable[RequestType] = UNSET
     r"""The type of request"""
 
     approval_date: OptionalNullable[str] = UNSET
     r"""The date the request was approved"""
 
-    units: Annotated[
-        OptionalNullable[Units], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    units: OptionalNullable[Units] = UNSET
     r"""The unit of time off requested. Possible values include: `hours`, `days`, or `other`."""
 
     amount: OptionalNullable[float] = UNSET
@@ -415,60 +410,66 @@ class TimeOffRequestInput(BaseModel):
         return value
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = [
-            "employee_id",
-            "policy_id",
-            "status",
-            "description",
-            "start_date",
-            "end_date",
-            "request_date",
-            "request_type",
-            "approval_date",
-            "units",
-            "amount",
-            "day_part",
-            "notes",
-            "pass_through",
-            "policy_type",
-        ]
-        nullable_fields = [
-            "employee_id",
-            "policy_id",
-            "status",
-            "description",
-            "start_date",
-            "end_date",
-            "request_date",
-            "request_type",
-            "approval_date",
-            "units",
-            "amount",
-            "day_part",
-        ]
-        null_default_fields = []
-
+        optional_fields = set(
+            [
+                "employee_id",
+                "policy_id",
+                "status",
+                "description",
+                "start_date",
+                "end_date",
+                "request_date",
+                "request_type",
+                "approval_date",
+                "units",
+                "amount",
+                "day_part",
+                "notes",
+                "pass_through",
+                "policy_type",
+            ]
+        )
+        nullable_fields = set(
+            [
+                "employee_id",
+                "policy_id",
+                "status",
+                "description",
+                "start_date",
+                "end_date",
+                "request_date",
+                "request_type",
+                "approval_date",
+                "units",
+                "amount",
+                "day_part",
+            ]
+        )
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m

@@ -8,7 +8,7 @@ from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from datetime import date
 from jsonpath import JSONPath
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
 
 
 class ApideckEmployees(BaseSDK):
@@ -27,7 +27,7 @@ class ApideckEmployees(BaseSDK):
         sort: Optional[
             Union[models.EmployeesSort, models.EmployeesSortTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -72,7 +72,7 @@ class ApideckEmployees(BaseSDK):
             limit=limit,
             filter_=utils.get_pydantic_model(filter_, Optional[models.EmployeesFilter]),
             sort=utils.get_pydantic_model(sort, Optional[models.EmployeesSort]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -93,6 +93,7 @@ class ApideckEmployees(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -117,9 +118,155 @@ class ApideckEmployees(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["hris"],
+                extensions={
+                    "x-apideck-api": "hris",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sdworx-webservice-oidc",
+                            "description": "SD Worx HR Selfservice exposes only the employee number, first name, last name and employer number of each employee; all other employee fields are not available. `id` is the SD Worx employee number and `company_id` the employer number, which are the values accepted by the `time-off-requests` filters.\n",
+                        },
+                        {
+                            "connector": "sdworx-be-sme",
+                            "description": "Listing employees requires the `employer_file_number` connection setting: it selects the SD Worx payroll file\n(employer) whose employees are returned. The available employers are the records of the `companies` resource.\n\nOnly employees with an active contract are returned, so terminated employees never appear; `employment_status`\nis `terminated` only for a contract whose leaving date has already passed. `department`, `manager`, `team`,\n`bank_accounts` and `photo_url` are not available.\n\nEmployees cannot be filtered or sorted: any `filter[...]` or `sort[...]` parameter is rejected with a 400.\n`limit` and `cursor` work. Every page assembles person and contract details from several vendor calls, so\na list call takes a few seconds. Listing without the `employer_file_number` setting returns a 400 that\nnames the setting; an employer the connection cannot access returns a 404.\n\nIf one of the detail calls fails, the request still succeeds with a 200 and the fields that call\nprovides (for example `gender`, `birthday`, `jobs`, `compensations` or the employment dates) are absent.\nTreat their absence as unavailable for this request, not as empty at the source. One record is returned\nper person; when a person holds several concurrent contracts with the employer, the details of the first\ncontract are used.\n\n`id` is the SD Worx person id and `employee_number` the payroll employee number. `title`, `jobs`,\n`employment_start_date`, `employment_end_date`, `employment_role.type` and `compensations` come from the\ncontract valid on the day of the request; wages are returned in EUR per hour, month or (as `other`) per day.\n`jobs` is empty when the contract has no job description in SD Worx.\n\n`gender` is derived from SD Worx's gender code table (male, female, or `not_specified` for unknown and not\ndisclosed). `preferred_language` and `languages` are normalised to ISO 639-1 codes (`nl`, `fr`, `de`, `en`),\n`nationalities` are ISO 3166-1 alpha-2 codes and `marital_status` carries the SD Worx marital-status code\n(for example `02` for married). Belgian addresses split the house number and the box number:\n`addresses[].line1` holds the street and house number and `addresses[].line2` holds the box number.\n",
+                        },
+                        {
+                            "connector": "deel",
+                            "description": 'The `emails[].type` value `primary` follows the worker\'s own Deel account (login) email, which may be\neither their work or their personal address and therefore varies from worker to worker. Deel does not\ndocument how the flag is chosen, so treat this as observed behaviour.\n\nTo avoid depending on which address happens to be primary, the primary address is also returned a second\ntime under its real type. A worker whose account email is their work address returns both\n`{"type": "primary"}` and `{"type": "work"}` for it, so reading the `work` entry gives the work address\nregardless of the primary flag. Because Deel can list the same address more than once, one address may\nappear in several entries with different types.\n\nDeel `home` addresses are returned as `personal`.\n\nUse `?raw=true` to see Deel\'s original `type` and `primary` flags.\n',
+                        },
+                        {
+                            "connector": "nmbrs",
+                            "description": 'We keep track of the "List Employees" response for NMBRS virtual webhooks events, which contains fewer fields compared to the "Get Employee" response.',
+                        },
+                        {
+                            "connector": "ukg-pro",
+                            "description": 'UKG Pro serves person data and employment data from two different endpoints, so the employment fields on "List Employees" (`employment_status`, `employment_role`, `title`, `department`, `department_id`, `employment_start_date`, `employment_end_date`, `manager`) are enriched from a second call made on your behalf. If that secondary call fails, the request still succeeds with a 200 and those fields are simply absent from the affected records — the person-scope fields are unaffected. Treat their absence as "unavailable for this request", not as "empty at the source". On a list filtered by `employment_status` the roles are reversed: the second call supplies the person fields, so if it fails the records keep their employment fields while the person fields — including `id` — may be absent.\nUKG returns every employee ever employed, including terminated ones. `employment_status` resolves from the connector\'s employment status value; use `filter[employment_status]` to scope the list server-side. The filter accepts `active`, `inactive` and `terminated` — `other` is rejected because this connector has no status it could match. The filter can be combined with `filter[company_id]`, but not with `filter[email]`, `filter[first_name]` or `filter[last_name]` — those combinations are rejected with a 400 rather than returning silently unfiltered results.\nA filtered list returns one entry per matching employment record, so an employee with more than one matching record appears more than once — dedupe on `id` if you need unique employees. The unfiltered list keeps its one-entry-per-employee shape and reports each employee\'s primary employment record, so the same employee can appear under `filter[employment_status]=terminated` (an older terminated record matched) while the unfiltered list reports them as `active`.\n`department` and `department_id` both resolve from the connector\'s organisation-level hierarchy, and `division` is not currently mapped. `jobs`, `compensations`, `custom_fields` and `bank_accounts` are only available on "Get Employee".\n',
+                        },
+                        {
+                            "connector": "ceridian-dayforce",
+                            "description": 'The Ceridian Dayforce "List Employees" endpoint only returns employee IDs by default. To get full employee details, use the "Get Employee" endpoint. For virtual webhook events on Ceridian Dayforce, we monitor the "List Employees" response, which has a very small set of fields in comparison to the "Get Employee" response. This is the reason why we only support `hris.employee.created` events for this connector.\n',
+                        },
+                        {
+                            "connector": "hibob",
+                            "description": "If your Unify plan has the 'Custom Field Mapping' feature, you can map custom fields to your responses. Once mapped, they will be included in the custom_mappings property within Unify responses.\nImportant to know is that HiBob has permission controls for users to determine which data will be available on their API. This can lead to specific fields not being available (example: `birthday`).\nOn 'List Employees', only mapped custom fields have values. Other custom fields are returned with `value: null`. For getting all custom field values, please use the 'Get Employee' (employeesOne) call instead of 'List Employees'.\n",
+                        },
+                        {
+                            "connector": "hibob-oauth",
+                            "description": "If your Unify plan has the 'Custom Field Mapping' feature, you can map custom fields to your responses. Once mapped, they will be included in the custom_mappings property within Unify responses.\nImportant to know is that HiBob has permission controls for users to determine which data will be available on their API. This can lead to specific fields not being available (example: `birthday`).\nOn 'List Employees', only mapped custom fields have values. Other custom fields are returned with `value: null`. For getting all custom field values, please use the 'Get Employee' (employeesOne) call instead of 'List Employees'.\n",
+                        },
+                        {
+                            "connector": "paylocity",
+                            "description": 'For virtual webhook events on Paylocity, we monitor the "List Employees" response, which has a very small set of fields in comparison of the "Get Employee" response.',
+                        },
+                        {
+                            "connector": "sage-hr",
+                            "description": 'The minimum pagination `limit` is 50, since Sage HR does not support pagination with a lower limit. Pagination for Sage HR only support per 50 limits. Without the employment_status filter it will only return active employees. To fetch terminated employees, you need to include the employment_status filter with the value "terminated".\n',
+                        },
+                        {
+                            "connector": "sap-successfactors",
+                            "description": "Custom fields are extracted from both `personalInfoNav` and\n`employmentNav.jobInfoNav` on each employee record. Custom fields stored on\nother navs are not surfaced in `custom_fields` — use `pass_through` to access them.\n\n`custom_fields[].value` is human-readable for picklist-backed properties and for a\nverified set of Foundation-Object-backed properties (`position`, `costCenter`,\n`payGrade`, `businessUnit`, `employeeClass`). For picklists, the tenant's picklist label\nis returned (`\"Monday to Sunday\"` rather than the option ID `\"663865\"`), resolved by\npreferring `en_GB`, then `en_US`, then any other English locale, then the sole authored\nlocale when a tenant-created picklist has only one; if no label is usable the option's\nexternal code is returned. Foundation-Object-backed properties are resolved by matching\neach object's own active-status and label convention — a best-effort convention match,\nnot a guarantee, so any other Foundation-Object-backed property still returns the raw\ndownstream ID. Expect a mix of readable labels and raw IDs across `custom_fields`.\n\n`custom_fields[].name` carries the property's SAP field label (`\"FLSA Work Week\"`) and is\npopulated for every custom field the tenant's metadata describes.\n\n`custom_fields[].id` is the SAP property name (`costCenter`, `customString13`). When\nboth the personal-information entity and the job-information entity contribute a custom\nfield with the same name, both entries are prefixed with their SAP entity\n(`PerPersonal:customString7` and `EmpJob:customString7`) so each id identifies one\nfield. The prefix follows the tenant's configuration: if the tenant later adds a field\nwith an existing name to the other entity, the previously unprefixed id becomes\nprefixed, and a custom mapping stored against the old id returns no value until the\nfield is re-picked. In rare cases a shared name is still returned unprefixed: when\nSAP's field definitions are temporarily unavailable (a `picklistMetadata` entry in\n`meta.warnings`) and the response contains no record of the other entity. A custom\nmapping stored against the unprefixed id can then return the other entity's value.\n\nAddress fields `line1`–`line5` are passed through verbatim from SAP's positional\nfields `address1`–`address5` with no per-country recomposition. SAP SuccessFactors\ninterprets these positions differently per country, and the meaning of each position\nalso varies per tenant — two SAP customers in the same country can configure\n`address1`–`addressN` semantics differently via Manage Business Configuration.\nBelgium and the Netherlands are confirmed examples of per-tenant variation.\nThe country code is exposed in `addresses[].country` as ISO-2 (e.g. `\"BE\"`, `\"NL\"`) —\nconsumers must use it together with knowledge of the specific tenant's configuration\nto interpret the semantic meaning of each line.\n\nFields `address6` through `address20` are not surfaced in the unified response — the\nJSON mapping declares `line1`–`line5` only. Consumers that need higher-numbered\npositional fields must use `pass_through`.\n\nThe `street_number` field is not populated for SAP SuccessFactors employees.\n\nThis limitation is by SAP design: their OData v2 API exposes a single merged\n`PerAddressDEFLT` entity for all countries and does not surface per-country\nfield semantics. See SAP KBA 2902948.\n\nOn the home address (`addresses[].type` `home`), `city`, `state` and `postal_code` can\ncontain SAP's numeric option IDs (for example `\"358\"`) when the tenant's home-address\nlayout for that country makes the field a dropdown. SAP does not report which countries\nuse dropdowns, so list them in the Employees configuration settings (Countries where home\naddress City, State or Postal Code is a dropdown, as 3-letter country codes such as\n`BEL`). For a listed country, `city` and `state` return the option's label\n(`\"Antwerpen\"`) and `postal_code` returns the postal code itself (`\"2060\"`). A value stays\nthe raw option ID when its country is not listed, when the tenant's address setup has no\ndropdown for that field, or when the lookup cannot be completed. Other address types, such as `primary`,\nare not resolved and may still contain option IDs.\n\nIf a lookup behind these readable values fails, the response is still a 200 and the\naffected values are returned as SAP stores them. `meta.warnings` then carries an entry of\ntype `downstream_request_failed` whose `operation` names the lookup:\n- `picklistMetadata`: `custom_fields[].name` is missing and picklist values in\n  `custom_fields` are returned as option IDs.\n- `picklistLabels`: picklist values in `custom_fields` are returned as option IDs;\n  `custom_fields[].name` is still present.\n- `homeAddressPicklists`: `city`, `state` and `postal_code` on home addresses are returned\n  as option IDs.\n\n`status_code` is the HTTP status of the failed lookup when one is available (a lookup that\ntimed out is reported as 504). It is absent when the request could not be built, when SAP's\nresponse could not be used, or when the lookup was not requested because the page would\nexceed SAP's URL length limit; in that case request fewer employees per page with `limit`.\nRaw IDs without such an entry are normally the cases described above; they can also follow\nan unexpected error in Unify's own enrichment, which is not reported in `meta.warnings`.\n\nEmail type is resolved from the `externalCode` of the email-category picklist\noption (ecEmailType), which is locale-independent, so the resolved type does not\ndepend on the tenant's configured language. The externalCode to unified type\nmapping is: B maps to work, P to personal, PI to primary, S to secondary, BI to\nbilling, and O to other. `B`, `P` and `O` are SAP-seeded defaults present in every\ntenant; `PI`, `S` and `BI` must be configured as picklist options by the tenant to\ntake effect. Any email whose ecEmailType option uses an externalCode outside this\nset, or has no externalCode, resolves to other.\n\nSAP SuccessFactors' Person entities are each keyed by `personIdExternal` plus a\ntype/category field — `PerEmail` by `emailType`, `PerPhone` by `phoneType`, and so on\n(SAP SuccessFactors OData V2 API Reference Guide, §9.4.1.9.2). If a tenant deactivates\nthat type field, every row for the person resolves to the same key, so SAP collapses\nthem down to one before the request reaches Apideck, and there is no request-side\nworkaround — the tenant's SAP administrator must re-activate the type field to\nretrieve every row. For `emails[]` this means a person with several email addresses\non file returns only one, and — since the type-decode data collapses too — that entry\nresolves to `other` rather than its real type. SAP has confirmed this generalizes to\nany entity sharing the same composite-key shape, which would include `PerPhone`\n(keyed by `personIdExternal + phoneType`); `phone_numbers[]` derives `type` from\n`isPrimary` rather than a type decode, so if the same collapse occurs there it would\nsurface as a shorter array rather than a mislabeled one.\n\n`preferred_language` is derived from the `externalCode` of the employee's\n`nativePreferredLang` picklist option, which is locale-independent. The value is the\nBCP-47 language subtag, uppercased (e.g. `ru_RU` resolves to `RU`, `en` to `EN`). It\nis `null` when the externalCode is absent, system-generated, or not a parseable\nISO-639-1 two-letter code.\n",
+                        },
+                        {
+                            "connector": "hr-works",
+                            "description": "The employment_status supports filtering on 'active'.",
+                        },
+                        {
+                            "connector": "bamboohr",
+                            "description": 'The employment role field will return "other" for list calls when the employee is terminated. To fetch the correct employment role data, you need to call the employee detail endpoint.\n\nBambooHR does not publish its rate limits and throttles at its discretion. When BambooHR throttles the\nrequest for the record or list you asked for, Unify returns HTTP 429. When BambooHR includes a retry\ndelay, the 429 carries `Retry-After` (seconds to wait) and `x-downstream-ratelimit-reset` (Unix epoch\ntime in milliseconds after which to retry). No limit or remaining-request headers are provided.\n',
+                        },
+                        {
+                            "connector": "rippling",
+                            "description": "Include pass_through[include_terminated] in the query params to include terminated employees in the response.",
+                        },
+                        {
+                            "connector": "workday",
+                            "description": "To avoid request timeouts when fetching all employees, it's recommended to use a limit of 20. Workday can return large amounts of data per employee, and requests exceeding 30 seconds will timeout with an \"Endpoint request timed out\" error.\n\nList Employees returns the employee's department (`department_id`, `department_name`) and company (`company_id`, `company_name`), with the same values as Get Employee. `division_id`, `division` and `custom_fields` are returned on Get Employee only.\n\n`company_id` and `company_name` are the worker's legal company: the Workday organization of type Company assigned to the worker's primary job. Company hierarchies (consolidation roll-ups such as regions) are not returned. When the worker has no job data visible to the integration user, both fields are empty.\n\nList Employees returns workers as of today, so future-dated hires (hire date after today) are not included by default. Pass `filter[as_of_date]` (YYYY-MM-DD) with a future date to include them; it is sent to Workday as `Response_Filter.As_Of_Effective_Date`. Note that a future as-of date also returns existing workers as of that date, including any future-dated job or compensation changes. Get Employee does not accept this filter and always returns the worker as of today.\n\nAddress lines: when Workday's address format for the country splits the street into components, `addresses[].line1` is built from them in this order: the street type when there is one (for example Spanish `Calle` or `Carrer`), then the street name, then the house number; so a Spanish address reads `Calle Montesa 16` and the house number is also returned as `street_number`. `line1` always places the house number after the street name, even where Workday's own formatted address in `string` puts it first, as for France and South Africa (`Rue Juliette Lamber 13`). When the format has a house number but no labelled street name, the lowest-numbered other component is used as the street name. The remaining typed components (building, unit, floor and similar) fill `line2` to `line5` in Workday's line order. For formats without a street-type or street-name component and without a house-number component (for example the US), `line1` is the lowest-numbered address line as Workday returns it, the others follow in `line2` to `line5`, and `street_number` is omitted. `jobs[].location` applies the same `line1` and `street_number` rules; its `line2` to `line5` are not mapped.\n",
+                        },
+                        {
+                            "connector": "fourth",
+                            "description": 'The `leaving_reason` field in Fourth is a string and not an enum. We will return `"other"` if there is a leaving reason. You can use `custom_mappings` to get the actual value.\nThe `manager.id` field may be empty even when `manager.name` is present. This occurs when the manager is a former employee who is not included in the active employees list. In such cases, the manager\'s EmployeeID cannot be resolved from the PayrollNumber lookup.\n',
+                        },
+                        {
+                            "connector": "adp-workforce-now",
+                            "description": "ADP Workforce Now does not expose a native cross-page total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate API request to the ADP count endpoint — an extra API call not currently implemented.\n",
+                        },
+                        {
+                            "connector": "azure-active-directory",
+                            "description": "Microsoft Azure Active Directory does not include a total count in default list responses. `meta.total_count` will not appear. Surfacing the total requires adding `$count=true` with a `ConsistencyLevel: eventual` header — an extra requirement not currently implemented.\n",
+                        },
+                        {
+                            "connector": "adp-run",
+                            "description": "ADP Run does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "adp-ihcm",
+                            "description": "ADP iHCM does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "rippling",
+                            "description": "Rippling does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "justworks",
+                            "description": "Justworks does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "hibob",
+                            "description": "HiBob does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "ceridian-dayforce",
+                            "description": "Ceridian Dayforce does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "trinet",
+                            "description": "TriNet does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "people-hr",
+                            "description": "People HR does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "sapling",
+                            "description": "Sapling does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "google-workspace",
+                            "description": "Google Workspace does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "okta",
+                            "description": "Okta does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "AFAS does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "zoho-people",
+                            "description": "Zoho People does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the total requires a separate count endpoint with a date context — not currently implemented.\n",
+                        },
+                        {
+                            "connector": "lucca-hr",
+                            "description": "`total_count` is available in Lucca HR but requires `?include=totalCount` query parameter. Currently not wired — `meta.total_count` will not appear.\n\nLucca enforces a limit of 50 requests per minute per Lucca domain (see\nhttps://developers.luccasoftware.com/documentation/limits). The quota is shared by every integration\nconnected to that domain, not per Unify connection, so other tools using the same Lucca account consume\nit too. When the limit is exceeded, Unify returns HTTP 429. When Lucca includes a retry delay in that\nresponse (it has in every observed case), the 429 also carries a `Retry-After` header (the number of\nseconds to wait before retrying), `x-downstream-ratelimit-limit` and `x-downstream-ratelimit-reset` (the\nUnix epoch time in milliseconds at which the window frees). Lucca provides no remaining-request count,\nand no rate-limit headers are returned on successful responses.\n",
+                        },
+                        {
+                            "connector": "haileyhr",
+                            "description": 'Hailey HR supports "parallel employments" (multiple Employment records per employee). `department_id`, `department_name`, `division`, `division_id`, `company_id`, `company_name`, `title`, `team`, `manager.id`, and `employment_role.type` reflect the employee\'s **effectual** employment — the active one, or when none is active the next-to-start, or failing that the most recent ended one (status precedence: active → will-start → ended). `priority` is a manual, user-ordered rank that is deliberately not recalculated when an employment ends, so it does not by itself indicate which employment is current. `employment_start_date`/`employment_end_date` reflect overall company tenure instead — see "Get Employee" for per-employment detail via `jobs[]`.\nAn employee can also hold multiple titles and belong to multiple teams at once (`titleIds`/`teamIds` arrays). We only return the first of each as `title`/`team`, since the unified schema allows a single value for both.\n',
+                        },
+                        {
+                            "connector": "humaans-io",
+                            "description": 'By default, listing employees makes one Humaans call per page and returns only the person record:\n`title`, `manager`, `department`, `department_name`, `bank_accounts`, `compensations` and `custom_fields`\nare not returned, `jobs[]` carries only the location id, and `addresses` holds only the primary address.\nUse Get Employee for the full record.\n\nTo get the same fields as Get Employee in the list, set "Include full details when listing employees" to\nYes in the connection\'s Employees configuration settings. Through the Vault API, this is the employees\nresource config `enrich_employee_list` set to `"true"`.\n\nHumaans returns these fields from five separate endpoints (bank accounts, compensations, job roles, custom\nfield values and office locations). Every page with employees on it makes at least one extra request to\neach of the first four, plus one to office locations when someone on the page works from an office.\nHumaans returns at most 250 rows per request, so an endpoint takes more requests when there are many rows\nto read, and a page of more than about 150 employees takes at least two requests for every endpoint except\noffice locations. For example, a page of 100 employees with 25 custom field values each takes 10 requests\nfor custom field values alone. Every extra request counts against the rate limit of the Humaans access\ntoken the connection uses.\n\nWith the setting on, `fields` limits the extra requests to the ones the requested fields need. A list that\nasks only for fields from the person record, such as `fields=id,first_name,emails`, makes no extra\nrequests. `addresses` and `jobs` also request office locations when needed, and `custom_mappings`\nrequests custom field values. With the setting off, `fields` cannot turn the extra details on.\n\nWhen the setting is on, a failed extra request does not fail the list. If Humaans rejects one, rate\nlimits it, or it does not finish in time, the response is still a 200 with an entry in `meta.warnings`.\nThe same happens when one endpoint would need too many requests for the page. The entry\'s `operation`\nnames the endpoint, and the fields it provides are unavailable for that request, not empty in Humaans:\n- `bankAccountsAll`, `compensationsAll`: `bank_accounts`, `compensations` are missing.\n- `customValuesAll`: `custom_fields` and the custom mappings that read them are missing.\n- `jobRolesAll`: `title`, `manager`, `department` and `department_name` are missing, and `jobs[]` is\n  returned as without the setting, with only the location.\n- `locationsAll`: `addresses` has no office entry, and the office in `jobs[].location` carries only its id.\n\nA `status_code` of 403 means the Humaans access token is not allowed to read that data. It repeats on every\npage, and smaller pages or spacing out requests do not help: grant the permission in Humaans, or leave the\nfields that endpoint provides out of `fields`.\n\nFor other warnings on large pages, request smaller pages with `limit` (default 20, maximum 200). A smaller\npage has fewer rows to read, so it makes fewer extra requests at once and finishes sooner. Listing every\nemployee then takes more pages, and each page repeats the person and office location requests, so the\ntotal number of requests grows slightly. Spacing out page requests also helps against rate limits.\n',
+                        },
+                        {
+                            "connector": "silae-fr",
+                            "description": 'By default, listing employees makes one Silae request per page and returns only `id`, `display_name`,\n`social_security_number` and `emails`. Use Get Employee for the full record.\n\nTo get the Get Employee details in the list as well, set "Include full details when listing employees" to\nYes in the connection\'s Employees configuration settings. Through the Vault API, this is the employees\nresource config `enrich_employee_list` set to `"true"`. The list then also returns `first_name`,\n`last_name`, `salutation`, `marital_status`, `title`, `employment_start_date`, `employment_end_date`,\n`birthday`, `jobs`, `addresses` and `phone_numbers`.\n\nSilae returns these details one employee at a time, so with the setting on every page makes one extra\nrequest for each employee on it: a page of 200 employees makes 200 extra requests. Every extra request\ncounts against the connection\'s Silae API limits.\n\nWith the setting on, `fields` limits the extra requests to lists that need them: a list that asks only for\n`id`, `display_name`, `social_security_number` and `emails` makes no extra requests. With the setting off,\n`fields` cannot turn the extra details on.\n\nWhen the setting is on, a failed extra request does not fail the list. If Silae rejects the request for an\nemployee, or the page takes too long to read every employee, the response is still a 200, those employees\nare returned without the extra details, and `meta.warnings` has an entry whose `operation` is\n`employeesOne`. If Silae refuses access or rate-limits the connection, no further extra requests are made\nfor that page and its remaining employees are returned without the extra details. A warning that the\nconnection is not allowed to read employee records repeats on every page: grant that access for the dossier\nin Silae, or leave the setting off.\n\nTo make fewer extra requests per page and finish each page sooner, request smaller pages with `limit`\n(default 20, maximum 200).\n',
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -146,17 +293,19 @@ class ApideckEmployees(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.HrisEmployeesAllResponse(
                 get_employees_response=unmarshal_json_response(
-                    Optional[models.GetEmployeesResponse], http_res
+                    Optional[models.GetEmployeesResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -197,11 +346,10 @@ class ApideckEmployees(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.HrisEmployeesAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -221,7 +369,7 @@ class ApideckEmployees(BaseSDK):
         sort: Optional[
             Union[models.EmployeesSort, models.EmployeesSortTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -266,7 +414,7 @@ class ApideckEmployees(BaseSDK):
             limit=limit,
             filter_=utils.get_pydantic_model(filter_, Optional[models.EmployeesFilter]),
             sort=utils.get_pydantic_model(sort, Optional[models.EmployeesSort]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -287,6 +435,7 @@ class ApideckEmployees(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -311,9 +460,155 @@ class ApideckEmployees(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["hris"],
+                extensions={
+                    "x-apideck-api": "hris",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sdworx-webservice-oidc",
+                            "description": "SD Worx HR Selfservice exposes only the employee number, first name, last name and employer number of each employee; all other employee fields are not available. `id` is the SD Worx employee number and `company_id` the employer number, which are the values accepted by the `time-off-requests` filters.\n",
+                        },
+                        {
+                            "connector": "sdworx-be-sme",
+                            "description": "Listing employees requires the `employer_file_number` connection setting: it selects the SD Worx payroll file\n(employer) whose employees are returned. The available employers are the records of the `companies` resource.\n\nOnly employees with an active contract are returned, so terminated employees never appear; `employment_status`\nis `terminated` only for a contract whose leaving date has already passed. `department`, `manager`, `team`,\n`bank_accounts` and `photo_url` are not available.\n\nEmployees cannot be filtered or sorted: any `filter[...]` or `sort[...]` parameter is rejected with a 400.\n`limit` and `cursor` work. Every page assembles person and contract details from several vendor calls, so\na list call takes a few seconds. Listing without the `employer_file_number` setting returns a 400 that\nnames the setting; an employer the connection cannot access returns a 404.\n\nIf one of the detail calls fails, the request still succeeds with a 200 and the fields that call\nprovides (for example `gender`, `birthday`, `jobs`, `compensations` or the employment dates) are absent.\nTreat their absence as unavailable for this request, not as empty at the source. One record is returned\nper person; when a person holds several concurrent contracts with the employer, the details of the first\ncontract are used.\n\n`id` is the SD Worx person id and `employee_number` the payroll employee number. `title`, `jobs`,\n`employment_start_date`, `employment_end_date`, `employment_role.type` and `compensations` come from the\ncontract valid on the day of the request; wages are returned in EUR per hour, month or (as `other`) per day.\n`jobs` is empty when the contract has no job description in SD Worx.\n\n`gender` is derived from SD Worx's gender code table (male, female, or `not_specified` for unknown and not\ndisclosed). `preferred_language` and `languages` are normalised to ISO 639-1 codes (`nl`, `fr`, `de`, `en`),\n`nationalities` are ISO 3166-1 alpha-2 codes and `marital_status` carries the SD Worx marital-status code\n(for example `02` for married). Belgian addresses split the house number and the box number:\n`addresses[].line1` holds the street and house number and `addresses[].line2` holds the box number.\n",
+                        },
+                        {
+                            "connector": "deel",
+                            "description": 'The `emails[].type` value `primary` follows the worker\'s own Deel account (login) email, which may be\neither their work or their personal address and therefore varies from worker to worker. Deel does not\ndocument how the flag is chosen, so treat this as observed behaviour.\n\nTo avoid depending on which address happens to be primary, the primary address is also returned a second\ntime under its real type. A worker whose account email is their work address returns both\n`{"type": "primary"}` and `{"type": "work"}` for it, so reading the `work` entry gives the work address\nregardless of the primary flag. Because Deel can list the same address more than once, one address may\nappear in several entries with different types.\n\nDeel `home` addresses are returned as `personal`.\n\nUse `?raw=true` to see Deel\'s original `type` and `primary` flags.\n',
+                        },
+                        {
+                            "connector": "nmbrs",
+                            "description": 'We keep track of the "List Employees" response for NMBRS virtual webhooks events, which contains fewer fields compared to the "Get Employee" response.',
+                        },
+                        {
+                            "connector": "ukg-pro",
+                            "description": 'UKG Pro serves person data and employment data from two different endpoints, so the employment fields on "List Employees" (`employment_status`, `employment_role`, `title`, `department`, `department_id`, `employment_start_date`, `employment_end_date`, `manager`) are enriched from a second call made on your behalf. If that secondary call fails, the request still succeeds with a 200 and those fields are simply absent from the affected records — the person-scope fields are unaffected. Treat their absence as "unavailable for this request", not as "empty at the source". On a list filtered by `employment_status` the roles are reversed: the second call supplies the person fields, so if it fails the records keep their employment fields while the person fields — including `id` — may be absent.\nUKG returns every employee ever employed, including terminated ones. `employment_status` resolves from the connector\'s employment status value; use `filter[employment_status]` to scope the list server-side. The filter accepts `active`, `inactive` and `terminated` — `other` is rejected because this connector has no status it could match. The filter can be combined with `filter[company_id]`, but not with `filter[email]`, `filter[first_name]` or `filter[last_name]` — those combinations are rejected with a 400 rather than returning silently unfiltered results.\nA filtered list returns one entry per matching employment record, so an employee with more than one matching record appears more than once — dedupe on `id` if you need unique employees. The unfiltered list keeps its one-entry-per-employee shape and reports each employee\'s primary employment record, so the same employee can appear under `filter[employment_status]=terminated` (an older terminated record matched) while the unfiltered list reports them as `active`.\n`department` and `department_id` both resolve from the connector\'s organisation-level hierarchy, and `division` is not currently mapped. `jobs`, `compensations`, `custom_fields` and `bank_accounts` are only available on "Get Employee".\n',
+                        },
+                        {
+                            "connector": "ceridian-dayforce",
+                            "description": 'The Ceridian Dayforce "List Employees" endpoint only returns employee IDs by default. To get full employee details, use the "Get Employee" endpoint. For virtual webhook events on Ceridian Dayforce, we monitor the "List Employees" response, which has a very small set of fields in comparison to the "Get Employee" response. This is the reason why we only support `hris.employee.created` events for this connector.\n',
+                        },
+                        {
+                            "connector": "hibob",
+                            "description": "If your Unify plan has the 'Custom Field Mapping' feature, you can map custom fields to your responses. Once mapped, they will be included in the custom_mappings property within Unify responses.\nImportant to know is that HiBob has permission controls for users to determine which data will be available on their API. This can lead to specific fields not being available (example: `birthday`).\nOn 'List Employees', only mapped custom fields have values. Other custom fields are returned with `value: null`. For getting all custom field values, please use the 'Get Employee' (employeesOne) call instead of 'List Employees'.\n",
+                        },
+                        {
+                            "connector": "hibob-oauth",
+                            "description": "If your Unify plan has the 'Custom Field Mapping' feature, you can map custom fields to your responses. Once mapped, they will be included in the custom_mappings property within Unify responses.\nImportant to know is that HiBob has permission controls for users to determine which data will be available on their API. This can lead to specific fields not being available (example: `birthday`).\nOn 'List Employees', only mapped custom fields have values. Other custom fields are returned with `value: null`. For getting all custom field values, please use the 'Get Employee' (employeesOne) call instead of 'List Employees'.\n",
+                        },
+                        {
+                            "connector": "paylocity",
+                            "description": 'For virtual webhook events on Paylocity, we monitor the "List Employees" response, which has a very small set of fields in comparison of the "Get Employee" response.',
+                        },
+                        {
+                            "connector": "sage-hr",
+                            "description": 'The minimum pagination `limit` is 50, since Sage HR does not support pagination with a lower limit. Pagination for Sage HR only support per 50 limits. Without the employment_status filter it will only return active employees. To fetch terminated employees, you need to include the employment_status filter with the value "terminated".\n',
+                        },
+                        {
+                            "connector": "sap-successfactors",
+                            "description": "Custom fields are extracted from both `personalInfoNav` and\n`employmentNav.jobInfoNav` on each employee record. Custom fields stored on\nother navs are not surfaced in `custom_fields` — use `pass_through` to access them.\n\n`custom_fields[].value` is human-readable for picklist-backed properties and for a\nverified set of Foundation-Object-backed properties (`position`, `costCenter`,\n`payGrade`, `businessUnit`, `employeeClass`). For picklists, the tenant's picklist label\nis returned (`\"Monday to Sunday\"` rather than the option ID `\"663865\"`), resolved by\npreferring `en_GB`, then `en_US`, then any other English locale, then the sole authored\nlocale when a tenant-created picklist has only one; if no label is usable the option's\nexternal code is returned. Foundation-Object-backed properties are resolved by matching\neach object's own active-status and label convention — a best-effort convention match,\nnot a guarantee, so any other Foundation-Object-backed property still returns the raw\ndownstream ID. Expect a mix of readable labels and raw IDs across `custom_fields`.\n\n`custom_fields[].name` carries the property's SAP field label (`\"FLSA Work Week\"`) and is\npopulated for every custom field the tenant's metadata describes.\n\n`custom_fields[].id` is the SAP property name (`costCenter`, `customString13`). When\nboth the personal-information entity and the job-information entity contribute a custom\nfield with the same name, both entries are prefixed with their SAP entity\n(`PerPersonal:customString7` and `EmpJob:customString7`) so each id identifies one\nfield. The prefix follows the tenant's configuration: if the tenant later adds a field\nwith an existing name to the other entity, the previously unprefixed id becomes\nprefixed, and a custom mapping stored against the old id returns no value until the\nfield is re-picked. In rare cases a shared name is still returned unprefixed: when\nSAP's field definitions are temporarily unavailable (a `picklistMetadata` entry in\n`meta.warnings`) and the response contains no record of the other entity. A custom\nmapping stored against the unprefixed id can then return the other entity's value.\n\nAddress fields `line1`–`line5` are passed through verbatim from SAP's positional\nfields `address1`–`address5` with no per-country recomposition. SAP SuccessFactors\ninterprets these positions differently per country, and the meaning of each position\nalso varies per tenant — two SAP customers in the same country can configure\n`address1`–`addressN` semantics differently via Manage Business Configuration.\nBelgium and the Netherlands are confirmed examples of per-tenant variation.\nThe country code is exposed in `addresses[].country` as ISO-2 (e.g. `\"BE\"`, `\"NL\"`) —\nconsumers must use it together with knowledge of the specific tenant's configuration\nto interpret the semantic meaning of each line.\n\nFields `address6` through `address20` are not surfaced in the unified response — the\nJSON mapping declares `line1`–`line5` only. Consumers that need higher-numbered\npositional fields must use `pass_through`.\n\nThe `street_number` field is not populated for SAP SuccessFactors employees.\n\nThis limitation is by SAP design: their OData v2 API exposes a single merged\n`PerAddressDEFLT` entity for all countries and does not surface per-country\nfield semantics. See SAP KBA 2902948.\n\nOn the home address (`addresses[].type` `home`), `city`, `state` and `postal_code` can\ncontain SAP's numeric option IDs (for example `\"358\"`) when the tenant's home-address\nlayout for that country makes the field a dropdown. SAP does not report which countries\nuse dropdowns, so list them in the Employees configuration settings (Countries where home\naddress City, State or Postal Code is a dropdown, as 3-letter country codes such as\n`BEL`). For a listed country, `city` and `state` return the option's label\n(`\"Antwerpen\"`) and `postal_code` returns the postal code itself (`\"2060\"`). A value stays\nthe raw option ID when its country is not listed, when the tenant's address setup has no\ndropdown for that field, or when the lookup cannot be completed. Other address types, such as `primary`,\nare not resolved and may still contain option IDs.\n\nIf a lookup behind these readable values fails, the response is still a 200 and the\naffected values are returned as SAP stores them. `meta.warnings` then carries an entry of\ntype `downstream_request_failed` whose `operation` names the lookup:\n- `picklistMetadata`: `custom_fields[].name` is missing and picklist values in\n  `custom_fields` are returned as option IDs.\n- `picklistLabels`: picklist values in `custom_fields` are returned as option IDs;\n  `custom_fields[].name` is still present.\n- `homeAddressPicklists`: `city`, `state` and `postal_code` on home addresses are returned\n  as option IDs.\n\n`status_code` is the HTTP status of the failed lookup when one is available (a lookup that\ntimed out is reported as 504). It is absent when the request could not be built, when SAP's\nresponse could not be used, or when the lookup was not requested because the page would\nexceed SAP's URL length limit; in that case request fewer employees per page with `limit`.\nRaw IDs without such an entry are normally the cases described above; they can also follow\nan unexpected error in Unify's own enrichment, which is not reported in `meta.warnings`.\n\nEmail type is resolved from the `externalCode` of the email-category picklist\noption (ecEmailType), which is locale-independent, so the resolved type does not\ndepend on the tenant's configured language. The externalCode to unified type\nmapping is: B maps to work, P to personal, PI to primary, S to secondary, BI to\nbilling, and O to other. `B`, `P` and `O` are SAP-seeded defaults present in every\ntenant; `PI`, `S` and `BI` must be configured as picklist options by the tenant to\ntake effect. Any email whose ecEmailType option uses an externalCode outside this\nset, or has no externalCode, resolves to other.\n\nSAP SuccessFactors' Person entities are each keyed by `personIdExternal` plus a\ntype/category field — `PerEmail` by `emailType`, `PerPhone` by `phoneType`, and so on\n(SAP SuccessFactors OData V2 API Reference Guide, §9.4.1.9.2). If a tenant deactivates\nthat type field, every row for the person resolves to the same key, so SAP collapses\nthem down to one before the request reaches Apideck, and there is no request-side\nworkaround — the tenant's SAP administrator must re-activate the type field to\nretrieve every row. For `emails[]` this means a person with several email addresses\non file returns only one, and — since the type-decode data collapses too — that entry\nresolves to `other` rather than its real type. SAP has confirmed this generalizes to\nany entity sharing the same composite-key shape, which would include `PerPhone`\n(keyed by `personIdExternal + phoneType`); `phone_numbers[]` derives `type` from\n`isPrimary` rather than a type decode, so if the same collapse occurs there it would\nsurface as a shorter array rather than a mislabeled one.\n\n`preferred_language` is derived from the `externalCode` of the employee's\n`nativePreferredLang` picklist option, which is locale-independent. The value is the\nBCP-47 language subtag, uppercased (e.g. `ru_RU` resolves to `RU`, `en` to `EN`). It\nis `null` when the externalCode is absent, system-generated, or not a parseable\nISO-639-1 two-letter code.\n",
+                        },
+                        {
+                            "connector": "hr-works",
+                            "description": "The employment_status supports filtering on 'active'.",
+                        },
+                        {
+                            "connector": "bamboohr",
+                            "description": 'The employment role field will return "other" for list calls when the employee is terminated. To fetch the correct employment role data, you need to call the employee detail endpoint.\n\nBambooHR does not publish its rate limits and throttles at its discretion. When BambooHR throttles the\nrequest for the record or list you asked for, Unify returns HTTP 429. When BambooHR includes a retry\ndelay, the 429 carries `Retry-After` (seconds to wait) and `x-downstream-ratelimit-reset` (Unix epoch\ntime in milliseconds after which to retry). No limit or remaining-request headers are provided.\n',
+                        },
+                        {
+                            "connector": "rippling",
+                            "description": "Include pass_through[include_terminated] in the query params to include terminated employees in the response.",
+                        },
+                        {
+                            "connector": "workday",
+                            "description": "To avoid request timeouts when fetching all employees, it's recommended to use a limit of 20. Workday can return large amounts of data per employee, and requests exceeding 30 seconds will timeout with an \"Endpoint request timed out\" error.\n\nList Employees returns the employee's department (`department_id`, `department_name`) and company (`company_id`, `company_name`), with the same values as Get Employee. `division_id`, `division` and `custom_fields` are returned on Get Employee only.\n\n`company_id` and `company_name` are the worker's legal company: the Workday organization of type Company assigned to the worker's primary job. Company hierarchies (consolidation roll-ups such as regions) are not returned. When the worker has no job data visible to the integration user, both fields are empty.\n\nList Employees returns workers as of today, so future-dated hires (hire date after today) are not included by default. Pass `filter[as_of_date]` (YYYY-MM-DD) with a future date to include them; it is sent to Workday as `Response_Filter.As_Of_Effective_Date`. Note that a future as-of date also returns existing workers as of that date, including any future-dated job or compensation changes. Get Employee does not accept this filter and always returns the worker as of today.\n\nAddress lines: when Workday's address format for the country splits the street into components, `addresses[].line1` is built from them in this order: the street type when there is one (for example Spanish `Calle` or `Carrer`), then the street name, then the house number; so a Spanish address reads `Calle Montesa 16` and the house number is also returned as `street_number`. `line1` always places the house number after the street name, even where Workday's own formatted address in `string` puts it first, as for France and South Africa (`Rue Juliette Lamber 13`). When the format has a house number but no labelled street name, the lowest-numbered other component is used as the street name. The remaining typed components (building, unit, floor and similar) fill `line2` to `line5` in Workday's line order. For formats without a street-type or street-name component and without a house-number component (for example the US), `line1` is the lowest-numbered address line as Workday returns it, the others follow in `line2` to `line5`, and `street_number` is omitted. `jobs[].location` applies the same `line1` and `street_number` rules; its `line2` to `line5` are not mapped.\n",
+                        },
+                        {
+                            "connector": "fourth",
+                            "description": 'The `leaving_reason` field in Fourth is a string and not an enum. We will return `"other"` if there is a leaving reason. You can use `custom_mappings` to get the actual value.\nThe `manager.id` field may be empty even when `manager.name` is present. This occurs when the manager is a former employee who is not included in the active employees list. In such cases, the manager\'s EmployeeID cannot be resolved from the PayrollNumber lookup.\n',
+                        },
+                        {
+                            "connector": "adp-workforce-now",
+                            "description": "ADP Workforce Now does not expose a native cross-page total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate API request to the ADP count endpoint — an extra API call not currently implemented.\n",
+                        },
+                        {
+                            "connector": "azure-active-directory",
+                            "description": "Microsoft Azure Active Directory does not include a total count in default list responses. `meta.total_count` will not appear. Surfacing the total requires adding `$count=true` with a `ConsistencyLevel: eventual` header — an extra requirement not currently implemented.\n",
+                        },
+                        {
+                            "connector": "adp-run",
+                            "description": "ADP Run does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "adp-ihcm",
+                            "description": "ADP iHCM does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "rippling",
+                            "description": "Rippling does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "justworks",
+                            "description": "Justworks does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "hibob",
+                            "description": "HiBob does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "ceridian-dayforce",
+                            "description": "Ceridian Dayforce does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "trinet",
+                            "description": "TriNet does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "people-hr",
+                            "description": "People HR does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "sapling",
+                            "description": "Sapling does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "google-workspace",
+                            "description": "Google Workspace does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "okta",
+                            "description": "Okta does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "AFAS does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "zoho-people",
+                            "description": "Zoho People does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the total requires a separate count endpoint with a date context — not currently implemented.\n",
+                        },
+                        {
+                            "connector": "lucca-hr",
+                            "description": "`total_count` is available in Lucca HR but requires `?include=totalCount` query parameter. Currently not wired — `meta.total_count` will not appear.\n\nLucca enforces a limit of 50 requests per minute per Lucca domain (see\nhttps://developers.luccasoftware.com/documentation/limits). The quota is shared by every integration\nconnected to that domain, not per Unify connection, so other tools using the same Lucca account consume\nit too. When the limit is exceeded, Unify returns HTTP 429. When Lucca includes a retry delay in that\nresponse (it has in every observed case), the 429 also carries a `Retry-After` header (the number of\nseconds to wait before retrying), `x-downstream-ratelimit-limit` and `x-downstream-ratelimit-reset` (the\nUnix epoch time in milliseconds at which the window frees). Lucca provides no remaining-request count,\nand no rate-limit headers are returned on successful responses.\n",
+                        },
+                        {
+                            "connector": "haileyhr",
+                            "description": 'Hailey HR supports "parallel employments" (multiple Employment records per employee). `department_id`, `department_name`, `division`, `division_id`, `company_id`, `company_name`, `title`, `team`, `manager.id`, and `employment_role.type` reflect the employee\'s **effectual** employment — the active one, or when none is active the next-to-start, or failing that the most recent ended one (status precedence: active → will-start → ended). `priority` is a manual, user-ordered rank that is deliberately not recalculated when an employment ends, so it does not by itself indicate which employment is current. `employment_start_date`/`employment_end_date` reflect overall company tenure instead — see "Get Employee" for per-employment detail via `jobs[]`.\nAn employee can also hold multiple titles and belong to multiple teams at once (`titleIds`/`teamIds` arrays). We only return the first of each as `title`/`team`, since the unified schema allows a single value for both.\n',
+                        },
+                        {
+                            "connector": "humaans-io",
+                            "description": 'By default, listing employees makes one Humaans call per page and returns only the person record:\n`title`, `manager`, `department`, `department_name`, `bank_accounts`, `compensations` and `custom_fields`\nare not returned, `jobs[]` carries only the location id, and `addresses` holds only the primary address.\nUse Get Employee for the full record.\n\nTo get the same fields as Get Employee in the list, set "Include full details when listing employees" to\nYes in the connection\'s Employees configuration settings. Through the Vault API, this is the employees\nresource config `enrich_employee_list` set to `"true"`.\n\nHumaans returns these fields from five separate endpoints (bank accounts, compensations, job roles, custom\nfield values and office locations). Every page with employees on it makes at least one extra request to\neach of the first four, plus one to office locations when someone on the page works from an office.\nHumaans returns at most 250 rows per request, so an endpoint takes more requests when there are many rows\nto read, and a page of more than about 150 employees takes at least two requests for every endpoint except\noffice locations. For example, a page of 100 employees with 25 custom field values each takes 10 requests\nfor custom field values alone. Every extra request counts against the rate limit of the Humaans access\ntoken the connection uses.\n\nWith the setting on, `fields` limits the extra requests to the ones the requested fields need. A list that\nasks only for fields from the person record, such as `fields=id,first_name,emails`, makes no extra\nrequests. `addresses` and `jobs` also request office locations when needed, and `custom_mappings`\nrequests custom field values. With the setting off, `fields` cannot turn the extra details on.\n\nWhen the setting is on, a failed extra request does not fail the list. If Humaans rejects one, rate\nlimits it, or it does not finish in time, the response is still a 200 with an entry in `meta.warnings`.\nThe same happens when one endpoint would need too many requests for the page. The entry\'s `operation`\nnames the endpoint, and the fields it provides are unavailable for that request, not empty in Humaans:\n- `bankAccountsAll`, `compensationsAll`: `bank_accounts`, `compensations` are missing.\n- `customValuesAll`: `custom_fields` and the custom mappings that read them are missing.\n- `jobRolesAll`: `title`, `manager`, `department` and `department_name` are missing, and `jobs[]` is\n  returned as without the setting, with only the location.\n- `locationsAll`: `addresses` has no office entry, and the office in `jobs[].location` carries only its id.\n\nA `status_code` of 403 means the Humaans access token is not allowed to read that data. It repeats on every\npage, and smaller pages or spacing out requests do not help: grant the permission in Humaans, or leave the\nfields that endpoint provides out of `fields`.\n\nFor other warnings on large pages, request smaller pages with `limit` (default 20, maximum 200). A smaller\npage has fewer rows to read, so it makes fewer extra requests at once and finishes sooner. Listing every\nemployee then takes more pages, and each page repeats the person and office location requests, so the\ntotal number of requests grows slightly. Spacing out page requests also helps against rate limits.\n',
+                        },
+                        {
+                            "connector": "silae-fr",
+                            "description": 'By default, listing employees makes one Silae request per page and returns only `id`, `display_name`,\n`social_security_number` and `emails`. Use Get Employee for the full record.\n\nTo get the Get Employee details in the list as well, set "Include full details when listing employees" to\nYes in the connection\'s Employees configuration settings. Through the Vault API, this is the employees\nresource config `enrich_employee_list` set to `"true"`. The list then also returns `first_name`,\n`last_name`, `salutation`, `marital_status`, `title`, `employment_start_date`, `employment_end_date`,\n`birthday`, `jobs`, `addresses` and `phone_numbers`.\n\nSilae returns these details one employee at a time, so with the setting on every page makes one extra\nrequest for each employee on it: a page of 200 employees makes 200 extra requests. Every extra request\ncounts against the connection\'s Silae API limits.\n\nWith the setting on, `fields` limits the extra requests to lists that need them: a list that asks only for\n`id`, `display_name`, `social_security_number` and `emails` makes no extra requests. With the setting off,\n`fields` cannot turn the extra details on.\n\nWhen the setting is on, a failed extra request does not fail the list. If Silae rejects the request for an\nemployee, or the page takes too long to read every employee, the response is still a 200, those employees\nare returned without the extra details, and `meta.warnings` has an entry whose `operation` is\n`employeesOne`. If Silae refuses access or rate-limits the connection, no further extra requests are made\nfor that page and its remaining employees are returned without the extra details. A warning that the\nconnection is not allowed to read employee records repeats on every page: grant that access for the dossier\nin Silae, or leave the setting off.\n\nTo make fewer extra requests per page and finish each page sooner, request smaller pages with `limit`\n(default 20, maximum 200).\n',
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -340,17 +635,19 @@ class ApideckEmployees(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.HrisEmployeesAllResponse(
                 get_employees_response=unmarshal_json_response(
-                    Optional[models.GetEmployeesResponse], http_res
+                    Optional[models.GetEmployeesResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -391,11 +688,10 @@ class ApideckEmployees(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.HrisEmployeesAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -438,7 +734,7 @@ class ApideckEmployees(BaseSDK):
         ] = None,
         ethnicity: OptionalNullable[str] = UNSET,
         manager: Optional[Union[models.Manager, models.ManagerTypedDict]] = None,
-        direct_reports: OptionalNullable[List[str]] = UNSET,
+        direct_reports: OptionalNullable[Iterable[str]] = UNSET,
         social_security_number: OptionalNullable[str] = UNSET,
         birthday: OptionalNullable[date] = UNSET,
         deceased_on: OptionalNullable[date] = UNSET,
@@ -447,51 +743,59 @@ class ApideckEmployees(BaseSDK):
         gender: OptionalNullable[models.Gender] = UNSET,
         pronouns: OptionalNullable[str] = UNSET,
         preferred_language: OptionalNullable[str] = UNSET,
-        languages: Optional[List[Nullable[str]]] = None,
-        nationalities: Optional[List[Nullable[str]]] = None,
+        languages: Optional[Iterable[Nullable[str]]] = None,
+        nationalities: Optional[Iterable[Nullable[str]]] = None,
         photo_url: OptionalNullable[str] = UNSET,
         timezone: OptionalNullable[str] = UNSET,
         source: OptionalNullable[str] = UNSET,
         source_id: OptionalNullable[str] = UNSET,
         record_url: OptionalNullable[str] = UNSET,
         jobs: OptionalNullable[
-            Union[List[models.EmployeeJobInput], List[models.EmployeeJobInputTypedDict]]
+            Union[
+                Iterable[models.EmployeeJobInput],
+                Iterable[models.EmployeeJobInputTypedDict],
+            ]
         ] = UNSET,
         compensations: OptionalNullable[
             Union[
-                List[models.EmployeeCompensationInput],
-                List[models.EmployeeCompensationInputTypedDict],
+                Iterable[models.EmployeeCompensationInput],
+                Iterable[models.EmployeeCompensationInputTypedDict],
             ]
         ] = UNSET,
         works_remote: OptionalNullable[bool] = UNSET,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         phone_numbers: Optional[
-            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+            Union[Iterable[models.PhoneNumber], Iterable[models.PhoneNumberTypedDict]]
         ] = None,
-        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        emails: Optional[
+            Union[Iterable[models.Email], Iterable[models.EmailTypedDict]]
+        ] = None,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         social_links: Optional[
-            Union[List[models.SocialLink], List[models.SocialLinkTypedDict]]
+            Union[Iterable[models.SocialLink], Iterable[models.SocialLinkTypedDict]]
         ] = None,
         bank_accounts: Optional[
-            Union[List[models.BankAccount2], List[models.BankAccount2TypedDict]]
+            Union[Iterable[models.BankAccount2], Iterable[models.BankAccount2TypedDict]]
         ] = None,
         tax_code: OptionalNullable[str] = UNSET,
         tax_id: OptionalNullable[str] = UNSET,
         dietary_preference: OptionalNullable[str] = UNSET,
-        food_allergies: OptionalNullable[List[str]] = UNSET,
+        food_allergies: OptionalNullable[Iterable[str]] = UNSET,
         probation_period: Optional[
             Union[models.ProbationPeriod, models.ProbationPeriodTypedDict]
         ] = None,
-        tags: OptionalNullable[List[str]] = UNSET,
+        tags: OptionalNullable[Iterable[str]] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         deleted: OptionalNullable[bool] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -617,7 +921,9 @@ class ApideckEmployees(BaseSDK):
                 ),
                 ethnicity=ethnicity,
                 manager=utils.get_pydantic_model(manager, Optional[models.Manager]),
-                direct_reports=direct_reports,
+                direct_reports=utils.unmarshal(
+                    direct_reports, OptionalNullable[List[str]]
+                ),
                 social_security_number=social_security_number,
                 birthday=birthday,
                 deceased_on=deceased_on,
@@ -626,8 +932,10 @@ class ApideckEmployees(BaseSDK):
                 gender=gender,
                 pronouns=pronouns,
                 preferred_language=preferred_language,
-                languages=languages,
-                nationalities=nationalities,
+                languages=utils.unmarshal(languages, Optional[List[Nullable[str]]]),
+                nationalities=utils.unmarshal(
+                    nationalities, Optional[List[Nullable[str]]]
+                ),
                 photo_url=photo_url,
                 timezone=timezone,
                 source=source,
@@ -660,11 +968,13 @@ class ApideckEmployees(BaseSDK):
                 tax_code=tax_code,
                 tax_id=tax_id,
                 dietary_preference=dietary_preference,
-                food_allergies=food_allergies,
+                food_allergies=utils.unmarshal(
+                    food_allergies, OptionalNullable[List[str]]
+                ),
                 probation_period=utils.get_pydantic_model(
                     probation_period, Optional[models.ProbationPeriod]
                 ),
-                tags=tags,
+                tags=utils.unmarshal(tags, OptionalNullable[List[str]]),
                 row_version=row_version,
                 deleted=deleted,
                 pass_through=utils.get_pydantic_model(
@@ -693,6 +1003,7 @@ class ApideckEmployees(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.employee, False, False, "json", models.EmployeeInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -717,9 +1028,43 @@ class ApideckEmployees(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["hris"],
+                extensions={
+                    "x-apideck-api": "hris",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "bamboohr",
+                            "description": "BambooHR does not publish its rate limits and throttles at its discretion. When BambooHR throttles the\nrequest to create the employee, Unify returns HTTP 429. When BambooHR includes a retry delay, the 429\ncarries `Retry-After` (seconds to wait) and `x-downstream-ratelimit-reset` (Unix epoch time in\nmilliseconds after which to retry). No limit or remaining-request headers are provided.\n",
+                        },
+                        {
+                            "connector": "hibob",
+                            "description": "When creating an employee is required by Hibob to include the following Unifiy fields: first_name, last_name, employment_start_date, jobs[0].location.name and an email with a primary type must be provided within the emails field.\nFor countries hibob doesn't accept iso code or name values so just the country common name. Example 'United States'\nHiBob API just accepts one compensation, so for the request it will be considered the first one sent in the array and the payment unit is sent yearly by default.\n",
+                        },
+                        {
+                            "connector": "hibob-oauth",
+                            "description": "When creating an employee is required by Hibob to include the following Unifiy fields: first_name, last_name, employment_start_date, jobs[0].location.name and an email with a primary type must be provided within the emails field.\nFor countries hibob doesn't accept iso code or name values so just the country common name. Example 'United States'\nHiBob API just accepts one compensation, so for the request it will be considered the first one sent in the array and the payment unit is sent yearly by default.\n",
+                        },
+                        {
+                            "connector": "humaans-io",
+                            "description": "When creating an employee in Humaans, it is mandatory to include the following Unify fields: first_name, last_name, title, employment_start_date, jobs[0].location.id. Additionally, within the 'emails' field, you must provide an email with a 'primary' type. Furthermore, if the employee is remote, the primary address city will be used as the remote city, and this value should be valid.\"\n",
+                        },
+                        {
+                            "connector": "nmbrs",
+                            "description": 'When creating an employee, the `employment_role.type` values accepted for NMbrs are `employee`, `contractor` and `freelance`.\n\n**Important**: Nmbrs requires nationality data (`nationalities` field) for employees with type "payroll". When nationality is not provided:\n- Employees with `employment_role.type: "employee"` are automatically created as "external" type instead of "payroll" to avoid validation errors\n- This may affect payroll processing, benefits eligibility, and reporting in Nmbrs\n- To create employees as "payroll" type, ensure the `nationalities` field contains at least one ISO country code\n- Contractors and freelancers are always created as "external" type regardless of nationality\n',
+                        },
+                        {
+                            "connector": "haileyhr",
+                            "description": "Hailey HR does not allow duplicate email addresses across employees. Creating an employee with an `emails` value already in use by another employee returns an error.\n\n`employee_number` cannot be set through the API. Hailey HR generates employment numbers from rules configured in Hailey, so a value supplied on create is accepted without error and silently ignored — the created employee returns `employee_number: null` until a number is entered in Hailey directly. Reading the field works normally once it has been set.\n",
+                        },
+                        {
+                            "connector": "bamboohr",
+                            "description": "BambooHR has no primary email or phone field, so only these `emails[].type` and `phone_numbers[].type`\nvalues are written: emails `work` → Work Email and `personal` → Home Email; phone numbers `work` → Work\nPhone (with `extension` → Work Phone Extension), `mobile` → Mobile Phone and `home` → Home Phone. Any\nother type, including `primary`, is ignored and that email or phone number is not saved.\n\nList Employees and Get Employee return a `primary` email that is a read-only copy of the work email. To\nchange it, send the `work` email.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -727,10 +1072,9 @@ class ApideckEmployees(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.HrisEmployeesAddResponse(
                 create_employee_response=unmarshal_json_response(
-                    Optional[models.CreateEmployeeResponse], http_res
+                    Optional[models.CreateEmployeeResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -771,10 +1115,9 @@ class ApideckEmployees(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.HrisEmployeesAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -817,7 +1160,7 @@ class ApideckEmployees(BaseSDK):
         ] = None,
         ethnicity: OptionalNullable[str] = UNSET,
         manager: Optional[Union[models.Manager, models.ManagerTypedDict]] = None,
-        direct_reports: OptionalNullable[List[str]] = UNSET,
+        direct_reports: OptionalNullable[Iterable[str]] = UNSET,
         social_security_number: OptionalNullable[str] = UNSET,
         birthday: OptionalNullable[date] = UNSET,
         deceased_on: OptionalNullable[date] = UNSET,
@@ -826,51 +1169,59 @@ class ApideckEmployees(BaseSDK):
         gender: OptionalNullable[models.Gender] = UNSET,
         pronouns: OptionalNullable[str] = UNSET,
         preferred_language: OptionalNullable[str] = UNSET,
-        languages: Optional[List[Nullable[str]]] = None,
-        nationalities: Optional[List[Nullable[str]]] = None,
+        languages: Optional[Iterable[Nullable[str]]] = None,
+        nationalities: Optional[Iterable[Nullable[str]]] = None,
         photo_url: OptionalNullable[str] = UNSET,
         timezone: OptionalNullable[str] = UNSET,
         source: OptionalNullable[str] = UNSET,
         source_id: OptionalNullable[str] = UNSET,
         record_url: OptionalNullable[str] = UNSET,
         jobs: OptionalNullable[
-            Union[List[models.EmployeeJobInput], List[models.EmployeeJobInputTypedDict]]
+            Union[
+                Iterable[models.EmployeeJobInput],
+                Iterable[models.EmployeeJobInputTypedDict],
+            ]
         ] = UNSET,
         compensations: OptionalNullable[
             Union[
-                List[models.EmployeeCompensationInput],
-                List[models.EmployeeCompensationInputTypedDict],
+                Iterable[models.EmployeeCompensationInput],
+                Iterable[models.EmployeeCompensationInputTypedDict],
             ]
         ] = UNSET,
         works_remote: OptionalNullable[bool] = UNSET,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         phone_numbers: Optional[
-            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+            Union[Iterable[models.PhoneNumber], Iterable[models.PhoneNumberTypedDict]]
         ] = None,
-        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        emails: Optional[
+            Union[Iterable[models.Email], Iterable[models.EmailTypedDict]]
+        ] = None,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         social_links: Optional[
-            Union[List[models.SocialLink], List[models.SocialLinkTypedDict]]
+            Union[Iterable[models.SocialLink], Iterable[models.SocialLinkTypedDict]]
         ] = None,
         bank_accounts: Optional[
-            Union[List[models.BankAccount2], List[models.BankAccount2TypedDict]]
+            Union[Iterable[models.BankAccount2], Iterable[models.BankAccount2TypedDict]]
         ] = None,
         tax_code: OptionalNullable[str] = UNSET,
         tax_id: OptionalNullable[str] = UNSET,
         dietary_preference: OptionalNullable[str] = UNSET,
-        food_allergies: OptionalNullable[List[str]] = UNSET,
+        food_allergies: OptionalNullable[Iterable[str]] = UNSET,
         probation_period: Optional[
             Union[models.ProbationPeriod, models.ProbationPeriodTypedDict]
         ] = None,
-        tags: OptionalNullable[List[str]] = UNSET,
+        tags: OptionalNullable[Iterable[str]] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         deleted: OptionalNullable[bool] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -996,7 +1347,9 @@ class ApideckEmployees(BaseSDK):
                 ),
                 ethnicity=ethnicity,
                 manager=utils.get_pydantic_model(manager, Optional[models.Manager]),
-                direct_reports=direct_reports,
+                direct_reports=utils.unmarshal(
+                    direct_reports, OptionalNullable[List[str]]
+                ),
                 social_security_number=social_security_number,
                 birthday=birthday,
                 deceased_on=deceased_on,
@@ -1005,8 +1358,10 @@ class ApideckEmployees(BaseSDK):
                 gender=gender,
                 pronouns=pronouns,
                 preferred_language=preferred_language,
-                languages=languages,
-                nationalities=nationalities,
+                languages=utils.unmarshal(languages, Optional[List[Nullable[str]]]),
+                nationalities=utils.unmarshal(
+                    nationalities, Optional[List[Nullable[str]]]
+                ),
                 photo_url=photo_url,
                 timezone=timezone,
                 source=source,
@@ -1039,11 +1394,13 @@ class ApideckEmployees(BaseSDK):
                 tax_code=tax_code,
                 tax_id=tax_id,
                 dietary_preference=dietary_preference,
-                food_allergies=food_allergies,
+                food_allergies=utils.unmarshal(
+                    food_allergies, OptionalNullable[List[str]]
+                ),
                 probation_period=utils.get_pydantic_model(
                     probation_period, Optional[models.ProbationPeriod]
                 ),
-                tags=tags,
+                tags=utils.unmarshal(tags, OptionalNullable[List[str]]),
                 row_version=row_version,
                 deleted=deleted,
                 pass_through=utils.get_pydantic_model(
@@ -1072,6 +1429,7 @@ class ApideckEmployees(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.employee, False, False, "json", models.EmployeeInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1096,9 +1454,43 @@ class ApideckEmployees(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["hris"],
+                extensions={
+                    "x-apideck-api": "hris",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "bamboohr",
+                            "description": "BambooHR does not publish its rate limits and throttles at its discretion. When BambooHR throttles the\nrequest to create the employee, Unify returns HTTP 429. When BambooHR includes a retry delay, the 429\ncarries `Retry-After` (seconds to wait) and `x-downstream-ratelimit-reset` (Unix epoch time in\nmilliseconds after which to retry). No limit or remaining-request headers are provided.\n",
+                        },
+                        {
+                            "connector": "hibob",
+                            "description": "When creating an employee is required by Hibob to include the following Unifiy fields: first_name, last_name, employment_start_date, jobs[0].location.name and an email with a primary type must be provided within the emails field.\nFor countries hibob doesn't accept iso code or name values so just the country common name. Example 'United States'\nHiBob API just accepts one compensation, so for the request it will be considered the first one sent in the array and the payment unit is sent yearly by default.\n",
+                        },
+                        {
+                            "connector": "hibob-oauth",
+                            "description": "When creating an employee is required by Hibob to include the following Unifiy fields: first_name, last_name, employment_start_date, jobs[0].location.name and an email with a primary type must be provided within the emails field.\nFor countries hibob doesn't accept iso code or name values so just the country common name. Example 'United States'\nHiBob API just accepts one compensation, so for the request it will be considered the first one sent in the array and the payment unit is sent yearly by default.\n",
+                        },
+                        {
+                            "connector": "humaans-io",
+                            "description": "When creating an employee in Humaans, it is mandatory to include the following Unify fields: first_name, last_name, title, employment_start_date, jobs[0].location.id. Additionally, within the 'emails' field, you must provide an email with a 'primary' type. Furthermore, if the employee is remote, the primary address city will be used as the remote city, and this value should be valid.\"\n",
+                        },
+                        {
+                            "connector": "nmbrs",
+                            "description": 'When creating an employee, the `employment_role.type` values accepted for NMbrs are `employee`, `contractor` and `freelance`.\n\n**Important**: Nmbrs requires nationality data (`nationalities` field) for employees with type "payroll". When nationality is not provided:\n- Employees with `employment_role.type: "employee"` are automatically created as "external" type instead of "payroll" to avoid validation errors\n- This may affect payroll processing, benefits eligibility, and reporting in Nmbrs\n- To create employees as "payroll" type, ensure the `nationalities` field contains at least one ISO country code\n- Contractors and freelancers are always created as "external" type regardless of nationality\n',
+                        },
+                        {
+                            "connector": "haileyhr",
+                            "description": "Hailey HR does not allow duplicate email addresses across employees. Creating an employee with an `emails` value already in use by another employee returns an error.\n\n`employee_number` cannot be set through the API. Hailey HR generates employment numbers from rules configured in Hailey, so a value supplied on create is accepted without error and silently ignored — the created employee returns `employee_number: null` until a number is entered in Hailey directly. Reading the field works normally once it has been set.\n",
+                        },
+                        {
+                            "connector": "bamboohr",
+                            "description": "BambooHR has no primary email or phone field, so only these `emails[].type` and `phone_numbers[].type`\nvalues are written: emails `work` → Work Email and `personal` → Home Email; phone numbers `work` → Work\nPhone (with `extension` → Work Phone Extension), `mobile` → Mobile Phone and `home` → Home Phone. Any\nother type, including `primary`, is ignored and that email or phone number is not saved.\n\nList Employees and Get Employee return a `primary` email that is a read-only copy of the work email. To\nchange it, send the `work` email.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1106,10 +1498,9 @@ class ApideckEmployees(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.HrisEmployeesAddResponse(
                 create_employee_response=unmarshal_json_response(
-                    Optional[models.CreateEmployeeResponse], http_res
+                    Optional[models.CreateEmployeeResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1150,10 +1541,9 @@ class ApideckEmployees(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.HrisEmployeesAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1170,7 +1560,7 @@ class ApideckEmployees(BaseSDK):
         filter_: Optional[
             Union[models.EmployeesOneFilter, models.EmployeesOneFilterTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -1213,7 +1603,7 @@ class ApideckEmployees(BaseSDK):
             filter_=utils.get_pydantic_model(
                 filter_, Optional[models.EmployeesOneFilter]
             ),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
         )
 
         req = self._build_request(
@@ -1233,6 +1623,7 @@ class ApideckEmployees(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1257,9 +1648,87 @@ class ApideckEmployees(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["hris"],
+                extensions={
+                    "x-apideck-api": "hris",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "bamboohr",
+                            "description": "BambooHR does not publish its rate limits and throttles at its discretion. When BambooHR throttles the\nrequest for the record or list you asked for, Unify returns HTTP 429. When BambooHR includes a retry\ndelay, the 429 carries `Retry-After` (seconds to wait) and `x-downstream-ratelimit-reset` (Unix epoch\ntime in milliseconds after which to retry). No limit or remaining-request headers are provided.\n",
+                        },
+                        {
+                            "connector": "sdworx-be-sme",
+                            "description": "`id` is the SD Worx person id. Reading an employee requires the `employer_file_number` connection setting\n(a 400 names it when missing); `employee_number`, `company_id`, `title`, `jobs`, `compensations`,\n`employment_start_date`, `employment_end_date` and `employment_role` come from the person's active\ncontract for that employer, valid on the day of the request, and are absent when the person has none.\nThe record is assembled from several vendor calls: if one fails the request still succeeds with a 200\nand that call's fields are absent, so treat absence as unavailable for this request. `jobs` is empty\nwhen the contract has no job description.\n\n`department`, `manager`, `team`, `bank_accounts`, `photo_url` and `updated_at` are not available.\n\n`gender` is derived from SD Worx's gender code table (male, female, or `not_specified` for unknown and not\ndisclosed); `preferred_language` and `languages` are ISO 639-1 codes, `nationalities` ISO 3166-1 alpha-2\ncodes and `marital_status` the SD Worx marital-status code (for example `02` for married).\n`addresses[].line1` holds the street and house number and `addresses[].line2` holds the Belgian box number.\n",
+                        },
+                        {
+                            "connector": "deel",
+                            "description": 'The `emails[].type` value `primary` follows the worker\'s own Deel account (login) email, which may be\neither their work or their personal address and therefore varies from worker to worker. Deel does not\ndocument how the flag is chosen, so treat this as observed behaviour.\n\nTo avoid depending on which address happens to be primary, the primary address is also returned a second\ntime under its real type. A worker whose account email is their work address returns both\n`{"type": "primary"}` and `{"type": "work"}` for it, so reading the `work` entry gives the work address\nregardless of the primary flag. Because Deel can list the same address more than once, one address may\nappear in several entries with different types.\n\nDeel `home` addresses are returned as `personal`.\n\nUse `?raw=true` to see Deel\'s original `type` and `primary` flags.\n',
+                        },
+                        {
+                            "connector": "hibob",
+                            "description": "If your Unify plan has the 'Custom Field Mapping' feature, you can map custom fields to your responses. Once mapped, they will be included in the custom_mappings property within Unify responses.\nImportant to know is that HiBob has permission controls for users to determine which data will be available on their API. This can lead to specific fields not being available (example: `birthday`).\n",
+                        },
+                        {
+                            "connector": "hibob-oauth",
+                            "description": "If your Unify plan has the 'Custom Field Mapping' feature, you can map custom fields to your responses. Once mapped, they will be included in the custom_mappings property within Unify responses.\nImportant to know is that HiBob has permission controls for users to determine which data will be available on their API. This can lead to specific fields not being available (example: `birthday`).\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-hr",
+                            "description": "Employee data is sourced from the Dynamics 365 Finance & Operations `Workers` data entity and\nenriched per employee from the `Employments` entity (`company_id`, `employment_start_date`,\n`employment_end_date`) and the `PayrollFixedCompensationPlans` entity (`compensations`). These\nenrichment fields are returned only by Get Employee (the detail endpoint); List Employees returns\nthe base `Workers` fields only. Open-ended employments have no `employment_end_date` — the F&O\nfar-future end-date sentinel (`2154-12-31`) is normalized to `null`.\n\n`compensations` is populated only when the tenant has the Finance & Operations Payroll module\nprovisioned with data (reflecting the primary fixed-compensation plan); on tenants without payroll\ndata it is an empty array. `social_security_number` is not currently available from F&O and is\nalways `null`. Use `pass_through` to reach additional `Workers` fields.\n",
+                        },
+                        {
+                            "connector": "ukg-pro",
+                            "description": "`employment_role` is sourced from the UKG `employment-details` endpoint and is returned only by\nGet Employee (the detail read), not by List Employees.\n\n`employment_role.type` is derived from UKG's `employeeTypeCode`, which is a company-defined code\ntable (configurable per tenant), not a fixed system enum. The codes we translate are: `CON` →\n`contractor`, `INT` → `internship`, `REG` → `employee`, `TMP` → `temp`, `SUM` → `temp`, `STU` →\n`other`, `TES` → `other`. Any other or unrecognized code returns `other` because employee types\nare defined by each UKG customer and vary between tenants.\n\n`employment_role.sub_type` is derived from `fullTimeOrPartTimeCode` (`F` → `full_time`, `P` →\n`part_time`), falling back to `salaryOrHourly` (`H` → `hourly`), otherwise `not_specified`. When\nboth are present, `fullTimeOrPartTimeCode` takes precedence (sub_type holds a single value).\n\nTo map your own `employeeTypeCode` values, add a custom mapping scoped to the `getEmploymentDetails`\nrequest with the JSONPath `$['employeeTypeCode']` (do not use the picker-suggested\n`$[*]['employeeTypeCode']` — the `[*]` form does not populate). The value is returned under\n`custom_mappings`.\n",
+                        },
+                        {
+                            "connector": "sap-successfactors",
+                            "description": "Custom fields are extracted from both `personalInfoNav` and\n`employmentNav.jobInfoNav` on each employee record. Custom fields stored on\nother navs are not surfaced in `custom_fields` — use `pass_through` to access them.\n\n`custom_fields[].value` is human-readable for picklist-backed properties and for a\nverified set of Foundation-Object-backed properties (`position`, `costCenter`,\n`payGrade`, `businessUnit`, `employeeClass`). For picklists, the tenant's picklist label\nis returned (`\"Monday to Sunday\"` rather than the option ID `\"663865\"`), resolved by\npreferring `en_GB`, then `en_US`, then any other English locale, then the sole authored\nlocale when a tenant-created picklist has only one; if no label is usable the option's\nexternal code is returned. Foundation-Object-backed properties are resolved by matching\neach object's own active-status and label convention — a best-effort convention match,\nnot a guarantee, so any other Foundation-Object-backed property still returns the raw\ndownstream ID. Expect a mix of readable labels and raw IDs across `custom_fields`.\n\n`custom_fields[].name` carries the property's SAP field label (`\"FLSA Work Week\"`) and is\npopulated for every custom field the tenant's metadata describes.\n\n`custom_fields[].id` is the SAP property name (`costCenter`, `customString13`). When\nboth the personal-information entity and the job-information entity contribute a custom\nfield with the same name, both entries are prefixed with their SAP entity\n(`PerPersonal:customString7` and `EmpJob:customString7`) so each id identifies one\nfield. The prefix follows the tenant's configuration: if the tenant later adds a field\nwith an existing name to the other entity, the previously unprefixed id becomes\nprefixed, and a custom mapping stored against the old id returns no value until the\nfield is re-picked. In rare cases a shared name is still returned unprefixed: when\nSAP's field definitions are temporarily unavailable (a `picklistMetadata` entry in\n`meta.warnings`) and the response contains no record of the other entity. A custom\nmapping stored against the unprefixed id can then return the other entity's value.\n\nAddress fields `line1`–`line5` are passed through verbatim from SAP's positional\nfields `address1`–`address5` with no per-country recomposition. SAP SuccessFactors\ninterprets these positions differently per country, and the meaning of each position\nalso varies per tenant — two SAP customers in the same country can configure\n`address1`–`addressN` semantics differently via Manage Business Configuration.\nBelgium and the Netherlands are confirmed examples of per-tenant variation.\nThe country code is exposed in `addresses[].country` as ISO-2 (e.g. `\"BE\"`, `\"NL\"`) —\nconsumers must use it together with knowledge of the specific tenant's configuration\nto interpret the semantic meaning of each line.\n\nFields `address6` through `address20` are not surfaced in the unified response — the\nJSON mapping declares `line1`–`line5` only. Consumers that need higher-numbered\npositional fields must use `pass_through`.\n\nThe `street_number` field is not populated for SAP SuccessFactors employees.\n\nThis limitation is by SAP design: their OData v2 API exposes a single merged\n`PerAddressDEFLT` entity for all countries and does not surface per-country\nfield semantics. See SAP KBA 2902948.\n\nOn the home address (`addresses[].type` `home`), `city`, `state` and `postal_code` can\ncontain SAP's numeric option IDs (for example `\"358\"`) when the tenant's home-address\nlayout for that country makes the field a dropdown. SAP does not report which countries\nuse dropdowns, so list them in the Employees configuration settings (Countries where home\naddress City, State or Postal Code is a dropdown, as 3-letter country codes such as\n`BEL`). For a listed country, `city` and `state` return the option's label\n(`\"Antwerpen\"`) and `postal_code` returns the postal code itself (`\"2060\"`). A value stays\nthe raw option ID when its country is not listed, when the tenant's address setup has no\ndropdown for that field, or when the lookup cannot be completed. Other address types, such as `primary`,\nare not resolved and may still contain option IDs.\n\nIf a lookup behind these readable values fails, the response is still a 200 and the\naffected values are returned as SAP stores them. `meta.warnings` then carries an entry of\ntype `downstream_request_failed` whose `operation` names the lookup:\n- `picklistMetadata`: `custom_fields[].name` is missing and picklist values in\n  `custom_fields` are returned as option IDs.\n- `picklistLabels`: picklist values in `custom_fields` are returned as option IDs;\n  `custom_fields[].name` is still present.\n- `homeAddressPicklists`: `city`, `state` and `postal_code` on home addresses are returned\n  as option IDs.\n\n`status_code` is the HTTP status of the failed lookup when one is available (a lookup that\ntimed out is reported as 504). It is absent when the request could not be built, when SAP's\nresponse could not be used, or when the lookup was not requested because the page would\nexceed SAP's URL length limit; in that case request fewer employees per page with `limit`.\nRaw IDs without such an entry are normally the cases described above; they can also follow\nan unexpected error in Unify's own enrichment, which is not reported in `meta.warnings`.\n\nEmail type is resolved from the `externalCode` of the email-category picklist\noption (ecEmailType), which is locale-independent, so the resolved type does not\ndepend on the tenant's configured language. The externalCode to unified type\nmapping is: B maps to work, P to personal, PI to primary, S to secondary, BI to\nbilling, and O to other. `B`, `P` and `O` are SAP-seeded defaults present in every\ntenant; `PI`, `S` and `BI` must be configured as picklist options by the tenant to\ntake effect. Any email whose ecEmailType option uses an externalCode outside this\nset, or has no externalCode, resolves to other.\n\nSAP SuccessFactors' Person entities are each keyed by `personIdExternal` plus a\ntype/category field — `PerEmail` by `emailType`, `PerPhone` by `phoneType`, and so on\n(SAP SuccessFactors OData V2 API Reference Guide, §9.4.1.9.2). If a tenant deactivates\nthat type field, every row for the person resolves to the same key, so SAP collapses\nthem down to one before the request reaches Apideck, and there is no request-side\nworkaround — the tenant's SAP administrator must re-activate the type field to\nretrieve every row. For `emails[]` this means a person with several email addresses\non file returns only one, and — since the type-decode data collapses too — that entry\nresolves to `other` rather than its real type. SAP has confirmed this generalizes to\nany entity sharing the same composite-key shape, which would include `PerPhone`\n(keyed by `personIdExternal + phoneType`); `phone_numbers[]` derives `type` from\n`isPrimary` rather than a type decode, so if the same collapse occurs there it would\nsurface as a shorter array rather than a mislabeled one.\n\n`preferred_language` is derived from the `externalCode` of the employee's\n`nativePreferredLang` picklist option, which is locale-independent. The value is the\nBCP-47 language subtag, uppercased (e.g. `ru_RU` resolves to `RU`, `en` to `EN`). It\nis `null` when the externalCode is absent, system-generated, or not a parseable\nISO-639-1 two-letter code.\n",
+                        },
+                        {
+                            "connector": "charliehr",
+                            "description": "The jobs array compensation data includes only the data related to the first compensation. For more comprehensive compensation data, please refer to the compensations array.",
+                        },
+                        {
+                            "connector": "sympa",
+                            "description": "The employment end data and jobs array are only available on the 'Get Employee' response.",
+                        },
+                        {
+                            "connector": "fourth",
+                            "description": 'The `leaving_reason` field in Fourth is a string and not an enum. We will return `"other"` if there is a leaving reason. You can use `custom_mappings` to get the actual value.\nThe `manager.id` field may be empty even when `manager.name` is present. This occurs when the manager is a former employee who is not included in the active employees list. In such cases, the manager\'s EmployeeID cannot be resolved from the PayrollNumber lookup.\n',
+                        },
+                        {
+                            "connector": "liantis",
+                            "description": "Liantis does not provide name fields such as `first_name`, `last_name`, or `display_name` on the Get Employee response.\nAdditionally, the fields returned by the Get Employee endpoint differ from those returned by List Employees, as they use different upstream API endpoints with different data structures.\n",
+                        },
+                        {
+                            "connector": "workday",
+                            "description": "Job Level (e.g., Junior, Intermediate, Senior, Principal) is exposed as a custom field `Job_Level_ID` on the Get Employee response only — not on List Employees. It is sourced from a separate `Get_Job_Profiles` SOAP call against Workday's Human_Resources service and merged into the response.\n\nJob Level is omitted when the worker's job profile does not define `Job_Level_Reference` in Workday (configured per profile), or when the connection's Integration System User does not have access to `Get_Job_Profiles` on the Human_Resources web service. Other custom fields and the rest of the response are unaffected in either case.\n\nThis enrichment is intentionally not performed on List Employees to avoid an extra SOAP call per worker.\n\nOn Get Employee, `manager.name`, `manager.first_name`, `manager.last_name`, `manager.email` and `manager.employment_status` are populated from a separate lookup of the manager's own worker record (List Employees returns `manager.id` only). When Workday cannot return that record — for example the manager is terminated, or is outside the integration user's security scope — those fields are omitted, `manager.id` is still returned, the rest of the employee is unaffected, and the response carries a `meta.warnings` entry of type `downstream_request_failed`. When the employee has no manager reference, `manager` is omitted from the response entirely and no warning is emitted.\n\n`company_id` and `company_name` are the worker's legal company: the Workday organization of type Company assigned to the worker's primary job. Company hierarchies (consolidation roll-ups such as regions) are not returned. When the worker has no job data visible to the integration user, both fields are empty.\n\nAddress lines: when Workday's address format for the country splits the street into components, `addresses[].line1` is built from them in this order: the street type when there is one (for example Spanish `Calle` or `Carrer`), then the street name, then the house number; so a Spanish address reads `Calle Montesa 16` and the house number is also returned as `street_number`. `line1` always places the house number after the street name, even where Workday's own formatted address in `string` puts it first, as for France and South Africa (`Rue Juliette Lamber 13`). When the format has a house number but no labelled street name, the lowest-numbered other component is used as the street name. The remaining typed components (building, unit, floor and similar) fill `line2` to `line5` in Workday's line order. For formats without a street-type or street-name component and without a house-number component (for example the US), `line1` is the lowest-numbered address line as Workday returns it, the others follow in `line2` to `line5`, and `street_number` is omitted. `jobs[].location` applies the same `line1` and `street_number` rules; its `line2` to `line5` are not mapped.\n",
+                        },
+                        {
+                            "connector": "acerta",
+                            "description": "`employment_start_date` may be sourced from Acerta's \"date in company\" value instead of\nthe agreement's own start date, when Acerta supplies it — this can be an earlier date\nthan the agreement start date. When more than one such date is on record for an\nemployee, the earliest one is used. Its meaning is configured per Acerta customer: for\nsome it equals the hire date exactly, for others it is deliberately set earlier for\nseniority calculations. Where Acerta does not supply this value, `employment_start_date`\nfalls back to the agreement's start date.\n",
+                        },
+                        {
+                            "connector": "officient-io",
+                            "description": "`employment_start_date` is the earlier of Officient's first employment date and the start\ndate of the employee's earliest role in their role history. Officient's first employment\ndate is the start of the first wage/contract period, so people who start through a temp\nagency before getting a contract only get their real start date from role history. When\nrole history is unavailable (for example the connection lacks read access to it), the\nfirst employment date is used. `employment_start_date` is only returned by Get Employee,\nnot by List Employees. Company-specific start dates kept in Officient custom fields are\nreturned unchanged in `custom_fields`.\n",
+                        },
+                        {
+                            "connector": "haileyhr",
+                            "description": "Hailey HR supports \"parallel employments\" — an employee can hold more than one Employment at once. Fields that describe a single current position (`department_id`, `department_name`, `division`, `division_id`, `company_id`, `company_name`, `title`, `team`, `manager.id`, `employment_role.type`, `probation_period.end_date`, and employment-level values in `custom_fields`) reflect the employee's **effectual** employment: the active one, or — when none is active — the one that will start next, or failing that the most recent ended one (status precedence: active → will-start → ended); these fields can be absent from the response if that value can't be resolved. `employment_start_date`/`employment_end_date` reflect overall company tenure (earliest start / latest-or-open end across ALL employments), not the effectual one. Every employment is listed in `jobs[]`, flagged via `is_primary`, with its own `start_date`/`end_date`.\n\nEach employment also carries a manual `priority` rank set in Hailey HR's UI. `priority` is a user-ordered value that is deliberately **not** recalculated when an employment ends, so an ended employment can keep `priority: 1` indefinitely — it is not a marker of which employment is current. `jobs[].is_primary` flags the employment Hailey HR itself resolved the effectual fields from (matched back to `jobs[]` on the employment terms such as type, probation end and scope, the employment-level custom field values and the organisational data, since Hailey HR does not expose its id), so it agrees with `employment_role.type`, `probation_period.end_date` and the employment-level `custom_fields`. When that match cannot single out one employment — several employments are indistinguishable on all of those values, the values are absent or consent-stripped, or the two Hailey HR reads disagree — the status precedence above, then the lowest `priority`, breaks the tie instead, and the agreement is not guaranteed.\n\nAn employee can also hold multiple titles and belong to multiple teams at once (`titleIds`/`teamIds` arrays). We only return the first of each as `title`/`team`, since the unified schema allows a single value for both.\n\nSalaries carry a `history[]` of effective-dated amounts — a raise adds a new dated entry rather than replacing the old one. `compensations[].rate`/`effective_date` reflect the entry with the most recent date that has already passed, not just the last entry added.\n",
+                        },
+                        {
+                            "connector": "lucca-hr",
+                            "description": "Lucca enforces a limit of 50 requests per minute per Lucca domain (see\nhttps://developers.luccasoftware.com/documentation/limits). The quota is shared by every integration\nconnected to that domain, not per Unify connection, so other tools using the same Lucca account consume\nit too. When the limit is exceeded, Unify returns HTTP 429. When Lucca includes a retry delay in that\nresponse (it has in every observed case), the 429 also carries a `Retry-After` header (the number of\nseconds to wait before retrying), `x-downstream-ratelimit-limit` and `x-downstream-ratelimit-reset` (the\nUnix epoch time in milliseconds at which the window frees). Lucca provides no remaining-request count,\nand no rate-limit headers are returned on successful responses.\n",
+                        },
+                        {
+                            "connector": "silae-fr",
+                            "description": "`gender` is not returned: Silae does not document its gender codes.\n\n`employment_start_date`, `employment_end_date` and `title` describe the employee's current contract (the\nactive job, or the most recent one when none is active), and `jobs` contains only that job.\n`employment_start_date` is the contract start date, not the date of the latest change to the job.\n`employment_end_date` is null while the contract has no end date.\n\n`jobs[].id` identifies Silae's current job record. Silae starts a new record whenever it registers a payroll\nchange, such as a salary change, so the id can change while the contract stays the same.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1267,10 +1736,9 @@ class ApideckEmployees(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.HrisEmployeesOneResponse(
                 get_employee_response=unmarshal_json_response(
-                    Optional[models.GetEmployeeResponse], http_res
+                    Optional[models.GetEmployeeResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1311,10 +1779,9 @@ class ApideckEmployees(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.HrisEmployeesOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1331,7 +1798,7 @@ class ApideckEmployees(BaseSDK):
         filter_: Optional[
             Union[models.EmployeesOneFilter, models.EmployeesOneFilterTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -1374,7 +1841,7 @@ class ApideckEmployees(BaseSDK):
             filter_=utils.get_pydantic_model(
                 filter_, Optional[models.EmployeesOneFilter]
             ),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
         )
 
         req = self._build_request_async(
@@ -1394,6 +1861,7 @@ class ApideckEmployees(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1418,9 +1886,87 @@ class ApideckEmployees(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["hris"],
+                extensions={
+                    "x-apideck-api": "hris",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "bamboohr",
+                            "description": "BambooHR does not publish its rate limits and throttles at its discretion. When BambooHR throttles the\nrequest for the record or list you asked for, Unify returns HTTP 429. When BambooHR includes a retry\ndelay, the 429 carries `Retry-After` (seconds to wait) and `x-downstream-ratelimit-reset` (Unix epoch\ntime in milliseconds after which to retry). No limit or remaining-request headers are provided.\n",
+                        },
+                        {
+                            "connector": "sdworx-be-sme",
+                            "description": "`id` is the SD Worx person id. Reading an employee requires the `employer_file_number` connection setting\n(a 400 names it when missing); `employee_number`, `company_id`, `title`, `jobs`, `compensations`,\n`employment_start_date`, `employment_end_date` and `employment_role` come from the person's active\ncontract for that employer, valid on the day of the request, and are absent when the person has none.\nThe record is assembled from several vendor calls: if one fails the request still succeeds with a 200\nand that call's fields are absent, so treat absence as unavailable for this request. `jobs` is empty\nwhen the contract has no job description.\n\n`department`, `manager`, `team`, `bank_accounts`, `photo_url` and `updated_at` are not available.\n\n`gender` is derived from SD Worx's gender code table (male, female, or `not_specified` for unknown and not\ndisclosed); `preferred_language` and `languages` are ISO 639-1 codes, `nationalities` ISO 3166-1 alpha-2\ncodes and `marital_status` the SD Worx marital-status code (for example `02` for married).\n`addresses[].line1` holds the street and house number and `addresses[].line2` holds the Belgian box number.\n",
+                        },
+                        {
+                            "connector": "deel",
+                            "description": 'The `emails[].type` value `primary` follows the worker\'s own Deel account (login) email, which may be\neither their work or their personal address and therefore varies from worker to worker. Deel does not\ndocument how the flag is chosen, so treat this as observed behaviour.\n\nTo avoid depending on which address happens to be primary, the primary address is also returned a second\ntime under its real type. A worker whose account email is their work address returns both\n`{"type": "primary"}` and `{"type": "work"}` for it, so reading the `work` entry gives the work address\nregardless of the primary flag. Because Deel can list the same address more than once, one address may\nappear in several entries with different types.\n\nDeel `home` addresses are returned as `personal`.\n\nUse `?raw=true` to see Deel\'s original `type` and `primary` flags.\n',
+                        },
+                        {
+                            "connector": "hibob",
+                            "description": "If your Unify plan has the 'Custom Field Mapping' feature, you can map custom fields to your responses. Once mapped, they will be included in the custom_mappings property within Unify responses.\nImportant to know is that HiBob has permission controls for users to determine which data will be available on their API. This can lead to specific fields not being available (example: `birthday`).\n",
+                        },
+                        {
+                            "connector": "hibob-oauth",
+                            "description": "If your Unify plan has the 'Custom Field Mapping' feature, you can map custom fields to your responses. Once mapped, they will be included in the custom_mappings property within Unify responses.\nImportant to know is that HiBob has permission controls for users to determine which data will be available on their API. This can lead to specific fields not being available (example: `birthday`).\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-hr",
+                            "description": "Employee data is sourced from the Dynamics 365 Finance & Operations `Workers` data entity and\nenriched per employee from the `Employments` entity (`company_id`, `employment_start_date`,\n`employment_end_date`) and the `PayrollFixedCompensationPlans` entity (`compensations`). These\nenrichment fields are returned only by Get Employee (the detail endpoint); List Employees returns\nthe base `Workers` fields only. Open-ended employments have no `employment_end_date` — the F&O\nfar-future end-date sentinel (`2154-12-31`) is normalized to `null`.\n\n`compensations` is populated only when the tenant has the Finance & Operations Payroll module\nprovisioned with data (reflecting the primary fixed-compensation plan); on tenants without payroll\ndata it is an empty array. `social_security_number` is not currently available from F&O and is\nalways `null`. Use `pass_through` to reach additional `Workers` fields.\n",
+                        },
+                        {
+                            "connector": "ukg-pro",
+                            "description": "`employment_role` is sourced from the UKG `employment-details` endpoint and is returned only by\nGet Employee (the detail read), not by List Employees.\n\n`employment_role.type` is derived from UKG's `employeeTypeCode`, which is a company-defined code\ntable (configurable per tenant), not a fixed system enum. The codes we translate are: `CON` →\n`contractor`, `INT` → `internship`, `REG` → `employee`, `TMP` → `temp`, `SUM` → `temp`, `STU` →\n`other`, `TES` → `other`. Any other or unrecognized code returns `other` because employee types\nare defined by each UKG customer and vary between tenants.\n\n`employment_role.sub_type` is derived from `fullTimeOrPartTimeCode` (`F` → `full_time`, `P` →\n`part_time`), falling back to `salaryOrHourly` (`H` → `hourly`), otherwise `not_specified`. When\nboth are present, `fullTimeOrPartTimeCode` takes precedence (sub_type holds a single value).\n\nTo map your own `employeeTypeCode` values, add a custom mapping scoped to the `getEmploymentDetails`\nrequest with the JSONPath `$['employeeTypeCode']` (do not use the picker-suggested\n`$[*]['employeeTypeCode']` — the `[*]` form does not populate). The value is returned under\n`custom_mappings`.\n",
+                        },
+                        {
+                            "connector": "sap-successfactors",
+                            "description": "Custom fields are extracted from both `personalInfoNav` and\n`employmentNav.jobInfoNav` on each employee record. Custom fields stored on\nother navs are not surfaced in `custom_fields` — use `pass_through` to access them.\n\n`custom_fields[].value` is human-readable for picklist-backed properties and for a\nverified set of Foundation-Object-backed properties (`position`, `costCenter`,\n`payGrade`, `businessUnit`, `employeeClass`). For picklists, the tenant's picklist label\nis returned (`\"Monday to Sunday\"` rather than the option ID `\"663865\"`), resolved by\npreferring `en_GB`, then `en_US`, then any other English locale, then the sole authored\nlocale when a tenant-created picklist has only one; if no label is usable the option's\nexternal code is returned. Foundation-Object-backed properties are resolved by matching\neach object's own active-status and label convention — a best-effort convention match,\nnot a guarantee, so any other Foundation-Object-backed property still returns the raw\ndownstream ID. Expect a mix of readable labels and raw IDs across `custom_fields`.\n\n`custom_fields[].name` carries the property's SAP field label (`\"FLSA Work Week\"`) and is\npopulated for every custom field the tenant's metadata describes.\n\n`custom_fields[].id` is the SAP property name (`costCenter`, `customString13`). When\nboth the personal-information entity and the job-information entity contribute a custom\nfield with the same name, both entries are prefixed with their SAP entity\n(`PerPersonal:customString7` and `EmpJob:customString7`) so each id identifies one\nfield. The prefix follows the tenant's configuration: if the tenant later adds a field\nwith an existing name to the other entity, the previously unprefixed id becomes\nprefixed, and a custom mapping stored against the old id returns no value until the\nfield is re-picked. In rare cases a shared name is still returned unprefixed: when\nSAP's field definitions are temporarily unavailable (a `picklistMetadata` entry in\n`meta.warnings`) and the response contains no record of the other entity. A custom\nmapping stored against the unprefixed id can then return the other entity's value.\n\nAddress fields `line1`–`line5` are passed through verbatim from SAP's positional\nfields `address1`–`address5` with no per-country recomposition. SAP SuccessFactors\ninterprets these positions differently per country, and the meaning of each position\nalso varies per tenant — two SAP customers in the same country can configure\n`address1`–`addressN` semantics differently via Manage Business Configuration.\nBelgium and the Netherlands are confirmed examples of per-tenant variation.\nThe country code is exposed in `addresses[].country` as ISO-2 (e.g. `\"BE\"`, `\"NL\"`) —\nconsumers must use it together with knowledge of the specific tenant's configuration\nto interpret the semantic meaning of each line.\n\nFields `address6` through `address20` are not surfaced in the unified response — the\nJSON mapping declares `line1`–`line5` only. Consumers that need higher-numbered\npositional fields must use `pass_through`.\n\nThe `street_number` field is not populated for SAP SuccessFactors employees.\n\nThis limitation is by SAP design: their OData v2 API exposes a single merged\n`PerAddressDEFLT` entity for all countries and does not surface per-country\nfield semantics. See SAP KBA 2902948.\n\nOn the home address (`addresses[].type` `home`), `city`, `state` and `postal_code` can\ncontain SAP's numeric option IDs (for example `\"358\"`) when the tenant's home-address\nlayout for that country makes the field a dropdown. SAP does not report which countries\nuse dropdowns, so list them in the Employees configuration settings (Countries where home\naddress City, State or Postal Code is a dropdown, as 3-letter country codes such as\n`BEL`). For a listed country, `city` and `state` return the option's label\n(`\"Antwerpen\"`) and `postal_code` returns the postal code itself (`\"2060\"`). A value stays\nthe raw option ID when its country is not listed, when the tenant's address setup has no\ndropdown for that field, or when the lookup cannot be completed. Other address types, such as `primary`,\nare not resolved and may still contain option IDs.\n\nIf a lookup behind these readable values fails, the response is still a 200 and the\naffected values are returned as SAP stores them. `meta.warnings` then carries an entry of\ntype `downstream_request_failed` whose `operation` names the lookup:\n- `picklistMetadata`: `custom_fields[].name` is missing and picklist values in\n  `custom_fields` are returned as option IDs.\n- `picklistLabels`: picklist values in `custom_fields` are returned as option IDs;\n  `custom_fields[].name` is still present.\n- `homeAddressPicklists`: `city`, `state` and `postal_code` on home addresses are returned\n  as option IDs.\n\n`status_code` is the HTTP status of the failed lookup when one is available (a lookup that\ntimed out is reported as 504). It is absent when the request could not be built, when SAP's\nresponse could not be used, or when the lookup was not requested because the page would\nexceed SAP's URL length limit; in that case request fewer employees per page with `limit`.\nRaw IDs without such an entry are normally the cases described above; they can also follow\nan unexpected error in Unify's own enrichment, which is not reported in `meta.warnings`.\n\nEmail type is resolved from the `externalCode` of the email-category picklist\noption (ecEmailType), which is locale-independent, so the resolved type does not\ndepend on the tenant's configured language. The externalCode to unified type\nmapping is: B maps to work, P to personal, PI to primary, S to secondary, BI to\nbilling, and O to other. `B`, `P` and `O` are SAP-seeded defaults present in every\ntenant; `PI`, `S` and `BI` must be configured as picklist options by the tenant to\ntake effect. Any email whose ecEmailType option uses an externalCode outside this\nset, or has no externalCode, resolves to other.\n\nSAP SuccessFactors' Person entities are each keyed by `personIdExternal` plus a\ntype/category field — `PerEmail` by `emailType`, `PerPhone` by `phoneType`, and so on\n(SAP SuccessFactors OData V2 API Reference Guide, §9.4.1.9.2). If a tenant deactivates\nthat type field, every row for the person resolves to the same key, so SAP collapses\nthem down to one before the request reaches Apideck, and there is no request-side\nworkaround — the tenant's SAP administrator must re-activate the type field to\nretrieve every row. For `emails[]` this means a person with several email addresses\non file returns only one, and — since the type-decode data collapses too — that entry\nresolves to `other` rather than its real type. SAP has confirmed this generalizes to\nany entity sharing the same composite-key shape, which would include `PerPhone`\n(keyed by `personIdExternal + phoneType`); `phone_numbers[]` derives `type` from\n`isPrimary` rather than a type decode, so if the same collapse occurs there it would\nsurface as a shorter array rather than a mislabeled one.\n\n`preferred_language` is derived from the `externalCode` of the employee's\n`nativePreferredLang` picklist option, which is locale-independent. The value is the\nBCP-47 language subtag, uppercased (e.g. `ru_RU` resolves to `RU`, `en` to `EN`). It\nis `null` when the externalCode is absent, system-generated, or not a parseable\nISO-639-1 two-letter code.\n",
+                        },
+                        {
+                            "connector": "charliehr",
+                            "description": "The jobs array compensation data includes only the data related to the first compensation. For more comprehensive compensation data, please refer to the compensations array.",
+                        },
+                        {
+                            "connector": "sympa",
+                            "description": "The employment end data and jobs array are only available on the 'Get Employee' response.",
+                        },
+                        {
+                            "connector": "fourth",
+                            "description": 'The `leaving_reason` field in Fourth is a string and not an enum. We will return `"other"` if there is a leaving reason. You can use `custom_mappings` to get the actual value.\nThe `manager.id` field may be empty even when `manager.name` is present. This occurs when the manager is a former employee who is not included in the active employees list. In such cases, the manager\'s EmployeeID cannot be resolved from the PayrollNumber lookup.\n',
+                        },
+                        {
+                            "connector": "liantis",
+                            "description": "Liantis does not provide name fields such as `first_name`, `last_name`, or `display_name` on the Get Employee response.\nAdditionally, the fields returned by the Get Employee endpoint differ from those returned by List Employees, as they use different upstream API endpoints with different data structures.\n",
+                        },
+                        {
+                            "connector": "workday",
+                            "description": "Job Level (e.g., Junior, Intermediate, Senior, Principal) is exposed as a custom field `Job_Level_ID` on the Get Employee response only — not on List Employees. It is sourced from a separate `Get_Job_Profiles` SOAP call against Workday's Human_Resources service and merged into the response.\n\nJob Level is omitted when the worker's job profile does not define `Job_Level_Reference` in Workday (configured per profile), or when the connection's Integration System User does not have access to `Get_Job_Profiles` on the Human_Resources web service. Other custom fields and the rest of the response are unaffected in either case.\n\nThis enrichment is intentionally not performed on List Employees to avoid an extra SOAP call per worker.\n\nOn Get Employee, `manager.name`, `manager.first_name`, `manager.last_name`, `manager.email` and `manager.employment_status` are populated from a separate lookup of the manager's own worker record (List Employees returns `manager.id` only). When Workday cannot return that record — for example the manager is terminated, or is outside the integration user's security scope — those fields are omitted, `manager.id` is still returned, the rest of the employee is unaffected, and the response carries a `meta.warnings` entry of type `downstream_request_failed`. When the employee has no manager reference, `manager` is omitted from the response entirely and no warning is emitted.\n\n`company_id` and `company_name` are the worker's legal company: the Workday organization of type Company assigned to the worker's primary job. Company hierarchies (consolidation roll-ups such as regions) are not returned. When the worker has no job data visible to the integration user, both fields are empty.\n\nAddress lines: when Workday's address format for the country splits the street into components, `addresses[].line1` is built from them in this order: the street type when there is one (for example Spanish `Calle` or `Carrer`), then the street name, then the house number; so a Spanish address reads `Calle Montesa 16` and the house number is also returned as `street_number`. `line1` always places the house number after the street name, even where Workday's own formatted address in `string` puts it first, as for France and South Africa (`Rue Juliette Lamber 13`). When the format has a house number but no labelled street name, the lowest-numbered other component is used as the street name. The remaining typed components (building, unit, floor and similar) fill `line2` to `line5` in Workday's line order. For formats without a street-type or street-name component and without a house-number component (for example the US), `line1` is the lowest-numbered address line as Workday returns it, the others follow in `line2` to `line5`, and `street_number` is omitted. `jobs[].location` applies the same `line1` and `street_number` rules; its `line2` to `line5` are not mapped.\n",
+                        },
+                        {
+                            "connector": "acerta",
+                            "description": "`employment_start_date` may be sourced from Acerta's \"date in company\" value instead of\nthe agreement's own start date, when Acerta supplies it — this can be an earlier date\nthan the agreement start date. When more than one such date is on record for an\nemployee, the earliest one is used. Its meaning is configured per Acerta customer: for\nsome it equals the hire date exactly, for others it is deliberately set earlier for\nseniority calculations. Where Acerta does not supply this value, `employment_start_date`\nfalls back to the agreement's start date.\n",
+                        },
+                        {
+                            "connector": "officient-io",
+                            "description": "`employment_start_date` is the earlier of Officient's first employment date and the start\ndate of the employee's earliest role in their role history. Officient's first employment\ndate is the start of the first wage/contract period, so people who start through a temp\nagency before getting a contract only get their real start date from role history. When\nrole history is unavailable (for example the connection lacks read access to it), the\nfirst employment date is used. `employment_start_date` is only returned by Get Employee,\nnot by List Employees. Company-specific start dates kept in Officient custom fields are\nreturned unchanged in `custom_fields`.\n",
+                        },
+                        {
+                            "connector": "haileyhr",
+                            "description": "Hailey HR supports \"parallel employments\" — an employee can hold more than one Employment at once. Fields that describe a single current position (`department_id`, `department_name`, `division`, `division_id`, `company_id`, `company_name`, `title`, `team`, `manager.id`, `employment_role.type`, `probation_period.end_date`, and employment-level values in `custom_fields`) reflect the employee's **effectual** employment: the active one, or — when none is active — the one that will start next, or failing that the most recent ended one (status precedence: active → will-start → ended); these fields can be absent from the response if that value can't be resolved. `employment_start_date`/`employment_end_date` reflect overall company tenure (earliest start / latest-or-open end across ALL employments), not the effectual one. Every employment is listed in `jobs[]`, flagged via `is_primary`, with its own `start_date`/`end_date`.\n\nEach employment also carries a manual `priority` rank set in Hailey HR's UI. `priority` is a user-ordered value that is deliberately **not** recalculated when an employment ends, so an ended employment can keep `priority: 1` indefinitely — it is not a marker of which employment is current. `jobs[].is_primary` flags the employment Hailey HR itself resolved the effectual fields from (matched back to `jobs[]` on the employment terms such as type, probation end and scope, the employment-level custom field values and the organisational data, since Hailey HR does not expose its id), so it agrees with `employment_role.type`, `probation_period.end_date` and the employment-level `custom_fields`. When that match cannot single out one employment — several employments are indistinguishable on all of those values, the values are absent or consent-stripped, or the two Hailey HR reads disagree — the status precedence above, then the lowest `priority`, breaks the tie instead, and the agreement is not guaranteed.\n\nAn employee can also hold multiple titles and belong to multiple teams at once (`titleIds`/`teamIds` arrays). We only return the first of each as `title`/`team`, since the unified schema allows a single value for both.\n\nSalaries carry a `history[]` of effective-dated amounts — a raise adds a new dated entry rather than replacing the old one. `compensations[].rate`/`effective_date` reflect the entry with the most recent date that has already passed, not just the last entry added.\n",
+                        },
+                        {
+                            "connector": "lucca-hr",
+                            "description": "Lucca enforces a limit of 50 requests per minute per Lucca domain (see\nhttps://developers.luccasoftware.com/documentation/limits). The quota is shared by every integration\nconnected to that domain, not per Unify connection, so other tools using the same Lucca account consume\nit too. When the limit is exceeded, Unify returns HTTP 429. When Lucca includes a retry delay in that\nresponse (it has in every observed case), the 429 also carries a `Retry-After` header (the number of\nseconds to wait before retrying), `x-downstream-ratelimit-limit` and `x-downstream-ratelimit-reset` (the\nUnix epoch time in milliseconds at which the window frees). Lucca provides no remaining-request count,\nand no rate-limit headers are returned on successful responses.\n",
+                        },
+                        {
+                            "connector": "silae-fr",
+                            "description": "`gender` is not returned: Silae does not document its gender codes.\n\n`employment_start_date`, `employment_end_date` and `title` describe the employee's current contract (the\nactive job, or the most recent one when none is active), and `jobs` contains only that job.\n`employment_start_date` is the contract start date, not the date of the latest change to the job.\n`employment_end_date` is null while the contract has no end date.\n\n`jobs[].id` identifies Silae's current job record. Silae starts a new record whenever it registers a payroll\nchange, such as a salary change, so the id can change while the contract stays the same.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1428,10 +1974,9 @@ class ApideckEmployees(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.HrisEmployeesOneResponse(
                 get_employee_response=unmarshal_json_response(
-                    Optional[models.GetEmployeeResponse], http_res
+                    Optional[models.GetEmployeeResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1472,10 +2017,9 @@ class ApideckEmployees(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.HrisEmployeesOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1519,7 +2063,7 @@ class ApideckEmployees(BaseSDK):
         ] = None,
         ethnicity: OptionalNullable[str] = UNSET,
         manager: Optional[Union[models.Manager, models.ManagerTypedDict]] = None,
-        direct_reports: OptionalNullable[List[str]] = UNSET,
+        direct_reports: OptionalNullable[Iterable[str]] = UNSET,
         social_security_number: OptionalNullable[str] = UNSET,
         birthday: OptionalNullable[date] = UNSET,
         deceased_on: OptionalNullable[date] = UNSET,
@@ -1528,51 +2072,59 @@ class ApideckEmployees(BaseSDK):
         gender: OptionalNullable[models.Gender] = UNSET,
         pronouns: OptionalNullable[str] = UNSET,
         preferred_language: OptionalNullable[str] = UNSET,
-        languages: Optional[List[Nullable[str]]] = None,
-        nationalities: Optional[List[Nullable[str]]] = None,
+        languages: Optional[Iterable[Nullable[str]]] = None,
+        nationalities: Optional[Iterable[Nullable[str]]] = None,
         photo_url: OptionalNullable[str] = UNSET,
         timezone: OptionalNullable[str] = UNSET,
         source: OptionalNullable[str] = UNSET,
         source_id: OptionalNullable[str] = UNSET,
         record_url: OptionalNullable[str] = UNSET,
         jobs: OptionalNullable[
-            Union[List[models.EmployeeJobInput], List[models.EmployeeJobInputTypedDict]]
+            Union[
+                Iterable[models.EmployeeJobInput],
+                Iterable[models.EmployeeJobInputTypedDict],
+            ]
         ] = UNSET,
         compensations: OptionalNullable[
             Union[
-                List[models.EmployeeCompensationInput],
-                List[models.EmployeeCompensationInputTypedDict],
+                Iterable[models.EmployeeCompensationInput],
+                Iterable[models.EmployeeCompensationInputTypedDict],
             ]
         ] = UNSET,
         works_remote: OptionalNullable[bool] = UNSET,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         phone_numbers: Optional[
-            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+            Union[Iterable[models.PhoneNumber], Iterable[models.PhoneNumberTypedDict]]
         ] = None,
-        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        emails: Optional[
+            Union[Iterable[models.Email], Iterable[models.EmailTypedDict]]
+        ] = None,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         social_links: Optional[
-            Union[List[models.SocialLink], List[models.SocialLinkTypedDict]]
+            Union[Iterable[models.SocialLink], Iterable[models.SocialLinkTypedDict]]
         ] = None,
         bank_accounts: Optional[
-            Union[List[models.BankAccount2], List[models.BankAccount2TypedDict]]
+            Union[Iterable[models.BankAccount2], Iterable[models.BankAccount2TypedDict]]
         ] = None,
         tax_code: OptionalNullable[str] = UNSET,
         tax_id: OptionalNullable[str] = UNSET,
         dietary_preference: OptionalNullable[str] = UNSET,
-        food_allergies: OptionalNullable[List[str]] = UNSET,
+        food_allergies: OptionalNullable[Iterable[str]] = UNSET,
         probation_period: Optional[
             Union[models.ProbationPeriod, models.ProbationPeriodTypedDict]
         ] = None,
-        tags: OptionalNullable[List[str]] = UNSET,
+        tags: OptionalNullable[Iterable[str]] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         deleted: OptionalNullable[bool] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1700,7 +2252,9 @@ class ApideckEmployees(BaseSDK):
                 ),
                 ethnicity=ethnicity,
                 manager=utils.get_pydantic_model(manager, Optional[models.Manager]),
-                direct_reports=direct_reports,
+                direct_reports=utils.unmarshal(
+                    direct_reports, OptionalNullable[List[str]]
+                ),
                 social_security_number=social_security_number,
                 birthday=birthday,
                 deceased_on=deceased_on,
@@ -1709,8 +2263,10 @@ class ApideckEmployees(BaseSDK):
                 gender=gender,
                 pronouns=pronouns,
                 preferred_language=preferred_language,
-                languages=languages,
-                nationalities=nationalities,
+                languages=utils.unmarshal(languages, Optional[List[Nullable[str]]]),
+                nationalities=utils.unmarshal(
+                    nationalities, Optional[List[Nullable[str]]]
+                ),
                 photo_url=photo_url,
                 timezone=timezone,
                 source=source,
@@ -1743,11 +2299,13 @@ class ApideckEmployees(BaseSDK):
                 tax_code=tax_code,
                 tax_id=tax_id,
                 dietary_preference=dietary_preference,
-                food_allergies=food_allergies,
+                food_allergies=utils.unmarshal(
+                    food_allergies, OptionalNullable[List[str]]
+                ),
                 probation_period=utils.get_pydantic_model(
                     probation_period, Optional[models.ProbationPeriod]
                 ),
-                tags=tags,
+                tags=utils.unmarshal(tags, OptionalNullable[List[str]]),
                 row_version=row_version,
                 deleted=deleted,
                 pass_through=utils.get_pydantic_model(
@@ -1776,6 +2334,7 @@ class ApideckEmployees(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.employee, False, False, "json", models.EmployeeInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1800,9 +2359,31 @@ class ApideckEmployees(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["hris"],
+                extensions={
+                    "x-apideck-api": "hris",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "bamboohr",
+                            "description": "BambooHR does not publish its rate limits and throttles at its discretion. When BambooHR throttles the\nrequest to update the employee, Unify returns HTTP 429. When BambooHR includes a retry delay, the 429\ncarries `Retry-After` (seconds to wait) and `x-downstream-ratelimit-reset` (Unix epoch time in\nmilliseconds after which to retry). No limit or remaining-request headers are provided.\n",
+                        },
+                        {
+                            "connector": "hibob",
+                            "description": "Certain fields like address, compensations, and title cannot be updated via the HiBob API.",
+                        },
+                        {
+                            "connector": "hibob-oauth",
+                            "description": "Certain fields like address, compensations, and title cannot be updated via the HiBob API.",
+                        },
+                        {
+                            "connector": "bamboohr",
+                            "description": "BambooHR has no primary email or phone field, so only these `emails[].type` and `phone_numbers[].type`\nvalues are written: emails `work` → Work Email and `personal` → Home Email; phone numbers `work` → Work\nPhone (with `extension` → Work Phone Extension), `mobile` → Mobile Phone and `home` → Home Phone. Any\nother type, including `primary`, is ignored and that email or phone number is not saved.\n\nIf nothing else in the update maps to a BambooHR field (for example, a request that only contains\n`primary` entries), BambooHR rejects the empty update with a 400 `Malformed JSON` error.\n\nList Employees and Get Employee return a `primary` email that is a read-only copy of the work email. To\nchange it, send the `work` email.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1810,10 +2391,9 @@ class ApideckEmployees(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.HrisEmployeesUpdateResponse(
                 update_employee_response=unmarshal_json_response(
-                    Optional[models.UpdateEmployeeResponse], http_res
+                    Optional[models.UpdateEmployeeResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1854,10 +2434,9 @@ class ApideckEmployees(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.HrisEmployeesUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1901,7 +2480,7 @@ class ApideckEmployees(BaseSDK):
         ] = None,
         ethnicity: OptionalNullable[str] = UNSET,
         manager: Optional[Union[models.Manager, models.ManagerTypedDict]] = None,
-        direct_reports: OptionalNullable[List[str]] = UNSET,
+        direct_reports: OptionalNullable[Iterable[str]] = UNSET,
         social_security_number: OptionalNullable[str] = UNSET,
         birthday: OptionalNullable[date] = UNSET,
         deceased_on: OptionalNullable[date] = UNSET,
@@ -1910,51 +2489,59 @@ class ApideckEmployees(BaseSDK):
         gender: OptionalNullable[models.Gender] = UNSET,
         pronouns: OptionalNullable[str] = UNSET,
         preferred_language: OptionalNullable[str] = UNSET,
-        languages: Optional[List[Nullable[str]]] = None,
-        nationalities: Optional[List[Nullable[str]]] = None,
+        languages: Optional[Iterable[Nullable[str]]] = None,
+        nationalities: Optional[Iterable[Nullable[str]]] = None,
         photo_url: OptionalNullable[str] = UNSET,
         timezone: OptionalNullable[str] = UNSET,
         source: OptionalNullable[str] = UNSET,
         source_id: OptionalNullable[str] = UNSET,
         record_url: OptionalNullable[str] = UNSET,
         jobs: OptionalNullable[
-            Union[List[models.EmployeeJobInput], List[models.EmployeeJobInputTypedDict]]
+            Union[
+                Iterable[models.EmployeeJobInput],
+                Iterable[models.EmployeeJobInputTypedDict],
+            ]
         ] = UNSET,
         compensations: OptionalNullable[
             Union[
-                List[models.EmployeeCompensationInput],
-                List[models.EmployeeCompensationInputTypedDict],
+                Iterable[models.EmployeeCompensationInput],
+                Iterable[models.EmployeeCompensationInputTypedDict],
             ]
         ] = UNSET,
         works_remote: OptionalNullable[bool] = UNSET,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         phone_numbers: Optional[
-            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+            Union[Iterable[models.PhoneNumber], Iterable[models.PhoneNumberTypedDict]]
         ] = None,
-        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        emails: Optional[
+            Union[Iterable[models.Email], Iterable[models.EmailTypedDict]]
+        ] = None,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         social_links: Optional[
-            Union[List[models.SocialLink], List[models.SocialLinkTypedDict]]
+            Union[Iterable[models.SocialLink], Iterable[models.SocialLinkTypedDict]]
         ] = None,
         bank_accounts: Optional[
-            Union[List[models.BankAccount2], List[models.BankAccount2TypedDict]]
+            Union[Iterable[models.BankAccount2], Iterable[models.BankAccount2TypedDict]]
         ] = None,
         tax_code: OptionalNullable[str] = UNSET,
         tax_id: OptionalNullable[str] = UNSET,
         dietary_preference: OptionalNullable[str] = UNSET,
-        food_allergies: OptionalNullable[List[str]] = UNSET,
+        food_allergies: OptionalNullable[Iterable[str]] = UNSET,
         probation_period: Optional[
             Union[models.ProbationPeriod, models.ProbationPeriodTypedDict]
         ] = None,
-        tags: OptionalNullable[List[str]] = UNSET,
+        tags: OptionalNullable[Iterable[str]] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         deleted: OptionalNullable[bool] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -2082,7 +2669,9 @@ class ApideckEmployees(BaseSDK):
                 ),
                 ethnicity=ethnicity,
                 manager=utils.get_pydantic_model(manager, Optional[models.Manager]),
-                direct_reports=direct_reports,
+                direct_reports=utils.unmarshal(
+                    direct_reports, OptionalNullable[List[str]]
+                ),
                 social_security_number=social_security_number,
                 birthday=birthday,
                 deceased_on=deceased_on,
@@ -2091,8 +2680,10 @@ class ApideckEmployees(BaseSDK):
                 gender=gender,
                 pronouns=pronouns,
                 preferred_language=preferred_language,
-                languages=languages,
-                nationalities=nationalities,
+                languages=utils.unmarshal(languages, Optional[List[Nullable[str]]]),
+                nationalities=utils.unmarshal(
+                    nationalities, Optional[List[Nullable[str]]]
+                ),
                 photo_url=photo_url,
                 timezone=timezone,
                 source=source,
@@ -2125,11 +2716,13 @@ class ApideckEmployees(BaseSDK):
                 tax_code=tax_code,
                 tax_id=tax_id,
                 dietary_preference=dietary_preference,
-                food_allergies=food_allergies,
+                food_allergies=utils.unmarshal(
+                    food_allergies, OptionalNullable[List[str]]
+                ),
                 probation_period=utils.get_pydantic_model(
                     probation_period, Optional[models.ProbationPeriod]
                 ),
-                tags=tags,
+                tags=utils.unmarshal(tags, OptionalNullable[List[str]]),
                 row_version=row_version,
                 deleted=deleted,
                 pass_through=utils.get_pydantic_model(
@@ -2158,6 +2751,7 @@ class ApideckEmployees(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.employee, False, False, "json", models.EmployeeInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2182,9 +2776,31 @@ class ApideckEmployees(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["hris"],
+                extensions={
+                    "x-apideck-api": "hris",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "bamboohr",
+                            "description": "BambooHR does not publish its rate limits and throttles at its discretion. When BambooHR throttles the\nrequest to update the employee, Unify returns HTTP 429. When BambooHR includes a retry delay, the 429\ncarries `Retry-After` (seconds to wait) and `x-downstream-ratelimit-reset` (Unix epoch time in\nmilliseconds after which to retry). No limit or remaining-request headers are provided.\n",
+                        },
+                        {
+                            "connector": "hibob",
+                            "description": "Certain fields like address, compensations, and title cannot be updated via the HiBob API.",
+                        },
+                        {
+                            "connector": "hibob-oauth",
+                            "description": "Certain fields like address, compensations, and title cannot be updated via the HiBob API.",
+                        },
+                        {
+                            "connector": "bamboohr",
+                            "description": "BambooHR has no primary email or phone field, so only these `emails[].type` and `phone_numbers[].type`\nvalues are written: emails `work` → Work Email and `personal` → Home Email; phone numbers `work` → Work\nPhone (with `extension` → Work Phone Extension), `mobile` → Mobile Phone and `home` → Home Phone. Any\nother type, including `primary`, is ignored and that email or phone number is not saved.\n\nIf nothing else in the update maps to a BambooHR field (for example, a request that only contains\n`primary` entries), BambooHR rejects the empty update with a 400 `Malformed JSON` error.\n\nList Employees and Get Employee return a `primary` email that is a read-only copy of the work email. To\nchange it, send the `work` email.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2192,10 +2808,9 @@ class ApideckEmployees(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.HrisEmployeesUpdateResponse(
                 update_employee_response=unmarshal_json_response(
-                    Optional[models.UpdateEmployeeResponse], http_res
+                    Optional[models.UpdateEmployeeResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2236,10 +2851,9 @@ class ApideckEmployees(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.HrisEmployeesUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2306,6 +2920,7 @@ class ApideckEmployees(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2330,9 +2945,11 @@ class ApideckEmployees(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["hris"],
+                extensions={"x-apideck-api": "hris"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2340,10 +2957,9 @@ class ApideckEmployees(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.HrisEmployeesDeleteResponse(
                 delete_employee_response=unmarshal_json_response(
-                    Optional[models.DeleteEmployeeResponse], http_res
+                    Optional[models.DeleteEmployeeResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2384,10 +3000,9 @@ class ApideckEmployees(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.HrisEmployeesDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2454,6 +3069,7 @@ class ApideckEmployees(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2478,9 +3094,11 @@ class ApideckEmployees(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["hris"],
+                extensions={"x-apideck-api": "hris"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2488,10 +3106,9 @@ class ApideckEmployees(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.HrisEmployeesDeleteResponse(
                 delete_employee_response=unmarshal_json_response(
-                    Optional[models.DeleteEmployeeResponse], http_res
+                    Optional[models.DeleteEmployeeResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2532,10 +3149,9 @@ class ApideckEmployees(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.HrisEmployeesDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

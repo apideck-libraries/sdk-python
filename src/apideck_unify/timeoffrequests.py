@@ -7,7 +7,7 @@ from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from jsonpath import JSONPath
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
 
 
 class TimeOffRequests(BaseSDK):
@@ -23,7 +23,7 @@ class TimeOffRequests(BaseSDK):
         filter_: Optional[
             Union[models.TimeOffRequestsFilter, models.TimeOffRequestsFilterTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -68,7 +68,7 @@ class TimeOffRequests(BaseSDK):
             filter_=utils.get_pydantic_model(
                 filter_, Optional[models.TimeOffRequestsFilter]
             ),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -89,6 +89,7 @@ class TimeOffRequests(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -113,9 +114,63 @@ class TimeOffRequests(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["hris"],
+                extensions={
+                    "x-apideck-api": "hris",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sdworx-webservice-oidc",
+                            "description": "SD Worx HR Selfservice returns an absence report, not a list of requests: one record per employee per day (or day part), so a multi-day absence appears as several records sharing `policy_id` and `description`, each with `end_date` equal to its `start_date`. The `start_date`, `end_date`, `company_id` and `employee_id` filters are all required, as in the legacy SOAP connector: one employee over one date range per request (`company_id` is the employer number and `employee_id` the employee number, both returned by List Employees). Every requested employee-month counts towards the SD Worx quota of 1,000 employee-months per Client ID per day, and each page of a list re-reads the report, so one page costs the months in the range again: request large pages (`limit=200`) and keep date ranges short. SD Worx records times in Belgian local time without an offset: `updated_at` is converted to UTC and an `updated_since` filter is converted back, so a returned `updated_at` can be passed straight into `updated_since`.\n",
+                        },
+                        {
+                            "connector": "adp-workforce-now",
+                            "description": "ADP Workforce Now does not expose a native cross-page total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate API request to the ADP count endpoint — an extra API call not currently implemented.\n",
+                        },
+                        {
+                            "connector": "bamboohr",
+                            "description": "BambooHR requires start_date and end_date parameters to successfully retrieve time off requests. These optional Unify parameters can be sent as filters[start_date] and filters[end_date]. If there are not present, they are sent to BambooHR with the default values of '1900-01-01' & '2100-12-31' respectively.\n\nBambooHR does not publish its rate limits and throttles at its discretion. When BambooHR throttles the\nrequest for the record or list you asked for, Unify returns HTTP 429. When BambooHR includes a retry\ndelay, the 429 carries `Retry-After` (seconds to wait) and `x-downstream-ratelimit-reset` (Unix epoch\ntime in milliseconds after which to retry). No limit or remaining-request headers are provided.\n",
+                        },
+                        {
+                            "connector": "hr-works",
+                            "description": "In HR Works the start_date and end_date are required fields and the maximum date interval is one year between start_date and end_date. It doesn't support pagination right now, it can be created as per customer request.",
+                        },
+                        {
+                            "connector": "kenjo",
+                            "description": "In Kenjo the start_date and end_date are required fields and the maximum date interval is 92 days. We do not support Processed, inApproval and CancelledAfterProcessed filters from Kenjo.\n",
+                        },
+                        {
+                            "connector": "payfit",
+                            "description": "In Payfit the start_date parameter is supported only and will provide data of that specific month only. This endpoint is only available for French companies.\n",
+                        },
+                        {
+                            "connector": "people-hr",
+                            "description": "In PeopleHR, it is mandatory to provide the employee_id in the filter.\n",
+                        },
+                        {
+                            "connector": "charliehr",
+                            "description": "For CharlieHR, when filtering by start_date, the end_date parameter is required. Omitting end_date will result in no data being returned.\n",
+                        },
+                        {
+                            "connector": "adp-ihcm",
+                            "description": "ADP iHCM does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "hibob",
+                            "description": "HiBob does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "lucca-hr",
+                            "description": "`total_count` is available in Lucca HR but requires `?include=totalCount` query parameter. Currently not wired — `meta.total_count` will not appear.\n\nLucca enforces a limit of 50 requests per minute per Lucca domain (see\nhttps://developers.luccasoftware.com/documentation/limits). The quota is shared by every integration\nconnected to that domain, not per Unify connection, so other tools using the same Lucca account consume\nit too. When the limit is exceeded, Unify returns HTTP 429. When Lucca includes a retry delay in that\nresponse (it has in every observed case), the 429 also carries a `Retry-After` header (the number of\nseconds to wait before retrying), `x-downstream-ratelimit-limit` and `x-downstream-ratelimit-reset` (the\nUnix epoch time in milliseconds at which the window frees). Lucca provides no remaining-request count,\nand no rate-limit headers are returned on successful responses.\n",
+                        },
+                        {
+                            "connector": "haileyhr",
+                            "description": "HaileyHR returns time off as one entry per calendar day, with no request-level identifier and no date range. Unify surfaces each day as its own time-off request, so start_date always equals end_date. A multi-day booking therefore appears as one request per day rather than a single spanning request. Day-based entries report units `days` (a full day = 1, a half day = 0.5); entries booked in minutes report units `hours` (minutes / 60). Unify does not merge consecutive days into a span: HaileyHR provides no request boundary, so calendar-adjacency alone cannot tell two separate same-reason bookings apart from one longer booking.\n\nPagination is not supported. HaileyHR's `/TimeOff` returns the full company dataset in a single response with no native paging, and there is no stable per-request identifier to page on. The `limit` and `cursor` parameters are not honored — retrieve the full list in one call.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -141,17 +196,21 @@ class TimeOffRequests(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.HrisTimeOffRequestsAllResponse(
                 get_time_off_requests_response=unmarshal_json_response(
-                    Optional[models.GetTimeOffRequestsResponse], http_res
+                    Optional[models.GetTimeOffRequestsResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -192,11 +251,10 @@ class TimeOffRequests(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.HrisTimeOffRequestsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -213,7 +271,7 @@ class TimeOffRequests(BaseSDK):
         filter_: Optional[
             Union[models.TimeOffRequestsFilter, models.TimeOffRequestsFilterTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -258,7 +316,7 @@ class TimeOffRequests(BaseSDK):
             filter_=utils.get_pydantic_model(
                 filter_, Optional[models.TimeOffRequestsFilter]
             ),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -279,6 +337,7 @@ class TimeOffRequests(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -303,9 +362,63 @@ class TimeOffRequests(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["hris"],
+                extensions={
+                    "x-apideck-api": "hris",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sdworx-webservice-oidc",
+                            "description": "SD Worx HR Selfservice returns an absence report, not a list of requests: one record per employee per day (or day part), so a multi-day absence appears as several records sharing `policy_id` and `description`, each with `end_date` equal to its `start_date`. The `start_date`, `end_date`, `company_id` and `employee_id` filters are all required, as in the legacy SOAP connector: one employee over one date range per request (`company_id` is the employer number and `employee_id` the employee number, both returned by List Employees). Every requested employee-month counts towards the SD Worx quota of 1,000 employee-months per Client ID per day, and each page of a list re-reads the report, so one page costs the months in the range again: request large pages (`limit=200`) and keep date ranges short. SD Worx records times in Belgian local time without an offset: `updated_at` is converted to UTC and an `updated_since` filter is converted back, so a returned `updated_at` can be passed straight into `updated_since`.\n",
+                        },
+                        {
+                            "connector": "adp-workforce-now",
+                            "description": "ADP Workforce Now does not expose a native cross-page total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate API request to the ADP count endpoint — an extra API call not currently implemented.\n",
+                        },
+                        {
+                            "connector": "bamboohr",
+                            "description": "BambooHR requires start_date and end_date parameters to successfully retrieve time off requests. These optional Unify parameters can be sent as filters[start_date] and filters[end_date]. If there are not present, they are sent to BambooHR with the default values of '1900-01-01' & '2100-12-31' respectively.\n\nBambooHR does not publish its rate limits and throttles at its discretion. When BambooHR throttles the\nrequest for the record or list you asked for, Unify returns HTTP 429. When BambooHR includes a retry\ndelay, the 429 carries `Retry-After` (seconds to wait) and `x-downstream-ratelimit-reset` (Unix epoch\ntime in milliseconds after which to retry). No limit or remaining-request headers are provided.\n",
+                        },
+                        {
+                            "connector": "hr-works",
+                            "description": "In HR Works the start_date and end_date are required fields and the maximum date interval is one year between start_date and end_date. It doesn't support pagination right now, it can be created as per customer request.",
+                        },
+                        {
+                            "connector": "kenjo",
+                            "description": "In Kenjo the start_date and end_date are required fields and the maximum date interval is 92 days. We do not support Processed, inApproval and CancelledAfterProcessed filters from Kenjo.\n",
+                        },
+                        {
+                            "connector": "payfit",
+                            "description": "In Payfit the start_date parameter is supported only and will provide data of that specific month only. This endpoint is only available for French companies.\n",
+                        },
+                        {
+                            "connector": "people-hr",
+                            "description": "In PeopleHR, it is mandatory to provide the employee_id in the filter.\n",
+                        },
+                        {
+                            "connector": "charliehr",
+                            "description": "For CharlieHR, when filtering by start_date, the end_date parameter is required. Omitting end_date will result in no data being returned.\n",
+                        },
+                        {
+                            "connector": "adp-ihcm",
+                            "description": "ADP iHCM does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "hibob",
+                            "description": "HiBob does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "lucca-hr",
+                            "description": "`total_count` is available in Lucca HR but requires `?include=totalCount` query parameter. Currently not wired — `meta.total_count` will not appear.\n\nLucca enforces a limit of 50 requests per minute per Lucca domain (see\nhttps://developers.luccasoftware.com/documentation/limits). The quota is shared by every integration\nconnected to that domain, not per Unify connection, so other tools using the same Lucca account consume\nit too. When the limit is exceeded, Unify returns HTTP 429. When Lucca includes a retry delay in that\nresponse (it has in every observed case), the 429 also carries a `Retry-After` header (the number of\nseconds to wait before retrying), `x-downstream-ratelimit-limit` and `x-downstream-ratelimit-reset` (the\nUnix epoch time in milliseconds at which the window frees). Lucca provides no remaining-request count,\nand no rate-limit headers are returned on successful responses.\n",
+                        },
+                        {
+                            "connector": "haileyhr",
+                            "description": "HaileyHR returns time off as one entry per calendar day, with no request-level identifier and no date range. Unify surfaces each day as its own time-off request, so start_date always equals end_date. A multi-day booking therefore appears as one request per day rather than a single spanning request. Day-based entries report units `days` (a full day = 1, a half day = 0.5); entries booked in minutes report units `hours` (minutes / 60). Unify does not merge consecutive days into a span: HaileyHR provides no request boundary, so calendar-adjacency alone cannot tell two separate same-reason bookings apart from one longer booking.\n\nPagination is not supported. HaileyHR's `/TimeOff` returns the full company dataset in a single response with no native paging, and there is no stable per-request identifier to page on. The `limit` and `cursor` parameters are not honored — retrieve the full list in one call.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -331,17 +444,21 @@ class TimeOffRequests(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.HrisTimeOffRequestsAllResponse(
                 get_time_off_requests_response=unmarshal_json_response(
-                    Optional[models.GetTimeOffRequestsResponse], http_res
+                    Optional[models.GetTimeOffRequestsResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -382,11 +499,10 @@ class TimeOffRequests(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.HrisTimeOffRequestsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -412,7 +528,10 @@ class TimeOffRequests(BaseSDK):
         day_part: OptionalNullable[str] = UNSET,
         notes: Optional[Union[models.NotesModel, models.NotesModelTypedDict]] = None,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         policy_type: Optional[str] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -508,6 +627,7 @@ class TimeOffRequests(BaseSDK):
                 "json",
                 models.TimeOffRequestInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -532,9 +652,19 @@ class TimeOffRequests(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["hris"],
+                extensions={
+                    "x-apideck-api": "hris",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "people-hr",
+                            "description": "In PeopleHR, day_part value should be AM or PM. It is mandatory to provide the employee_id in the request body.\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -542,10 +672,11 @@ class TimeOffRequests(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.HrisTimeOffRequestsAddResponse(
                 create_time_off_request_response=unmarshal_json_response(
-                    Optional[models.CreateTimeOffRequestResponse], http_res
+                    Optional[models.CreateTimeOffRequestResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -586,10 +717,9 @@ class TimeOffRequests(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.HrisTimeOffRequestsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -615,7 +745,10 @@ class TimeOffRequests(BaseSDK):
         day_part: OptionalNullable[str] = UNSET,
         notes: Optional[Union[models.NotesModel, models.NotesModelTypedDict]] = None,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         policy_type: Optional[str] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -711,6 +844,7 @@ class TimeOffRequests(BaseSDK):
                 "json",
                 models.TimeOffRequestInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -735,9 +869,19 @@ class TimeOffRequests(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["hris"],
+                extensions={
+                    "x-apideck-api": "hris",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "people-hr",
+                            "description": "In PeopleHR, day_part value should be AM or PM. It is mandatory to provide the employee_id in the request body.\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -745,10 +889,11 @@ class TimeOffRequests(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.HrisTimeOffRequestsAddResponse(
                 create_time_off_request_response=unmarshal_json_response(
-                    Optional[models.CreateTimeOffRequestResponse], http_res
+                    Optional[models.CreateTimeOffRequestResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -789,10 +934,9 @@ class TimeOffRequests(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.HrisTimeOffRequestsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -865,6 +1009,7 @@ class TimeOffRequests(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -889,9 +1034,23 @@ class TimeOffRequests(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["hris"],
+                extensions={
+                    "x-apideck-api": "hris",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "bamboohr",
+                            "description": "BambooHR does not publish its rate limits and throttles at its discretion. When BambooHR throttles the\nrequest for the record or list you asked for, Unify returns HTTP 429. When BambooHR includes a retry\ndelay, the 429 carries `Retry-After` (seconds to wait) and `x-downstream-ratelimit-reset` (Unix epoch\ntime in milliseconds after which to retry). No limit or remaining-request headers are provided.\n",
+                        },
+                        {
+                            "connector": "lucca-hr",
+                            "description": "Lucca enforces a limit of 50 requests per minute per Lucca domain (see\nhttps://developers.luccasoftware.com/documentation/limits). The quota is shared by every integration\nconnected to that domain, not per Unify connection, so other tools using the same Lucca account consume\nit too. When the limit is exceeded, Unify returns HTTP 429. When Lucca includes a retry delay in that\nresponse (it has in every observed case), the 429 also carries a `Retry-After` header (the number of\nseconds to wait before retrying), `x-downstream-ratelimit-limit` and `x-downstream-ratelimit-reset` (the\nUnix epoch time in milliseconds at which the window frees). Lucca provides no remaining-request count,\nand no rate-limit headers are returned on successful responses.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -899,10 +1058,9 @@ class TimeOffRequests(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.HrisTimeOffRequestsOneResponse(
                 get_time_off_request_response=unmarshal_json_response(
-                    Optional[models.GetTimeOffRequestResponse], http_res
+                    Optional[models.GetTimeOffRequestResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -943,10 +1101,9 @@ class TimeOffRequests(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.HrisTimeOffRequestsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1019,6 +1176,7 @@ class TimeOffRequests(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1043,9 +1201,23 @@ class TimeOffRequests(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["hris"],
+                extensions={
+                    "x-apideck-api": "hris",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "bamboohr",
+                            "description": "BambooHR does not publish its rate limits and throttles at its discretion. When BambooHR throttles the\nrequest for the record or list you asked for, Unify returns HTTP 429. When BambooHR includes a retry\ndelay, the 429 carries `Retry-After` (seconds to wait) and `x-downstream-ratelimit-reset` (Unix epoch\ntime in milliseconds after which to retry). No limit or remaining-request headers are provided.\n",
+                        },
+                        {
+                            "connector": "lucca-hr",
+                            "description": "Lucca enforces a limit of 50 requests per minute per Lucca domain (see\nhttps://developers.luccasoftware.com/documentation/limits). The quota is shared by every integration\nconnected to that domain, not per Unify connection, so other tools using the same Lucca account consume\nit too. When the limit is exceeded, Unify returns HTTP 429. When Lucca includes a retry delay in that\nresponse (it has in every observed case), the 429 also carries a `Retry-After` header (the number of\nseconds to wait before retrying), `x-downstream-ratelimit-limit` and `x-downstream-ratelimit-reset` (the\nUnix epoch time in milliseconds at which the window frees). Lucca provides no remaining-request count,\nand no rate-limit headers are returned on successful responses.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1053,10 +1225,9 @@ class TimeOffRequests(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.HrisTimeOffRequestsOneResponse(
                 get_time_off_request_response=unmarshal_json_response(
-                    Optional[models.GetTimeOffRequestResponse], http_res
+                    Optional[models.GetTimeOffRequestResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1097,10 +1268,9 @@ class TimeOffRequests(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.HrisTimeOffRequestsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1128,7 +1298,10 @@ class TimeOffRequests(BaseSDK):
         day_part: OptionalNullable[str] = UNSET,
         notes: Optional[Union[models.NotesModel, models.NotesModelTypedDict]] = None,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         policy_type: Optional[str] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -1228,6 +1401,7 @@ class TimeOffRequests(BaseSDK):
                 "json",
                 models.TimeOffRequestInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1252,9 +1426,11 @@ class TimeOffRequests(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["hris"],
+                extensions={"x-apideck-api": "hris"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1262,10 +1438,11 @@ class TimeOffRequests(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.HrisTimeOffRequestsUpdateResponse(
                 update_time_off_request_response=unmarshal_json_response(
-                    Optional[models.UpdateTimeOffRequestResponse], http_res
+                    Optional[models.UpdateTimeOffRequestResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1306,10 +1483,9 @@ class TimeOffRequests(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.HrisTimeOffRequestsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1337,7 +1513,10 @@ class TimeOffRequests(BaseSDK):
         day_part: OptionalNullable[str] = UNSET,
         notes: Optional[Union[models.NotesModel, models.NotesModelTypedDict]] = None,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         policy_type: Optional[str] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -1437,6 +1616,7 @@ class TimeOffRequests(BaseSDK):
                 "json",
                 models.TimeOffRequestInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1461,9 +1641,11 @@ class TimeOffRequests(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["hris"],
+                extensions={"x-apideck-api": "hris"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1471,10 +1653,11 @@ class TimeOffRequests(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.HrisTimeOffRequestsUpdateResponse(
                 update_time_off_request_response=unmarshal_json_response(
-                    Optional[models.UpdateTimeOffRequestResponse], http_res
+                    Optional[models.UpdateTimeOffRequestResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1515,10 +1698,9 @@ class TimeOffRequests(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.HrisTimeOffRequestsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1588,6 +1770,7 @@ class TimeOffRequests(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1612,9 +1795,11 @@ class TimeOffRequests(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["hris"],
+                extensions={"x-apideck-api": "hris"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1622,10 +1807,11 @@ class TimeOffRequests(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.HrisTimeOffRequestsDeleteResponse(
                 delete_time_off_request_response=unmarshal_json_response(
-                    Optional[models.DeleteTimeOffRequestResponse], http_res
+                    Optional[models.DeleteTimeOffRequestResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1666,10 +1852,9 @@ class TimeOffRequests(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.HrisTimeOffRequestsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1739,6 +1924,7 @@ class TimeOffRequests(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1763,9 +1949,11 @@ class TimeOffRequests(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["hris"],
+                extensions={"x-apideck-api": "hris"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1773,10 +1961,11 @@ class TimeOffRequests(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.HrisTimeOffRequestsDeleteResponse(
                 delete_time_off_request_response=unmarshal_json_response(
-                    Optional[models.DeleteTimeOffRequestResponse], http_res
+                    Optional[models.DeleteTimeOffRequestResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1817,10 +2006,9 @@ class TimeOffRequests(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.HrisTimeOffRequestsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

@@ -1,5 +1,4 @@
-# SalesReceipts
-(*accounting.sales_receipts*)
+# Accounting.SalesReceipts
 
 ## Overview
 
@@ -28,7 +27,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.sales_receipts.list(raw=False, service_id="salesforce", company_id="12345", limit=20, filter_={
@@ -99,14 +98,14 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.sales_receipts.create(total_amount=49.99, raw=False, service_id="salesforce", company_id="12345", number="SR-00001", customer={
         "id": "12345",
         "display_name": "Windsurf Shop",
         "email": "boring@boring.com",
-    }, currency=apideck_unify.Currency.USD, currency_rate=0.69, tax_inclusive=True, sub_total=250, total_tax=25, transaction_date=parse_datetime("2021-05-01T12:00:00.000Z"), payment_method="cash", payment_method_reference="123456", payment_method_id="12345", account={
+    }, currency=apideck_unify.Currency.USD, currency_rate=0.69, tax_inclusive=True, sub_total=250.0, total_tax=25.0, transaction_date=parse_datetime("2021-05-01T12:00:00.000Z"), payment_method="cash", payment_method_reference="123456", payment_method_id="12345", account={
         "id": "123456",
         "name": "Bank account",
         "nominal_code": "N091",
@@ -121,9 +120,9 @@ with Apideck(
             "line_number": 1,
             "description": "Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.",
             "type": apideck_unify.InvoiceLineItemType.SALES_ITEM,
-            "tax_amount": 27500,
-            "total_amount": 27500,
-            "quantity": 1,
+            "tax_amount": 27500.0,
+            "total_amount": 27500.0,
+            "quantity": 1.0,
             "unit_price": 27500.5,
             "unit_of_measure": "pc.",
             "discount_percentage": 0.01,
@@ -153,7 +152,7 @@ with Apideck(
             "tax_rate": {
                 "id": "123456",
                 "code": "N-T",
-                "rate": 10,
+                "rate": 10.0,
             },
             "tracking_categories": [
                 {
@@ -183,7 +182,7 @@ with Apideck(
             ],
             "row_version": "1-12345",
         },
-    ], tax_code="1234", discount_percentage=5.5, discount_amount=25, note="Thank you for your purchase", customer_memo="Thank you for your business and have a great day!", reference="REF-123456", billing_address={
+    ], tax_code="1234", discount_percentage=5.5, discount_amount=25.0, note="Thank you for your purchase", customer_memo="Thank you for your business and have a great day!", reference="REF-123456", billing_address={
         "id": "123",
         "type": apideck_unify.Type.PRIMARY,
         "string": "25 Spring Street, Blackburn, VIC 3130",
@@ -346,7 +345,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.sales_receipts.get(id="<id>", service_id="salesforce", company_id="12345", raw=False, fields="id,updated_at")
@@ -405,14 +404,14 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.sales_receipts.update(id="<id>", service_id="salesforce", raw=False, company_id="12345", number="SR-00001", customer={
         "id": "12345",
         "display_name": "Windsurf Shop",
         "email": "boring@boring.com",
-    }, currency=apideck_unify.Currency.USD, currency_rate=0.69, tax_inclusive=True, sub_total=250, total_amount=49.99, total_tax=25, transaction_date=parse_datetime("2021-05-01T12:00:00.000Z"), payment_method="cash", payment_method_reference="123456", payment_method_id="12345", account={
+    }, currency=apideck_unify.Currency.USD, currency_rate=0.69, tax_inclusive=True, sub_total=250.0, total_amount=49.99, total_tax=25.0, transaction_date=parse_datetime("2021-05-01T12:00:00.000Z"), payment_method="cash", payment_method_reference="123456", payment_method_id="12345", account={
         "id": "123456",
         "name": "Bank account",
         "nominal_code": "N091",
@@ -427,9 +426,9 @@ with Apideck(
             "line_number": 1,
             "description": "Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.",
             "type": apideck_unify.InvoiceLineItemType.SALES_ITEM,
-            "tax_amount": 27500,
-            "total_amount": 27500,
-            "quantity": 1,
+            "tax_amount": 27500.0,
+            "total_amount": 27500.0,
+            "quantity": 1.0,
             "unit_price": 27500.5,
             "unit_of_measure": "pc.",
             "discount_percentage": 0.01,
@@ -459,7 +458,7 @@ with Apideck(
             "tax_rate": {
                 "id": "123456",
                 "code": "N-T",
-                "rate": 10,
+                "rate": 10.0,
             },
             "tracking_categories": [
                 {
@@ -489,7 +488,7 @@ with Apideck(
             ],
             "row_version": "1-12345",
         },
-    ], tax_code="1234", discount_percentage=5.5, discount_amount=25, note="Thank you for your purchase", customer_memo="Thank you for your business and have a great day!", reference="REF-123456", billing_address={
+    ], tax_code="1234", discount_percentage=5.5, discount_amount=25.0, note="Thank you for your purchase", customer_memo="Thank you for your business and have a great day!", reference="REF-123456", billing_address={
         "id": "123",
         "type": apideck_unify.Type.PRIMARY,
         "string": "25 Spring Street, Blackburn, VIC 3130",
@@ -653,7 +652,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.sales_receipts.delete(id="<id>", service_id="salesforce", raw=False, company_id="12345")

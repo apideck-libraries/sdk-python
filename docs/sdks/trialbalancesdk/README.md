@@ -1,5 +1,4 @@
-# TrialBalanceSDK
-(*accounting.trial_balance*)
+# Accounting.TrialBalance
 
 ## Overview
 
@@ -23,7 +22,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.trial_balance.get(service_id="salesforce", company_id="12345", pass_through={

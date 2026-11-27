@@ -1,5 +1,4 @@
-# Webhooks
-(*webhook.webhooks*)
+# Webhook.Webhooks
 
 ## Overview
 
@@ -25,7 +24,7 @@ import os
 
 with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.webhook.webhooks.list(limit=20)
@@ -83,7 +82,7 @@ import os
 
 with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.webhook.webhooks.create(unified_api=apideck_unify.UnifiedAPIID.CRM, status=apideck_unify.Status.ENABLED, delivery_url="https://example.com/my/webhook/endpoint", events=[
@@ -139,7 +138,7 @@ import os
 
 with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.webhook.webhooks.get(id="<id>")
@@ -196,7 +195,7 @@ import os
 
 with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.webhook.webhooks.update(id="<id>", description="A description", status=apideck_unify.Status.ENABLED, delivery_url="https://example.com/my/webhook/endpoint", events=[
@@ -252,7 +251,7 @@ import os
 
 with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.webhook.webhooks.delete(id="<id>")

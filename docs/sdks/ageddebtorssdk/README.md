@@ -1,5 +1,4 @@
-# AgedDebtorsSDK
-(*accounting.aged_debtors*)
+# Accounting.AgedDebtors
 
 ## Overview
 
@@ -22,7 +21,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.aged_debtors.get(raw=False, service_id="salesforce", company_id="12345", filter_={

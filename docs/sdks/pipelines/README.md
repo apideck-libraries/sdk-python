@@ -1,5 +1,4 @@
-# Pipelines
-(*crm.pipelines*)
+# Crm.Pipelines
 
 ## Overview
 
@@ -26,7 +25,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.crm.pipelines.list(raw=False, service_id="salesforce", limit=20, pass_through={
@@ -86,7 +85,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.crm.pipelines.create(name="Sales Pipeline", raw=False, service_id="salesforce", id="default", currency=apideck_unify.Currency.USD, archived=False, active=False, display_order=1, win_probability_enabled=True, stages=[
@@ -188,7 +187,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.crm.pipelines.get(id="<id>", service_id="salesforce", raw=False, fields="id,updated_at")
@@ -244,7 +243,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.crm.pipelines.update(id_param="<value>", name="Sales Pipeline", service_id="salesforce", raw=False, id="default", currency=apideck_unify.Currency.USD, archived=False, active=False, display_order=1, win_probability_enabled=True, stages=[
@@ -379,7 +378,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.crm.pipelines.delete(id="<id>", service_id="salesforce", raw=False)

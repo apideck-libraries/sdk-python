@@ -8,7 +8,7 @@ from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from datetime import datetime
 from jsonpath import JSONPath
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
 
 
 class Payments(BaseSDK):
@@ -26,7 +26,7 @@ class Payments(BaseSDK):
             Union[models.PaymentsFilter, models.PaymentsFilterTypedDict]
         ] = None,
         sort: Optional[Union[models.PaymentsSort, models.PaymentsSortTypedDict]] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -73,7 +73,7 @@ class Payments(BaseSDK):
             limit=limit,
             filter_=utils.get_pydantic_model(filter_, Optional[models.PaymentsFilter]),
             sort=utils.get_pydantic_model(sort, Optional[models.PaymentsSort]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -94,6 +94,7 @@ class Payments(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -118,9 +119,135 @@ class Payments(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "`filter[updated_since]` compares on whole days: SAP keeps only the date of the last change, so the time\npart is ignored and the filter is inclusive of the given day (in UTC). Records changed earlier that day are\nreturned again; dedupe by `id`.\n\n`limit` caps the SAP posting lines read per page, not the payments, so a page can hold fewer\npayments than `limit`. A payment is never split across pages: one with more posting lines\nthan `limit` is returned complete on a page of its own. Only a payment with more than 5,000\nposting lines, or one whose lines cannot all be read within the request's time budget, still\nappears on consecutive pages with the same `id`, each carrying part of its lines; if SAP\nfails while they are read, the request returns a retryable error. Follow `meta.cursors.next`\nuntil it is `null`. `meta.total_count` will not appear and `meta.cursors.previous` is always\n`null`. `pass_through` cannot set `$top`, `$skip` or `$orderby` on this list; such a request\nis refused with a 400.\n\nA `pass_through[$filter]` replaces the connector's document-type filter, so the list skips\ndocuments of other types and can end before the last payment.\n\n`allocations` lists the documents SAP cleared the payment against: `invoice` and `credit_memo` with the unified id of the invoice or credit note, or\n`journal_entry` with id `<company code>:<fiscal year>:<document number>` for a document that no\nother resource returns. `amount` is the part of the payment applied to each document; a partial\npayment lists the document with the partial amount. A partial payment posted in SAP's Post Incoming Payments\napp can take over the open remainder of an earlier partial payment of the same document; it then lists\nonly the amount it added, and its `total_amount` is the amount received. The earlier payment keeps its\nown allocation, also after a later payment settles the document. A payment that settles a document\nand opens a residual item for the rest lists the document with only the amount it paid. An uncleared payment returns `allocations` as `null`.\nWhen one clearing in SAP settled several payments together, those payments also return\n`allocations` as `null`, because SAP does not record which payment paid which document.\n`reconciled` is `true` only when the whole payment is cleared, so one with an open remainder is\nnot. Reading allocations adds SAP reads, usually one or two per page and only when the page has\ncleared payments. If one of them fails, the request returns an error rather than the page.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Fiken has no payments list: the payments are read from the company's invoices, so a list\nreads up to 2,000 invoices (20 requests of 100); beyond that, the response carries a warning that the list is\nincomplete. `limit` and the cursor page through the payments, and every page reads the invoices again, so walking a long list costs several Fiken requests per page; prefer a filter where you can. `filter[customer_id]`\nis applied by Fiken; `filter[invoice_id]` reads only that invoice, in one request.\n`filter[updated_since]` is not supported (Fiken does not expose a payment modification date).\n\nOnly payments on invoices are listed: a customer payment is attached to the invoice's sale. Payments\non sales that did not come from an invoice are not returned.\n\nThe payment `id` is composite, `<invoice_id>:<payment_id>`, because Fiken only addresses a payment\nthrough its parent. `allocations[0].id` is the unified invoice id. `total_amount` is in the payment's\n`currency`; `currency_rate` is derived from Fiken's `amountInNok` for foreign-currency payments.\nBank fees (`fee`) are not exposed. `customer` carries the id and name only.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "FreeAgent stores a payment as an explanation on a bank account, and it can only list those\nper bank account. Each list request therefore reads the explanations of every bank account\nbefore returning a page, so it gets slower as the ledger grows. Use `filter[updated_since]`\nfor incremental syncs, and `filter[invoice_id]` to read the payments of one invoice.\n`meta.total_count` is not returned.\n\n`customer` is not populated. Read the invoice in `allocations[0].id` to get its customer.\n\nA refund paid out against a credit note is returned with `type: accounts_receivable_credit`\nand an allocation of type `credit_memo`; a customer payment with `type: accounts_receivable`\nand an allocation of type `invoice`. `total_amount` is always positive.\n",
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": "Twinfield returns every matching payment in a single call for this endpoint — there is no\nserver-side pagination, so a large date range can be a large response.\n\n`account` and `allocations` are not populated on the list. Fetch the individual payment by\n`id` to get those fields.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "The minimun page size accepted for Netsuite is 5. The cursor for Netsuite expires if they have not been used within 15 minutes after its creation.\n`filter[subsidiary_id]` scopes results to a single subsidiary and is only supported on NetSuite OneWorld accounts; on standard (single-entity) accounts it is ignored.\n",
+                        },
+                        {
+                            "connector": "kashflow",
+                            "description": "Kashflow only allows to retrieve payments by invoice, so in order to use this endpoint the filter[invoice_number] parameter is required.",
+                        },
+                        {
+                            "connector": "sage-business-cloud-accounting",
+                            "description": "Payments are retrieved using the `transaction_type_id` parameter which defaults to `CUSTOMER_RECEIPT`. Use the `type` filter to retrieve other payment transaction types.\n",
+                        },
+                        {
+                            "connector": "alegra",
+                            "description": "A payment must be applied to at least one invoice — Alegra rejects an unapplied payment.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks Online does not expose a reliable cross-page total record count. The `QueryResponse.totalCount` field in list responses reflects the count for that page only, not the full dataset. `meta.total_count` will not appear in list responses. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite uses the same underlying QuickBooks API. The `QueryResponse.totalCount` field in list responses reflects the per-page count only. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics",
+                            "description": "Microsoft Dynamics 365 does not include a total record count in default list responses. `meta.total_count` will not appear. Surfacing the total requires adding `$count=true` to the OData query or calling a separate `$count` endpoint — not currently implemented.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Zoho Books does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "stripe",
+                            "description": "Stripe removed `total_count` from list responses in March 2025 (API version 2025-03-31.basil). `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "rillet",
+                            "description": "Rillet does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "procountor-fi",
+                            "description": "Procountor does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "access-financials",
+                            "description": "Access Financials does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "wave",
+                            "description": "Wave has no list of payments, only each invoice's payments, so every request reads the invoices that have a payment and pages over their payments. A request that would read more than 10,000 paid invoices fails with a 400 asking for `filter[updated_since]`, and a failed invoice page fails the request (502, or Wave's 4xx/429) rather than returning a partial list. `meta.total_count` will not appear. `filter[updated_since]` matches a payment's own modification time. Only invoice payments are listed.\n",
+                        },
+                        {
+                            "connector": "dualentry",
+                            "description": "DualEntry scopes payments by company. Pass the `x-apideck-company-id` header (or set a Default\nCompany on the connection) to return only records belonging to that company within the tenant.\nWithout it, records across all companies in the tenant are returned.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "If you encounter a '400 Bad Request' error indicating \"Control 'fieldName' is read-only\" it means the 'editable' property for this field in Microsoft Dynamics 365 Business Central is currently set to false. To resolve this issue and make the field writable, simply update the 'editable' property to true in Microsoft Dynamics 365 Business Central. Additionally, line item tax rates must be specified by tax rate *code* (e.g., \"G3\"), not by ID. In U.S.-regionalized Business Central tenants, the `tax_inclusive` field cannot be set to `true`.\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": "Moneybird has no way to list payments, so this list operation is not supported. Retrieve a\nsingle payment by `id`, or read the payments on the parent sales invoice.\n\nMoneybird ties a payment to one sales invoice. A payment allocated to several sales invoices is\nstored as one Moneybird payment per allocation: every allocation needs an `amount`, the amounts\nmust add up to `total_amount`, and no sales invoice may appear twice. Such a payment gets a\ncomposite `id` (the Moneybird ids joined with `:`), which works for retrieving and deleting it\nas a whole. If any part is refused, the parts already registered are removed and nothing is\nkept. A composite `id` is only valid as returned: repeating a part is rejected. Moneybird\nreports each part separately, so webhooks deliver one `payment.created` per part, carrying that\npart's own id, and a refused split can deliver a created and a deleted event for a part\nthat was removed again.\n\nThe payment is recorded in the sales invoice's own currency for `total_amount`; `currency`,\n`currency_rate` and `payment_method` are not applied. `reference` is stored. Allocations must\nbe of type `invoice` (or untyped), and an allocation `amount` must match\n`total_amount`. Moneybird accepts a payment larger than the open balance, leaving a\nnegative balance on the sales invoice.\n\nMoneybird does not say whether a deleted payment belonged to a sales invoice or a purchase\ninvoice. Every payment deletion is therefore delivered as both `payment.deleted` and\n`bill_payment.deleted`, with the same `entity_id`. Ignore the event for an `id` you do not hold.\n",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "AFAS does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "freshbooks",
+                            "description": "The Freshbooks Bills api is currently in beta.",
+                        },
+                        {
+                            "connector": "myob-acumatica",
+                            "description": "The Apideck service type is used for MYOB Acumatica non-stock items, and inventory is used for stock items.\n",
+                        },
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "QuickBooks Desktop does not expose a reliable cross-page total record count. Getting `total_count` requires a separate COUNT query — an extra API call that is not currently implemented. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "acumatica",
+                            "description": "The Apideck service type is used for Acumatica non-stock items, and inventory is used for stock items.\n",
+                        },
+                        {
+                            "connector": "snelstart",
+                            "description": "SnelStart has no dedicated payments resource — a payment is a bank booking\n(`bankboekingen`) that reconciles against an existing sales booking (invoice). List/get\nfilters SnelStart's bank-booking list to entries carrying a sales-booking reconciliation\nline, so a bank booking that only posts to a general ledger account, or that reconciles\nagainst a purchase booking (a bill payment) instead, never appears here.\n",
+                        },
+                        {
+                            "connector": "exact-online",
+                            "description": "Payments are read from Exact Online's cash-flow area, so the Exact Online app registration\nneeds read access to it (the `financial.cashflow` scope, set in the app's Data & Security\nReview). Without it, every call returns a 403 `AppScopeViolated` error while the connection\nstill shows as Connected and other resources keep working. Invoice `balance` is derived from\nthe same area and comes back `null` in that case.\n",
+                        },
+                        {
+                            "connector": "exact-online-nl",
+                            "description": "Payments are read from Exact Online's cash-flow area, so the Exact Online app registration\nneeds read access to it (the `financial.cashflow` scope, set in the app's Data & Security\nReview). Without it, every call returns a 403 `AppScopeViolated` error while the connection\nstill shows as Connected and other resources keep working. Invoice `balance` is derived from\nthe same area and comes back `null` in that case.\n",
+                        },
+                        {
+                            "connector": "exact-online-uk",
+                            "description": "Payments are read from Exact Online's cash-flow area, so the Exact Online app registration\nneeds read access to it (the `financial.cashflow` scope, set in the app's Data & Security\nReview). Without it, every call returns a 403 `AppScopeViolated` error while the connection\nstill shows as Connected and other resources keep working. Invoice `balance` is derived from\nthe same area and comes back `null` in that case.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -148,17 +275,19 @@ class Payments(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingPaymentsAllResponse(
                 get_payments_response=unmarshal_json_response(
-                    Optional[models.GetPaymentsResponse], http_res
+                    Optional[models.GetPaymentsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -199,11 +328,10 @@ class Payments(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingPaymentsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -222,7 +350,7 @@ class Payments(BaseSDK):
             Union[models.PaymentsFilter, models.PaymentsFilterTypedDict]
         ] = None,
         sort: Optional[Union[models.PaymentsSort, models.PaymentsSortTypedDict]] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -269,7 +397,7 @@ class Payments(BaseSDK):
             limit=limit,
             filter_=utils.get_pydantic_model(filter_, Optional[models.PaymentsFilter]),
             sort=utils.get_pydantic_model(sort, Optional[models.PaymentsSort]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -290,6 +418,7 @@ class Payments(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -314,9 +443,135 @@ class Payments(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "`filter[updated_since]` compares on whole days: SAP keeps only the date of the last change, so the time\npart is ignored and the filter is inclusive of the given day (in UTC). Records changed earlier that day are\nreturned again; dedupe by `id`.\n\n`limit` caps the SAP posting lines read per page, not the payments, so a page can hold fewer\npayments than `limit`. A payment is never split across pages: one with more posting lines\nthan `limit` is returned complete on a page of its own. Only a payment with more than 5,000\nposting lines, or one whose lines cannot all be read within the request's time budget, still\nappears on consecutive pages with the same `id`, each carrying part of its lines; if SAP\nfails while they are read, the request returns a retryable error. Follow `meta.cursors.next`\nuntil it is `null`. `meta.total_count` will not appear and `meta.cursors.previous` is always\n`null`. `pass_through` cannot set `$top`, `$skip` or `$orderby` on this list; such a request\nis refused with a 400.\n\nA `pass_through[$filter]` replaces the connector's document-type filter, so the list skips\ndocuments of other types and can end before the last payment.\n\n`allocations` lists the documents SAP cleared the payment against: `invoice` and `credit_memo` with the unified id of the invoice or credit note, or\n`journal_entry` with id `<company code>:<fiscal year>:<document number>` for a document that no\nother resource returns. `amount` is the part of the payment applied to each document; a partial\npayment lists the document with the partial amount. A partial payment posted in SAP's Post Incoming Payments\napp can take over the open remainder of an earlier partial payment of the same document; it then lists\nonly the amount it added, and its `total_amount` is the amount received. The earlier payment keeps its\nown allocation, also after a later payment settles the document. A payment that settles a document\nand opens a residual item for the rest lists the document with only the amount it paid. An uncleared payment returns `allocations` as `null`.\nWhen one clearing in SAP settled several payments together, those payments also return\n`allocations` as `null`, because SAP does not record which payment paid which document.\n`reconciled` is `true` only when the whole payment is cleared, so one with an open remainder is\nnot. Reading allocations adds SAP reads, usually one or two per page and only when the page has\ncleared payments. If one of them fails, the request returns an error rather than the page.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Fiken has no payments list: the payments are read from the company's invoices, so a list\nreads up to 2,000 invoices (20 requests of 100); beyond that, the response carries a warning that the list is\nincomplete. `limit` and the cursor page through the payments, and every page reads the invoices again, so walking a long list costs several Fiken requests per page; prefer a filter where you can. `filter[customer_id]`\nis applied by Fiken; `filter[invoice_id]` reads only that invoice, in one request.\n`filter[updated_since]` is not supported (Fiken does not expose a payment modification date).\n\nOnly payments on invoices are listed: a customer payment is attached to the invoice's sale. Payments\non sales that did not come from an invoice are not returned.\n\nThe payment `id` is composite, `<invoice_id>:<payment_id>`, because Fiken only addresses a payment\nthrough its parent. `allocations[0].id` is the unified invoice id. `total_amount` is in the payment's\n`currency`; `currency_rate` is derived from Fiken's `amountInNok` for foreign-currency payments.\nBank fees (`fee`) are not exposed. `customer` carries the id and name only.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "FreeAgent stores a payment as an explanation on a bank account, and it can only list those\nper bank account. Each list request therefore reads the explanations of every bank account\nbefore returning a page, so it gets slower as the ledger grows. Use `filter[updated_since]`\nfor incremental syncs, and `filter[invoice_id]` to read the payments of one invoice.\n`meta.total_count` is not returned.\n\n`customer` is not populated. Read the invoice in `allocations[0].id` to get its customer.\n\nA refund paid out against a credit note is returned with `type: accounts_receivable_credit`\nand an allocation of type `credit_memo`; a customer payment with `type: accounts_receivable`\nand an allocation of type `invoice`. `total_amount` is always positive.\n",
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": "Twinfield returns every matching payment in a single call for this endpoint — there is no\nserver-side pagination, so a large date range can be a large response.\n\n`account` and `allocations` are not populated on the list. Fetch the individual payment by\n`id` to get those fields.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "The minimun page size accepted for Netsuite is 5. The cursor for Netsuite expires if they have not been used within 15 minutes after its creation.\n`filter[subsidiary_id]` scopes results to a single subsidiary and is only supported on NetSuite OneWorld accounts; on standard (single-entity) accounts it is ignored.\n",
+                        },
+                        {
+                            "connector": "kashflow",
+                            "description": "Kashflow only allows to retrieve payments by invoice, so in order to use this endpoint the filter[invoice_number] parameter is required.",
+                        },
+                        {
+                            "connector": "sage-business-cloud-accounting",
+                            "description": "Payments are retrieved using the `transaction_type_id` parameter which defaults to `CUSTOMER_RECEIPT`. Use the `type` filter to retrieve other payment transaction types.\n",
+                        },
+                        {
+                            "connector": "alegra",
+                            "description": "A payment must be applied to at least one invoice — Alegra rejects an unapplied payment.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks Online does not expose a reliable cross-page total record count. The `QueryResponse.totalCount` field in list responses reflects the count for that page only, not the full dataset. `meta.total_count` will not appear in list responses. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite uses the same underlying QuickBooks API. The `QueryResponse.totalCount` field in list responses reflects the per-page count only. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics",
+                            "description": "Microsoft Dynamics 365 does not include a total record count in default list responses. `meta.total_count` will not appear. Surfacing the total requires adding `$count=true` to the OData query or calling a separate `$count` endpoint — not currently implemented.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Zoho Books does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "stripe",
+                            "description": "Stripe removed `total_count` from list responses in March 2025 (API version 2025-03-31.basil). `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "rillet",
+                            "description": "Rillet does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "procountor-fi",
+                            "description": "Procountor does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "access-financials",
+                            "description": "Access Financials does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "wave",
+                            "description": "Wave has no list of payments, only each invoice's payments, so every request reads the invoices that have a payment and pages over their payments. A request that would read more than 10,000 paid invoices fails with a 400 asking for `filter[updated_since]`, and a failed invoice page fails the request (502, or Wave's 4xx/429) rather than returning a partial list. `meta.total_count` will not appear. `filter[updated_since]` matches a payment's own modification time. Only invoice payments are listed.\n",
+                        },
+                        {
+                            "connector": "dualentry",
+                            "description": "DualEntry scopes payments by company. Pass the `x-apideck-company-id` header (or set a Default\nCompany on the connection) to return only records belonging to that company within the tenant.\nWithout it, records across all companies in the tenant are returned.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "If you encounter a '400 Bad Request' error indicating \"Control 'fieldName' is read-only\" it means the 'editable' property for this field in Microsoft Dynamics 365 Business Central is currently set to false. To resolve this issue and make the field writable, simply update the 'editable' property to true in Microsoft Dynamics 365 Business Central. Additionally, line item tax rates must be specified by tax rate *code* (e.g., \"G3\"), not by ID. In U.S.-regionalized Business Central tenants, the `tax_inclusive` field cannot be set to `true`.\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": "Moneybird has no way to list payments, so this list operation is not supported. Retrieve a\nsingle payment by `id`, or read the payments on the parent sales invoice.\n\nMoneybird ties a payment to one sales invoice. A payment allocated to several sales invoices is\nstored as one Moneybird payment per allocation: every allocation needs an `amount`, the amounts\nmust add up to `total_amount`, and no sales invoice may appear twice. Such a payment gets a\ncomposite `id` (the Moneybird ids joined with `:`), which works for retrieving and deleting it\nas a whole. If any part is refused, the parts already registered are removed and nothing is\nkept. A composite `id` is only valid as returned: repeating a part is rejected. Moneybird\nreports each part separately, so webhooks deliver one `payment.created` per part, carrying that\npart's own id, and a refused split can deliver a created and a deleted event for a part\nthat was removed again.\n\nThe payment is recorded in the sales invoice's own currency for `total_amount`; `currency`,\n`currency_rate` and `payment_method` are not applied. `reference` is stored. Allocations must\nbe of type `invoice` (or untyped), and an allocation `amount` must match\n`total_amount`. Moneybird accepts a payment larger than the open balance, leaving a\nnegative balance on the sales invoice.\n\nMoneybird does not say whether a deleted payment belonged to a sales invoice or a purchase\ninvoice. Every payment deletion is therefore delivered as both `payment.deleted` and\n`bill_payment.deleted`, with the same `entity_id`. Ignore the event for an `id` you do not hold.\n",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "AFAS does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "freshbooks",
+                            "description": "The Freshbooks Bills api is currently in beta.",
+                        },
+                        {
+                            "connector": "myob-acumatica",
+                            "description": "The Apideck service type is used for MYOB Acumatica non-stock items, and inventory is used for stock items.\n",
+                        },
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "QuickBooks Desktop does not expose a reliable cross-page total record count. Getting `total_count` requires a separate COUNT query — an extra API call that is not currently implemented. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "acumatica",
+                            "description": "The Apideck service type is used for Acumatica non-stock items, and inventory is used for stock items.\n",
+                        },
+                        {
+                            "connector": "snelstart",
+                            "description": "SnelStart has no dedicated payments resource — a payment is a bank booking\n(`bankboekingen`) that reconciles against an existing sales booking (invoice). List/get\nfilters SnelStart's bank-booking list to entries carrying a sales-booking reconciliation\nline, so a bank booking that only posts to a general ledger account, or that reconciles\nagainst a purchase booking (a bill payment) instead, never appears here.\n",
+                        },
+                        {
+                            "connector": "exact-online",
+                            "description": "Payments are read from Exact Online's cash-flow area, so the Exact Online app registration\nneeds read access to it (the `financial.cashflow` scope, set in the app's Data & Security\nReview). Without it, every call returns a 403 `AppScopeViolated` error while the connection\nstill shows as Connected and other resources keep working. Invoice `balance` is derived from\nthe same area and comes back `null` in that case.\n",
+                        },
+                        {
+                            "connector": "exact-online-nl",
+                            "description": "Payments are read from Exact Online's cash-flow area, so the Exact Online app registration\nneeds read access to it (the `financial.cashflow` scope, set in the app's Data & Security\nReview). Without it, every call returns a 403 `AppScopeViolated` error while the connection\nstill shows as Connected and other resources keep working. Invoice `balance` is derived from\nthe same area and comes back `null` in that case.\n",
+                        },
+                        {
+                            "connector": "exact-online-uk",
+                            "description": "Payments are read from Exact Online's cash-flow area, so the Exact Online app registration\nneeds read access to it (the `financial.cashflow` scope, set in the app's Data & Security\nReview). Without it, every call returns a 403 `AppScopeViolated` error while the connection\nstill shows as Connected and other resources keep working. Invoice `balance` is derived from\nthe same area and comes back `null` in that case.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -344,17 +599,19 @@ class Payments(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingPaymentsAllResponse(
                 get_payments_response=unmarshal_json_response(
-                    Optional[models.GetPaymentsResponse], http_res
+                    Optional[models.GetPaymentsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -395,11 +652,10 @@ class Payments(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingPaymentsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -443,23 +699,29 @@ class Payments(BaseSDK):
         status: Optional[models.PaymentStatus] = None,
         type_: Optional[models.PaymentType] = None,
         allocations: Optional[
-            Union[List[models.AllocationInput], List[models.AllocationInputTypedDict]]
+            Union[
+                Iterable[models.AllocationInput],
+                Iterable[models.AllocationInputTypedDict],
+            ]
         ] = None,
         note: OptionalNullable[str] = UNSET,
         number: OptionalNullable[str] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         display_id: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -493,7 +755,7 @@ class Payments(BaseSDK):
         :param subsidiary:
         :param reconciled: Indicates if the transaction has been reconciled.
         :param status: Status of payment
-        :param type: Type of payment
+        :param type_: Type of payment
         :param allocations:
         :param note: Note associated with the transaction
         :param number: Number associated with the transaction
@@ -591,6 +853,7 @@ class Payments(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.payment, False, False, "json", models.PaymentInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -615,9 +878,99 @@ class Payments(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "fiken",
+                            "description": "Creates the payment on the invoice's sale (Fiken `POST /sales/{saleId}/payments`). Send exactly one\n`allocations[]` entry with `type: invoice` and the invoice id; a Fiken payment settles one invoice,\nso several allocations are refused with 422. `account.id` is the bank account the money was received\nin: either a Fiken account code (`1920:10001`) or the bank account id from `/accounting/bank-accounts`.\n`total_amount` is in `currency` (default NOK); for a foreign-currency payment send `currency_rate`\nto fix the NOK amount, otherwise Fiken converts at the rate of `transaction_date`. The response id is\ncomposite, `<invoice_id>:<payment_id>`. A payment cannot be updated; delete and recreate it.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "A FreeAgent payment settles exactly one invoice or credit note: send one `allocations` entry\nwith `type: invoice` (or `credit_memo` for a credit note refund) and its `id`. To settle\nseveral documents, create one payment per document. `account.id` is required and must be a\nFreeAgent bank account id.\n\nSend `total_amount` as a positive number. A `credit_memo` allocation or\n`type: accounts_receivable_credit` records money paid out to the customer.\n\n`total_amount` is recorded in the bank account's currency. Paying an invoice in another\ncurrency is not supported here; record it in FreeAgent. `reference` is set by FreeAgent and\ncannot be supplied.\n",
+                        },
+                        {
+                            "connector": "e-boekhouden",
+                            "description": "`allocations[].id` must be the invoice's own invoice number (the human-readable string,\ne.g. the one shown on the invoice document), not its internal id. e-Boekhouden records\ninvoices through two separate systems that don't share a lookup: a payment can only be\nmatched against an invoice recorded through the booking/journal side, not one created\nthrough the standalone invoicing/document side — even when the invoice number is identical\non both, the latter fails with \"Invoice not found\".\n\n`allocations[].amount` must add up to `total_amount` when both are supplied — e-Boekhouden\nbooks each allocation at face value and reports only the new record's id back, so a\nmismatch would otherwise post the allocated sum and silently drop the difference. A payment\nwhose allocations disagree with its total is rejected before it is sent.\n",
+                        },
+                        {
+                            "connector": "exact-online",
+                            "description": "Creating a payment records the bank transaction but does not automatically reconcile it\nwith the linked invoice — the invoice status will not change to paid until the payment is\nmatched manually in Exact Online. A valid bank journal (Type=12) must be supplied via the\n`bank_journal_code` connection setting or `pass_through[journal_code]` per request;\nwithout one the API returns 'Invalid journal'.\n",
+                        },
+                        {
+                            "connector": "exact-online-nl",
+                            "description": "Creating a payment records the bank transaction but does not automatically reconcile it\nwith the linked invoice — the invoice status will not change to paid until the payment is\nmatched manually in Exact Online. A valid bank journal (Type=12) must be supplied via the\n`bank_journal_code` connection setting or `pass_through[journal_code]` per request;\nwithout one the API returns 'Invalid journal'.\n",
+                        },
+                        {
+                            "connector": "exact-online-uk",
+                            "description": "Creating a payment records the bank transaction but does not automatically reconcile it\nwith the linked invoice — the invoice status will not change to paid until the payment is\nmatched manually in Exact Online. A valid bank journal (Type=12) must be supplied via the\n`bank_journal_code` connection setting or `pass_through[journal_code]` per request;\nwithout one the API returns 'Invalid journal'.\n",
+                        },
+                        {
+                            "connector": "restaurant365",
+                            "description": "Payments cannot be created through this connector — the create operation is unsupported.\nR365's create-payment endpoint requires a header-level `locationId`, and the unified\nPayment schema has no field to source it from. Mapping the operation without it would\neither fail with a 422 or silently apply the payment to the wrong location, so it was\nleft unmapped rather than shipped broken. Payments can only be read.\n\nEvery R365 payment is an accounts-payable (vendor) payment — `customer` is always null.\nThe counterparty is only available via the deprecated `supplier` field.\n",
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": "Disabled as of 2026-08-18. Twinfield's bank transaction requires a reference to an existing,\nalready-imported bank statement line — a value the caller cannot supply directly, and this\nconnector has no way to discover one (its bank-statement-import path is itself disabled).\nSeparately, `account.id` must be a real ledger-account code (e.g. `1010`); the id returned\nby `/accounting/bank-accounts` is a different Twinfield concept and does not work here.\n",
+                        },
+                        {
+                            "connector": "myob",
+                            "description": "MYOB payments cannot be updated — the MYOB API allows only GET, POST and DELETE on customer payments, so the update operation is unsupported. Delete the payment and recreate it instead.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "Sage Intacct applies a payment to individual invoice LINES, while unified `allocations`\nreference an invoice. Apideck resolves the invoice to its lines automatically, and applies\nthe allocation to the FIRST line of each invoice. For a multi-line invoice that means the\nwhole allocated amount lands on line 1 rather than being spread across lines.\n\nAn allocation whose invoice cannot be resolved fails the request rather than posting a\npayment that applies to nothing.\n\n`account.id` must be the Sage financial entity id of the bank account (for example\n`100_SVB`), not a unified bank-account id.\n\nA credit memo is applied to an invoice through this endpoint, not through the credit-note\nresource: include one allocation of type `invoice` for the invoice being credited and one\nof type `credit_memo` for the credit memo funding it, both carrying the amount applied.\n`account.id` is still required even though no cash moves for a credit-only payment. At\nmost one `credit_memo` allocation is supported per request; it is applied across every\ninvoice allocation in the same request, so splitting one invoice's balance across more\nthan one credit memo needs separate calls.\n",
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "SAP S/4HANA Cloud creates the payment as a financial accounting posting. It is not a bank statement import\nor a payment-program run. `company_id`, `customer.id` and `account.id` are required. If SAP rejects the posting\n(for example an unknown bank account or a customer not set up in the company), the request fails with a `400`\nand nothing is posted.\n\n`reference` (up to 16 characters) and `note` (up to 25 characters) are stored on the posting and returned\nwhen the payment is read; longer values are cut to these lengths. SAP stores `reference` in upper case, so\n`pay-2026-a` is returned as `PAY-2026-A`; `note` keeps its case. `number` is assigned by SAP and cannot be\nset: a `number` sent on create is ignored.\n\nCreating payments is not yet available on SAP S/4HANA On-Premise and Private Cloud connections\n(connections whose SAP System URL is your own gateway rather than an SAP-hosted Public Edition tenant on `*.s4hana.cloud.sap` or `*.s4hana.ondemand.com`):\nthe request returns `501` and nothing is posted. Reading payments works on those connections.\n\n`allocations` are applied in SAP by clearing. The payment is posted, then cleared against its\ntargets, and the request returns `201` only once SAP shows the allocations as applied.\nSupported `type` values are `invoice` and `credit_memo`. `id` is the unified id of the invoice\nor credit note (`<company code>:<fiscal year>:<document number>`). Each target must be in the\npayment's company code, for the same customer and in the same currency. A payment takes up to\n20 allocations, each to a different document. `amount` is required when there is more than one\nallocation; a single allocation without `amount` applies the whole `total_amount`. Credit memo\namounts are subtracted, and the allocations must net to more than 0 and no more than\n`total_amount`.\n\nAn allocation for less than the invoice's open amount is a partial payment: the invoice stays\nopen and reads `partially_paid`. If the allocations net to less than `total_amount`, the\nremainder stays on the customer's account as an open payment item. A document with more than\none open item (installments) cannot be allocated. No cash discount is taken.\n\nEvery allocation is checked in SAP before anything is posted. The request returns `400` naming\nthe allocation (for example `allocations[1]`), and posts nothing, when the document is not\nfound, is already cleared, has a different customer, company code or currency, or has less\nopen than the allocated `amount`, or when `type` does not match the document. Allocations also need\nthe Journal Entry – Clearing service in the **SAP_COM_0002** communication arrangement. Without\nit the request returns `400` and nothing is posted. If SAP cannot be read during these checks,\nthe request returns `503`, nothing is posted, and you can retry.\n\n`408` means too little of the request's time was left to post and clear the payment. Nothing\nwas posted, so retry the request.\n\n`409` means the payment was posted but SAP has not confirmed its allocations as applied. The\nmessage gives the payment `id` and says whether the clearing was not sent, may have been sent,\nor was sent but not confirmed in time. Do not resend the request, because that posts a second\npayment. Read the payment instead: its `allocations` show what SAP applied. In a batch, the\nitem is reported as created with this error. The first clearing after the SAP tenant has been\nidle can take longer than the request allows and return this `409`; SAP may still apply it\nafterwards, so read the payment to see whether it did.\n",
+                        },
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "QuickBooks Desktop applies a payment to invoices via `allocations[]` — each `allocations[].id` is the target invoice's transaction id and `allocations[].amount` the amount applied. Without `allocations`, the payment is created unapplied. On update, QBD cannot change the applied invoices, payment method, or deposit/AR account — only customer, `transaction_date`, `reference`, `total_amount`, and `note` are updatable; recreate the payment to change allocations.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "The number property could be used to override the Netsuite tranId property.\n\nDate-only fields need no configuration: NetSuite converts the datetime it receives into the\nSOAP/integration user's time zone before storing the date part, and these fields are anchored so\nthey store on the intended calendar day for any integration user between UTC-10 and UTC+13.\n\nFour zones fall outside that range and need the optional `timezone` connection setting:\n`Pacific/Pago_Pago`, `Pacific/Niue` and `Pacific/Midway` (UTC-11) store one day early without it,\nand `Pacific/Kiritimati` (UTC+14) stores one day late. Set it to the IANA zone of the NetSuite user\nthis connection authenticates as, read from that user's Home > Set Preferences > Time Zone — Setup >\nCompany > Company Information only supplies the default, so a user who overrode it needs their own\nzone.\n\nWhen the setting is used its value must be within 12 hours of that user's real zone in either\ndirection: more than ~12h east stores dates one day early, more than ~12h west stores them one day\nlate.\n\nThis applies to every NetSuite date-only write field across the accounting resources.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": 'Xero supports creating payments against multiple allocation types in a single request. However, the response will provide the ID of the first payment only. To access all payment IDs, inspect the raw data.\n\nXero rejects payments where the organisation base currency, the invoice currency, and the bank\naccount currency are all different (a "3-currency transaction"):\n\n`"The invoice, payment and organisation base currencies are all different. Xero cannot currently handle a 3-currency transaction."`\n\nPay from a bank account in either the base or the invoice currency (two currencies) to avoid the error.\n\nRefunding a credit note (for example when the invoice is already paid):\n- Send an allocation with `type: credit_memo` and the credit note id. Xero records it as a credit note refund (`ARCREDITPAYMENT`). The credit note becomes `paid` when the refund settles its remaining credit in full.\n- The `account` must be a bank account, or have "Enable payments to this account" ticked in Xero. Otherwise Xero returns "Account type is invalid for making a payment to/from".\n- Bank accounts often have no code in Xero. Send `account.id` instead of `account.code`.\n- The amount can\'t be more than the credit note\'s remaining credit ("Payment amount exceeds the amount outstanding on this document").\n',
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "Payment allocations in QuickBooks are processed asynchronously. While the allocations are included in the request, they may not appear in the immediate response. The allocations will be applied and become visible in subsequent list or get calls.\n\nSend an `Idempotency-Key` to make retrying a create safe: it reaches QuickBooks as its `requestid`. QuickBooks keeps a `requestid` for at least 24 hours and can keep it longer, so after the 24-hour window a key reused for a different payment may get the original payment back, with the new body ignored. Use a new key for every payment. Your key can be 1-255 characters: Unify sends QuickBooks a 32-character `requestid` derived from it, so QuickBooks' 50-character `requestid` limit never applies.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Payment allocations in Intuit Enterprise Suite are processed asynchronously. While the allocations are included in the request, they may not appear in the immediate response. The allocations will be applied and become visible in subsequent list or get calls.\n\nSend an `Idempotency-Key` to make retrying a create safe: it reaches Intuit Enterprise Suite as its `requestid`. Intuit Enterprise Suite keeps a `requestid` for at least 24 hours and can keep it longer, so after the 24-hour window a key reused for a different payment may get the original payment back, with the new body ignored. Use a new key for every payment. Your key can be 1-255 characters: Unify sends Intuit Enterprise Suite a 32-character `requestid` derived from it, so Intuit Enterprise Suite's 50-character `requestid` limit never applies.\n",
+                        },
+                        {
+                            "connector": "access-financials",
+                            "description": "Access Financials creates payments as live/posted transactions immediately. Live transactions cannot be updated, so to correct a payment you must delete it and create a new one.\n",
+                        },
+                        {
+                            "connector": "wafeq",
+                            "description": "Wafeq splits payment allocations by document type into separate vendor fields: `accounts_receivable` payments populate `invoice_payments[]`, `accounts_payable` payments populate `bill_payments[]`. Wafeq requires `amount_to_pcy` (amount in primary currency) on each allocation; Apideck mirrors `amount` for single-currency cases. The target invoice or bill must be finalized before a payment can attach — drafts return `403 payment_locked`. To finalize, PATCH the document with the appropriate non-draft status (invoices/credit-notes accept `FINALIZED` or `SENT`, bills accept `AUTHORIZED`); these map to the unified `authorised` status. The bank account's currency must match the payment currency (Wafeq does not auto-convert).\n",
+                        },
+                        {
+                            "connector": "snelstart",
+                            "description": "SnelStart has no dedicated payments write endpoint — a payment is created as a bank\nbooking that reconciles against an existing sales booking (invoice). `account.id` must be\na SnelStart bank account id (a Bank-type daybook, from the connector's own bank-accounts\nlist) — not a ledger-accounts id, despite the field's generic name. Each `allocations[].id`\nmust be the id of an existing invoice; if `allocations[].amount` is omitted, `total_amount`\nis used. There is no partial-reconciliation status: the write either succeeds (`status:\npaid`) or the whole request 400s — SnelStart has no `pending`/`draft` equivalent for a bank\nbooking.\n",
+                        },
+                        {
+                            "connector": "dualentry",
+                            "description": "Apply a payment to an invoice via `allocations[]`: each `allocations[].id` is the target invoice's id\n(its DualEntry invoice number) and `allocations[].amount` the amount applied. This is what drives the\ninvoice's derived `status` (`partially_paid` / `paid`). A memo (`note`) is required. Use\n`status: authorised` to post the payment — `posted` is not an accepted value (allowed: `draft`,\n`authorised`, `rejected`, `paid`, `voided`, `deleted`). Payments created with `status: draft` succeed\nbut do not affect the invoice balance or status; only posted (`authorised`) payments move the balance.\n",
+                        },
+                        {
+                            "connector": "visma-netvisor",
+                            "description": "Always send `payment_method`, spelled exactly like a payment method set up in the company's Netvisor. Any other value is rejected as an unknown payment method, and so is a payment sent without one.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -625,10 +978,9 @@ class Payments(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingPaymentsAddResponse(
                 create_payment_response=unmarshal_json_response(
-                    Optional[models.CreatePaymentResponse], http_res
+                    Optional[models.CreatePaymentResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -669,10 +1021,9 @@ class Payments(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingPaymentsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -716,23 +1067,29 @@ class Payments(BaseSDK):
         status: Optional[models.PaymentStatus] = None,
         type_: Optional[models.PaymentType] = None,
         allocations: Optional[
-            Union[List[models.AllocationInput], List[models.AllocationInputTypedDict]]
+            Union[
+                Iterable[models.AllocationInput],
+                Iterable[models.AllocationInputTypedDict],
+            ]
         ] = None,
         note: OptionalNullable[str] = UNSET,
         number: OptionalNullable[str] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         display_id: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -766,7 +1123,7 @@ class Payments(BaseSDK):
         :param subsidiary:
         :param reconciled: Indicates if the transaction has been reconciled.
         :param status: Status of payment
-        :param type: Type of payment
+        :param type_: Type of payment
         :param allocations:
         :param note: Note associated with the transaction
         :param number: Number associated with the transaction
@@ -864,6 +1221,7 @@ class Payments(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.payment, False, False, "json", models.PaymentInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -888,9 +1246,99 @@ class Payments(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "fiken",
+                            "description": "Creates the payment on the invoice's sale (Fiken `POST /sales/{saleId}/payments`). Send exactly one\n`allocations[]` entry with `type: invoice` and the invoice id; a Fiken payment settles one invoice,\nso several allocations are refused with 422. `account.id` is the bank account the money was received\nin: either a Fiken account code (`1920:10001`) or the bank account id from `/accounting/bank-accounts`.\n`total_amount` is in `currency` (default NOK); for a foreign-currency payment send `currency_rate`\nto fix the NOK amount, otherwise Fiken converts at the rate of `transaction_date`. The response id is\ncomposite, `<invoice_id>:<payment_id>`. A payment cannot be updated; delete and recreate it.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "A FreeAgent payment settles exactly one invoice or credit note: send one `allocations` entry\nwith `type: invoice` (or `credit_memo` for a credit note refund) and its `id`. To settle\nseveral documents, create one payment per document. `account.id` is required and must be a\nFreeAgent bank account id.\n\nSend `total_amount` as a positive number. A `credit_memo` allocation or\n`type: accounts_receivable_credit` records money paid out to the customer.\n\n`total_amount` is recorded in the bank account's currency. Paying an invoice in another\ncurrency is not supported here; record it in FreeAgent. `reference` is set by FreeAgent and\ncannot be supplied.\n",
+                        },
+                        {
+                            "connector": "e-boekhouden",
+                            "description": "`allocations[].id` must be the invoice's own invoice number (the human-readable string,\ne.g. the one shown on the invoice document), not its internal id. e-Boekhouden records\ninvoices through two separate systems that don't share a lookup: a payment can only be\nmatched against an invoice recorded through the booking/journal side, not one created\nthrough the standalone invoicing/document side — even when the invoice number is identical\non both, the latter fails with \"Invoice not found\".\n\n`allocations[].amount` must add up to `total_amount` when both are supplied — e-Boekhouden\nbooks each allocation at face value and reports only the new record's id back, so a\nmismatch would otherwise post the allocated sum and silently drop the difference. A payment\nwhose allocations disagree with its total is rejected before it is sent.\n",
+                        },
+                        {
+                            "connector": "exact-online",
+                            "description": "Creating a payment records the bank transaction but does not automatically reconcile it\nwith the linked invoice — the invoice status will not change to paid until the payment is\nmatched manually in Exact Online. A valid bank journal (Type=12) must be supplied via the\n`bank_journal_code` connection setting or `pass_through[journal_code]` per request;\nwithout one the API returns 'Invalid journal'.\n",
+                        },
+                        {
+                            "connector": "exact-online-nl",
+                            "description": "Creating a payment records the bank transaction but does not automatically reconcile it\nwith the linked invoice — the invoice status will not change to paid until the payment is\nmatched manually in Exact Online. A valid bank journal (Type=12) must be supplied via the\n`bank_journal_code` connection setting or `pass_through[journal_code]` per request;\nwithout one the API returns 'Invalid journal'.\n",
+                        },
+                        {
+                            "connector": "exact-online-uk",
+                            "description": "Creating a payment records the bank transaction but does not automatically reconcile it\nwith the linked invoice — the invoice status will not change to paid until the payment is\nmatched manually in Exact Online. A valid bank journal (Type=12) must be supplied via the\n`bank_journal_code` connection setting or `pass_through[journal_code]` per request;\nwithout one the API returns 'Invalid journal'.\n",
+                        },
+                        {
+                            "connector": "restaurant365",
+                            "description": "Payments cannot be created through this connector — the create operation is unsupported.\nR365's create-payment endpoint requires a header-level `locationId`, and the unified\nPayment schema has no field to source it from. Mapping the operation without it would\neither fail with a 422 or silently apply the payment to the wrong location, so it was\nleft unmapped rather than shipped broken. Payments can only be read.\n\nEvery R365 payment is an accounts-payable (vendor) payment — `customer` is always null.\nThe counterparty is only available via the deprecated `supplier` field.\n",
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": "Disabled as of 2026-08-18. Twinfield's bank transaction requires a reference to an existing,\nalready-imported bank statement line — a value the caller cannot supply directly, and this\nconnector has no way to discover one (its bank-statement-import path is itself disabled).\nSeparately, `account.id` must be a real ledger-account code (e.g. `1010`); the id returned\nby `/accounting/bank-accounts` is a different Twinfield concept and does not work here.\n",
+                        },
+                        {
+                            "connector": "myob",
+                            "description": "MYOB payments cannot be updated — the MYOB API allows only GET, POST and DELETE on customer payments, so the update operation is unsupported. Delete the payment and recreate it instead.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "Sage Intacct applies a payment to individual invoice LINES, while unified `allocations`\nreference an invoice. Apideck resolves the invoice to its lines automatically, and applies\nthe allocation to the FIRST line of each invoice. For a multi-line invoice that means the\nwhole allocated amount lands on line 1 rather than being spread across lines.\n\nAn allocation whose invoice cannot be resolved fails the request rather than posting a\npayment that applies to nothing.\n\n`account.id` must be the Sage financial entity id of the bank account (for example\n`100_SVB`), not a unified bank-account id.\n\nA credit memo is applied to an invoice through this endpoint, not through the credit-note\nresource: include one allocation of type `invoice` for the invoice being credited and one\nof type `credit_memo` for the credit memo funding it, both carrying the amount applied.\n`account.id` is still required even though no cash moves for a credit-only payment. At\nmost one `credit_memo` allocation is supported per request; it is applied across every\ninvoice allocation in the same request, so splitting one invoice's balance across more\nthan one credit memo needs separate calls.\n",
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "SAP S/4HANA Cloud creates the payment as a financial accounting posting. It is not a bank statement import\nor a payment-program run. `company_id`, `customer.id` and `account.id` are required. If SAP rejects the posting\n(for example an unknown bank account or a customer not set up in the company), the request fails with a `400`\nand nothing is posted.\n\n`reference` (up to 16 characters) and `note` (up to 25 characters) are stored on the posting and returned\nwhen the payment is read; longer values are cut to these lengths. SAP stores `reference` in upper case, so\n`pay-2026-a` is returned as `PAY-2026-A`; `note` keeps its case. `number` is assigned by SAP and cannot be\nset: a `number` sent on create is ignored.\n\nCreating payments is not yet available on SAP S/4HANA On-Premise and Private Cloud connections\n(connections whose SAP System URL is your own gateway rather than an SAP-hosted Public Edition tenant on `*.s4hana.cloud.sap` or `*.s4hana.ondemand.com`):\nthe request returns `501` and nothing is posted. Reading payments works on those connections.\n\n`allocations` are applied in SAP by clearing. The payment is posted, then cleared against its\ntargets, and the request returns `201` only once SAP shows the allocations as applied.\nSupported `type` values are `invoice` and `credit_memo`. `id` is the unified id of the invoice\nor credit note (`<company code>:<fiscal year>:<document number>`). Each target must be in the\npayment's company code, for the same customer and in the same currency. A payment takes up to\n20 allocations, each to a different document. `amount` is required when there is more than one\nallocation; a single allocation without `amount` applies the whole `total_amount`. Credit memo\namounts are subtracted, and the allocations must net to more than 0 and no more than\n`total_amount`.\n\nAn allocation for less than the invoice's open amount is a partial payment: the invoice stays\nopen and reads `partially_paid`. If the allocations net to less than `total_amount`, the\nremainder stays on the customer's account as an open payment item. A document with more than\none open item (installments) cannot be allocated. No cash discount is taken.\n\nEvery allocation is checked in SAP before anything is posted. The request returns `400` naming\nthe allocation (for example `allocations[1]`), and posts nothing, when the document is not\nfound, is already cleared, has a different customer, company code or currency, or has less\nopen than the allocated `amount`, or when `type` does not match the document. Allocations also need\nthe Journal Entry – Clearing service in the **SAP_COM_0002** communication arrangement. Without\nit the request returns `400` and nothing is posted. If SAP cannot be read during these checks,\nthe request returns `503`, nothing is posted, and you can retry.\n\n`408` means too little of the request's time was left to post and clear the payment. Nothing\nwas posted, so retry the request.\n\n`409` means the payment was posted but SAP has not confirmed its allocations as applied. The\nmessage gives the payment `id` and says whether the clearing was not sent, may have been sent,\nor was sent but not confirmed in time. Do not resend the request, because that posts a second\npayment. Read the payment instead: its `allocations` show what SAP applied. In a batch, the\nitem is reported as created with this error. The first clearing after the SAP tenant has been\nidle can take longer than the request allows and return this `409`; SAP may still apply it\nafterwards, so read the payment to see whether it did.\n",
+                        },
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "QuickBooks Desktop applies a payment to invoices via `allocations[]` — each `allocations[].id` is the target invoice's transaction id and `allocations[].amount` the amount applied. Without `allocations`, the payment is created unapplied. On update, QBD cannot change the applied invoices, payment method, or deposit/AR account — only customer, `transaction_date`, `reference`, `total_amount`, and `note` are updatable; recreate the payment to change allocations.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "The number property could be used to override the Netsuite tranId property.\n\nDate-only fields need no configuration: NetSuite converts the datetime it receives into the\nSOAP/integration user's time zone before storing the date part, and these fields are anchored so\nthey store on the intended calendar day for any integration user between UTC-10 and UTC+13.\n\nFour zones fall outside that range and need the optional `timezone` connection setting:\n`Pacific/Pago_Pago`, `Pacific/Niue` and `Pacific/Midway` (UTC-11) store one day early without it,\nand `Pacific/Kiritimati` (UTC+14) stores one day late. Set it to the IANA zone of the NetSuite user\nthis connection authenticates as, read from that user's Home > Set Preferences > Time Zone — Setup >\nCompany > Company Information only supplies the default, so a user who overrode it needs their own\nzone.\n\nWhen the setting is used its value must be within 12 hours of that user's real zone in either\ndirection: more than ~12h east stores dates one day early, more than ~12h west stores them one day\nlate.\n\nThis applies to every NetSuite date-only write field across the accounting resources.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": 'Xero supports creating payments against multiple allocation types in a single request. However, the response will provide the ID of the first payment only. To access all payment IDs, inspect the raw data.\n\nXero rejects payments where the organisation base currency, the invoice currency, and the bank\naccount currency are all different (a "3-currency transaction"):\n\n`"The invoice, payment and organisation base currencies are all different. Xero cannot currently handle a 3-currency transaction."`\n\nPay from a bank account in either the base or the invoice currency (two currencies) to avoid the error.\n\nRefunding a credit note (for example when the invoice is already paid):\n- Send an allocation with `type: credit_memo` and the credit note id. Xero records it as a credit note refund (`ARCREDITPAYMENT`). The credit note becomes `paid` when the refund settles its remaining credit in full.\n- The `account` must be a bank account, or have "Enable payments to this account" ticked in Xero. Otherwise Xero returns "Account type is invalid for making a payment to/from".\n- Bank accounts often have no code in Xero. Send `account.id` instead of `account.code`.\n- The amount can\'t be more than the credit note\'s remaining credit ("Payment amount exceeds the amount outstanding on this document").\n',
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "Payment allocations in QuickBooks are processed asynchronously. While the allocations are included in the request, they may not appear in the immediate response. The allocations will be applied and become visible in subsequent list or get calls.\n\nSend an `Idempotency-Key` to make retrying a create safe: it reaches QuickBooks as its `requestid`. QuickBooks keeps a `requestid` for at least 24 hours and can keep it longer, so after the 24-hour window a key reused for a different payment may get the original payment back, with the new body ignored. Use a new key for every payment. Your key can be 1-255 characters: Unify sends QuickBooks a 32-character `requestid` derived from it, so QuickBooks' 50-character `requestid` limit never applies.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Payment allocations in Intuit Enterprise Suite are processed asynchronously. While the allocations are included in the request, they may not appear in the immediate response. The allocations will be applied and become visible in subsequent list or get calls.\n\nSend an `Idempotency-Key` to make retrying a create safe: it reaches Intuit Enterprise Suite as its `requestid`. Intuit Enterprise Suite keeps a `requestid` for at least 24 hours and can keep it longer, so after the 24-hour window a key reused for a different payment may get the original payment back, with the new body ignored. Use a new key for every payment. Your key can be 1-255 characters: Unify sends Intuit Enterprise Suite a 32-character `requestid` derived from it, so Intuit Enterprise Suite's 50-character `requestid` limit never applies.\n",
+                        },
+                        {
+                            "connector": "access-financials",
+                            "description": "Access Financials creates payments as live/posted transactions immediately. Live transactions cannot be updated, so to correct a payment you must delete it and create a new one.\n",
+                        },
+                        {
+                            "connector": "wafeq",
+                            "description": "Wafeq splits payment allocations by document type into separate vendor fields: `accounts_receivable` payments populate `invoice_payments[]`, `accounts_payable` payments populate `bill_payments[]`. Wafeq requires `amount_to_pcy` (amount in primary currency) on each allocation; Apideck mirrors `amount` for single-currency cases. The target invoice or bill must be finalized before a payment can attach — drafts return `403 payment_locked`. To finalize, PATCH the document with the appropriate non-draft status (invoices/credit-notes accept `FINALIZED` or `SENT`, bills accept `AUTHORIZED`); these map to the unified `authorised` status. The bank account's currency must match the payment currency (Wafeq does not auto-convert).\n",
+                        },
+                        {
+                            "connector": "snelstart",
+                            "description": "SnelStart has no dedicated payments write endpoint — a payment is created as a bank\nbooking that reconciles against an existing sales booking (invoice). `account.id` must be\na SnelStart bank account id (a Bank-type daybook, from the connector's own bank-accounts\nlist) — not a ledger-accounts id, despite the field's generic name. Each `allocations[].id`\nmust be the id of an existing invoice; if `allocations[].amount` is omitted, `total_amount`\nis used. There is no partial-reconciliation status: the write either succeeds (`status:\npaid`) or the whole request 400s — SnelStart has no `pending`/`draft` equivalent for a bank\nbooking.\n",
+                        },
+                        {
+                            "connector": "dualentry",
+                            "description": "Apply a payment to an invoice via `allocations[]`: each `allocations[].id` is the target invoice's id\n(its DualEntry invoice number) and `allocations[].amount` the amount applied. This is what drives the\ninvoice's derived `status` (`partially_paid` / `paid`). A memo (`note`) is required. Use\n`status: authorised` to post the payment — `posted` is not an accepted value (allowed: `draft`,\n`authorised`, `rejected`, `paid`, `voided`, `deleted`). Payments created with `status: draft` succeed\nbut do not affect the invoice balance or status; only posted (`authorised`) payments move the balance.\n",
+                        },
+                        {
+                            "connector": "visma-netvisor",
+                            "description": "Always send `payment_method`, spelled exactly like a payment method set up in the company's Netvisor. Any other value is rejected as an unknown payment method, and so is a payment sent without one.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -898,10 +1346,9 @@ class Payments(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingPaymentsAddResponse(
                 create_payment_response=unmarshal_json_response(
-                    Optional[models.CreatePaymentResponse], http_res
+                    Optional[models.CreatePaymentResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -942,10 +1389,9 @@ class Payments(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingPaymentsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1018,6 +1464,7 @@ class Payments(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1042,9 +1489,27 @@ class Payments(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "`allocations` and `reconciled` are read as when listing payments: `allocations` lists the\ndocuments SAP cleared the payment against, and is `null` for an uncleared payment or one that SAP\ncleared together with other payments. `reconciled` is `true` only when the whole payment is\ncleared. Reading allocations adds one or two SAP reads when the payment is cleared; if one of\nthem fails, the request returns an error.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": 'The id is composite, `<invoice_id>:<payment_id>`, as returned by list and create. Fiken answers 400\n"No payment found with this id" for a payment that does not exist or was deleted. One extra call\nreads the invoice to resolve its sale.\n',
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "Returns 404 when the id belongs to a FreeAgent bank transaction explanation that does not\nsettle an invoice or credit note (a bill payment, transfer or expense).\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1052,10 +1517,9 @@ class Payments(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingPaymentsOneResponse(
                 get_payment_response=unmarshal_json_response(
-                    Optional[models.GetPaymentResponse], http_res
+                    Optional[models.GetPaymentResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1096,10 +1560,9 @@ class Payments(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingPaymentsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1172,6 +1635,7 @@ class Payments(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1196,9 +1660,27 @@ class Payments(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "`allocations` and `reconciled` are read as when listing payments: `allocations` lists the\ndocuments SAP cleared the payment against, and is `null` for an uncleared payment or one that SAP\ncleared together with other payments. `reconciled` is `true` only when the whole payment is\ncleared. Reading allocations adds one or two SAP reads when the payment is cleared; if one of\nthem fails, the request returns an error.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": 'The id is composite, `<invoice_id>:<payment_id>`, as returned by list and create. Fiken answers 400\n"No payment found with this id" for a payment that does not exist or was deleted. One extra call\nreads the invoice to resolve its sale.\n',
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "Returns 404 when the id belongs to a FreeAgent bank transaction explanation that does not\nsettle an invoice or credit note (a bill payment, transfer or expense).\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1206,10 +1688,9 @@ class Payments(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingPaymentsOneResponse(
                 get_payment_response=unmarshal_json_response(
-                    Optional[models.GetPaymentResponse], http_res
+                    Optional[models.GetPaymentResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1250,10 +1731,9 @@ class Payments(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingPaymentsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1297,23 +1777,29 @@ class Payments(BaseSDK):
         status: Optional[models.PaymentStatus] = None,
         type_: Optional[models.PaymentType] = None,
         allocations: Optional[
-            Union[List[models.AllocationInput], List[models.AllocationInputTypedDict]]
+            Union[
+                Iterable[models.AllocationInput],
+                Iterable[models.AllocationInputTypedDict],
+            ]
         ] = None,
         note: OptionalNullable[str] = UNSET,
         number: OptionalNullable[str] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         display_id: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1347,7 +1833,7 @@ class Payments(BaseSDK):
         :param subsidiary:
         :param reconciled: Indicates if the transaction has been reconciled.
         :param status: Status of payment
-        :param type: Type of payment
+        :param type_: Type of payment
         :param allocations:
         :param note: Note associated with the transaction
         :param number: Number associated with the transaction
@@ -1449,6 +1935,7 @@ class Payments(BaseSDK):
                 "json",
                 models.PaymentUpdateInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1473,9 +1960,39 @@ class Payments(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Updates need `row_version` from a prior read of the record: without it the update is rejected with `Missing required field: data.editSequence`.\n\nWrites are applied on the Web Connector's next run, so an update can return a `504` timeout after 28 seconds while QuickBooks still applies it. Read the record back before retrying.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "Returns 404 when the id belongs to a FreeAgent bank transaction explanation that does not\nsettle an invoice or credit note (a bill payment, transfer or expense).\n\n`allocations` is optional; when sent it must be one entry with `type: invoice` or\n`credit_memo`.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Date-only fields need no configuration: NetSuite converts the datetime it receives into the\nSOAP/integration user's time zone before storing the date part, and these fields are anchored so\nthey store on the intended calendar day for any integration user between UTC-10 and UTC+13.\n\nFour zones fall outside that range and need the optional `timezone` connection setting:\n`Pacific/Pago_Pago`, `Pacific/Niue` and `Pacific/Midway` (UTC-11) store one day early without it,\nand `Pacific/Kiritimati` (UTC+14) stores one day late. Set it to the IANA zone of the NetSuite user\nthis connection authenticates as, read from that user's Home > Set Preferences > Time Zone — Setup >\nCompany > Company Information only supplies the default, so a user who overrode it needs their own\nzone.\n\nWhen the setting is used its value must be within 12 hours of that user's real zone in either\ndirection: more than ~12h east stores dates one day early, more than ~12h west stores them one day\nlate.\n\nThis applies to every NetSuite date-only write field across the accounting resources.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Xero doesn't support updating payments. To update a payment, you need to delete the existing payment and create a new one.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "To clear the payment method on an existing payment, send `payment_method_id: null` explicitly\nin the PATCH body. Omitting the field preserves the existing payment method (sparse update\nsemantics). Sending `null` triggers `PaymentMethodRef: { value: null }` in the QuickBooks\nsparse POST, which removes the payment method reference from the payment.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "To clear the payment method on an existing payment, send `payment_method_id: null` explicitly\nin the PATCH body. Omitting the field preserves the existing payment method (sparse update\nsemantics). Sending `null` triggers `PaymentMethodRef: { value: null }` in the Intuit Enterprise Suite\nsparse POST, which removes the payment method reference from the payment.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1483,10 +2000,9 @@ class Payments(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingPaymentsUpdateResponse(
                 update_payment_response=unmarshal_json_response(
-                    Optional[models.UpdatePaymentResponse], http_res
+                    Optional[models.UpdatePaymentResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1527,10 +2043,9 @@ class Payments(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingPaymentsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1574,23 +2089,29 @@ class Payments(BaseSDK):
         status: Optional[models.PaymentStatus] = None,
         type_: Optional[models.PaymentType] = None,
         allocations: Optional[
-            Union[List[models.AllocationInput], List[models.AllocationInputTypedDict]]
+            Union[
+                Iterable[models.AllocationInput],
+                Iterable[models.AllocationInputTypedDict],
+            ]
         ] = None,
         note: OptionalNullable[str] = UNSET,
         number: OptionalNullable[str] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         display_id: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1624,7 +2145,7 @@ class Payments(BaseSDK):
         :param subsidiary:
         :param reconciled: Indicates if the transaction has been reconciled.
         :param status: Status of payment
-        :param type: Type of payment
+        :param type_: Type of payment
         :param allocations:
         :param note: Note associated with the transaction
         :param number: Number associated with the transaction
@@ -1726,6 +2247,7 @@ class Payments(BaseSDK):
                 "json",
                 models.PaymentUpdateInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1750,9 +2272,39 @@ class Payments(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Updates need `row_version` from a prior read of the record: without it the update is rejected with `Missing required field: data.editSequence`.\n\nWrites are applied on the Web Connector's next run, so an update can return a `504` timeout after 28 seconds while QuickBooks still applies it. Read the record back before retrying.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "Returns 404 when the id belongs to a FreeAgent bank transaction explanation that does not\nsettle an invoice or credit note (a bill payment, transfer or expense).\n\n`allocations` is optional; when sent it must be one entry with `type: invoice` or\n`credit_memo`.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Date-only fields need no configuration: NetSuite converts the datetime it receives into the\nSOAP/integration user's time zone before storing the date part, and these fields are anchored so\nthey store on the intended calendar day for any integration user between UTC-10 and UTC+13.\n\nFour zones fall outside that range and need the optional `timezone` connection setting:\n`Pacific/Pago_Pago`, `Pacific/Niue` and `Pacific/Midway` (UTC-11) store one day early without it,\nand `Pacific/Kiritimati` (UTC+14) stores one day late. Set it to the IANA zone of the NetSuite user\nthis connection authenticates as, read from that user's Home > Set Preferences > Time Zone — Setup >\nCompany > Company Information only supplies the default, so a user who overrode it needs their own\nzone.\n\nWhen the setting is used its value must be within 12 hours of that user's real zone in either\ndirection: more than ~12h east stores dates one day early, more than ~12h west stores them one day\nlate.\n\nThis applies to every NetSuite date-only write field across the accounting resources.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Xero doesn't support updating payments. To update a payment, you need to delete the existing payment and create a new one.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "To clear the payment method on an existing payment, send `payment_method_id: null` explicitly\nin the PATCH body. Omitting the field preserves the existing payment method (sparse update\nsemantics). Sending `null` triggers `PaymentMethodRef: { value: null }` in the QuickBooks\nsparse POST, which removes the payment method reference from the payment.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "To clear the payment method on an existing payment, send `payment_method_id: null` explicitly\nin the PATCH body. Omitting the field preserves the existing payment method (sparse update\nsemantics). Sending `null` triggers `PaymentMethodRef: { value: null }` in the Intuit Enterprise Suite\nsparse POST, which removes the payment method reference from the payment.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1760,10 +2312,9 @@ class Payments(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingPaymentsUpdateResponse(
                 update_payment_response=unmarshal_json_response(
-                    Optional[models.UpdatePaymentResponse], http_res
+                    Optional[models.UpdatePaymentResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1804,10 +2355,9 @@ class Payments(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingPaymentsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1877,6 +2427,7 @@ class Payments(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1901,9 +2452,27 @@ class Payments(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "fiken",
+                            "description": 'Undoes the payment the way Fiken\'s "Angre" action does: an open payment is deleted, a payment in a\nclosed period is reversed with a counter-entry so the audit trail is kept. Fiken refuses it for\npayments on a written-off sale or related to debt collection. The id is composite,\n`<invoice_id>:<payment_id>`.\n',
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "Returns 404 when the id belongs to a FreeAgent bank transaction explanation that does not\nsettle an invoice or credit note (a bill payment, transfer or expense).\n",
+                        },
+                        {
+                            "connector": "freshbooks",
+                            "description": "Delete will set the payment to inactive and will soft delete it, meaning it will stop appearing in the list API call. However, it can still be found via the get by id call.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1911,10 +2480,9 @@ class Payments(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingPaymentsDeleteResponse(
                 delete_payment_response=unmarshal_json_response(
-                    Optional[models.DeletePaymentResponse], http_res
+                    Optional[models.DeletePaymentResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1955,10 +2523,9 @@ class Payments(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingPaymentsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2028,6 +2595,7 @@ class Payments(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2052,9 +2620,27 @@ class Payments(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "fiken",
+                            "description": 'Undoes the payment the way Fiken\'s "Angre" action does: an open payment is deleted, a payment in a\nclosed period is reversed with a counter-entry so the audit trail is kept. Fiken refuses it for\npayments on a written-off sale or related to debt collection. The id is composite,\n`<invoice_id>:<payment_id>`.\n',
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "Returns 404 when the id belongs to a FreeAgent bank transaction explanation that does not\nsettle an invoice or credit note (a bill payment, transfer or expense).\n",
+                        },
+                        {
+                            "connector": "freshbooks",
+                            "description": "Delete will set the payment to inactive and will soft delete it, meaning it will stop appearing in the list API call. However, it can still be found via the get by id call.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2062,10 +2648,9 @@ class Payments(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingPaymentsDeleteResponse(
                 delete_payment_response=unmarshal_json_response(
-                    Optional[models.DeletePaymentResponse], http_res
+                    Optional[models.DeletePaymentResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2106,10 +2691,9 @@ class Payments(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingPaymentsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2118,8 +2702,8 @@ class Payments(BaseSDK):
         self,
         *,
         items: Union[
-            List[models.BatchPaymentsRequestItems],
-            List[models.BatchPaymentsRequestItemsTypedDict],
+            Iterable[models.BatchPaymentsRequestItems],
+            Iterable[models.BatchPaymentsRequestItemsTypedDict],
         ],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
@@ -2193,6 +2777,7 @@ class Payments(BaseSDK):
                 "json",
                 models.BatchPaymentsRequest,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2217,9 +2802,31 @@ class Payments(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "xero",
+                            "description": "Records are written one at a time, so the request counts as **one request per\nrecord** against your plan — batching saves you round trips, not quota.\n\nA payment allocated across several invoices is recorded by Xero as several\npayments, so a single item you send can turn into more than one provider record.\nBecause of that, records are written one at a time rather than in a single\nbatched call, and each result returns the id of the first payment Xero creates\nfor that item. A request of N records therefore takes about N times as long as\na single write and counts as N calls against your Xero rate limit.\n\nAt most 20 records per request. That ceiling has not been measured for records\nwritten one at a time on this resource, so treat it as an upper\nbound rather than a safe size: prefer smaller requests and set client timeouts from\nyour own observed per-record latency.\n\nEach record succeeds or fails on its own; read the per-item `status` to see which\nwere written. If the request times out, the items it could not confirm come back\nwith `status: uncertain` rather than `failed` — some of them may well have been\nwritten, and no ids are returned for those. Verify before retrying an `uncertain`\nitem: list the resource to find what exists, or a retry will duplicate it.\n\nResults come back in the order the items were sent. Supply `_ref` on every item if\nyou need to tie an outcome back to your own record — it is echoed on every result,\nincluding failures, and is never sent to the connector.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Records are written one at a time, so the request counts as **one request per\nrecord** against your plan — batching saves you round trips, not quota.\n\nAt most 10 records per request.\n\nRecords are written one at a time, so a request of N payments takes about N times as\nlong as a single write and counts as N requests against your plan. Each record\nsucceeds or fails on its own; read the per-item `status` to see which were written.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "The whole request is one call to the provider, so it counts as **one request**\nagainst your plan however many records it carries.\n\nAt most 20 payments per request. A request carrying more is rejected before any\nrecord is written.\n\nResponse time scales with the number of records rather than being a fixed cost:\na full request of 20 takes roughly 27 seconds. Set client timeouts accordingly.\n\nA request that times out may still have written some or all of its records. When\nthat happens no ids are returned for them, so treat a timed-out batch as uncertain\nrather than failed: list the records to find what was written before retrying, or a\nretry will duplicate them.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "The whole request is one call to the provider, so it counts as **one request**\nagainst your plan however many records it carries.\n\nAt most 20 payments per request. A request carrying more is rejected before any\nrecord is written.\n\nResponse time scales with the number of records rather than being a fixed cost:\na full request of 20 takes roughly 27 seconds. Set client timeouts accordingly.\n\nA request that times out may still have written some or all of its records. When\nthat happens no ids are returned for them, so treat a timed-out batch as uncertain\nrather than failed: list the records to find what was written before retrying, or a\nretry will duplicate them.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2227,10 +2834,9 @@ class Payments(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingPaymentsBatchAddResponse(
                 batch_payments_response=unmarshal_json_response(
-                    Optional[models.BatchPaymentsResponse], http_res
+                    Optional[models.BatchPaymentsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2271,10 +2877,9 @@ class Payments(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingPaymentsBatchAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2283,8 +2888,8 @@ class Payments(BaseSDK):
         self,
         *,
         items: Union[
-            List[models.BatchPaymentsRequestItems],
-            List[models.BatchPaymentsRequestItemsTypedDict],
+            Iterable[models.BatchPaymentsRequestItems],
+            Iterable[models.BatchPaymentsRequestItemsTypedDict],
         ],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
@@ -2358,6 +2963,7 @@ class Payments(BaseSDK):
                 "json",
                 models.BatchPaymentsRequest,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2382,9 +2988,31 @@ class Payments(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "xero",
+                            "description": "Records are written one at a time, so the request counts as **one request per\nrecord** against your plan — batching saves you round trips, not quota.\n\nA payment allocated across several invoices is recorded by Xero as several\npayments, so a single item you send can turn into more than one provider record.\nBecause of that, records are written one at a time rather than in a single\nbatched call, and each result returns the id of the first payment Xero creates\nfor that item. A request of N records therefore takes about N times as long as\na single write and counts as N calls against your Xero rate limit.\n\nAt most 20 records per request. That ceiling has not been measured for records\nwritten one at a time on this resource, so treat it as an upper\nbound rather than a safe size: prefer smaller requests and set client timeouts from\nyour own observed per-record latency.\n\nEach record succeeds or fails on its own; read the per-item `status` to see which\nwere written. If the request times out, the items it could not confirm come back\nwith `status: uncertain` rather than `failed` — some of them may well have been\nwritten, and no ids are returned for those. Verify before retrying an `uncertain`\nitem: list the resource to find what exists, or a retry will duplicate it.\n\nResults come back in the order the items were sent. Supply `_ref` on every item if\nyou need to tie an outcome back to your own record — it is echoed on every result,\nincluding failures, and is never sent to the connector.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Records are written one at a time, so the request counts as **one request per\nrecord** against your plan — batching saves you round trips, not quota.\n\nAt most 10 records per request.\n\nRecords are written one at a time, so a request of N payments takes about N times as\nlong as a single write and counts as N requests against your plan. Each record\nsucceeds or fails on its own; read the per-item `status` to see which were written.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "The whole request is one call to the provider, so it counts as **one request**\nagainst your plan however many records it carries.\n\nAt most 20 payments per request. A request carrying more is rejected before any\nrecord is written.\n\nResponse time scales with the number of records rather than being a fixed cost:\na full request of 20 takes roughly 27 seconds. Set client timeouts accordingly.\n\nA request that times out may still have written some or all of its records. When\nthat happens no ids are returned for them, so treat a timed-out batch as uncertain\nrather than failed: list the records to find what was written before retrying, or a\nretry will duplicate them.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "The whole request is one call to the provider, so it counts as **one request**\nagainst your plan however many records it carries.\n\nAt most 20 payments per request. A request carrying more is rejected before any\nrecord is written.\n\nResponse time scales with the number of records rather than being a fixed cost:\na full request of 20 takes roughly 27 seconds. Set client timeouts accordingly.\n\nA request that times out may still have written some or all of its records. When\nthat happens no ids are returned for them, so treat a timed-out batch as uncertain\nrather than failed: list the records to find what was written before retrying, or a\nretry will duplicate them.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2392,10 +3020,9 @@ class Payments(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingPaymentsBatchAddResponse(
                 batch_payments_response=unmarshal_json_response(
-                    Optional[models.BatchPaymentsResponse], http_res
+                    Optional[models.BatchPaymentsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2436,10 +3063,9 @@ class Payments(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingPaymentsBatchAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

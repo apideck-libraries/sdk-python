@@ -24,19 +24,14 @@ r"""Contains parameter or domain specific information related to the error and w
 class NotFoundResponseData(BaseModel):
     status_code: Optional[float] = None
     r"""HTTP status code"""
-
     error: Optional[str] = None
     r"""Contains an explanation of the status_code as defined in HTTP/1.1 standard (RFC 7231)"""
-
     type_name: Optional[str] = None
     r"""The type of error returned"""
-
     message: Optional[str] = None
     r"""A human-readable message providing more details about the error."""
-
     detail: Optional[NotFoundResponseDetail] = None
     r"""Contains parameter or domain specific information related to the error and why it occurred."""
-
     ref: Optional[str] = None
     r"""Link to documentation of error type"""
 

@@ -1,5 +1,4 @@
-# Quotes
-(*accounting.quotes*)
+# Accounting.Quotes
 
 ## Overview
 
@@ -27,7 +26,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.quotes.list(raw=False, service_id="salesforce", company_id="12345", limit=20, filter_={
@@ -94,14 +93,14 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.quotes.create(raw=False, service_id="salesforce", company_id_param="12345", idempotency_key="your-unique-key-per-create", number="QT00546", customer={
         "id": "12345",
         "display_name": "Windsurf Shop",
         "email": "boring@boring.com",
-    }, sales_order_id="123456", company_id="12345", department_id="12345", project_id="12345", quote_date=date.fromisoformat("2020-09-30"), expiry_date=date.fromisoformat("2020-10-30"), terms="Valid for 30 days", terms_id="12345", reference="INV-2024-001", po_number="90000117", status=apideck_unify.QuoteStatus.DRAFT, currency=apideck_unify.Currency.USD, currency_rate=0.69, tax_inclusive=True, sub_total=27500, total_tax=2500, tax_code="1234", discount_percentage=5.5, discount_amount=25, total=27500, customer_memo="Thank you for considering our services!", line_items=[
+    }, sales_order_id="123456", company_id="12345", department_id="12345", project_id="12345", quote_date=date.fromisoformat("2020-09-30"), expiry_date=date.fromisoformat("2020-10-30"), terms="Valid for 30 days", terms_id="12345", reference="INV-2024-001", po_number="90000117", status=apideck_unify.QuoteStatus.DRAFT, currency=apideck_unify.Currency.USD, currency_rate=0.69, tax_inclusive=True, sub_total=27500.0, total_tax=2500.0, tax_code="1234", discount_percentage=5.5, discount_amount=25.0, total=27500.0, customer_memo="Thank you for considering our services!", line_items=[
         {
             "id": "12345",
             "row_id": "12345",
@@ -109,9 +108,9 @@ with Apideck(
             "line_number": 1,
             "description": "Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.",
             "type": apideck_unify.QuoteLineItemType.SALES_ITEM,
-            "tax_amount": 27500,
-            "total_amount": 27500,
-            "quantity": 1,
+            "tax_amount": 27500.0,
+            "total_amount": 27500.0,
+            "quantity": 1.0,
             "unit_price": 27500.5,
             "unit_of_measure": "pc.",
             "discount_percentage": 0.01,
@@ -126,7 +125,7 @@ with Apideck(
             },
             "tax_rate": {
                 "id": "123456",
-                "rate": 10,
+                "rate": 10.0,
             },
             "tracking_categories": [
                 {
@@ -315,7 +314,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.quotes.get(id="<id>", service_id="salesforce", company_id="12345", raw=False)
@@ -372,14 +371,14 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.quotes.update(id="<id>", service_id="salesforce", company_id_param="12345", raw=False, number="QT00546", customer={
         "id": "12345",
         "display_name": "Windsurf Shop",
         "email": "boring@boring.com",
-    }, sales_order_id="123456", company_id="12345", department_id="12345", project_id="12345", quote_date=date.fromisoformat("2020-09-30"), expiry_date=date.fromisoformat("2020-10-30"), terms="Valid for 30 days", terms_id="12345", reference="INV-2024-001", po_number="90000117", status=apideck_unify.QuoteStatus.DRAFT, currency=apideck_unify.Currency.USD, currency_rate=0.69, tax_inclusive=True, sub_total=27500, total_tax=2500, tax_code="1234", discount_percentage=5.5, discount_amount=25, total=27500, customer_memo="Thank you for considering our services!", line_items=[
+    }, sales_order_id="123456", company_id="12345", department_id="12345", project_id="12345", quote_date=date.fromisoformat("2020-09-30"), expiry_date=date.fromisoformat("2020-10-30"), terms="Valid for 30 days", terms_id="12345", reference="INV-2024-001", po_number="90000117", status=apideck_unify.QuoteStatus.DRAFT, currency=apideck_unify.Currency.USD, currency_rate=0.69, tax_inclusive=True, sub_total=27500.0, total_tax=2500.0, tax_code="1234", discount_percentage=5.5, discount_amount=25.0, total=27500.0, customer_memo="Thank you for considering our services!", line_items=[
         {
             "id": "12345",
             "row_id": "12345",
@@ -387,9 +386,9 @@ with Apideck(
             "line_number": 1,
             "description": "Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.",
             "type": apideck_unify.QuoteLineItemType.SALES_ITEM,
-            "tax_amount": 27500,
-            "total_amount": 27500,
-            "quantity": 1,
+            "tax_amount": 27500.0,
+            "total_amount": 27500.0,
+            "quantity": 1.0,
             "unit_price": 27500.5,
             "unit_of_measure": "pc.",
             "discount_percentage": 0.01,
@@ -404,7 +403,7 @@ with Apideck(
             },
             "tax_rate": {
                 "id": "123456",
-                "rate": 10,
+                "rate": 10.0,
             },
             "tracking_categories": None,
             "ledger_account": {
@@ -586,7 +585,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.quotes.delete(id="<id>", service_id="salesforce", company_id="12345", raw=False)

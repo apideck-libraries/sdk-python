@@ -76,6 +76,7 @@ class CustomFields(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -100,9 +101,43 @@ class CustomFields(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["vault"],
+                extensions={
+                    "x-apideck-api": "vault",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "azure-active-directory",
+                            "description": "Custom fields are derived from a sampled user record (`onPremisesExtensionAttributes.*` keys and `userType`). Microsoft Entra\ndoes not expose a separate attribute-schema endpoint for custom (extension) attributes — the shape of\n`onPremisesExtensionAttributes.*` is fixed and always present on the user object, so sampling does not cause fields to\ndisappear. However, the values returned reflect the sampled user's data only.\n\nUse `?resource_id=<user-id>` to pin sampling to a specific user for deterministic results.\n",
+                        },
+                        {
+                            "connector": "charliehr",
+                            "description": "Custom fields are derived from the `notes[]` array on a sampled team member. CharlieHR does not expose a custom-field\nschema endpoint, so fields without a note on the sampled team member are not returned.\n\nUse `?resource_id=<id>` to pin sampling to a specific team member.\n",
+                        },
+                        {
+                            "connector": "personio",
+                            "description": "Custom fields are derived from the `attributes.dynamic_*` keys on a sampled employee record. Personio dynamic attributes\nwithout a value on the sampled employee are still returned (null values are not dropped), but the value will be `null`.\n\nUse `?resource_id=<id>` to pin sampling to a specific employee for deterministic value coverage.\n",
+                        },
+                        {
+                            "connector": "workday",
+                            "description": "Custom fields are derived from a fixed set of paths on the Workday Worker SOAP envelope: Custom_Organization references,\nsupervisory organisation, People Business Partner roles, Employee_Type_ID, Job_Category_ID, Management_Level_ID, and\nWorker_Type. These are Workday system fields surfaced as custom fields — they do NOT reflect tenant-defined custom\nattributes added via Workday's configuration interface. The returned list is deterministic across requests but cannot\nbe extended by tenant configuration.\n",
+                        },
+                        {
+                            "connector": "breathehr",
+                            "description": "Custom fields are derived from the `custom_fields` object on a sampled employee record. Breathe HR does not expose a\nseparate field-definition schema endpoint, so fields not populated on the sampled employee are not returned.\n\nUse `?resource_id=<id>` to pin sampling to a specific employee.\n",
+                        },
+                        {
+                            "connector": "gusto",
+                            "description": "Custom fields are derived from the `custom_fields[]` array on a sampled employee record. Gusto exposes a company-level\ncustom field definitions endpoint (`/v1/companies/{company_id}/custom_fields`), but Apideck's schema-path branch does\nnot inject `company_id` into the request, so the sample-record path is used.\n\nUse `?resource_id=<id>` to pin sampling to a specific employee for deterministic value coverage.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Custom fields include `type`, the data type NetSuite declares for the field: `text`, `number`, `date`, `datetime`,\n`checkbox`, `select` or `multi-select`. Whole and decimal numbers are both `number`. `type` is left out for a field\nNetSuite gives no recognised definition for.\n\nThe list covers the custom fields defined for the resource, not only those with a value on the sampled record. A field\nwith no value on that record is returned with `name` (its NetSuite script ID, such as `custbody_po_reference`),\n`value: null` and no `id`. To write that field, send its script ID as `id` or `name`. Use `?resource_id=<id>` to pin sampling to\na specific record.\n\nLine-item custom fields (script IDs starting with `custcol`) are listed for bills, invoices, credit notes and quotes.\nTheir `finder` does not locate the field: it points at the record's own `custom_fields`, while a line field is\nreturned under `line_items[].custom_fields`. Do not use it in a custom mapping. A custom segment defined on both the\nrecord and its lines is listed once.\n\nA few list fields are reported as `text` while they have no value on the sampled record, and as `select` once they\nhave one.\n\nIf the connection's NetSuite role cannot read record definitions through NetSuite's REST web services, the list\ncontains only the custom fields with a value on the sampled record, without `type`.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -110,10 +145,9 @@ class CustomFields(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.VaultCustomFieldsAllResponse(
                 get_custom_fields_response=unmarshal_json_response(
-                    Optional[models.GetCustomFieldsResponse], http_res
+                    Optional[models.GetCustomFieldsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -149,10 +183,9 @@ class CustomFields(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.VaultCustomFieldsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -223,6 +256,7 @@ class CustomFields(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -247,9 +281,43 @@ class CustomFields(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["vault"],
+                extensions={
+                    "x-apideck-api": "vault",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "azure-active-directory",
+                            "description": "Custom fields are derived from a sampled user record (`onPremisesExtensionAttributes.*` keys and `userType`). Microsoft Entra\ndoes not expose a separate attribute-schema endpoint for custom (extension) attributes — the shape of\n`onPremisesExtensionAttributes.*` is fixed and always present on the user object, so sampling does not cause fields to\ndisappear. However, the values returned reflect the sampled user's data only.\n\nUse `?resource_id=<user-id>` to pin sampling to a specific user for deterministic results.\n",
+                        },
+                        {
+                            "connector": "charliehr",
+                            "description": "Custom fields are derived from the `notes[]` array on a sampled team member. CharlieHR does not expose a custom-field\nschema endpoint, so fields without a note on the sampled team member are not returned.\n\nUse `?resource_id=<id>` to pin sampling to a specific team member.\n",
+                        },
+                        {
+                            "connector": "personio",
+                            "description": "Custom fields are derived from the `attributes.dynamic_*` keys on a sampled employee record. Personio dynamic attributes\nwithout a value on the sampled employee are still returned (null values are not dropped), but the value will be `null`.\n\nUse `?resource_id=<id>` to pin sampling to a specific employee for deterministic value coverage.\n",
+                        },
+                        {
+                            "connector": "workday",
+                            "description": "Custom fields are derived from a fixed set of paths on the Workday Worker SOAP envelope: Custom_Organization references,\nsupervisory organisation, People Business Partner roles, Employee_Type_ID, Job_Category_ID, Management_Level_ID, and\nWorker_Type. These are Workday system fields surfaced as custom fields — they do NOT reflect tenant-defined custom\nattributes added via Workday's configuration interface. The returned list is deterministic across requests but cannot\nbe extended by tenant configuration.\n",
+                        },
+                        {
+                            "connector": "breathehr",
+                            "description": "Custom fields are derived from the `custom_fields` object on a sampled employee record. Breathe HR does not expose a\nseparate field-definition schema endpoint, so fields not populated on the sampled employee are not returned.\n\nUse `?resource_id=<id>` to pin sampling to a specific employee.\n",
+                        },
+                        {
+                            "connector": "gusto",
+                            "description": "Custom fields are derived from the `custom_fields[]` array on a sampled employee record. Gusto exposes a company-level\ncustom field definitions endpoint (`/v1/companies/{company_id}/custom_fields`), but Apideck's schema-path branch does\nnot inject `company_id` into the request, so the sample-record path is used.\n\nUse `?resource_id=<id>` to pin sampling to a specific employee for deterministic value coverage.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Custom fields include `type`, the data type NetSuite declares for the field: `text`, `number`, `date`, `datetime`,\n`checkbox`, `select` or `multi-select`. Whole and decimal numbers are both `number`. `type` is left out for a field\nNetSuite gives no recognised definition for.\n\nThe list covers the custom fields defined for the resource, not only those with a value on the sampled record. A field\nwith no value on that record is returned with `name` (its NetSuite script ID, such as `custbody_po_reference`),\n`value: null` and no `id`. To write that field, send its script ID as `id` or `name`. Use `?resource_id=<id>` to pin sampling to\na specific record.\n\nLine-item custom fields (script IDs starting with `custcol`) are listed for bills, invoices, credit notes and quotes.\nTheir `finder` does not locate the field: it points at the record's own `custom_fields`, while a line field is\nreturned under `line_items[].custom_fields`. Do not use it in a custom mapping. A custom segment defined on both the\nrecord and its lines is listed once.\n\nA few list fields are reported as `text` while they have no value on the sampled record, and as `select` once they\nhave one.\n\nIf the connection's NetSuite role cannot read record definitions through NetSuite's REST web services, the list\ncontains only the custom fields with a value on the sampled record, without `type`.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -257,10 +325,9 @@ class CustomFields(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.VaultCustomFieldsAllResponse(
                 get_custom_fields_response=unmarshal_json_response(
-                    Optional[models.GetCustomFieldsResponse], http_res
+                    Optional[models.GetCustomFieldsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -296,10 +363,9 @@ class CustomFields(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.VaultCustomFieldsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

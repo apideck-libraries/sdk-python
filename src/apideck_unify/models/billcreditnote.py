@@ -44,14 +44,15 @@ from apideck_unify.types import (
     OptionalNullable,
     UNSET,
     UNSET_SENTINEL,
+    current_exclude_none,
+    serialize_with_info,
 )
-from apideck_unify.utils import validate_open_enum
+from apideck_unify.types.basemodel import current_filtered_dump
 from datetime import datetime
 from enum import Enum
 from pydantic import field_serializer, model_serializer
-from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
-from typing_extensions import Annotated, NotRequired, TypedDict
+from typing_extensions import NotRequired, TypedDict
 
 
 class BillCreditNoteStatus(str, Enum, metaclass=utils.OpenEnumMeta):
@@ -154,9 +155,7 @@ class BillCreditNote(BaseModel):
 
     department: OptionalNullable[LinkedDepartment] = UNSET
 
-    currency: Annotated[
-        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    currency: OptionalNullable[Currency] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     currency_rate: OptionalNullable[float] = UNSET
@@ -183,9 +182,7 @@ class BillCreditNote(BaseModel):
     remaining_credit: OptionalNullable[float] = UNSET
     r"""Indicates the total credit amount still available to apply towards the payment."""
 
-    status: Annotated[
-        Optional[BillCreditNoteStatus], PlainValidator(validate_open_enum(False))
-    ] = None
+    status: Optional[BillCreditNoteStatus] = None
     r"""Status of bill credit notes"""
 
     reference: OptionalNullable[str] = UNSET
@@ -197,9 +194,7 @@ class BillCreditNote(BaseModel):
     date_paid: OptionalNullable[datetime] = UNSET
     r"""Date bill credit note paid - YYYY:MM::DDThh:mm:ss.sTZD"""
 
-    type: Annotated[
-        Optional[BillCreditNoteType], PlainValidator(validate_open_enum(False))
-    ] = None
+    type: Optional[BillCreditNoteType] = None
     r"""The type of credit note. A bill credit note is always an accounts payable (supplier-side) credit."""
 
     account: OptionalNullable[LinkedLedgerAccount] = UNSET
@@ -270,93 +265,99 @@ class BillCreditNote(BaseModel):
         return value
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = [
-            "id",
-            "number",
-            "supplier",
-            "subsidiary",
-            "location",
-            "department",
-            "currency",
-            "currency_rate",
-            "tax_inclusive",
-            "sub_total",
-            "total_amount",
-            "total_tax",
-            "tax_code",
-            "balance",
-            "remaining_credit",
-            "status",
-            "reference",
-            "date_issued",
-            "date_paid",
-            "type",
-            "account",
-            "line_items",
-            "allocations",
-            "note",
-            "terms",
-            "tracking_categories",
-            "custom_mappings",
-            "custom_fields",
-            "row_version",
-            "updated_by",
-            "created_by",
-            "updated_at",
-            "created_at",
-            "pass_through",
-        ]
-        nullable_fields = [
-            "number",
-            "supplier",
-            "subsidiary",
-            "location",
-            "department",
-            "currency",
-            "currency_rate",
-            "tax_inclusive",
-            "sub_total",
-            "total_tax",
-            "tax_code",
-            "balance",
-            "remaining_credit",
-            "reference",
-            "date_paid",
-            "account",
-            "note",
-            "terms",
-            "tracking_categories",
-            "custom_mappings",
-            "row_version",
-            "updated_by",
-            "created_by",
-            "updated_at",
-            "created_at",
-        ]
-        null_default_fields = []
-
+        optional_fields = set(
+            [
+                "id",
+                "number",
+                "supplier",
+                "subsidiary",
+                "location",
+                "department",
+                "currency",
+                "currency_rate",
+                "tax_inclusive",
+                "sub_total",
+                "total_amount",
+                "total_tax",
+                "tax_code",
+                "balance",
+                "remaining_credit",
+                "status",
+                "reference",
+                "date_issued",
+                "date_paid",
+                "type",
+                "account",
+                "line_items",
+                "allocations",
+                "note",
+                "terms",
+                "tracking_categories",
+                "custom_mappings",
+                "custom_fields",
+                "row_version",
+                "updated_by",
+                "created_by",
+                "updated_at",
+                "created_at",
+                "pass_through",
+            ]
+        )
+        nullable_fields = set(
+            [
+                "number",
+                "supplier",
+                "subsidiary",
+                "location",
+                "department",
+                "currency",
+                "currency_rate",
+                "tax_inclusive",
+                "sub_total",
+                "total_tax",
+                "tax_code",
+                "balance",
+                "remaining_credit",
+                "reference",
+                "date_paid",
+                "account",
+                "note",
+                "terms",
+                "tracking_categories",
+                "custom_mappings",
+                "row_version",
+                "updated_by",
+                "created_by",
+                "updated_at",
+                "created_at",
+            ]
+        )
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m
 
@@ -428,9 +429,7 @@ class BillCreditNoteInput(BaseModel):
 
     department: OptionalNullable[LinkedDepartmentInput] = UNSET
 
-    currency: Annotated[
-        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    currency: OptionalNullable[Currency] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     currency_rate: OptionalNullable[float] = UNSET
@@ -457,9 +456,7 @@ class BillCreditNoteInput(BaseModel):
     remaining_credit: OptionalNullable[float] = UNSET
     r"""Indicates the total credit amount still available to apply towards the payment."""
 
-    status: Annotated[
-        Optional[BillCreditNoteStatus], PlainValidator(validate_open_enum(False))
-    ] = None
+    status: Optional[BillCreditNoteStatus] = None
     r"""Status of bill credit notes"""
 
     reference: OptionalNullable[str] = UNSET
@@ -471,9 +468,7 @@ class BillCreditNoteInput(BaseModel):
     date_paid: OptionalNullable[datetime] = UNSET
     r"""Date bill credit note paid - YYYY:MM::DDThh:mm:ss.sTZD"""
 
-    type: Annotated[
-        Optional[BillCreditNoteType], PlainValidator(validate_open_enum(False))
-    ] = None
+    type: Optional[BillCreditNoteType] = None
     r"""The type of credit note. A bill credit note is always an accounts payable (supplier-side) credit."""
 
     account: OptionalNullable[LinkedLedgerAccount] = UNSET
@@ -529,81 +524,87 @@ class BillCreditNoteInput(BaseModel):
         return value
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = [
-            "number",
-            "supplier",
-            "subsidiary",
-            "location",
-            "department",
-            "currency",
-            "currency_rate",
-            "tax_inclusive",
-            "sub_total",
-            "total_amount",
-            "total_tax",
-            "tax_code",
-            "balance",
-            "remaining_credit",
-            "status",
-            "reference",
-            "date_issued",
-            "date_paid",
-            "type",
-            "account",
-            "line_items",
-            "allocations",
-            "note",
-            "terms",
-            "tracking_categories",
-            "custom_fields",
-            "row_version",
-            "pass_through",
-        ]
-        nullable_fields = [
-            "number",
-            "supplier",
-            "subsidiary",
-            "location",
-            "department",
-            "currency",
-            "currency_rate",
-            "tax_inclusive",
-            "sub_total",
-            "total_tax",
-            "tax_code",
-            "balance",
-            "remaining_credit",
-            "reference",
-            "date_paid",
-            "account",
-            "note",
-            "terms",
-            "tracking_categories",
-            "row_version",
-        ]
-        null_default_fields = []
-
+        optional_fields = set(
+            [
+                "number",
+                "supplier",
+                "subsidiary",
+                "location",
+                "department",
+                "currency",
+                "currency_rate",
+                "tax_inclusive",
+                "sub_total",
+                "total_amount",
+                "total_tax",
+                "tax_code",
+                "balance",
+                "remaining_credit",
+                "status",
+                "reference",
+                "date_issued",
+                "date_paid",
+                "type",
+                "account",
+                "line_items",
+                "allocations",
+                "note",
+                "terms",
+                "tracking_categories",
+                "custom_fields",
+                "row_version",
+                "pass_through",
+            ]
+        )
+        nullable_fields = set(
+            [
+                "number",
+                "supplier",
+                "subsidiary",
+                "location",
+                "department",
+                "currency",
+                "currency_rate",
+                "tax_inclusive",
+                "sub_total",
+                "total_tax",
+                "tax_code",
+                "balance",
+                "remaining_credit",
+                "reference",
+                "date_paid",
+                "account",
+                "note",
+                "terms",
+                "tracking_categories",
+                "row_version",
+            ]
+        )
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m

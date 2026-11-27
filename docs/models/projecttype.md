@@ -2,6 +2,16 @@
 
 Type or category of the project
 
+## Example Usage
+
+```python
+from apideck_unify.models import ProjectType
+
+value = ProjectType.CLIENT_PROJECT
+
+# Open enum: unrecognized values are captured as UnrecognizedStr
+```
+
 
 ## Values
 

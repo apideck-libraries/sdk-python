@@ -2,6 +2,16 @@
 
 The field on which to sort the Employees
 
+## Example Usage
+
+```python
+from apideck_unify.models import EmployeesSortBy
+
+value = EmployeesSortBy.FIRST_NAME
+
+# Open enum: unrecognized values are captured as UnrecognizedStr
+```
+
 
 ## Values
 

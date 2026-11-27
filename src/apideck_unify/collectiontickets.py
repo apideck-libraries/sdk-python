@@ -8,7 +8,7 @@ from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from datetime import datetime
 from jsonpath import JSONPath
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
 
 
 class CollectionTickets(BaseSDK):
@@ -26,7 +26,7 @@ class CollectionTickets(BaseSDK):
         filter_: Optional[
             Union[models.IssuesFilter, models.IssuesFilterTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -73,7 +73,7 @@ class CollectionTickets(BaseSDK):
             collection_id=collection_id,
             sort=utils.get_pydantic_model(sort, Optional[models.TicketsSort]),
             filter_=utils.get_pydantic_model(filter_, Optional[models.IssuesFilter]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -94,6 +94,7 @@ class CollectionTickets(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -118,9 +119,35 @@ class CollectionTickets(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["issueTracking"],
+                extensions={
+                    "x-apideck-api": "issueTracking",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "monday",
+                            "description": "Monday.com does not include a total record count in default list responses. `meta.total_count` will not appear. Surfacing the total requires a separate GraphQL query for the total item count — not currently implemented.\n",
+                        },
+                        {
+                            "connector": "jira",
+                            "description": "Jira does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "jira-service-desk",
+                            "description": "Jira Service Desk does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "linear",
+                            "description": "Linear does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "linear-multiworkspace",
+                            "description": "Linear Multi-workspace does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -148,17 +175,19 @@ class CollectionTickets(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.IssueTrackingCollectionTicketsAllResponse(
                 get_tickets_response=unmarshal_json_response(
-                    Optional[models.GetTicketsResponse], http_res
+                    Optional[models.GetTicketsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -199,11 +228,10 @@ class CollectionTickets(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.IssueTrackingCollectionTicketsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -222,7 +250,7 @@ class CollectionTickets(BaseSDK):
         filter_: Optional[
             Union[models.IssuesFilter, models.IssuesFilterTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -269,7 +297,7 @@ class CollectionTickets(BaseSDK):
             collection_id=collection_id,
             sort=utils.get_pydantic_model(sort, Optional[models.TicketsSort]),
             filter_=utils.get_pydantic_model(filter_, Optional[models.IssuesFilter]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -290,6 +318,7 @@ class CollectionTickets(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -314,9 +343,35 @@ class CollectionTickets(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["issueTracking"],
+                extensions={
+                    "x-apideck-api": "issueTracking",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "monday",
+                            "description": "Monday.com does not include a total record count in default list responses. `meta.total_count` will not appear. Surfacing the total requires a separate GraphQL query for the total item count — not currently implemented.\n",
+                        },
+                        {
+                            "connector": "jira",
+                            "description": "Jira does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "jira-service-desk",
+                            "description": "Jira Service Desk does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "linear",
+                            "description": "Linear does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "linear-multiworkspace",
+                            "description": "Linear Multi-workspace does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -344,17 +399,19 @@ class CollectionTickets(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.IssueTrackingCollectionTicketsAllResponse(
                 get_tickets_response=unmarshal_json_response(
-                    Optional[models.GetTicketsResponse], http_res
+                    Optional[models.GetTicketsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -395,11 +452,10 @@ class CollectionTickets(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.IssueTrackingCollectionTicketsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -419,17 +475,22 @@ class CollectionTickets(BaseSDK):
         status: OptionalNullable[str] = UNSET,
         priority: OptionalNullable[models.TicketPriority] = UNSET,
         assignees: Optional[
-            Union[List[models.AssigneeInput], List[models.AssigneeInputTypedDict]]
+            Union[
+                Iterable[models.AssigneeInput], Iterable[models.AssigneeInputTypedDict]
+            ]
         ] = None,
         due_date: OptionalNullable[datetime] = UNSET,
         tags: Optional[
             Union[
-                List[models.CollectionTagInput],
-                List[models.CollectionTagInputTypedDict],
+                Iterable[models.CollectionTagInput],
+                Iterable[models.CollectionTagInputTypedDict],
             ]
         ] = None,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -446,7 +507,7 @@ class CollectionTickets(BaseSDK):
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param parent_id: The ticket's parent ID
-        :param type: The ticket's type
+        :param type_: The ticket's type
         :param subject: Subject of the ticket
         :param description: The ticket's description. HTML version of description is mapped if supported by the third-party platform
         :param status: The current status of the ticket. Possible values include: open, in_progress, closed, or - in cases where there is no clear mapping - the original value passed through.
@@ -516,6 +577,7 @@ class CollectionTickets(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.ticket, False, False, "json", models.TicketInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -540,9 +602,23 @@ class CollectionTickets(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["issueTracking"],
+                extensions={
+                    "x-apideck-api": "issueTracking",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "github-server",
+                            "description": 'GitHub always creates issues with status `open`; the `status` field is ignored on creation (you cannot create a closed or in-progress ticket). Change it afterward with an update — and note GitHub only supports `open`/`closed`. For workflow states like "in progress" or "up next", use labels via the `tags` field, or GitHub Projects.\n',
+                        },
+                        {
+                            "connector": "github-enterprise-cloud",
+                            "description": 'GitHub always creates issues with status `open`; the `status` field is ignored on creation (you cannot create a closed or in-progress ticket). Change it afterward with an update — and note GitHub only supports `open`/`closed`. For workflow states like "in progress" or "up next", use labels via the `tags` field, or GitHub Projects.\n',
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -550,10 +626,9 @@ class CollectionTickets(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.IssueTrackingCollectionTicketsAddResponse(
                 create_ticket_response=unmarshal_json_response(
-                    Optional[models.CreateTicketResponse], http_res
+                    Optional[models.CreateTicketResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -594,10 +669,9 @@ class CollectionTickets(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.IssueTrackingCollectionTicketsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -617,17 +691,22 @@ class CollectionTickets(BaseSDK):
         status: OptionalNullable[str] = UNSET,
         priority: OptionalNullable[models.TicketPriority] = UNSET,
         assignees: Optional[
-            Union[List[models.AssigneeInput], List[models.AssigneeInputTypedDict]]
+            Union[
+                Iterable[models.AssigneeInput], Iterable[models.AssigneeInputTypedDict]
+            ]
         ] = None,
         due_date: OptionalNullable[datetime] = UNSET,
         tags: Optional[
             Union[
-                List[models.CollectionTagInput],
-                List[models.CollectionTagInputTypedDict],
+                Iterable[models.CollectionTagInput],
+                Iterable[models.CollectionTagInputTypedDict],
             ]
         ] = None,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -644,7 +723,7 @@ class CollectionTickets(BaseSDK):
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param parent_id: The ticket's parent ID
-        :param type: The ticket's type
+        :param type_: The ticket's type
         :param subject: Subject of the ticket
         :param description: The ticket's description. HTML version of description is mapped if supported by the third-party platform
         :param status: The current status of the ticket. Possible values include: open, in_progress, closed, or - in cases where there is no clear mapping - the original value passed through.
@@ -714,6 +793,7 @@ class CollectionTickets(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.ticket, False, False, "json", models.TicketInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -738,9 +818,23 @@ class CollectionTickets(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["issueTracking"],
+                extensions={
+                    "x-apideck-api": "issueTracking",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "github-server",
+                            "description": 'GitHub always creates issues with status `open`; the `status` field is ignored on creation (you cannot create a closed or in-progress ticket). Change it afterward with an update — and note GitHub only supports `open`/`closed`. For workflow states like "in progress" or "up next", use labels via the `tags` field, or GitHub Projects.\n',
+                        },
+                        {
+                            "connector": "github-enterprise-cloud",
+                            "description": 'GitHub always creates issues with status `open`; the `status` field is ignored on creation (you cannot create a closed or in-progress ticket). Change it afterward with an update — and note GitHub only supports `open`/`closed`. For workflow states like "in progress" or "up next", use labels via the `tags` field, or GitHub Projects.\n',
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -748,10 +842,9 @@ class CollectionTickets(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.IssueTrackingCollectionTicketsAddResponse(
                 create_ticket_response=unmarshal_json_response(
-                    Optional[models.CreateTicketResponse], http_res
+                    Optional[models.CreateTicketResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -792,10 +885,9 @@ class CollectionTickets(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.IssueTrackingCollectionTicketsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -868,6 +960,7 @@ class CollectionTickets(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -892,9 +985,11 @@ class CollectionTickets(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["issueTracking"],
+                extensions={"x-apideck-api": "issueTracking"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -902,10 +997,9 @@ class CollectionTickets(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.IssueTrackingCollectionTicketsOneResponse(
                 get_ticket_response=unmarshal_json_response(
-                    Optional[models.GetTicketResponse], http_res
+                    Optional[models.GetTicketResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -946,10 +1040,9 @@ class CollectionTickets(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.IssueTrackingCollectionTicketsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1022,6 +1115,7 @@ class CollectionTickets(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1046,9 +1140,11 @@ class CollectionTickets(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["issueTracking"],
+                extensions={"x-apideck-api": "issueTracking"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1056,10 +1152,9 @@ class CollectionTickets(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.IssueTrackingCollectionTicketsOneResponse(
                 get_ticket_response=unmarshal_json_response(
-                    Optional[models.GetTicketResponse], http_res
+                    Optional[models.GetTicketResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1100,10 +1195,9 @@ class CollectionTickets(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.IssueTrackingCollectionTicketsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1124,17 +1218,22 @@ class CollectionTickets(BaseSDK):
         status: OptionalNullable[str] = UNSET,
         priority: OptionalNullable[models.TicketPriority] = UNSET,
         assignees: Optional[
-            Union[List[models.AssigneeInput], List[models.AssigneeInputTypedDict]]
+            Union[
+                Iterable[models.AssigneeInput], Iterable[models.AssigneeInputTypedDict]
+            ]
         ] = None,
         due_date: OptionalNullable[datetime] = UNSET,
         tags: Optional[
             Union[
-                List[models.CollectionTagInput],
-                List[models.CollectionTagInputTypedDict],
+                Iterable[models.CollectionTagInput],
+                Iterable[models.CollectionTagInputTypedDict],
             ]
         ] = None,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1152,7 +1251,7 @@ class CollectionTickets(BaseSDK):
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param parent_id: The ticket's parent ID
-        :param type: The ticket's type
+        :param type_: The ticket's type
         :param subject: Subject of the ticket
         :param description: The ticket's description. HTML version of description is mapped if supported by the third-party platform
         :param status: The current status of the ticket. Possible values include: open, in_progress, closed, or - in cases where there is no clear mapping - the original value passed through.
@@ -1223,6 +1322,7 @@ class CollectionTickets(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.ticket, False, False, "json", models.TicketInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1247,9 +1347,23 @@ class CollectionTickets(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["issueTracking"],
+                extensions={
+                    "x-apideck-api": "issueTracking",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "github-server",
+                            "description": 'GitHub issues only support the statuses `open` and `closed`. Any other `status` value (e.g. `in_progress`) is silently ignored and the issue\'s state is left unchanged. To represent workflow states like "in progress" or "up next", use labels via the `tags` field, or GitHub Projects (which are not exposed through this connector).\n',
+                        },
+                        {
+                            "connector": "github-enterprise-cloud",
+                            "description": 'GitHub issues only support the statuses `open` and `closed`. Any other `status` value (e.g. `in_progress`) is silently ignored and the issue\'s state is left unchanged. To represent workflow states like "in progress" or "up next", use labels via the `tags` field, or GitHub Projects (which are not exposed through this connector).\n',
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1257,10 +1371,9 @@ class CollectionTickets(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.IssueTrackingCollectionTicketsUpdateResponse(
                 update_ticket_response=unmarshal_json_response(
-                    Optional[models.UpdateTicketResponse], http_res
+                    Optional[models.UpdateTicketResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1301,10 +1414,9 @@ class CollectionTickets(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.IssueTrackingCollectionTicketsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1325,17 +1437,22 @@ class CollectionTickets(BaseSDK):
         status: OptionalNullable[str] = UNSET,
         priority: OptionalNullable[models.TicketPriority] = UNSET,
         assignees: Optional[
-            Union[List[models.AssigneeInput], List[models.AssigneeInputTypedDict]]
+            Union[
+                Iterable[models.AssigneeInput], Iterable[models.AssigneeInputTypedDict]
+            ]
         ] = None,
         due_date: OptionalNullable[datetime] = UNSET,
         tags: Optional[
             Union[
-                List[models.CollectionTagInput],
-                List[models.CollectionTagInputTypedDict],
+                Iterable[models.CollectionTagInput],
+                Iterable[models.CollectionTagInputTypedDict],
             ]
         ] = None,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1353,7 +1470,7 @@ class CollectionTickets(BaseSDK):
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param parent_id: The ticket's parent ID
-        :param type: The ticket's type
+        :param type_: The ticket's type
         :param subject: Subject of the ticket
         :param description: The ticket's description. HTML version of description is mapped if supported by the third-party platform
         :param status: The current status of the ticket. Possible values include: open, in_progress, closed, or - in cases where there is no clear mapping - the original value passed through.
@@ -1424,6 +1541,7 @@ class CollectionTickets(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.ticket, False, False, "json", models.TicketInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1448,9 +1566,23 @@ class CollectionTickets(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["issueTracking"],
+                extensions={
+                    "x-apideck-api": "issueTracking",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "github-server",
+                            "description": 'GitHub issues only support the statuses `open` and `closed`. Any other `status` value (e.g. `in_progress`) is silently ignored and the issue\'s state is left unchanged. To represent workflow states like "in progress" or "up next", use labels via the `tags` field, or GitHub Projects (which are not exposed through this connector).\n',
+                        },
+                        {
+                            "connector": "github-enterprise-cloud",
+                            "description": 'GitHub issues only support the statuses `open` and `closed`. Any other `status` value (e.g. `in_progress`) is silently ignored and the issue\'s state is left unchanged. To represent workflow states like "in progress" or "up next", use labels via the `tags` field, or GitHub Projects (which are not exposed through this connector).\n',
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1458,10 +1590,9 @@ class CollectionTickets(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.IssueTrackingCollectionTicketsUpdateResponse(
                 update_ticket_response=unmarshal_json_response(
-                    Optional[models.UpdateTicketResponse], http_res
+                    Optional[models.UpdateTicketResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1502,10 +1633,9 @@ class CollectionTickets(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.IssueTrackingCollectionTicketsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1575,6 +1705,7 @@ class CollectionTickets(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1599,9 +1730,11 @@ class CollectionTickets(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["issueTracking"],
+                extensions={"x-apideck-api": "issueTracking"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1609,10 +1742,9 @@ class CollectionTickets(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.IssueTrackingCollectionTicketsDeleteResponse(
                 delete_ticket_response=unmarshal_json_response(
-                    Optional[models.DeleteTicketResponse], http_res
+                    Optional[models.DeleteTicketResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1653,10 +1785,9 @@ class CollectionTickets(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.IssueTrackingCollectionTicketsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1726,6 +1857,7 @@ class CollectionTickets(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1750,9 +1882,11 @@ class CollectionTickets(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["issueTracking"],
+                extensions={"x-apideck-api": "issueTracking"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1760,10 +1894,9 @@ class CollectionTickets(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.IssueTrackingCollectionTicketsDeleteResponse(
                 delete_ticket_response=unmarshal_json_response(
-                    Optional[models.DeleteTicketResponse], http_res
+                    Optional[models.DeleteTicketResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1804,10 +1937,9 @@ class CollectionTickets(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.IssueTrackingCollectionTicketsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

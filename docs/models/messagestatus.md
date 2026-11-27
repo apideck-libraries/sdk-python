@@ -2,6 +2,16 @@
 
 Status of the delivery of the message.
 
+## Example Usage
+
+```python
+from apideck_unify.models import MessageStatus
+
+value = MessageStatus.ACCEPTED
+
+# Open enum: unrecognized values are captured as UnrecognizedStr
+```
+
 
 ## Values
 

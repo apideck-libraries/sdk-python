@@ -1,5 +1,4 @@
-# SharedLinks
-(*file_storage.shared_links*)
+# FileStorage.SharedLinks
 
 ## Overview
 
@@ -26,7 +25,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.file_storage.shared_links.list(raw=False, service_id="salesforce", limit=20, pass_through={
@@ -86,7 +85,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.file_storage.shared_links.create(target_id="<id>", raw=False, service_id="salesforce", download_url="https://www.box.com/shared/static/rh935iit6ewrmw0unyul.jpeg", scope=apideck_unify.Scope.COMPANY, pass_through=[
@@ -203,7 +202,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.file_storage.shared_links.get(id="<id>", service_id="salesforce", raw=False, fields="id,updated_at")
@@ -259,7 +258,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.file_storage.shared_links.update(id="<id>", target_id="<id>", service_id="salesforce", raw=False, download_url="https://www.box.com/shared/static/rh935iit6ewrmw0unyul.jpeg", scope=apideck_unify.Scope.COMPANY, pass_through=[
@@ -382,7 +381,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.file_storage.shared_links.delete(id="<id>", service_id="salesforce", raw=False)

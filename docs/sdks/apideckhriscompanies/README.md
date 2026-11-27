@@ -1,5 +1,4 @@
-# ApideckHrisCompanies
-(*hris.companies*)
+# Hris.Companies
 
 ## Overview
 
@@ -26,7 +25,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.hris.companies.list(raw=False, service_id="salesforce", limit=20, pass_through={
@@ -86,7 +85,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.hris.companies.create(legal_name="SpaceX", raw=False, service_id="salesforce", display_name="SpaceX", subdomain="company", status=apideck_unify.HrisCompanyStatus.ACTIVE, company_number="123456-AB", currency=apideck_unify.Currency.USD, addresses=[
@@ -299,7 +298,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.hris.companies.get(id="<id>", service_id="salesforce", raw=False, fields="id,updated_at")
@@ -355,7 +354,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.hris.companies.update(id="<id>", legal_name="SpaceX", service_id="salesforce", raw=False, display_name="SpaceX", subdomain="company", status=apideck_unify.HrisCompanyStatus.ACTIVE, company_number="123456-AB", currency=apideck_unify.Currency.USD, addresses=[
@@ -569,7 +568,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.hris.companies.delete(id="<id>", service_id="salesforce", raw=False)

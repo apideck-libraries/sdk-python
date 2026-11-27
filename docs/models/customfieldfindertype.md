@@ -2,6 +2,16 @@
 
 The declared data type of the custom field. Only returned by connectors that can read the field's definition; omitted otherwise.
 
+## Example Usage
+
+```python
+from apideck_unify.models import CustomFieldFinderType
+
+value = CustomFieldFinderType.TEXT
+
+# Open enum: unrecognized values are captured as UnrecognizedStr
+```
+
 
 ## Values
 

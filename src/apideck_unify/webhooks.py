@@ -7,7 +7,7 @@ from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from jsonpath import JSONPath
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
 
 
 class Webhooks(BaseSDK):
@@ -66,6 +66,7 @@ class Webhooks(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -90,9 +91,11 @@ class Webhooks(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["webhook"],
+                extensions={"x-apideck-api": "webhook"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -112,17 +115,19 @@ class Webhooks(BaseSDK):
                 cursor=next_cursor,
                 limit=limit,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.WebhookWebhooksAllResponse(
                 get_webhooks_response=unmarshal_json_response(
-                    Optional[models.GetWebhooksResponse], http_res
+                    Optional[models.GetWebhooksResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -158,11 +163,10 @@ class Webhooks(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.WebhookWebhooksAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -222,6 +226,7 @@ class Webhooks(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -246,9 +251,11 @@ class Webhooks(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["webhook"],
+                extensions={"x-apideck-api": "webhook"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -268,17 +275,19 @@ class Webhooks(BaseSDK):
                 cursor=next_cursor,
                 limit=limit,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.WebhookWebhooksAllResponse(
                 get_webhooks_response=unmarshal_json_response(
-                    Optional[models.GetWebhooksResponse], http_res
+                    Optional[models.GetWebhooksResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -314,11 +323,10 @@ class Webhooks(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.WebhookWebhooksAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -329,7 +337,7 @@ class Webhooks(BaseSDK):
         unified_api: models.UnifiedAPIID,
         status: models.Status,
         delivery_url: str,
-        events: List[models.WebhookEventType],
+        events: Iterable[models.WebhookEventType],
         app_id: Optional[str] = None,
         description: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -376,7 +384,7 @@ class Webhooks(BaseSDK):
                 unified_api=unified_api,
                 status=status,
                 delivery_url=delivery_url,
-                events=events,
+                events=utils.unmarshal(events, List[models.WebhookEventType]),
             ),
         )
 
@@ -403,6 +411,7 @@ class Webhooks(BaseSDK):
                 "json",
                 models.CreateWebhookRequest,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -427,9 +436,11 @@ class Webhooks(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["webhook"],
+                extensions={"x-apideck-api": "webhook"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -437,10 +448,9 @@ class Webhooks(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.WebhookWebhooksAddResponse(
                 create_webhook_response=unmarshal_json_response(
-                    Optional[models.CreateWebhookResponse], http_res
+                    Optional[models.CreateWebhookResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -476,10 +486,9 @@ class Webhooks(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.WebhookWebhooksAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -490,7 +499,7 @@ class Webhooks(BaseSDK):
         unified_api: models.UnifiedAPIID,
         status: models.Status,
         delivery_url: str,
-        events: List[models.WebhookEventType],
+        events: Iterable[models.WebhookEventType],
         app_id: Optional[str] = None,
         description: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -537,7 +546,7 @@ class Webhooks(BaseSDK):
                 unified_api=unified_api,
                 status=status,
                 delivery_url=delivery_url,
-                events=events,
+                events=utils.unmarshal(events, List[models.WebhookEventType]),
             ),
         )
 
@@ -564,6 +573,7 @@ class Webhooks(BaseSDK):
                 "json",
                 models.CreateWebhookRequest,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -588,9 +598,11 @@ class Webhooks(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["webhook"],
+                extensions={"x-apideck-api": "webhook"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -598,10 +610,9 @@ class Webhooks(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.WebhookWebhooksAddResponse(
                 create_webhook_response=unmarshal_json_response(
-                    Optional[models.CreateWebhookResponse], http_res
+                    Optional[models.CreateWebhookResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -637,10 +648,9 @@ class Webhooks(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.WebhookWebhooksAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -697,6 +707,7 @@ class Webhooks(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -721,9 +732,11 @@ class Webhooks(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["webhook"],
+                extensions={"x-apideck-api": "webhook"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -731,10 +744,9 @@ class Webhooks(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.WebhookWebhooksOneResponse(
                 get_webhook_response=unmarshal_json_response(
-                    Optional[models.GetWebhookResponse], http_res
+                    Optional[models.GetWebhookResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -770,10 +782,9 @@ class Webhooks(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.WebhookWebhooksOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -830,6 +841,7 @@ class Webhooks(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -854,9 +866,11 @@ class Webhooks(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["webhook"],
+                extensions={"x-apideck-api": "webhook"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -864,10 +878,9 @@ class Webhooks(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.WebhookWebhooksOneResponse(
                 get_webhook_response=unmarshal_json_response(
-                    Optional[models.GetWebhookResponse], http_res
+                    Optional[models.GetWebhookResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -903,10 +916,9 @@ class Webhooks(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.WebhookWebhooksOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -919,7 +931,7 @@ class Webhooks(BaseSDK):
         description: OptionalNullable[str] = UNSET,
         status: Optional[models.Status] = None,
         delivery_url: Optional[str] = None,
-        events: Optional[List[models.WebhookEventType]] = None,
+        events: Optional[Iterable[models.WebhookEventType]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -964,7 +976,7 @@ class Webhooks(BaseSDK):
                 description=description,
                 status=status,
                 delivery_url=delivery_url,
-                events=events,
+                events=utils.unmarshal(events, Optional[List[models.WebhookEventType]]),
             ),
         )
 
@@ -991,6 +1003,7 @@ class Webhooks(BaseSDK):
                 "json",
                 models.UpdateWebhookRequest,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1015,9 +1028,11 @@ class Webhooks(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["webhook"],
+                extensions={"x-apideck-api": "webhook"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1025,10 +1040,9 @@ class Webhooks(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.WebhookWebhooksUpdateResponse(
                 update_webhook_response=unmarshal_json_response(
-                    Optional[models.UpdateWebhookResponse], http_res
+                    Optional[models.UpdateWebhookResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1064,10 +1078,9 @@ class Webhooks(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.WebhookWebhooksUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1080,7 +1093,7 @@ class Webhooks(BaseSDK):
         description: OptionalNullable[str] = UNSET,
         status: Optional[models.Status] = None,
         delivery_url: Optional[str] = None,
-        events: Optional[List[models.WebhookEventType]] = None,
+        events: Optional[Iterable[models.WebhookEventType]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -1125,7 +1138,7 @@ class Webhooks(BaseSDK):
                 description=description,
                 status=status,
                 delivery_url=delivery_url,
-                events=events,
+                events=utils.unmarshal(events, Optional[List[models.WebhookEventType]]),
             ),
         )
 
@@ -1152,6 +1165,7 @@ class Webhooks(BaseSDK):
                 "json",
                 models.UpdateWebhookRequest,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1176,9 +1190,11 @@ class Webhooks(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["webhook"],
+                extensions={"x-apideck-api": "webhook"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1186,10 +1202,9 @@ class Webhooks(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.WebhookWebhooksUpdateResponse(
                 update_webhook_response=unmarshal_json_response(
-                    Optional[models.UpdateWebhookResponse], http_res
+                    Optional[models.UpdateWebhookResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1225,10 +1240,9 @@ class Webhooks(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.WebhookWebhooksUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1285,6 +1299,7 @@ class Webhooks(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1309,9 +1324,11 @@ class Webhooks(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["webhook"],
+                extensions={"x-apideck-api": "webhook"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1319,10 +1336,9 @@ class Webhooks(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.WebhookWebhooksDeleteResponse(
                 delete_webhook_response=unmarshal_json_response(
-                    Optional[models.DeleteWebhookResponse], http_res
+                    Optional[models.DeleteWebhookResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1358,10 +1374,9 @@ class Webhooks(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.WebhookWebhooksDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1418,6 +1433,7 @@ class Webhooks(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1442,9 +1458,11 @@ class Webhooks(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["webhook"],
+                extensions={"x-apideck-api": "webhook"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1452,10 +1470,9 @@ class Webhooks(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.WebhookWebhooksDeleteResponse(
                 delete_webhook_response=unmarshal_json_response(
-                    Optional[models.DeleteWebhookResponse], http_res
+                    Optional[models.DeleteWebhookResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1491,10 +1508,9 @@ class Webhooks(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.WebhookWebhooksDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

@@ -2,6 +2,16 @@
 
 The type of account.
 
+## Example Usage
+
+```python
+from apideck_unify.models import LedgerAccountType
+
+value = LedgerAccountType.ACCOUNTS_PAYABLE
+
+# Open enum: unrecognized values are captured as UnrecognizedStr
+```
+
 
 ## Values
 

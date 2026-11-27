@@ -11,12 +11,13 @@ from apideck_unify.types import (
     OptionalNullable,
     UNSET,
     UNSET_SENTINEL,
+    current_exclude_none,
+    serialize_with_info,
 )
-from apideck_unify.utils import validate_open_enum
+from apideck_unify.types.basemodel import current_filtered_dump
 from enum import Enum
 from pydantic import field_serializer, model_serializer
-from pydantic.functional_validators import PlainValidator
-from typing_extensions import Annotated, NotRequired, TypedDict
+from typing_extensions import NotRequired, TypedDict
 
 
 class FlsaStatus(str, Enum, metaclass=utils.OpenEnumMeta):
@@ -58,27 +59,19 @@ class EmployeeCompensation(BaseModel):
     rate: OptionalNullable[float] = UNSET
     r"""The amount paid per payment unit."""
 
-    payment_unit: Annotated[
-        OptionalNullable[PaymentUnit], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    payment_unit: OptionalNullable[PaymentUnit] = UNSET
     r"""Unit of measurement for employee compensation."""
 
-    currency: Annotated[
-        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    currency: OptionalNullable[Currency] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
-    flsa_status: Annotated[
-        OptionalNullable[FlsaStatus], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    flsa_status: OptionalNullable[FlsaStatus] = UNSET
     r"""The FLSA status for this compensation."""
 
     effective_date: OptionalNullable[str] = UNSET
     r"""The date on which a change to an employee's compensation takes effect."""
 
-    payment_frequency: Annotated[
-        OptionalNullable[PaymentFrequency], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    payment_frequency: OptionalNullable[PaymentFrequency] = UNSET
     r"""Frequency of employee compensation."""
 
     @field_serializer("payment_unit")
@@ -118,50 +111,56 @@ class EmployeeCompensation(BaseModel):
         return value
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = [
-            "id",
-            "job_id",
-            "rate",
-            "payment_unit",
-            "currency",
-            "flsa_status",
-            "effective_date",
-            "payment_frequency",
-        ]
-        nullable_fields = [
-            "id",
-            "job_id",
-            "rate",
-            "payment_unit",
-            "currency",
-            "flsa_status",
-            "effective_date",
-            "payment_frequency",
-        ]
-        null_default_fields = []
-
+        optional_fields = set(
+            [
+                "id",
+                "job_id",
+                "rate",
+                "payment_unit",
+                "currency",
+                "flsa_status",
+                "effective_date",
+                "payment_frequency",
+            ]
+        )
+        nullable_fields = set(
+            [
+                "id",
+                "job_id",
+                "rate",
+                "payment_unit",
+                "currency",
+                "flsa_status",
+                "effective_date",
+                "payment_frequency",
+            ]
+        )
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m
 
@@ -185,27 +184,19 @@ class EmployeeCompensationInput(BaseModel):
     rate: OptionalNullable[float] = UNSET
     r"""The amount paid per payment unit."""
 
-    payment_unit: Annotated[
-        OptionalNullable[PaymentUnit], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    payment_unit: OptionalNullable[PaymentUnit] = UNSET
     r"""Unit of measurement for employee compensation."""
 
-    currency: Annotated[
-        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    currency: OptionalNullable[Currency] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
-    flsa_status: Annotated[
-        OptionalNullable[FlsaStatus], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    flsa_status: OptionalNullable[FlsaStatus] = UNSET
     r"""The FLSA status for this compensation."""
 
     effective_date: OptionalNullable[str] = UNSET
     r"""The date on which a change to an employee's compensation takes effect."""
 
-    payment_frequency: Annotated[
-        OptionalNullable[PaymentFrequency], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    payment_frequency: OptionalNullable[PaymentFrequency] = UNSET
     r"""Frequency of employee compensation."""
 
     @field_serializer("payment_unit")
@@ -245,45 +236,51 @@ class EmployeeCompensationInput(BaseModel):
         return value
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = [
-            "rate",
-            "payment_unit",
-            "currency",
-            "flsa_status",
-            "effective_date",
-            "payment_frequency",
-        ]
-        nullable_fields = [
-            "rate",
-            "payment_unit",
-            "currency",
-            "flsa_status",
-            "effective_date",
-            "payment_frequency",
-        ]
-        null_default_fields = []
-
+        optional_fields = set(
+            [
+                "rate",
+                "payment_unit",
+                "currency",
+                "flsa_status",
+                "effective_date",
+                "payment_frequency",
+            ]
+        )
+        nullable_fields = set(
+            [
+                "rate",
+                "payment_unit",
+                "currency",
+                "flsa_status",
+                "effective_date",
+                "payment_frequency",
+            ]
+        )
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m

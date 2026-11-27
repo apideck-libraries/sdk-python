@@ -1,5 +1,4 @@
-# BankFeedAccounts
-(*accounting.bank_feed_accounts*)
+# Accounting.BankFeedAccounts
 
 ## Overview
 
@@ -26,7 +25,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.bank_feed_accounts.list(raw=False, service_id="salesforce", company_id="12345", limit=20, pass_through={
@@ -88,10 +87,10 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
-    res = apideck.accounting.bank_feed_accounts.create(raw=False, service_id="salesforce", bank_account_type=apideck_unify.BankAccountType.BANK, source_account_id="src_456", source_routing_number="021000021", source_account_number="123465", target_account_id="tgt_789", target_account_name="Main Company Checking", target_account_number="NL91ABNA0417164300", balance=25000, available_balance=24500, balance_as_of=parse_datetime("2026-11-12T09:30:00Z"), currency=apideck_unify.Currency.USD, feed_status=apideck_unify.FeedStatus.PENDING, status=apideck_unify.BankFeedAccountStatus.ACTIVE, country="US", account_holders=[
+    res = apideck.accounting.bank_feed_accounts.create(raw=False, service_id="salesforce", bank_account_type=apideck_unify.BankAccountType.BANK, source_account_id="src_456", source_routing_number="021000021", source_account_number="123465", target_account_id="tgt_789", target_account_name="Main Company Checking", target_account_number="NL91ABNA0417164300", balance=25000.0, available_balance=24500.0, balance_as_of=parse_datetime("2026-11-12T09:30:00Z"), currency=apideck_unify.Currency.USD, feed_status=apideck_unify.FeedStatus.PENDING, status=apideck_unify.BankFeedAccountStatus.ACTIVE, country="US", account_holders=[
         {
             "type": apideck_unify.HolderType.CONSUMER,
             "relationship": apideck_unify.HolderRelationship.PRIMARY,
@@ -232,7 +231,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.bank_feed_accounts.get(id="<id>", service_id="salesforce", company_id="12345", raw=False, fields="id,updated_at")
@@ -290,10 +289,10 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
-    res = apideck.accounting.bank_feed_accounts.update(id="<id>", service_id="salesforce", raw=False, bank_account_type=apideck_unify.BankAccountType.BANK, source_account_id="src_456", source_routing_number="021000021", source_account_number="123465", target_account_id="tgt_789", target_account_name="Main Company Checking", target_account_number="NL91ABNA0417164300", balance=25000, available_balance=24500, balance_as_of=parse_datetime("2026-11-12T09:30:00Z"), currency=apideck_unify.Currency.USD, feed_status=apideck_unify.FeedStatus.PENDING, status=apideck_unify.BankFeedAccountStatus.ACTIVE, country="US", account_holders=[
+    res = apideck.accounting.bank_feed_accounts.update(id="<id>", service_id="salesforce", raw=False, bank_account_type=apideck_unify.BankAccountType.BANK, source_account_id="src_456", source_routing_number="021000021", source_account_number="123465", target_account_id="tgt_789", target_account_name="Main Company Checking", target_account_number="NL91ABNA0417164300", balance=25000.0, available_balance=24500.0, balance_as_of=parse_datetime("2026-11-12T09:30:00Z"), currency=apideck_unify.Currency.USD, feed_status=apideck_unify.FeedStatus.PENDING, status=apideck_unify.BankFeedAccountStatus.ACTIVE, country="US", account_holders=[
         {
             "type": apideck_unify.HolderType.CONSUMER,
             "relationship": apideck_unify.HolderRelationship.PRIMARY,
@@ -429,7 +428,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.bank_feed_accounts.delete(id="<id>", service_id="salesforce", raw=False)

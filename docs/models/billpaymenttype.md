@@ -2,6 +2,16 @@
 
 Type of payment
 
+## Example Usage
+
+```python
+from apideck_unify.models import BillPaymentType
+
+value = BillPaymentType.ACCOUNTS_PAYABLE_CREDIT
+
+# Open enum: unrecognized values are captured as UnrecognizedStr
+```
+
 
 ## Values
 

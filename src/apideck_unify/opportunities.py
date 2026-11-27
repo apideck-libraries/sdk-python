@@ -8,7 +8,7 @@ from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from datetime import date, datetime
 from jsonpath import JSONPath
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
 
 
 class Opportunities(BaseSDK):
@@ -27,7 +27,7 @@ class Opportunities(BaseSDK):
         sort: Optional[
             Union[models.OpportunitiesSort, models.OpportunitiesSortTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -74,7 +74,7 @@ class Opportunities(BaseSDK):
                 filter_, Optional[models.OpportunitiesFilter]
             ),
             sort=utils.get_pydantic_model(sort, Optional[models.OpportunitiesSort]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -95,6 +95,7 @@ class Opportunities(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -119,9 +120,47 @@ class Opportunities(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "zendesk-sell",
+                            "description": "Zendesk Sell does not expose a native cross-page total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate request to the Zendesk Sell `GET /v2/{resource}/count` endpoint — an extra API call not currently implemented.\n",
+                        },
+                        {
+                            "connector": "hubspot",
+                            "description": "When using a filter or sorting for opportunities, Hubspot will only return a maximum of 10.000 opportunities and omit the company_id, primary_contact_id, company_id, contact_ids, lead_id and contact_id.\n\nHubSpot allows a deal to have no name, and its Search API omits blank properties from results. `title` is always returned, but it will be an **empty string** for such deals rather than a substituted placeholder — an empty `title` means the deal genuinely has no name in HubSpot, not that the value was unavailable. Treat `title` as possibly empty when using it as a display label.\n",
+                        },
+                        {
+                            "connector": "salesforce",
+                            "description": "Salesforce imposes a maximum offset limit of 2000. Exceeding this offset will result in an error from Salesforce. For result sets larger than 2000 items, it is necessary to set the pagination limit to 200, as this will enforce the use of batchSize for pagination. Note that setting a limit lower than 200 will not reduce the batchSize due to Salesforce's minimum batch size policy of 200, as detailed in their documentation [here](https://developer.salesforce.com/docs/atlas.en-us.250.0.api_rest/api_rest/headers_queryoptions.htm) and will have no effect.",
+                        },
+                        {
+                            "connector": "pipedrive",
+                            "description": "Pipedrive supports filtering by either title or company_id, but not both simultaneously.\n\nPipedrive does not expose a cross-page total record count in list responses. `meta.total_count` will not appear.\n\nWith `filter[company_id]` the list is served by Pipedrive's v2 deals endpoint: it is paginated with an opaque cursor (a cursor from before the change is rejected with `InvalidCursorError`), sorting is limited to `created_at` and `updated_at` (`sort[by]=title` returns an unsupported-sort error), `company_name` is not returned, `deleted` is returned, custom-field option values are numeric option ids with monetary and date-range fields split into `<key>` plus `<key>_currency` / `<key>_until` entries, and an unknown or non-numeric `company_id` is answered with a 400 instead of a 404. Deals of a deleted company return an empty list; archived deals are not included.\n",
+                        },
+                        {
+                            "connector": "zoho-crm",
+                            "description": "Zoho CRM's `info.count` in list responses is a per-page count only, not a cross-page total. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "attio",
+                            "description": "Attio does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "salesflare",
+                            "description": "Salesflare does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -148,17 +187,19 @@ class Opportunities(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmOpportunitiesAllResponse(
                 get_opportunities_response=unmarshal_json_response(
-                    Optional[models.GetOpportunitiesResponse], http_res
+                    Optional[models.GetOpportunitiesResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -199,11 +240,10 @@ class Opportunities(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmOpportunitiesAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -223,7 +263,7 @@ class Opportunities(BaseSDK):
         sort: Optional[
             Union[models.OpportunitiesSort, models.OpportunitiesSortTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -270,7 +310,7 @@ class Opportunities(BaseSDK):
                 filter_, Optional[models.OpportunitiesFilter]
             ),
             sort=utils.get_pydantic_model(sort, Optional[models.OpportunitiesSort]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -291,6 +331,7 @@ class Opportunities(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -315,9 +356,47 @@ class Opportunities(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "zendesk-sell",
+                            "description": "Zendesk Sell does not expose a native cross-page total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate request to the Zendesk Sell `GET /v2/{resource}/count` endpoint — an extra API call not currently implemented.\n",
+                        },
+                        {
+                            "connector": "hubspot",
+                            "description": "When using a filter or sorting for opportunities, Hubspot will only return a maximum of 10.000 opportunities and omit the company_id, primary_contact_id, company_id, contact_ids, lead_id and contact_id.\n\nHubSpot allows a deal to have no name, and its Search API omits blank properties from results. `title` is always returned, but it will be an **empty string** for such deals rather than a substituted placeholder — an empty `title` means the deal genuinely has no name in HubSpot, not that the value was unavailable. Treat `title` as possibly empty when using it as a display label.\n",
+                        },
+                        {
+                            "connector": "salesforce",
+                            "description": "Salesforce imposes a maximum offset limit of 2000. Exceeding this offset will result in an error from Salesforce. For result sets larger than 2000 items, it is necessary to set the pagination limit to 200, as this will enforce the use of batchSize for pagination. Note that setting a limit lower than 200 will not reduce the batchSize due to Salesforce's minimum batch size policy of 200, as detailed in their documentation [here](https://developer.salesforce.com/docs/atlas.en-us.250.0.api_rest/api_rest/headers_queryoptions.htm) and will have no effect.",
+                        },
+                        {
+                            "connector": "pipedrive",
+                            "description": "Pipedrive supports filtering by either title or company_id, but not both simultaneously.\n\nPipedrive does not expose a cross-page total record count in list responses. `meta.total_count` will not appear.\n\nWith `filter[company_id]` the list is served by Pipedrive's v2 deals endpoint: it is paginated with an opaque cursor (a cursor from before the change is rejected with `InvalidCursorError`), sorting is limited to `created_at` and `updated_at` (`sort[by]=title` returns an unsupported-sort error), `company_name` is not returned, `deleted` is returned, custom-field option values are numeric option ids with monetary and date-range fields split into `<key>` plus `<key>_currency` / `<key>_until` entries, and an unknown or non-numeric `company_id` is answered with a 400 instead of a 404. Deals of a deleted company return an empty list; archived deals are not included.\n",
+                        },
+                        {
+                            "connector": "zoho-crm",
+                            "description": "Zoho CRM's `info.count` in list responses is a per-page count only, not a cross-page total. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "attio",
+                            "description": "Attio does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "salesflare",
+                            "description": "Salesflare does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -344,17 +423,19 @@ class Opportunities(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmOpportunitiesAllResponse(
                 get_opportunities_response=unmarshal_json_response(
-                    Optional[models.GetOpportunitiesResponse], http_res
+                    Optional[models.GetOpportunitiesResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -395,11 +476,10 @@ class Opportunities(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmOpportunitiesAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -429,20 +509,23 @@ class Opportunities(BaseSDK):
         lead_id: OptionalNullable[str] = UNSET,
         lead_source: OptionalNullable[str] = UNSET,
         contact_id: OptionalNullable[str] = UNSET,
-        contact_ids: Optional[List[str]] = None,
+        contact_ids: Optional[Iterable[str]] = None,
         company_id: OptionalNullable[str] = UNSET,
         company_name: OptionalNullable[str] = UNSET,
         owner_id: OptionalNullable[str] = UNSET,
         priority: OptionalNullable[str] = UNSET,
         status: OptionalNullable[str] = UNSET,
         status_id: OptionalNullable[str] = UNSET,
-        tags: OptionalNullable[List[str]] = UNSET,
+        tags: OptionalNullable[Iterable[str]] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         stage_last_changed_at: OptionalNullable[datetime] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -460,7 +543,7 @@ class Opportunities(BaseSDK):
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param primary_contact_id: The unique identifier of the primary contact associated with the opportunity.
         :param description: A description of the opportunity.
-        :param type: The type of the opportunity
+        :param type_: The type of the opportunity
         :param monetary_amount: The monetary value associated with the opportunity
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param win_probability: The probability of winning the opportunity, expressed as a percentage.
@@ -525,14 +608,14 @@ class Opportunities(BaseSDK):
                 lead_id=lead_id,
                 lead_source=lead_source,
                 contact_id=contact_id,
-                contact_ids=contact_ids,
+                contact_ids=utils.unmarshal(contact_ids, Optional[List[str]]),
                 company_id=company_id,
                 company_name=company_name,
                 owner_id=owner_id,
                 priority=priority,
                 status=status,
                 status_id=status_id,
-                tags=tags,
+                tags=utils.unmarshal(tags, OptionalNullable[List[str]]),
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
                 ),
@@ -563,6 +646,7 @@ class Opportunities(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.opportunity, False, False, "json", models.OpportunityInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -587,9 +671,55 @@ class Opportunities(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "act",
+                            "description": "The `primary_contact_id` is required in the request body",
+                        },
+                        {
+                            "connector": "activecampaign",
+                            "description": "The `primary_contact_id` is required in the request body",
+                        },
+                        {
+                            "connector": "copper",
+                            "description": "The `primary_contact_id` is required in the request body",
+                        },
+                        {
+                            "connector": "microsoft-dynamics",
+                            "description": "The `primary_contact_id` is required in the request body",
+                        },
+                        {
+                            "connector": "pipedrive",
+                            "description": "The `primary_contact_id` is required in the request body",
+                        },
+                        {
+                            "connector": "salesforce",
+                            "description": "The `close_date` and `pipeline_stage_id` are required by Salesforce. If `close_date` is not provided, it defaults to `2021-12-31`.",
+                        },
+                        {
+                            "connector": "teamleader",
+                            "description": "The `primary_contact_id` is required in the request body",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "The `primary_contact_id` is required in the request body",
+                        },
+                        {
+                            "connector": "planhat",
+                            "description": "The allowed status values are `active`, `won` and `lost`. Default is `active`.",
+                        },
+                        {
+                            "connector": "microsoft-dynamics",
+                            "description": "Entity Reference (lookup) custom fields are written using Dataverse navigation-property\nsyntax automatically: supply the custom field id as either the read-side `_<attribute>_value`\nform or the bare attribute logical name, with the target row GUID as the value, and the\nconnector emits `<navigationProperty>@odata.bind` for you.\n\nTwo limitations: polymorphic multi-target lookup columns (e.g. Customer-type columns\ntargeting both accounts and contacts) cannot be auto-resolved from a bare GUID — the request\nfails with an actionable error; write those via pass_through with an explicit\n`<navigationProperty>@odata.bind` key. Clearing a lookup custom field by sending a null\nvalue is not supported.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -597,10 +727,9 @@ class Opportunities(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.CrmOpportunitiesAddResponse(
                 create_opportunity_response=unmarshal_json_response(
-                    Optional[models.CreateOpportunityResponse], http_res
+                    Optional[models.CreateOpportunityResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -641,10 +770,9 @@ class Opportunities(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmOpportunitiesAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -674,20 +802,23 @@ class Opportunities(BaseSDK):
         lead_id: OptionalNullable[str] = UNSET,
         lead_source: OptionalNullable[str] = UNSET,
         contact_id: OptionalNullable[str] = UNSET,
-        contact_ids: Optional[List[str]] = None,
+        contact_ids: Optional[Iterable[str]] = None,
         company_id: OptionalNullable[str] = UNSET,
         company_name: OptionalNullable[str] = UNSET,
         owner_id: OptionalNullable[str] = UNSET,
         priority: OptionalNullable[str] = UNSET,
         status: OptionalNullable[str] = UNSET,
         status_id: OptionalNullable[str] = UNSET,
-        tags: OptionalNullable[List[str]] = UNSET,
+        tags: OptionalNullable[Iterable[str]] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         stage_last_changed_at: OptionalNullable[datetime] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -705,7 +836,7 @@ class Opportunities(BaseSDK):
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param primary_contact_id: The unique identifier of the primary contact associated with the opportunity.
         :param description: A description of the opportunity.
-        :param type: The type of the opportunity
+        :param type_: The type of the opportunity
         :param monetary_amount: The monetary value associated with the opportunity
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param win_probability: The probability of winning the opportunity, expressed as a percentage.
@@ -770,14 +901,14 @@ class Opportunities(BaseSDK):
                 lead_id=lead_id,
                 lead_source=lead_source,
                 contact_id=contact_id,
-                contact_ids=contact_ids,
+                contact_ids=utils.unmarshal(contact_ids, Optional[List[str]]),
                 company_id=company_id,
                 company_name=company_name,
                 owner_id=owner_id,
                 priority=priority,
                 status=status,
                 status_id=status_id,
-                tags=tags,
+                tags=utils.unmarshal(tags, OptionalNullable[List[str]]),
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
                 ),
@@ -808,6 +939,7 @@ class Opportunities(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.opportunity, False, False, "json", models.OpportunityInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -832,9 +964,55 @@ class Opportunities(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "act",
+                            "description": "The `primary_contact_id` is required in the request body",
+                        },
+                        {
+                            "connector": "activecampaign",
+                            "description": "The `primary_contact_id` is required in the request body",
+                        },
+                        {
+                            "connector": "copper",
+                            "description": "The `primary_contact_id` is required in the request body",
+                        },
+                        {
+                            "connector": "microsoft-dynamics",
+                            "description": "The `primary_contact_id` is required in the request body",
+                        },
+                        {
+                            "connector": "pipedrive",
+                            "description": "The `primary_contact_id` is required in the request body",
+                        },
+                        {
+                            "connector": "salesforce",
+                            "description": "The `close_date` and `pipeline_stage_id` are required by Salesforce. If `close_date` is not provided, it defaults to `2021-12-31`.",
+                        },
+                        {
+                            "connector": "teamleader",
+                            "description": "The `primary_contact_id` is required in the request body",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "The `primary_contact_id` is required in the request body",
+                        },
+                        {
+                            "connector": "planhat",
+                            "description": "The allowed status values are `active`, `won` and `lost`. Default is `active`.",
+                        },
+                        {
+                            "connector": "microsoft-dynamics",
+                            "description": "Entity Reference (lookup) custom fields are written using Dataverse navigation-property\nsyntax automatically: supply the custom field id as either the read-side `_<attribute>_value`\nform or the bare attribute logical name, with the target row GUID as the value, and the\nconnector emits `<navigationProperty>@odata.bind` for you.\n\nTwo limitations: polymorphic multi-target lookup columns (e.g. Customer-type columns\ntargeting both accounts and contacts) cannot be auto-resolved from a bare GUID — the request\nfails with an actionable error; write those via pass_through with an explicit\n`<navigationProperty>@odata.bind` key. Clearing a lookup custom field by sending a null\nvalue is not supported.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -842,10 +1020,9 @@ class Opportunities(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.CrmOpportunitiesAddResponse(
                 create_opportunity_response=unmarshal_json_response(
-                    Optional[models.CreateOpportunityResponse], http_res
+                    Optional[models.CreateOpportunityResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -886,10 +1063,9 @@ class Opportunities(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmOpportunitiesAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -959,6 +1135,7 @@ class Opportunities(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -983,9 +1160,11 @@ class Opportunities(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={"x-apideck-api": "crm"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -993,10 +1172,9 @@ class Opportunities(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmOpportunitiesOneResponse(
                 get_opportunity_response=unmarshal_json_response(
-                    Optional[models.GetOpportunityResponse], http_res
+                    Optional[models.GetOpportunityResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1037,10 +1215,9 @@ class Opportunities(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmOpportunitiesOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1110,6 +1287,7 @@ class Opportunities(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1134,9 +1312,11 @@ class Opportunities(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={"x-apideck-api": "crm"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1144,10 +1324,9 @@ class Opportunities(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmOpportunitiesOneResponse(
                 get_opportunity_response=unmarshal_json_response(
-                    Optional[models.GetOpportunityResponse], http_res
+                    Optional[models.GetOpportunityResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1188,10 +1367,9 @@ class Opportunities(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmOpportunitiesOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1222,20 +1400,23 @@ class Opportunities(BaseSDK):
         lead_id: OptionalNullable[str] = UNSET,
         lead_source: OptionalNullable[str] = UNSET,
         contact_id: OptionalNullable[str] = UNSET,
-        contact_ids: Optional[List[str]] = None,
+        contact_ids: Optional[Iterable[str]] = None,
         company_id: OptionalNullable[str] = UNSET,
         company_name: OptionalNullable[str] = UNSET,
         owner_id: OptionalNullable[str] = UNSET,
         priority: OptionalNullable[str] = UNSET,
         status: OptionalNullable[str] = UNSET,
         status_id: OptionalNullable[str] = UNSET,
-        tags: OptionalNullable[List[str]] = UNSET,
+        tags: OptionalNullable[Iterable[str]] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         stage_last_changed_at: OptionalNullable[datetime] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1254,7 +1435,7 @@ class Opportunities(BaseSDK):
         :param raw: Include raw response. Mostly used for debugging purposes
         :param primary_contact_id: The unique identifier of the primary contact associated with the opportunity.
         :param description: A description of the opportunity.
-        :param type: The type of the opportunity
+        :param type_: The type of the opportunity
         :param monetary_amount: The monetary value associated with the opportunity
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param win_probability: The probability of winning the opportunity, expressed as a percentage.
@@ -1320,14 +1501,14 @@ class Opportunities(BaseSDK):
                 lead_id=lead_id,
                 lead_source=lead_source,
                 contact_id=contact_id,
-                contact_ids=contact_ids,
+                contact_ids=utils.unmarshal(contact_ids, Optional[List[str]]),
                 company_id=company_id,
                 company_name=company_name,
                 owner_id=owner_id,
                 priority=priority,
                 status=status,
                 status_id=status_id,
-                tags=tags,
+                tags=utils.unmarshal(tags, OptionalNullable[List[str]]),
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
                 ),
@@ -1358,6 +1539,7 @@ class Opportunities(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.opportunity, False, False, "json", models.OpportunityInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1382,9 +1564,23 @@ class Opportunities(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "planhat",
+                            "description": "The allowed status values are `active`, `won` and `lost`. Default is `active`.",
+                        },
+                        {
+                            "connector": "microsoft-dynamics",
+                            "description": "Entity Reference (lookup) custom fields are written using Dataverse navigation-property\nsyntax automatically: supply the custom field id as either the read-side `_<attribute>_value`\nform or the bare attribute logical name, with the target row GUID as the value, and the\nconnector emits `<navigationProperty>@odata.bind` for you.\n\nTwo limitations: polymorphic multi-target lookup columns (e.g. Customer-type columns\ntargeting both accounts and contacts) cannot be auto-resolved from a bare GUID — the request\nfails with an actionable error; write those via pass_through with an explicit\n`<navigationProperty>@odata.bind` key. Clearing a lookup custom field by sending a null\nvalue is not supported.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1392,10 +1588,9 @@ class Opportunities(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmOpportunitiesUpdateResponse(
                 update_opportunity_response=unmarshal_json_response(
-                    Optional[models.UpdateOpportunityResponse], http_res
+                    Optional[models.UpdateOpportunityResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1436,10 +1631,9 @@ class Opportunities(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmOpportunitiesUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1470,20 +1664,23 @@ class Opportunities(BaseSDK):
         lead_id: OptionalNullable[str] = UNSET,
         lead_source: OptionalNullable[str] = UNSET,
         contact_id: OptionalNullable[str] = UNSET,
-        contact_ids: Optional[List[str]] = None,
+        contact_ids: Optional[Iterable[str]] = None,
         company_id: OptionalNullable[str] = UNSET,
         company_name: OptionalNullable[str] = UNSET,
         owner_id: OptionalNullable[str] = UNSET,
         priority: OptionalNullable[str] = UNSET,
         status: OptionalNullable[str] = UNSET,
         status_id: OptionalNullable[str] = UNSET,
-        tags: OptionalNullable[List[str]] = UNSET,
+        tags: OptionalNullable[Iterable[str]] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         stage_last_changed_at: OptionalNullable[datetime] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1502,7 +1699,7 @@ class Opportunities(BaseSDK):
         :param raw: Include raw response. Mostly used for debugging purposes
         :param primary_contact_id: The unique identifier of the primary contact associated with the opportunity.
         :param description: A description of the opportunity.
-        :param type: The type of the opportunity
+        :param type_: The type of the opportunity
         :param monetary_amount: The monetary value associated with the opportunity
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param win_probability: The probability of winning the opportunity, expressed as a percentage.
@@ -1568,14 +1765,14 @@ class Opportunities(BaseSDK):
                 lead_id=lead_id,
                 lead_source=lead_source,
                 contact_id=contact_id,
-                contact_ids=contact_ids,
+                contact_ids=utils.unmarshal(contact_ids, Optional[List[str]]),
                 company_id=company_id,
                 company_name=company_name,
                 owner_id=owner_id,
                 priority=priority,
                 status=status,
                 status_id=status_id,
-                tags=tags,
+                tags=utils.unmarshal(tags, OptionalNullable[List[str]]),
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
                 ),
@@ -1606,6 +1803,7 @@ class Opportunities(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.opportunity, False, False, "json", models.OpportunityInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1630,9 +1828,23 @@ class Opportunities(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "planhat",
+                            "description": "The allowed status values are `active`, `won` and `lost`. Default is `active`.",
+                        },
+                        {
+                            "connector": "microsoft-dynamics",
+                            "description": "Entity Reference (lookup) custom fields are written using Dataverse navigation-property\nsyntax automatically: supply the custom field id as either the read-side `_<attribute>_value`\nform or the bare attribute logical name, with the target row GUID as the value, and the\nconnector emits `<navigationProperty>@odata.bind` for you.\n\nTwo limitations: polymorphic multi-target lookup columns (e.g. Customer-type columns\ntargeting both accounts and contacts) cannot be auto-resolved from a bare GUID — the request\nfails with an actionable error; write those via pass_through with an explicit\n`<navigationProperty>@odata.bind` key. Clearing a lookup custom field by sending a null\nvalue is not supported.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1640,10 +1852,9 @@ class Opportunities(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmOpportunitiesUpdateResponse(
                 update_opportunity_response=unmarshal_json_response(
-                    Optional[models.UpdateOpportunityResponse], http_res
+                    Optional[models.UpdateOpportunityResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1684,10 +1895,9 @@ class Opportunities(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmOpportunitiesUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1754,6 +1964,7 @@ class Opportunities(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1778,9 +1989,11 @@ class Opportunities(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={"x-apideck-api": "crm"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1788,10 +2001,9 @@ class Opportunities(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmOpportunitiesDeleteResponse(
                 delete_opportunity_response=unmarshal_json_response(
-                    Optional[models.DeleteOpportunityResponse], http_res
+                    Optional[models.DeleteOpportunityResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1832,10 +2044,9 @@ class Opportunities(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmOpportunitiesDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1902,6 +2113,7 @@ class Opportunities(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1926,9 +2138,11 @@ class Opportunities(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={"x-apideck-api": "crm"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1936,10 +2150,9 @@ class Opportunities(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmOpportunitiesDeleteResponse(
                 delete_opportunity_response=unmarshal_json_response(
-                    Optional[models.DeleteOpportunityResponse], http_res
+                    Optional[models.DeleteOpportunityResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1980,10 +2193,9 @@ class Opportunities(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmOpportunitiesDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

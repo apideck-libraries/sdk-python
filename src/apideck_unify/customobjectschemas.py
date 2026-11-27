@@ -7,7 +7,7 @@ from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from jsonpath import JSONPath
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
 
 
 class CustomObjectSchemas(BaseSDK):
@@ -20,7 +20,7 @@ class CustomObjectSchemas(BaseSDK):
         service_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -59,7 +59,7 @@ class CustomObjectSchemas(BaseSDK):
             service_id=service_id,
             cursor=cursor,
             limit=limit,
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
         )
 
         req = self._build_request(
@@ -79,6 +79,7 @@ class CustomObjectSchemas(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -103,9 +104,23 @@ class CustomObjectSchemas(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "salesforce",
+                            "description": "Salesforce imposes a maximum offset limit of 2000. Exceeding this offset will result in an error from Salesforce. For result sets larger than 2000 items, it is necessary to set the pagination limit to 200, as this will enforce the use of batchSize for pagination. Note that setting a limit lower than 200 will not reduce the batchSize due to Salesforce's minimum batch size policy of 200, as detailed in their documentation [here](https://developer.salesforce.com/docs/atlas.en-us.250.0.api_rest.meta/api_rest/headers_queryoptions.htm) and will have no effect.",
+                        },
+                        {
+                            "connector": "attio",
+                            "description": "Attio does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -129,17 +144,21 @@ class CustomObjectSchemas(BaseSDK):
                 limit=limit,
                 pass_through=pass_through,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmCustomObjectSchemasAllResponse(
                 get_custom_object_schemas_response=unmarshal_json_response(
-                    Optional[models.GetCustomObjectSchemasResponse], http_res
+                    Optional[models.GetCustomObjectSchemasResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -180,11 +199,10 @@ class CustomObjectSchemas(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmCustomObjectSchemasAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -198,7 +216,7 @@ class CustomObjectSchemas(BaseSDK):
         service_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -237,7 +255,7 @@ class CustomObjectSchemas(BaseSDK):
             service_id=service_id,
             cursor=cursor,
             limit=limit,
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
         )
 
         req = self._build_request_async(
@@ -257,6 +275,7 @@ class CustomObjectSchemas(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -281,9 +300,23 @@ class CustomObjectSchemas(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={
+                    "x-apideck-api": "crm",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "salesforce",
+                            "description": "Salesforce imposes a maximum offset limit of 2000. Exceeding this offset will result in an error from Salesforce. For result sets larger than 2000 items, it is necessary to set the pagination limit to 200, as this will enforce the use of batchSize for pagination. Note that setting a limit lower than 200 will not reduce the batchSize due to Salesforce's minimum batch size policy of 200, as detailed in their documentation [here](https://developer.salesforce.com/docs/atlas.en-us.250.0.api_rest.meta/api_rest/headers_queryoptions.htm) and will have no effect.",
+                        },
+                        {
+                            "connector": "attio",
+                            "description": "Attio does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -307,17 +340,21 @@ class CustomObjectSchemas(BaseSDK):
                 limit=limit,
                 pass_through=pass_through,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmCustomObjectSchemasAllResponse(
                 get_custom_object_schemas_response=unmarshal_json_response(
-                    Optional[models.GetCustomObjectSchemasResponse], http_res
+                    Optional[models.GetCustomObjectSchemasResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -358,11 +395,10 @@ class CustomObjectSchemas(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmCustomObjectSchemasAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -377,12 +413,15 @@ class CustomObjectSchemas(BaseSDK):
         name: OptionalNullable[str] = UNSET,
         description: OptionalNullable[str] = UNSET,
         fields: Optional[
-            Union[List[models.Fields], List[models.FieldsTypedDict]]
+            Union[Iterable[models.Fields], Iterable[models.FieldsTypedDict]]
         ] = None,
         visible: OptionalNullable[bool] = UNSET,
         active: OptionalNullable[bool] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -459,6 +498,7 @@ class CustomObjectSchemas(BaseSDK):
                 "json",
                 models.CustomObjectSchemaInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -483,9 +523,11 @@ class CustomObjectSchemas(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={"x-apideck-api": "crm"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -493,10 +535,11 @@ class CustomObjectSchemas(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.CrmCustomObjectSchemasAddResponse(
                 create_custom_object_schema_response=unmarshal_json_response(
-                    Optional[models.CreateCustomObjectSchemaResponse], http_res
+                    Optional[models.CreateCustomObjectSchemaResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -537,10 +580,9 @@ class CustomObjectSchemas(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmCustomObjectSchemasAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -555,12 +597,15 @@ class CustomObjectSchemas(BaseSDK):
         name: OptionalNullable[str] = UNSET,
         description: OptionalNullable[str] = UNSET,
         fields: Optional[
-            Union[List[models.Fields], List[models.FieldsTypedDict]]
+            Union[Iterable[models.Fields], Iterable[models.FieldsTypedDict]]
         ] = None,
         visible: OptionalNullable[bool] = UNSET,
         active: OptionalNullable[bool] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -637,6 +682,7 @@ class CustomObjectSchemas(BaseSDK):
                 "json",
                 models.CustomObjectSchemaInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -661,9 +707,11 @@ class CustomObjectSchemas(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={"x-apideck-api": "crm"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -671,10 +719,11 @@ class CustomObjectSchemas(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.CrmCustomObjectSchemasAddResponse(
                 create_custom_object_schema_response=unmarshal_json_response(
-                    Optional[models.CreateCustomObjectSchemaResponse], http_res
+                    Optional[models.CreateCustomObjectSchemaResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -715,10 +764,9 @@ class CustomObjectSchemas(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmCustomObjectSchemasAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -785,6 +833,7 @@ class CustomObjectSchemas(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -809,9 +858,11 @@ class CustomObjectSchemas(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={"x-apideck-api": "crm"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -819,10 +870,11 @@ class CustomObjectSchemas(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmCustomObjectSchemasOneResponse(
                 get_custom_object_schema_response=unmarshal_json_response(
-                    Optional[models.GetCustomObjectSchemaResponse], http_res
+                    Optional[models.GetCustomObjectSchemaResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -863,10 +915,9 @@ class CustomObjectSchemas(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmCustomObjectSchemasOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -933,6 +984,7 @@ class CustomObjectSchemas(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -957,9 +1009,11 @@ class CustomObjectSchemas(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={"x-apideck-api": "crm"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -967,10 +1021,11 @@ class CustomObjectSchemas(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmCustomObjectSchemasOneResponse(
                 get_custom_object_schema_response=unmarshal_json_response(
-                    Optional[models.GetCustomObjectSchemaResponse], http_res
+                    Optional[models.GetCustomObjectSchemaResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1011,10 +1066,9 @@ class CustomObjectSchemas(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmCustomObjectSchemasOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1030,12 +1084,15 @@ class CustomObjectSchemas(BaseSDK):
         name: OptionalNullable[str] = UNSET,
         description: OptionalNullable[str] = UNSET,
         fields: Optional[
-            Union[List[models.Fields], List[models.FieldsTypedDict]]
+            Union[Iterable[models.Fields], Iterable[models.FieldsTypedDict]]
         ] = None,
         visible: OptionalNullable[bool] = UNSET,
         active: OptionalNullable[bool] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1114,6 +1171,7 @@ class CustomObjectSchemas(BaseSDK):
                 "json",
                 models.CustomObjectSchemaInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1138,9 +1196,11 @@ class CustomObjectSchemas(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={"x-apideck-api": "crm"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1148,10 +1208,11 @@ class CustomObjectSchemas(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmCustomObjectSchemasUpdateResponse(
                 update_custom_object_schema_response=unmarshal_json_response(
-                    Optional[models.UpdateCustomObjectSchemaResponse], http_res
+                    Optional[models.UpdateCustomObjectSchemaResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1192,10 +1253,9 @@ class CustomObjectSchemas(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmCustomObjectSchemasUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1211,12 +1271,15 @@ class CustomObjectSchemas(BaseSDK):
         name: OptionalNullable[str] = UNSET,
         description: OptionalNullable[str] = UNSET,
         fields: Optional[
-            Union[List[models.Fields], List[models.FieldsTypedDict]]
+            Union[Iterable[models.Fields], Iterable[models.FieldsTypedDict]]
         ] = None,
         visible: OptionalNullable[bool] = UNSET,
         active: OptionalNullable[bool] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1295,6 +1358,7 @@ class CustomObjectSchemas(BaseSDK):
                 "json",
                 models.CustomObjectSchemaInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1319,9 +1383,11 @@ class CustomObjectSchemas(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={"x-apideck-api": "crm"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1329,10 +1395,11 @@ class CustomObjectSchemas(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmCustomObjectSchemasUpdateResponse(
                 update_custom_object_schema_response=unmarshal_json_response(
-                    Optional[models.UpdateCustomObjectSchemaResponse], http_res
+                    Optional[models.UpdateCustomObjectSchemaResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1373,10 +1440,9 @@ class CustomObjectSchemas(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmCustomObjectSchemasUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1443,6 +1509,7 @@ class CustomObjectSchemas(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1467,9 +1534,11 @@ class CustomObjectSchemas(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={"x-apideck-api": "crm"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1477,10 +1546,11 @@ class CustomObjectSchemas(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmCustomObjectSchemasDeleteResponse(
                 delete_custom_object_schema_response=unmarshal_json_response(
-                    Optional[models.DeleteCustomObjectSchemaResponse], http_res
+                    Optional[models.DeleteCustomObjectSchemaResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1521,10 +1591,9 @@ class CustomObjectSchemas(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmCustomObjectSchemasDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1591,6 +1660,7 @@ class CustomObjectSchemas(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1615,9 +1685,11 @@ class CustomObjectSchemas(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["crm"],
+                extensions={"x-apideck-api": "crm"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1625,10 +1697,11 @@ class CustomObjectSchemas(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.CrmCustomObjectSchemasDeleteResponse(
                 delete_custom_object_schema_response=unmarshal_json_response(
-                    Optional[models.DeleteCustomObjectSchemaResponse], http_res
+                    Optional[models.DeleteCustomObjectSchemaResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1669,10 +1742,9 @@ class CustomObjectSchemas(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.CrmCustomObjectSchemasDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

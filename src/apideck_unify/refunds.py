@@ -8,7 +8,7 @@ from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from datetime import datetime
 from jsonpath import JSONPath
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
 
 
 class Refunds(BaseSDK):
@@ -25,7 +25,7 @@ class Refunds(BaseSDK):
             Union[models.RefundsFilter, models.RefundsFilterTypedDict]
         ] = None,
         sort: Optional[Union[models.RefundsSort, models.RefundsSortTypedDict]] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -70,7 +70,7 @@ class Refunds(BaseSDK):
             limit=limit,
             filter_=utils.get_pydantic_model(filter_, Optional[models.RefundsFilter]),
             sort=utils.get_pydantic_model(sort, Optional[models.RefundsSort]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -91,6 +91,7 @@ class Refunds(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -115,9 +116,43 @@ class Refunds(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": 'A refund cannot be created on its own. Sage Intacct refunds something that already\nexists, so a create must reference a credit memo, customer advance, over-payment or\nnegative invoice — a request without one is rejected with "No refund details were\nfound in the request."\n\n`payment_method` accepts only two values: `eft` and `processInAP`. The AP route\nadditionally requires the customer to be linked to a vendor record, otherwise the\ncreate fails with "Cannot find a linked vendor for this customer."\n\n`number` is only populated once Sage assigns a document number; a refund created\nwithout one reads back with `number: null`.\n',
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": '`total_amount` is not writable. NetSuite derives a refund\'s amount from the credits it is\napplied to, so set the amount per entry in `allocations[].amount`. A `total_amount` sent\non its own is ignored and the refund is created for 0.\n\nA refund must apply to an **open** credit. Allocations pointing at a draft credit note,\nor at one already fully applied, are rejected with "Unable to find a matching line for\nsublist apply" — NetSuite only offers open credits in the apply sublist.\n\n`number` is assigned by NetSuite and cannot be set on create; sending one fails with\n"You do not have permissions to set a value for element tranid".\n\nCustomer-**deposit** allocations cannot be expressed on the write side (the unified\n`allocations[].type` enum has no `deposit` member). They still read back correctly,\nsurfacing as `type: other`.\n\nA refund that has been applied to a credit cannot be deleted. NetSuite rejects it with\n"This transaction cannot be deleted because it is linked to by one or more transactions",\nand since a refund\'s amount comes from the credits it is applied to, this is true of\nevery refund with a non-zero amount. Unapply it in NetSuite first, or void it instead of\ndeleting.\n',
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": 'Customer refunds are off by default in Sage Intacct. Until the feature is enabled, this endpoint returns an empty list rather than an error, so an empty result does not mean the company has no refunds.\nEnable it at Accounts Receivable > Setup > Configuration in the Customer refunds section, then set the journal refunds post to and the document sequence for refund numbers. Only after the feature is on does a Customer Refunds permission subject appear, which must then be granted on the role of the user who authorized the connection. Searching the permissions report for "refund" before enabling the feature returns no results, which looks like a missing permission but is a disabled feature.\n',
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "tax_inclusive only applies to UK, AU, IN, and CA editions. US companies ignore this field silently.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "tax_inclusive only applies to UK, AU, IN, and CA editions. US companies ignore this field silently.\n",
+                        },
+                        {
+                            "connector": "stripe",
+                            "description": "Stripe removed `total_count` from list responses in March 2025 (API version 2025-03-31.basil). `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "A NetSuite CustomerRefund settles against an existing customer credit via an internal apply list. `allocations[].type` decodes `invoice`, `journal_entry` and `credit_memo` from the underlying NetSuite document type; every other apply-list entry — including one backed by a customer deposit, which NetSuite tracks separately from invoice/credit-memo/ journal-entry applications — decodes to `other`. There is no way to tell a genuine \"other\" allocation apart from a customer-deposit application by reading the response alone.\nThe unified `status` reflects NetSuite's CustomerRefund transaction status on a best-effort basis: `Refunded` maps to `paid` and `Voided` to `voided`; any other NetSuite status defaults to `paid`. The full CustomerRefund status vocabulary was not confirmed against a live tenant, so an unusual status may report `paid`.\nThis list also includes NetSuite `CashRefund` records — itemized refunds tied to a cash sale or return authorization rather than an apply-list — surfaced with `type: sale_refund` and populated `line_items` instead of `allocations`. `CashRefund`'s own status field has no documented enum (unlike CustomerRefund's Refunded/Voided), so its `status` mapping reuses the same connectorMapping and defaults to `paid` for any value that isn't a literal `Refunded`/`Voided` match — unconfirmed against a live tenant.\nEvery `CashRefund` line in `line_items[].type` reports `sales_item`, regardless of the underlying NetSuite item/line kind. NetSuite's CashSale/CashRefund item sublist can contain discount, shipping, non-inventory and other non-sales-item lines, and the connector cannot currently distinguish them from the captured response shape, so a non-sales-item line is mislabeled as `sales_item` rather than reported accurately.\nWhenever a `filter`, `sort` or `pass_through` parameter is present, this list is served by a SuiteQL search rather than the SOAP list operation. That path never returns `line_items` or `allocations` for either refund type — pre-existing for CustomerRefund, and now also true for CashRefund. `type` still correctly distinguishes the two records; only the line-level detail is missing under a filtered/sorted/pass_through list.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -144,17 +179,19 @@ class Refunds(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingRefundsAllResponse(
                 get_refunds_response=unmarshal_json_response(
-                    Optional[models.GetRefundsResponse], http_res
+                    Optional[models.GetRefundsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -195,11 +232,10 @@ class Refunds(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingRefundsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -217,7 +253,7 @@ class Refunds(BaseSDK):
             Union[models.RefundsFilter, models.RefundsFilterTypedDict]
         ] = None,
         sort: Optional[Union[models.RefundsSort, models.RefundsSortTypedDict]] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -262,7 +298,7 @@ class Refunds(BaseSDK):
             limit=limit,
             filter_=utils.get_pydantic_model(filter_, Optional[models.RefundsFilter]),
             sort=utils.get_pydantic_model(sort, Optional[models.RefundsSort]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -283,6 +319,7 @@ class Refunds(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -307,9 +344,43 @@ class Refunds(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": 'A refund cannot be created on its own. Sage Intacct refunds something that already\nexists, so a create must reference a credit memo, customer advance, over-payment or\nnegative invoice — a request without one is rejected with "No refund details were\nfound in the request."\n\n`payment_method` accepts only two values: `eft` and `processInAP`. The AP route\nadditionally requires the customer to be linked to a vendor record, otherwise the\ncreate fails with "Cannot find a linked vendor for this customer."\n\n`number` is only populated once Sage assigns a document number; a refund created\nwithout one reads back with `number: null`.\n',
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": '`total_amount` is not writable. NetSuite derives a refund\'s amount from the credits it is\napplied to, so set the amount per entry in `allocations[].amount`. A `total_amount` sent\non its own is ignored and the refund is created for 0.\n\nA refund must apply to an **open** credit. Allocations pointing at a draft credit note,\nor at one already fully applied, are rejected with "Unable to find a matching line for\nsublist apply" — NetSuite only offers open credits in the apply sublist.\n\n`number` is assigned by NetSuite and cannot be set on create; sending one fails with\n"You do not have permissions to set a value for element tranid".\n\nCustomer-**deposit** allocations cannot be expressed on the write side (the unified\n`allocations[].type` enum has no `deposit` member). They still read back correctly,\nsurfacing as `type: other`.\n\nA refund that has been applied to a credit cannot be deleted. NetSuite rejects it with\n"This transaction cannot be deleted because it is linked to by one or more transactions",\nand since a refund\'s amount comes from the credits it is applied to, this is true of\nevery refund with a non-zero amount. Unapply it in NetSuite first, or void it instead of\ndeleting.\n',
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": 'Customer refunds are off by default in Sage Intacct. Until the feature is enabled, this endpoint returns an empty list rather than an error, so an empty result does not mean the company has no refunds.\nEnable it at Accounts Receivable > Setup > Configuration in the Customer refunds section, then set the journal refunds post to and the document sequence for refund numbers. Only after the feature is on does a Customer Refunds permission subject appear, which must then be granted on the role of the user who authorized the connection. Searching the permissions report for "refund" before enabling the feature returns no results, which looks like a missing permission but is a disabled feature.\n',
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "tax_inclusive only applies to UK, AU, IN, and CA editions. US companies ignore this field silently.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "tax_inclusive only applies to UK, AU, IN, and CA editions. US companies ignore this field silently.\n",
+                        },
+                        {
+                            "connector": "stripe",
+                            "description": "Stripe removed `total_count` from list responses in March 2025 (API version 2025-03-31.basil). `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "A NetSuite CustomerRefund settles against an existing customer credit via an internal apply list. `allocations[].type` decodes `invoice`, `journal_entry` and `credit_memo` from the underlying NetSuite document type; every other apply-list entry — including one backed by a customer deposit, which NetSuite tracks separately from invoice/credit-memo/ journal-entry applications — decodes to `other`. There is no way to tell a genuine \"other\" allocation apart from a customer-deposit application by reading the response alone.\nThe unified `status` reflects NetSuite's CustomerRefund transaction status on a best-effort basis: `Refunded` maps to `paid` and `Voided` to `voided`; any other NetSuite status defaults to `paid`. The full CustomerRefund status vocabulary was not confirmed against a live tenant, so an unusual status may report `paid`.\nThis list also includes NetSuite `CashRefund` records — itemized refunds tied to a cash sale or return authorization rather than an apply-list — surfaced with `type: sale_refund` and populated `line_items` instead of `allocations`. `CashRefund`'s own status field has no documented enum (unlike CustomerRefund's Refunded/Voided), so its `status` mapping reuses the same connectorMapping and defaults to `paid` for any value that isn't a literal `Refunded`/`Voided` match — unconfirmed against a live tenant.\nEvery `CashRefund` line in `line_items[].type` reports `sales_item`, regardless of the underlying NetSuite item/line kind. NetSuite's CashSale/CashRefund item sublist can contain discount, shipping, non-inventory and other non-sales-item lines, and the connector cannot currently distinguish them from the captured response shape, so a non-sales-item line is mislabeled as `sales_item` rather than reported accurately.\nWhenever a `filter`, `sort` or `pass_through` parameter is present, this list is served by a SuiteQL search rather than the SOAP list operation. That path never returns `line_items` or `allocations` for either refund type — pre-existing for CustomerRefund, and now also true for CashRefund. `type` still correctly distinguishes the two records; only the line-level detail is missing under a filtered/sorted/pass_through list.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -336,17 +407,19 @@ class Refunds(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingRefundsAllResponse(
                 get_refunds_response=unmarshal_json_response(
-                    Optional[models.GetRefundsResponse], http_res
+                    Optional[models.GetRefundsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -387,11 +460,10 @@ class Refunds(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingRefundsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -425,12 +497,15 @@ class Refunds(BaseSDK):
         ] = UNSET,
         line_items: Optional[
             Union[
-                List[models.InvoiceLineItemInput],
-                List[models.InvoiceLineItemInputTypedDict],
+                Iterable[models.InvoiceLineItemInput],
+                Iterable[models.InvoiceLineItemInputTypedDict],
             ]
         ] = None,
         allocations: Optional[
-            Union[List[models.AllocationInput], List[models.AllocationInputTypedDict]]
+            Union[
+                Iterable[models.AllocationInput],
+                Iterable[models.AllocationInputTypedDict],
+            ]
         ] = None,
         tax_code: OptionalNullable[str] = UNSET,
         discount_percentage: OptionalNullable[float] = UNSET,
@@ -452,16 +527,19 @@ class Refunds(BaseSDK):
         ] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -487,7 +565,7 @@ class Refunds(BaseSDK):
         :param total_tax: Total tax amount applied to this transaction.
         :param refund_date: The date of the refund - YYYY-MM-DDThh:mm:ss.sTZD
         :param status: Status of refund. Maps to: QBO (limited status), NetSuite CashRefund status, Sage Intacct state (draft/posted/voided), Zoho Books vis_state.
-        :param type: Type of refund. `refund_receipt` for itemized refunds with product/service lines and payment (QBO RefundReceipt; also NetSuite's apply-list-based CustomerRefund). `cash_refund` for cash-out refunds with GL distribution or allocations (Sage Intacct). `credit_note_refund` for refunds applied against a credit note (Zoho Books). `sale_refund` for itemized refunds tied to a cash sale or return authorization, without an apply-list (NetSuite CashRefund) — NetSuite's apply-list-based CustomerRefund reports as `refund_receipt` instead.
+        :param type_: Type of refund. `refund_receipt` for itemized refunds with product/service lines and payment (QBO RefundReceipt; also NetSuite's apply-list-based CustomerRefund). `cash_refund` for cash-out refunds with GL distribution or allocations (Sage Intacct). `credit_note_refund` for refunds applied against a credit note (Zoho Books). `sale_refund` for itemized refunds tied to a cash sale or return authorization, without an apply-list (NetSuite CashRefund) — NetSuite's apply-list-based CustomerRefund reports as `refund_receipt` instead.
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
         :param payment_method_reference: Optional reference message returned by payment method on processing
         :param payment_method_id: A unique identifier for an object.
@@ -607,6 +685,7 @@ class Refunds(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.refund, False, False, "json", models.RefundInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -631,9 +710,31 @@ class Refunds(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "Customer refunds must be enabled in Sage Intacct before this operation works, and the authorizing user's role needs the Customer Refunds permission. Without the permission Sage returns \"The user does not have permission for POST operation on resource objects/accounts-receivable/customer-refund\"; without the feature the permission subject does not exist to grant.\nEnable at Accounts Receivable > Setup > Configuration (Customer refunds section), choose the journal and document sequence, then grant the permission under Company > Admin > Roles. Refunds attach to a customer's existing credits, so the customer must have an unapplied credit, advance or overpayment to refund against.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": 'tax_inclusive only applies to UK, AU, IN, and CA editions. US companies ignore this field silently. payment_method_id is required to set the payment method. Provide the ID of a payment method record configured in QuickBooks. total_amount is required on each line item. If not provided, it is computed from quantity * unit_price. tracking_categories behavior depends on company settings. "One to entire transaction" uses top-level tracking_categories. "One to each row" requires tracking_categories on each line item.\n',
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": 'tax_inclusive only applies to UK, AU, IN, and CA editions. US companies ignore this field silently. payment_method_id is required to set the payment method. Provide the ID of a payment method record configured in Intuit Enterprise Suite. total_amount is required on each line item. If not provided, it is computed from quantity * unit_price. tracking_categories behavior depends on company settings. "One to entire transaction" uses top-level tracking_categories. "One to each row" requires tracking_categories on each line item.\n',
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "A refund requires an existing customer credit to settle against — an open credit memo, unapplied customer deposit, invoice overpayment or journal entry — since a NetSuite CustomerRefund is always applied against a prior document. A refund with no allocations is not a meaningful request.\nOnly `invoice`, `credit_memo` and `journal_entry` allocations can be created through the unified `allocations` array; they map to NetSuite's apply list. Customer-deposit allocations cannot be written through this endpoint: the unified `allocations[].type` enum has no `deposit` member, and this connector does not populate NetSuite's separate deposit list. Refunds against a customer deposit must be created directly in NetSuite — they will still read back correctly afterwards (as `allocations[].type: other`).\nSet `type: sale_refund` to create a NetSuite `CashRefund` instead of the default `CustomerRefund` — an itemized refund using `line_items` (not `allocations`), for a cash sale or return authorization rather than an existing credit. Omitting `type` (or sending anything else) always creates a `CustomerRefund`, unchanged from today. `CashRefund`'s line-item fields (`price` on write, `rate` on read) reuse NetSuite's sibling CreditMemo item sublist shape, live-verified against a sandbox tenant (create, update, get, list, and delete all round-trip correctly).\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -641,10 +742,9 @@ class Refunds(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingRefundsAddResponse(
                 create_refund_response=unmarshal_json_response(
-                    Optional[models.CreateRefundResponse], http_res
+                    Optional[models.CreateRefundResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -685,10 +785,9 @@ class Refunds(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingRefundsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -722,12 +821,15 @@ class Refunds(BaseSDK):
         ] = UNSET,
         line_items: Optional[
             Union[
-                List[models.InvoiceLineItemInput],
-                List[models.InvoiceLineItemInputTypedDict],
+                Iterable[models.InvoiceLineItemInput],
+                Iterable[models.InvoiceLineItemInputTypedDict],
             ]
         ] = None,
         allocations: Optional[
-            Union[List[models.AllocationInput], List[models.AllocationInputTypedDict]]
+            Union[
+                Iterable[models.AllocationInput],
+                Iterable[models.AllocationInputTypedDict],
+            ]
         ] = None,
         tax_code: OptionalNullable[str] = UNSET,
         discount_percentage: OptionalNullable[float] = UNSET,
@@ -749,16 +851,19 @@ class Refunds(BaseSDK):
         ] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -784,7 +889,7 @@ class Refunds(BaseSDK):
         :param total_tax: Total tax amount applied to this transaction.
         :param refund_date: The date of the refund - YYYY-MM-DDThh:mm:ss.sTZD
         :param status: Status of refund. Maps to: QBO (limited status), NetSuite CashRefund status, Sage Intacct state (draft/posted/voided), Zoho Books vis_state.
-        :param type: Type of refund. `refund_receipt` for itemized refunds with product/service lines and payment (QBO RefundReceipt; also NetSuite's apply-list-based CustomerRefund). `cash_refund` for cash-out refunds with GL distribution or allocations (Sage Intacct). `credit_note_refund` for refunds applied against a credit note (Zoho Books). `sale_refund` for itemized refunds tied to a cash sale or return authorization, without an apply-list (NetSuite CashRefund) — NetSuite's apply-list-based CustomerRefund reports as `refund_receipt` instead.
+        :param type_: Type of refund. `refund_receipt` for itemized refunds with product/service lines and payment (QBO RefundReceipt; also NetSuite's apply-list-based CustomerRefund). `cash_refund` for cash-out refunds with GL distribution or allocations (Sage Intacct). `credit_note_refund` for refunds applied against a credit note (Zoho Books). `sale_refund` for itemized refunds tied to a cash sale or return authorization, without an apply-list (NetSuite CashRefund) — NetSuite's apply-list-based CustomerRefund reports as `refund_receipt` instead.
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
         :param payment_method_reference: Optional reference message returned by payment method on processing
         :param payment_method_id: A unique identifier for an object.
@@ -904,6 +1009,7 @@ class Refunds(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.refund, False, False, "json", models.RefundInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -928,9 +1034,31 @@ class Refunds(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "Customer refunds must be enabled in Sage Intacct before this operation works, and the authorizing user's role needs the Customer Refunds permission. Without the permission Sage returns \"The user does not have permission for POST operation on resource objects/accounts-receivable/customer-refund\"; without the feature the permission subject does not exist to grant.\nEnable at Accounts Receivable > Setup > Configuration (Customer refunds section), choose the journal and document sequence, then grant the permission under Company > Admin > Roles. Refunds attach to a customer's existing credits, so the customer must have an unapplied credit, advance or overpayment to refund against.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": 'tax_inclusive only applies to UK, AU, IN, and CA editions. US companies ignore this field silently. payment_method_id is required to set the payment method. Provide the ID of a payment method record configured in QuickBooks. total_amount is required on each line item. If not provided, it is computed from quantity * unit_price. tracking_categories behavior depends on company settings. "One to entire transaction" uses top-level tracking_categories. "One to each row" requires tracking_categories on each line item.\n',
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": 'tax_inclusive only applies to UK, AU, IN, and CA editions. US companies ignore this field silently. payment_method_id is required to set the payment method. Provide the ID of a payment method record configured in Intuit Enterprise Suite. total_amount is required on each line item. If not provided, it is computed from quantity * unit_price. tracking_categories behavior depends on company settings. "One to entire transaction" uses top-level tracking_categories. "One to each row" requires tracking_categories on each line item.\n',
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "A refund requires an existing customer credit to settle against — an open credit memo, unapplied customer deposit, invoice overpayment or journal entry — since a NetSuite CustomerRefund is always applied against a prior document. A refund with no allocations is not a meaningful request.\nOnly `invoice`, `credit_memo` and `journal_entry` allocations can be created through the unified `allocations` array; they map to NetSuite's apply list. Customer-deposit allocations cannot be written through this endpoint: the unified `allocations[].type` enum has no `deposit` member, and this connector does not populate NetSuite's separate deposit list. Refunds against a customer deposit must be created directly in NetSuite — they will still read back correctly afterwards (as `allocations[].type: other`).\nSet `type: sale_refund` to create a NetSuite `CashRefund` instead of the default `CustomerRefund` — an itemized refund using `line_items` (not `allocations`), for a cash sale or return authorization rather than an existing credit. Omitting `type` (or sending anything else) always creates a `CustomerRefund`, unchanged from today. `CashRefund`'s line-item fields (`price` on write, `rate` on read) reuse NetSuite's sibling CreditMemo item sublist shape, live-verified against a sandbox tenant (create, update, get, list, and delete all round-trip correctly).\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -938,10 +1066,9 @@ class Refunds(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingRefundsAddResponse(
                 create_refund_response=unmarshal_json_response(
-                    Optional[models.CreateRefundResponse], http_res
+                    Optional[models.CreateRefundResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -982,10 +1109,9 @@ class Refunds(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingRefundsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1055,6 +1181,7 @@ class Refunds(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1079,9 +1206,31 @@ class Refunds(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": 'Customer refunds are off by default in Sage Intacct. Until the feature is enabled, this endpoint returns an empty list rather than an error, so an empty result does not mean the company has no refunds.\nEnable it at Accounts Receivable > Setup > Configuration in the Customer refunds section, then set the journal refunds post to and the document sequence for refund numbers. Only after the feature is on does a Customer Refunds permission subject appear, which must then be granted on the role of the user who authorized the connection. Searching the permissions report for "refund" before enabling the feature returns no results, which looks like a missing permission but is a disabled feature.\n',
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "tax_inclusive only applies to UK, AU, IN, and CA editions. US companies will not have this field in responses. payment_method returns the name of the payment method record, not the payment type category.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "tax_inclusive only applies to UK, AU, IN, and CA editions. US companies will not have this field in responses. payment_method returns the name of the payment method record, not the payment type category.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "A NetSuite CustomerRefund settles against an existing customer credit via an internal apply list. `allocations[].type` decodes `invoice`, `journal_entry` and `credit_memo` from the underlying NetSuite document type; every other apply-list entry — including one backed by a customer deposit, which NetSuite tracks separately from invoice/credit-memo/ journal-entry applications — decodes to `other`. There is no way to tell a genuine \"other\" allocation apart from a customer-deposit application by reading the response alone.\nThe unified `status` reflects NetSuite's CustomerRefund transaction status on a best-effort basis: `Refunded` maps to `paid` and `Voided` to `voided`; any other NetSuite status defaults to `paid`. The full CustomerRefund status vocabulary was not confirmed against a live tenant, so an unusual status may report `paid`.\nA NetSuite internalId does not reveal whether it belongs to a `CustomerRefund` or a `CashRefund`, so getting a refund by id makes one extra internal lookup first to resolve the record type before fetching it. If that lookup can't determine the type (a transient downstream issue, for example), the request falls back to fetching it as a `CustomerRefund`, which fails for a genuine `CashRefund` id rather than returning the wrong record.\nThis extra lookup is a second signed SOAP round-trip on **every** refund get, for **every** connection — including accounts that have never created a `CashRefund`. It is not an opt-in cost paid only by `CashRefund` users; every existing `CustomerRefund` read now takes twice as many NetSuite calls as before this connector supported `CashRefund`. A cheaper alternative (attempt as `CustomerRefund` first, resolve and retry only when NetSuite rejects it as the wrong type) was evaluated but not built — NetSuite SOAP faults return HTTP 200 with the fault in the response body rather than an error status, so the retry would need to key off body content in the same way `detectConcurrentRequestFault.ts` already does for concurrency errors, and the exact fault text for a wrong-record-type `RecordRef` has not been captured against a live tenant. Revisit if the extra round-trip proves costly in practice.\nEvery `CashRefund` line in `line_items[].type` reports `sales_item`, regardless of the underlying NetSuite item/line kind. NetSuite's CashSale/CashRefund item sublist can contain discount, shipping, non-inventory and other non-sales-item lines, and the connector cannot currently distinguish them from the captured response shape, so a non-sales-item line is mislabeled as `sales_item` rather than reported accurately.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1089,10 +1238,9 @@ class Refunds(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingRefundsOneResponse(
                 get_refund_response=unmarshal_json_response(
-                    Optional[models.GetRefundResponse], http_res
+                    Optional[models.GetRefundResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1133,10 +1281,9 @@ class Refunds(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingRefundsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1206,6 +1353,7 @@ class Refunds(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1230,9 +1378,31 @@ class Refunds(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": 'Customer refunds are off by default in Sage Intacct. Until the feature is enabled, this endpoint returns an empty list rather than an error, so an empty result does not mean the company has no refunds.\nEnable it at Accounts Receivable > Setup > Configuration in the Customer refunds section, then set the journal refunds post to and the document sequence for refund numbers. Only after the feature is on does a Customer Refunds permission subject appear, which must then be granted on the role of the user who authorized the connection. Searching the permissions report for "refund" before enabling the feature returns no results, which looks like a missing permission but is a disabled feature.\n',
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "tax_inclusive only applies to UK, AU, IN, and CA editions. US companies will not have this field in responses. payment_method returns the name of the payment method record, not the payment type category.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "tax_inclusive only applies to UK, AU, IN, and CA editions. US companies will not have this field in responses. payment_method returns the name of the payment method record, not the payment type category.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "A NetSuite CustomerRefund settles against an existing customer credit via an internal apply list. `allocations[].type` decodes `invoice`, `journal_entry` and `credit_memo` from the underlying NetSuite document type; every other apply-list entry — including one backed by a customer deposit, which NetSuite tracks separately from invoice/credit-memo/ journal-entry applications — decodes to `other`. There is no way to tell a genuine \"other\" allocation apart from a customer-deposit application by reading the response alone.\nThe unified `status` reflects NetSuite's CustomerRefund transaction status on a best-effort basis: `Refunded` maps to `paid` and `Voided` to `voided`; any other NetSuite status defaults to `paid`. The full CustomerRefund status vocabulary was not confirmed against a live tenant, so an unusual status may report `paid`.\nA NetSuite internalId does not reveal whether it belongs to a `CustomerRefund` or a `CashRefund`, so getting a refund by id makes one extra internal lookup first to resolve the record type before fetching it. If that lookup can't determine the type (a transient downstream issue, for example), the request falls back to fetching it as a `CustomerRefund`, which fails for a genuine `CashRefund` id rather than returning the wrong record.\nThis extra lookup is a second signed SOAP round-trip on **every** refund get, for **every** connection — including accounts that have never created a `CashRefund`. It is not an opt-in cost paid only by `CashRefund` users; every existing `CustomerRefund` read now takes twice as many NetSuite calls as before this connector supported `CashRefund`. A cheaper alternative (attempt as `CustomerRefund` first, resolve and retry only when NetSuite rejects it as the wrong type) was evaluated but not built — NetSuite SOAP faults return HTTP 200 with the fault in the response body rather than an error status, so the retry would need to key off body content in the same way `detectConcurrentRequestFault.ts` already does for concurrency errors, and the exact fault text for a wrong-record-type `RecordRef` has not been captured against a live tenant. Revisit if the extra round-trip proves costly in practice.\nEvery `CashRefund` line in `line_items[].type` reports `sales_item`, regardless of the underlying NetSuite item/line kind. NetSuite's CashSale/CashRefund item sublist can contain discount, shipping, non-inventory and other non-sales-item lines, and the connector cannot currently distinguish them from the captured response shape, so a non-sales-item line is mislabeled as `sales_item` rather than reported accurately.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1240,10 +1410,9 @@ class Refunds(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingRefundsOneResponse(
                 get_refund_response=unmarshal_json_response(
-                    Optional[models.GetRefundResponse], http_res
+                    Optional[models.GetRefundResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1284,10 +1453,9 @@ class Refunds(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingRefundsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1322,12 +1490,15 @@ class Refunds(BaseSDK):
         ] = UNSET,
         line_items: Optional[
             Union[
-                List[models.InvoiceLineItemInput],
-                List[models.InvoiceLineItemInputTypedDict],
+                Iterable[models.InvoiceLineItemInput],
+                Iterable[models.InvoiceLineItemInputTypedDict],
             ]
         ] = None,
         allocations: Optional[
-            Union[List[models.AllocationInput], List[models.AllocationInputTypedDict]]
+            Union[
+                Iterable[models.AllocationInput],
+                Iterable[models.AllocationInputTypedDict],
+            ]
         ] = None,
         tax_code: OptionalNullable[str] = UNSET,
         discount_percentage: OptionalNullable[float] = UNSET,
@@ -1349,16 +1520,19 @@ class Refunds(BaseSDK):
         ] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1385,7 +1559,7 @@ class Refunds(BaseSDK):
         :param total_tax: Total tax amount applied to this transaction.
         :param refund_date: The date of the refund - YYYY-MM-DDThh:mm:ss.sTZD
         :param status: Status of refund. Maps to: QBO (limited status), NetSuite CashRefund status, Sage Intacct state (draft/posted/voided), Zoho Books vis_state.
-        :param type: Type of refund. `refund_receipt` for itemized refunds with product/service lines and payment (QBO RefundReceipt; also NetSuite's apply-list-based CustomerRefund). `cash_refund` for cash-out refunds with GL distribution or allocations (Sage Intacct). `credit_note_refund` for refunds applied against a credit note (Zoho Books). `sale_refund` for itemized refunds tied to a cash sale or return authorization, without an apply-list (NetSuite CashRefund) — NetSuite's apply-list-based CustomerRefund reports as `refund_receipt` instead.
+        :param type_: Type of refund. `refund_receipt` for itemized refunds with product/service lines and payment (QBO RefundReceipt; also NetSuite's apply-list-based CustomerRefund). `cash_refund` for cash-out refunds with GL distribution or allocations (Sage Intacct). `credit_note_refund` for refunds applied against a credit note (Zoho Books). `sale_refund` for itemized refunds tied to a cash sale or return authorization, without an apply-list (NetSuite CashRefund) — NetSuite's apply-list-based CustomerRefund reports as `refund_receipt` instead.
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
         :param payment_method_reference: Optional reference message returned by payment method on processing
         :param payment_method_id: A unique identifier for an object.
@@ -1510,6 +1684,7 @@ class Refunds(BaseSDK):
                 "json",
                 models.RefundUpdateInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1534,9 +1709,31 @@ class Refunds(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "Customer refunds must be enabled in Sage Intacct before this operation works, and the authorizing user's role needs the Customer Refunds permission. Without the permission Sage rejects the request with \"The user does not have permission for ... resource objects/accounts-receivable/customer-refund\"; without the feature enabled the permission subject does not exist to grant in the first place.\nEnable at Accounts Receivable > Setup > Configuration (Customer refunds section), choose the journal and document sequence, then grant the permission under Company > Admin > Roles. Refunds attach to a customer's existing credits, so the customer must have an unapplied credit, advance or overpayment to refund against.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": 'row_version is required for updates. tracking_categories behavior depends on company settings. "One to each row" requires tracking_categories on each line item.\n',
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": 'row_version is required for updates. tracking_categories behavior depends on company settings. "One to each row" requires tracking_categories on each line item.\n',
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Only `invoice`, `credit_memo` and `journal_entry` allocations can be updated through the unified `allocations` array; they map to NetSuite's apply list. Customer-deposit allocations cannot be written through this endpoint: the unified `allocations[].type` enum has no `deposit` member, and this connector does not populate NetSuite's separate deposit list. A refund that settles against a customer deposit must be created and maintained directly in NetSuite — it will still read back correctly through this endpoint (as `allocations[].type: other`).\nA refund requires an existing customer credit to settle against — an open credit memo, unapplied customer deposit, invoice overpayment or journal entry — since a NetSuite CustomerRefund is always applied against a prior document.\nUpdating a `CashRefund` requires `type: sale_refund` in the request body — which NetSuite record shape gets sent is picked from the body itself, not looked up from the id (unlike get/delete). A GET response already includes `type`, so a normal read-modify-write cycle carries it forward automatically. Omitting it (or including it on an id that is actually a `CustomerRefund`) is rejected with a `422` naming the mismatch, before any request reaches NetSuite.\nThat mismatch check itself costs a second signed SOAP round-trip on **every** refund update, for every connection, not only ones that use `CashRefund` — the same permanent added-call cost as get/delete (see the `refundsOne` gotcha for why an attempt-then-retry alternative wasn't built instead).\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1544,10 +1741,9 @@ class Refunds(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingRefundsUpdateResponse(
                 update_refund_response=unmarshal_json_response(
-                    Optional[models.UpdateRefundResponse], http_res
+                    Optional[models.UpdateRefundResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1588,10 +1784,9 @@ class Refunds(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingRefundsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1626,12 +1821,15 @@ class Refunds(BaseSDK):
         ] = UNSET,
         line_items: Optional[
             Union[
-                List[models.InvoiceLineItemInput],
-                List[models.InvoiceLineItemInputTypedDict],
+                Iterable[models.InvoiceLineItemInput],
+                Iterable[models.InvoiceLineItemInputTypedDict],
             ]
         ] = None,
         allocations: Optional[
-            Union[List[models.AllocationInput], List[models.AllocationInputTypedDict]]
+            Union[
+                Iterable[models.AllocationInput],
+                Iterable[models.AllocationInputTypedDict],
+            ]
         ] = None,
         tax_code: OptionalNullable[str] = UNSET,
         discount_percentage: OptionalNullable[float] = UNSET,
@@ -1653,16 +1851,19 @@ class Refunds(BaseSDK):
         ] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1689,7 +1890,7 @@ class Refunds(BaseSDK):
         :param total_tax: Total tax amount applied to this transaction.
         :param refund_date: The date of the refund - YYYY-MM-DDThh:mm:ss.sTZD
         :param status: Status of refund. Maps to: QBO (limited status), NetSuite CashRefund status, Sage Intacct state (draft/posted/voided), Zoho Books vis_state.
-        :param type: Type of refund. `refund_receipt` for itemized refunds with product/service lines and payment (QBO RefundReceipt; also NetSuite's apply-list-based CustomerRefund). `cash_refund` for cash-out refunds with GL distribution or allocations (Sage Intacct). `credit_note_refund` for refunds applied against a credit note (Zoho Books). `sale_refund` for itemized refunds tied to a cash sale or return authorization, without an apply-list (NetSuite CashRefund) — NetSuite's apply-list-based CustomerRefund reports as `refund_receipt` instead.
+        :param type_: Type of refund. `refund_receipt` for itemized refunds with product/service lines and payment (QBO RefundReceipt; also NetSuite's apply-list-based CustomerRefund). `cash_refund` for cash-out refunds with GL distribution or allocations (Sage Intacct). `credit_note_refund` for refunds applied against a credit note (Zoho Books). `sale_refund` for itemized refunds tied to a cash sale or return authorization, without an apply-list (NetSuite CashRefund) — NetSuite's apply-list-based CustomerRefund reports as `refund_receipt` instead.
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
         :param payment_method_reference: Optional reference message returned by payment method on processing
         :param payment_method_id: A unique identifier for an object.
@@ -1814,6 +2015,7 @@ class Refunds(BaseSDK):
                 "json",
                 models.RefundUpdateInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1838,9 +2040,31 @@ class Refunds(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "Customer refunds must be enabled in Sage Intacct before this operation works, and the authorizing user's role needs the Customer Refunds permission. Without the permission Sage rejects the request with \"The user does not have permission for ... resource objects/accounts-receivable/customer-refund\"; without the feature enabled the permission subject does not exist to grant in the first place.\nEnable at Accounts Receivable > Setup > Configuration (Customer refunds section), choose the journal and document sequence, then grant the permission under Company > Admin > Roles. Refunds attach to a customer's existing credits, so the customer must have an unapplied credit, advance or overpayment to refund against.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": 'row_version is required for updates. tracking_categories behavior depends on company settings. "One to each row" requires tracking_categories on each line item.\n',
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": 'row_version is required for updates. tracking_categories behavior depends on company settings. "One to each row" requires tracking_categories on each line item.\n',
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Only `invoice`, `credit_memo` and `journal_entry` allocations can be updated through the unified `allocations` array; they map to NetSuite's apply list. Customer-deposit allocations cannot be written through this endpoint: the unified `allocations[].type` enum has no `deposit` member, and this connector does not populate NetSuite's separate deposit list. A refund that settles against a customer deposit must be created and maintained directly in NetSuite — it will still read back correctly through this endpoint (as `allocations[].type: other`).\nA refund requires an existing customer credit to settle against — an open credit memo, unapplied customer deposit, invoice overpayment or journal entry — since a NetSuite CustomerRefund is always applied against a prior document.\nUpdating a `CashRefund` requires `type: sale_refund` in the request body — which NetSuite record shape gets sent is picked from the body itself, not looked up from the id (unlike get/delete). A GET response already includes `type`, so a normal read-modify-write cycle carries it forward automatically. Omitting it (or including it on an id that is actually a `CustomerRefund`) is rejected with a `422` naming the mismatch, before any request reaches NetSuite.\nThat mismatch check itself costs a second signed SOAP round-trip on **every** refund update, for every connection, not only ones that use `CashRefund` — the same permanent added-call cost as get/delete (see the `refundsOne` gotcha for why an attempt-then-retry alternative wasn't built instead).\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1848,10 +2072,9 @@ class Refunds(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingRefundsUpdateResponse(
                 update_refund_response=unmarshal_json_response(
-                    Optional[models.UpdateRefundResponse], http_res
+                    Optional[models.UpdateRefundResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1892,10 +2115,9 @@ class Refunds(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingRefundsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1962,6 +2184,7 @@ class Refunds(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1986,9 +2209,19 @@ class Refunds(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "netsuite",
+                            "description": "A NetSuite internalId does not reveal whether it belongs to a `CustomerRefund` or a `CashRefund`, so deleting a refund by id makes one extra internal lookup first to resolve the record type. If that lookup can't determine the type, the request falls back to deleting it as a `CustomerRefund`, which fails for a genuine `CashRefund` id rather than deleting the wrong record.\nSame permanent cost as get/update: this is a second signed SOAP round-trip on every refund delete, for every connection, whether or not it has ever created a `CashRefund` (see the `refundsOne` gotcha for the alternative considered and why it wasn't built).\nSeparately, and true of every `*.delete` operation on this connector: NetSuite's SOAP delete response echoes success regardless of outcome, so a `200` here does not confirm the record was actually removed — read the record back to verify.\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1996,10 +2229,9 @@ class Refunds(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingRefundsDeleteResponse(
                 delete_refund_response=unmarshal_json_response(
-                    Optional[models.DeleteRefundResponse], http_res
+                    Optional[models.DeleteRefundResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2040,10 +2272,9 @@ class Refunds(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingRefundsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2110,6 +2341,7 @@ class Refunds(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2134,9 +2366,19 @@ class Refunds(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "netsuite",
+                            "description": "A NetSuite internalId does not reveal whether it belongs to a `CustomerRefund` or a `CashRefund`, so deleting a refund by id makes one extra internal lookup first to resolve the record type. If that lookup can't determine the type, the request falls back to deleting it as a `CustomerRefund`, which fails for a genuine `CashRefund` id rather than deleting the wrong record.\nSame permanent cost as get/update: this is a second signed SOAP round-trip on every refund delete, for every connection, whether or not it has ever created a `CashRefund` (see the `refundsOne` gotcha for the alternative considered and why it wasn't built).\nSeparately, and true of every `*.delete` operation on this connector: NetSuite's SOAP delete response echoes success regardless of outcome, so a `200` here does not confirm the record was actually removed — read the record back to verify.\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2144,10 +2386,9 @@ class Refunds(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingRefundsDeleteResponse(
                 delete_refund_response=unmarshal_json_response(
-                    Optional[models.DeleteRefundResponse], http_res
+                    Optional[models.DeleteRefundResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2188,10 +2429,9 @@ class Refunds(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingRefundsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

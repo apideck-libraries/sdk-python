@@ -2,6 +2,16 @@
 
 Quote status
 
+## Example Usage
+
+```python
+from apideck_unify.models import QuoteStatus
+
+value = QuoteStatus.DRAFT
+
+# Open enum: unrecognized values are captured as UnrecognizedStr
+```
+
 
 ## Values
 

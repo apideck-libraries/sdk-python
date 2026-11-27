@@ -8,7 +8,7 @@ from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from datetime import date
 from jsonpath import JSONPath
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
 
 
 class Jobs(BaseSDK):
@@ -21,7 +21,7 @@ class Jobs(BaseSDK):
         service_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -62,7 +62,7 @@ class Jobs(BaseSDK):
             service_id=service_id,
             cursor=cursor,
             limit=limit,
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -83,6 +83,7 @@ class Jobs(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -107,9 +108,31 @@ class Jobs(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["ats"],
+                extensions={
+                    "x-apideck-api": "ats",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "greenhouse",
+                            "description": "Greenhouse does not expose a total record count in list responses. `meta.total_count` will not appear.\n\nRecruiters, hiring managers, department name/hierarchy, addresses (office locations), openings, and the job post `location` are no longer returned on jobs. This data moved to separate Harvest V3 endpoints (job post locations to `/v3/job_post_locations`) and is not mapped; the department `id` is still returned. Custom fields on a job are returned as id/value pairs only — custom field names are no longer available.\n\nHarvest V3 strictly validates query parameters and rejects unknown ones with HTTP 422 on any page, including the first. V1-era list filters such as `created_after`/`updated_after` were removed in V3, so sending them via `pass_through` fails immediately. On cursor-based follow-up pages (page 2+), Greenhouse additionally requires the cursor to be the only query parameter, so `pass_through` parameters cause an HTTP 422 there as well.\n\nHarvest V3 cursor pagination is forward-only — Link headers carry only `rel=\"next\"` — so `meta.cursors.previous` is always `null` and paging backwards is not possible.\n\nThe job `url` and `links` fields are populated from the post's public job board URL as returned by Greenhouse. Internal-only job posts have no public URL, so they are returned with `url: null` and empty `links`.\n\n`status` reflects the job post's publication state, not the job's lifecycle: a live post reads `published`, and any active, non-live post reads `draft` — including posts of closed jobs — matching Harvest V3's own live/draft vocabulary for posts (there is no separate offline state). Archived posts read `status: null` with `deleted: true`. The job's open/closed lifecycle is not exposed on job posts.\n",
+                        },
+                        {
+                            "connector": "lever",
+                            "description": "Lever does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "recruitee",
+                            "description": "Recruitee does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "workable",
+                            "description": "Workable does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -134,17 +157,19 @@ class Jobs(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AtsJobsAllResponse(
                 get_jobs_response=unmarshal_json_response(
-                    Optional[models.GetJobsResponse], http_res
+                    Optional[models.GetJobsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -185,11 +210,10 @@ class Jobs(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AtsJobsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -203,7 +227,7 @@ class Jobs(BaseSDK):
         service_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -244,7 +268,7 @@ class Jobs(BaseSDK):
             service_id=service_id,
             cursor=cursor,
             limit=limit,
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -265,6 +289,7 @@ class Jobs(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -289,9 +314,31 @@ class Jobs(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["ats"],
+                extensions={
+                    "x-apideck-api": "ats",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "greenhouse",
+                            "description": "Greenhouse does not expose a total record count in list responses. `meta.total_count` will not appear.\n\nRecruiters, hiring managers, department name/hierarchy, addresses (office locations), openings, and the job post `location` are no longer returned on jobs. This data moved to separate Harvest V3 endpoints (job post locations to `/v3/job_post_locations`) and is not mapped; the department `id` is still returned. Custom fields on a job are returned as id/value pairs only — custom field names are no longer available.\n\nHarvest V3 strictly validates query parameters and rejects unknown ones with HTTP 422 on any page, including the first. V1-era list filters such as `created_after`/`updated_after` were removed in V3, so sending them via `pass_through` fails immediately. On cursor-based follow-up pages (page 2+), Greenhouse additionally requires the cursor to be the only query parameter, so `pass_through` parameters cause an HTTP 422 there as well.\n\nHarvest V3 cursor pagination is forward-only — Link headers carry only `rel=\"next\"` — so `meta.cursors.previous` is always `null` and paging backwards is not possible.\n\nThe job `url` and `links` fields are populated from the post's public job board URL as returned by Greenhouse. Internal-only job posts have no public URL, so they are returned with `url: null` and empty `links`.\n\n`status` reflects the job post's publication state, not the job's lifecycle: a live post reads `published`, and any active, non-live post reads `draft` — including posts of closed jobs — matching Harvest V3's own live/draft vocabulary for posts (there is no separate offline state). Archived posts read `status: null` with `deleted: true`. The job's open/closed lifecycle is not exposed on job posts.\n",
+                        },
+                        {
+                            "connector": "lever",
+                            "description": "Lever does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "recruitee",
+                            "description": "Recruitee does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "workable",
+                            "description": "Workable does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -316,17 +363,19 @@ class Jobs(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AtsJobsAllResponse(
                 get_jobs_response=unmarshal_json_response(
-                    Optional[models.GetJobsResponse], http_res
+                    Optional[models.GetJobsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -367,11 +416,10 @@ class Jobs(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AtsJobsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -399,13 +447,13 @@ class Jobs(BaseSDK):
             Union[models.DepartmentInput, models.DepartmentInputTypedDict]
         ] = None,
         branch: Optional[Union[models.JobBranch, models.JobBranchTypedDict]] = None,
-        recruiters: OptionalNullable[List[str]] = UNSET,
-        hiring_managers: Optional[List[str]] = None,
-        followers: OptionalNullable[List[str]] = UNSET,
+        recruiters: OptionalNullable[Iterable[str]] = UNSET,
+        hiring_managers: Optional[Iterable[str]] = None,
+        followers: OptionalNullable[Iterable[str]] = UNSET,
         description: OptionalNullable[str] = UNSET,
         description_html: OptionalNullable[str] = UNSET,
         blocks: Optional[
-            Union[List[models.Blocks], List[models.BlocksTypedDict]]
+            Union[Iterable[models.Blocks], Iterable[models.BlocksTypedDict]]
         ] = None,
         closing: OptionalNullable[str] = UNSET,
         closing_html: OptionalNullable[str] = UNSET,
@@ -415,16 +463,16 @@ class Jobs(BaseSDK):
         job_portal_url: OptionalNullable[str] = UNSET,
         record_url: OptionalNullable[str] = UNSET,
         links: Optional[
-            Union[List[models.JobLinks], List[models.JobLinksTypedDict]]
+            Union[Iterable[models.JobLinks], Iterable[models.JobLinksTypedDict]]
         ] = None,
         confidential: Optional[bool] = None,
         available_to_employees: Optional[bool] = None,
-        tags: OptionalNullable[List[str]] = UNSET,
+        tags: OptionalNullable[Iterable[str]] = UNSET,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         deleted: OptionalNullable[bool] = UNSET,
         owner_id: OptionalNullable[str] = UNSET,
@@ -513,9 +561,9 @@ class Jobs(BaseSDK):
                     department, Optional[models.DepartmentInput]
                 ),
                 branch=utils.get_pydantic_model(branch, Optional[models.JobBranch]),
-                recruiters=recruiters,
-                hiring_managers=hiring_managers,
-                followers=followers,
+                recruiters=utils.unmarshal(recruiters, OptionalNullable[List[str]]),
+                hiring_managers=utils.unmarshal(hiring_managers, Optional[List[str]]),
+                followers=utils.unmarshal(followers, OptionalNullable[List[str]]),
                 description=description,
                 description_html=description_html,
                 blocks=utils.get_pydantic_model(blocks, Optional[List[models.Blocks]]),
@@ -529,7 +577,7 @@ class Jobs(BaseSDK):
                 links=utils.get_pydantic_model(links, Optional[List[models.JobLinks]]),
                 confidential=confidential,
                 available_to_employees=available_to_employees,
-                tags=tags,
+                tags=utils.unmarshal(tags, OptionalNullable[List[str]]),
                 addresses=utils.get_pydantic_model(
                     addresses, Optional[List[models.Address]]
                 ),
@@ -561,6 +609,7 @@ class Jobs(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.job, False, False, "json", models.JobInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -585,9 +634,11 @@ class Jobs(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["ats"],
+                extensions={"x-apideck-api": "ats"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -595,10 +646,9 @@ class Jobs(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AtsJobsAddResponse(
                 create_job_response=unmarshal_json_response(
-                    Optional[models.CreateJobResponse], http_res
+                    Optional[models.CreateJobResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -639,10 +689,9 @@ class Jobs(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AtsJobsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -670,13 +719,13 @@ class Jobs(BaseSDK):
             Union[models.DepartmentInput, models.DepartmentInputTypedDict]
         ] = None,
         branch: Optional[Union[models.JobBranch, models.JobBranchTypedDict]] = None,
-        recruiters: OptionalNullable[List[str]] = UNSET,
-        hiring_managers: Optional[List[str]] = None,
-        followers: OptionalNullable[List[str]] = UNSET,
+        recruiters: OptionalNullable[Iterable[str]] = UNSET,
+        hiring_managers: Optional[Iterable[str]] = None,
+        followers: OptionalNullable[Iterable[str]] = UNSET,
         description: OptionalNullable[str] = UNSET,
         description_html: OptionalNullable[str] = UNSET,
         blocks: Optional[
-            Union[List[models.Blocks], List[models.BlocksTypedDict]]
+            Union[Iterable[models.Blocks], Iterable[models.BlocksTypedDict]]
         ] = None,
         closing: OptionalNullable[str] = UNSET,
         closing_html: OptionalNullable[str] = UNSET,
@@ -686,16 +735,16 @@ class Jobs(BaseSDK):
         job_portal_url: OptionalNullable[str] = UNSET,
         record_url: OptionalNullable[str] = UNSET,
         links: Optional[
-            Union[List[models.JobLinks], List[models.JobLinksTypedDict]]
+            Union[Iterable[models.JobLinks], Iterable[models.JobLinksTypedDict]]
         ] = None,
         confidential: Optional[bool] = None,
         available_to_employees: Optional[bool] = None,
-        tags: OptionalNullable[List[str]] = UNSET,
+        tags: OptionalNullable[Iterable[str]] = UNSET,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         deleted: OptionalNullable[bool] = UNSET,
         owner_id: OptionalNullable[str] = UNSET,
@@ -784,9 +833,9 @@ class Jobs(BaseSDK):
                     department, Optional[models.DepartmentInput]
                 ),
                 branch=utils.get_pydantic_model(branch, Optional[models.JobBranch]),
-                recruiters=recruiters,
-                hiring_managers=hiring_managers,
-                followers=followers,
+                recruiters=utils.unmarshal(recruiters, OptionalNullable[List[str]]),
+                hiring_managers=utils.unmarshal(hiring_managers, Optional[List[str]]),
+                followers=utils.unmarshal(followers, OptionalNullable[List[str]]),
                 description=description,
                 description_html=description_html,
                 blocks=utils.get_pydantic_model(blocks, Optional[List[models.Blocks]]),
@@ -800,7 +849,7 @@ class Jobs(BaseSDK):
                 links=utils.get_pydantic_model(links, Optional[List[models.JobLinks]]),
                 confidential=confidential,
                 available_to_employees=available_to_employees,
-                tags=tags,
+                tags=utils.unmarshal(tags, OptionalNullable[List[str]]),
                 addresses=utils.get_pydantic_model(
                     addresses, Optional[List[models.Address]]
                 ),
@@ -832,6 +881,7 @@ class Jobs(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.job, False, False, "json", models.JobInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -856,9 +906,11 @@ class Jobs(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["ats"],
+                extensions={"x-apideck-api": "ats"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -866,10 +918,9 @@ class Jobs(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AtsJobsAddResponse(
                 create_job_response=unmarshal_json_response(
-                    Optional[models.CreateJobResponse], http_res
+                    Optional[models.CreateJobResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -910,10 +961,9 @@ class Jobs(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AtsJobsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -983,6 +1033,7 @@ class Jobs(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1007,9 +1058,19 @@ class Jobs(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["ats"],
+                extensions={
+                    "x-apideck-api": "ats",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "greenhouse",
+                            "description": "A job post id that no longer exists returns an error (HTTP 400, \"Job post not found\") rather than an empty 200 response. Job posts deleted in the Greenhouse UI — including posts removed by deleting their job — are permanently removed by Harvest V3 and return this error; they are not retrievable afterwards. Closing a job does not remove or archive its posts; they remain readable.\n\nIf Greenhouse marks a post inactive without deleting it, the connector transparently re-fetches with `active=false` and returns the record with `deleted: true`.\n\n`status` reflects the job post's publication state, not the job's lifecycle: a live post reads `published`, and any active, non-live post reads `draft` — including posts of closed jobs — matching Harvest V3's own live/draft vocabulary for posts (there is no separate offline state). Archived posts read `status: null` with `deleted: true`. The job's open/closed lifecycle is not exposed on job posts.\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1017,10 +1078,9 @@ class Jobs(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AtsJobsOneResponse(
                 get_job_response=unmarshal_json_response(
-                    Optional[models.GetJobResponse], http_res
+                    Optional[models.GetJobResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1061,10 +1121,9 @@ class Jobs(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AtsJobsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1134,6 +1193,7 @@ class Jobs(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1158,9 +1218,19 @@ class Jobs(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["ats"],
+                extensions={
+                    "x-apideck-api": "ats",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "greenhouse",
+                            "description": "A job post id that no longer exists returns an error (HTTP 400, \"Job post not found\") rather than an empty 200 response. Job posts deleted in the Greenhouse UI — including posts removed by deleting their job — are permanently removed by Harvest V3 and return this error; they are not retrievable afterwards. Closing a job does not remove or archive its posts; they remain readable.\n\nIf Greenhouse marks a post inactive without deleting it, the connector transparently re-fetches with `active=false` and returns the record with `deleted: true`.\n\n`status` reflects the job post's publication state, not the job's lifecycle: a live post reads `published`, and any active, non-live post reads `draft` — including posts of closed jobs — matching Harvest V3's own live/draft vocabulary for posts (there is no separate offline state). Archived posts read `status: null` with `deleted: true`. The job's open/closed lifecycle is not exposed on job posts.\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1168,10 +1238,9 @@ class Jobs(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AtsJobsOneResponse(
                 get_job_response=unmarshal_json_response(
-                    Optional[models.GetJobResponse], http_res
+                    Optional[models.GetJobResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1212,10 +1281,9 @@ class Jobs(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AtsJobsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1244,13 +1312,13 @@ class Jobs(BaseSDK):
             Union[models.DepartmentInput, models.DepartmentInputTypedDict]
         ] = None,
         branch: Optional[Union[models.JobBranch, models.JobBranchTypedDict]] = None,
-        recruiters: OptionalNullable[List[str]] = UNSET,
-        hiring_managers: Optional[List[str]] = None,
-        followers: OptionalNullable[List[str]] = UNSET,
+        recruiters: OptionalNullable[Iterable[str]] = UNSET,
+        hiring_managers: Optional[Iterable[str]] = None,
+        followers: OptionalNullable[Iterable[str]] = UNSET,
         description: OptionalNullable[str] = UNSET,
         description_html: OptionalNullable[str] = UNSET,
         blocks: Optional[
-            Union[List[models.Blocks], List[models.BlocksTypedDict]]
+            Union[Iterable[models.Blocks], Iterable[models.BlocksTypedDict]]
         ] = None,
         closing: OptionalNullable[str] = UNSET,
         closing_html: OptionalNullable[str] = UNSET,
@@ -1260,16 +1328,16 @@ class Jobs(BaseSDK):
         job_portal_url: OptionalNullable[str] = UNSET,
         record_url: OptionalNullable[str] = UNSET,
         links: Optional[
-            Union[List[models.JobLinks], List[models.JobLinksTypedDict]]
+            Union[Iterable[models.JobLinks], Iterable[models.JobLinksTypedDict]]
         ] = None,
         confidential: Optional[bool] = None,
         available_to_employees: Optional[bool] = None,
-        tags: OptionalNullable[List[str]] = UNSET,
+        tags: OptionalNullable[Iterable[str]] = UNSET,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         deleted: OptionalNullable[bool] = UNSET,
         owner_id: OptionalNullable[str] = UNSET,
@@ -1360,9 +1428,9 @@ class Jobs(BaseSDK):
                     department, Optional[models.DepartmentInput]
                 ),
                 branch=utils.get_pydantic_model(branch, Optional[models.JobBranch]),
-                recruiters=recruiters,
-                hiring_managers=hiring_managers,
-                followers=followers,
+                recruiters=utils.unmarshal(recruiters, OptionalNullable[List[str]]),
+                hiring_managers=utils.unmarshal(hiring_managers, Optional[List[str]]),
+                followers=utils.unmarshal(followers, OptionalNullable[List[str]]),
                 description=description,
                 description_html=description_html,
                 blocks=utils.get_pydantic_model(blocks, Optional[List[models.Blocks]]),
@@ -1376,7 +1444,7 @@ class Jobs(BaseSDK):
                 links=utils.get_pydantic_model(links, Optional[List[models.JobLinks]]),
                 confidential=confidential,
                 available_to_employees=available_to_employees,
-                tags=tags,
+                tags=utils.unmarshal(tags, OptionalNullable[List[str]]),
                 addresses=utils.get_pydantic_model(
                     addresses, Optional[List[models.Address]]
                 ),
@@ -1408,6 +1476,7 @@ class Jobs(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.job, False, False, "json", models.JobInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1432,9 +1501,19 @@ class Jobs(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["ats"],
+                extensions={
+                    "x-apideck-api": "ats",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "greenhouse",
+                            "description": 'Harvest V3 job-post updates accept only `title`, `description_html` (mapped to `content`), and `status`. `location`, `visibility`, `code`, `deleted`, and `published_at` sent on update are silently ignored (200 OK, no write, no error).\n\n`status` maps only `published` (the job post goes live) and `draft`; any other value or an absent `status` is ignored. Closing or archiving a job post via update is not possible.\n\nPublishing (`status: published`) fails with HTTP 403 "User is not authorized to perform this action" when the Greenhouse job board the post belongs to has not itself been published. The error message is misleading — it is not a permission or OAuth scope problem. Publish the job board in Greenhouse (Configure → Job Boards & Posts) and retry.\n',
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1442,10 +1521,9 @@ class Jobs(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AtsJobsUpdateResponse(
                 update_job_response=unmarshal_json_response(
-                    Optional[models.UpdateJobResponse], http_res
+                    Optional[models.UpdateJobResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1486,10 +1564,9 @@ class Jobs(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AtsJobsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1518,13 +1595,13 @@ class Jobs(BaseSDK):
             Union[models.DepartmentInput, models.DepartmentInputTypedDict]
         ] = None,
         branch: Optional[Union[models.JobBranch, models.JobBranchTypedDict]] = None,
-        recruiters: OptionalNullable[List[str]] = UNSET,
-        hiring_managers: Optional[List[str]] = None,
-        followers: OptionalNullable[List[str]] = UNSET,
+        recruiters: OptionalNullable[Iterable[str]] = UNSET,
+        hiring_managers: Optional[Iterable[str]] = None,
+        followers: OptionalNullable[Iterable[str]] = UNSET,
         description: OptionalNullable[str] = UNSET,
         description_html: OptionalNullable[str] = UNSET,
         blocks: Optional[
-            Union[List[models.Blocks], List[models.BlocksTypedDict]]
+            Union[Iterable[models.Blocks], Iterable[models.BlocksTypedDict]]
         ] = None,
         closing: OptionalNullable[str] = UNSET,
         closing_html: OptionalNullable[str] = UNSET,
@@ -1534,16 +1611,16 @@ class Jobs(BaseSDK):
         job_portal_url: OptionalNullable[str] = UNSET,
         record_url: OptionalNullable[str] = UNSET,
         links: Optional[
-            Union[List[models.JobLinks], List[models.JobLinksTypedDict]]
+            Union[Iterable[models.JobLinks], Iterable[models.JobLinksTypedDict]]
         ] = None,
         confidential: Optional[bool] = None,
         available_to_employees: Optional[bool] = None,
-        tags: OptionalNullable[List[str]] = UNSET,
+        tags: OptionalNullable[Iterable[str]] = UNSET,
         addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
+            Union[Iterable[models.Address], Iterable[models.AddressTypedDict]]
         ] = None,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         deleted: OptionalNullable[bool] = UNSET,
         owner_id: OptionalNullable[str] = UNSET,
@@ -1634,9 +1711,9 @@ class Jobs(BaseSDK):
                     department, Optional[models.DepartmentInput]
                 ),
                 branch=utils.get_pydantic_model(branch, Optional[models.JobBranch]),
-                recruiters=recruiters,
-                hiring_managers=hiring_managers,
-                followers=followers,
+                recruiters=utils.unmarshal(recruiters, OptionalNullable[List[str]]),
+                hiring_managers=utils.unmarshal(hiring_managers, Optional[List[str]]),
+                followers=utils.unmarshal(followers, OptionalNullable[List[str]]),
                 description=description,
                 description_html=description_html,
                 blocks=utils.get_pydantic_model(blocks, Optional[List[models.Blocks]]),
@@ -1650,7 +1727,7 @@ class Jobs(BaseSDK):
                 links=utils.get_pydantic_model(links, Optional[List[models.JobLinks]]),
                 confidential=confidential,
                 available_to_employees=available_to_employees,
-                tags=tags,
+                tags=utils.unmarshal(tags, OptionalNullable[List[str]]),
                 addresses=utils.get_pydantic_model(
                     addresses, Optional[List[models.Address]]
                 ),
@@ -1682,6 +1759,7 @@ class Jobs(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.job, False, False, "json", models.JobInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1706,9 +1784,19 @@ class Jobs(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["ats"],
+                extensions={
+                    "x-apideck-api": "ats",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "greenhouse",
+                            "description": 'Harvest V3 job-post updates accept only `title`, `description_html` (mapped to `content`), and `status`. `location`, `visibility`, `code`, `deleted`, and `published_at` sent on update are silently ignored (200 OK, no write, no error).\n\n`status` maps only `published` (the job post goes live) and `draft`; any other value or an absent `status` is ignored. Closing or archiving a job post via update is not possible.\n\nPublishing (`status: published`) fails with HTTP 403 "User is not authorized to perform this action" when the Greenhouse job board the post belongs to has not itself been published. The error message is misleading — it is not a permission or OAuth scope problem. Publish the job board in Greenhouse (Configure → Job Boards & Posts) and retry.\n',
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1716,10 +1804,9 @@ class Jobs(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AtsJobsUpdateResponse(
                 update_job_response=unmarshal_json_response(
-                    Optional[models.UpdateJobResponse], http_res
+                    Optional[models.UpdateJobResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1760,10 +1847,9 @@ class Jobs(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AtsJobsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1830,6 +1916,7 @@ class Jobs(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1854,9 +1941,11 @@ class Jobs(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["ats"],
+                extensions={"x-apideck-api": "ats"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1864,10 +1953,9 @@ class Jobs(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AtsJobsDeleteResponse(
                 delete_job_response=unmarshal_json_response(
-                    Optional[models.DeleteJobResponse], http_res
+                    Optional[models.DeleteJobResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1908,10 +1996,9 @@ class Jobs(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AtsJobsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1978,6 +2065,7 @@ class Jobs(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2002,9 +2090,11 @@ class Jobs(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["ats"],
+                extensions={"x-apideck-api": "ats"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2012,10 +2102,9 @@ class Jobs(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AtsJobsDeleteResponse(
                 delete_job_response=unmarshal_json_response(
-                    Optional[models.DeleteJobResponse], http_res
+                    Optional[models.DeleteJobResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2056,10 +2145,9 @@ class Jobs(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AtsJobsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

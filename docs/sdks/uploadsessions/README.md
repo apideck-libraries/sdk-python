@@ -1,5 +1,4 @@
-# UploadSessions
-(*file_storage.upload_sessions*)
+# FileStorage.UploadSessions
 
 ## Overview
 
@@ -26,7 +25,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.file_storage.upload_sessions.create(name="Documents", parent_folder_id="1234", size=1810673, raw=False, service_id="salesforce", drive_id="1234", pass_through=[
@@ -173,7 +172,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.file_storage.upload_sessions.get(id="<id>", service_id="salesforce", raw=False, fields="id,updated_at")
@@ -230,10 +229,10 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
-    res = apideck.file_storage.upload_sessions.upload(id="<id>", part_number=0, request_body=io.BytesIO("<binary string>".encode()), service_id="salesforce", digest="sha=fpRyg5eVQletdZqEKaFlqwBXJzM=", raw=False)
+    res = apideck.file_storage.upload_sessions.upload(id="<id>", part_number=0.0, request_body=io.BytesIO("<binary string>".encode()), service_id="salesforce", digest="sha=fpRyg5eVQletdZqEKaFlqwBXJzM=", raw=False)
 
     assert res.update_upload_session_response is not None
 
@@ -248,7 +247,7 @@ with Apideck(
 | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `id`                                                                                                                                                                                                              | *str*                                                                                                                                                                                                             | :heavy_check_mark:                                                                                                                                                                                                | ID of the record you are acting upon.                                                                                                                                                                             |                                                                                                                                                                                                                   |
 | `part_number`                                                                                                                                                                                                     | *float*                                                                                                                                                                                                           | :heavy_check_mark:                                                                                                                                                                                                | Part number of the file part being uploaded.                                                                                                                                                                      | 0                                                                                                                                                                                                                 |
-| `request_body`                                                                                                                                                                                                    | *Union[bytes, IO[bytes], io.BufferedReader]*                                                                                                                                                                      | :heavy_check_mark:                                                                                                                                                                                                | N/A                                                                                                                                                                                                               | <binary string>                                                                                                                                                                                                   |
+| `request_body`                                                                                                                                                                                                    | *Union[bytes, IO[bytes], io.IOBase]*                                                                                                                                                                              | :heavy_check_mark:                                                                                                                                                                                                | N/A                                                                                                                                                                                                               | <binary string>                                                                                                                                                                                                   |
 | `consumer_id`                                                                                                                                                                                                     | *Optional[str]*                                                                                                                                                                                                   | :heavy_minus_sign:                                                                                                                                                                                                | ID of the consumer which you want to get or push data from                                                                                                                                                        | test-consumer                                                                                                                                                                                                     |
 | `app_id`                                                                                                                                                                                                          | *Optional[str]*                                                                                                                                                                                                   | :heavy_minus_sign:                                                                                                                                                                                                | The ID of your Unify application                                                                                                                                                                                  | dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX                                                                                                                                                                           |
 | `service_id`                                                                                                                                                                                                      | *Optional[str]*                                                                                                                                                                                                   | :heavy_minus_sign:                                                                                                                                                                                                | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.                                                                     | salesforce                                                                                                                                                                                                        |
@@ -288,7 +287,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.file_storage.upload_sessions.delete(id="<id>", service_id="salesforce", raw=False)
@@ -342,7 +341,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.file_storage.upload_sessions.finish(id="<id>", raw=False, service_id="salesforce", digest="sha=fpRyg5eVQletdZqEKaFlqwBXJzM=")

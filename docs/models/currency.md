@@ -2,6 +2,16 @@
 
 Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
 
+## Example Usage
+
+```python
+from apideck_unify.models import Currency
+
+value = Currency.UNKNOWN_CURRENCY
+
+# Open enum: unrecognized values are captured as UnrecognizedStr
+```
+
 
 ## Values
 

@@ -8,7 +8,7 @@ from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from datetime import date
 from jsonpath import JSONPath
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
 
 
 class Quotes(BaseSDK):
@@ -25,7 +25,7 @@ class Quotes(BaseSDK):
         filter_: Optional[
             Union[models.QuotesFilter, models.QuotesFilterTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -68,7 +68,7 @@ class Quotes(BaseSDK):
             cursor=cursor,
             limit=limit,
             filter_=utils.get_pydantic_model(filter_, Optional[models.QuotesFilter]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
         )
 
         req = self._build_request(
@@ -88,6 +88,7 @@ class Quotes(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -112,9 +113,67 @@ class Quotes(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Quotes are QuickBooks estimates. `status` is not returned: QuickBooks only marks an estimate active or inactive, which does not tell a sent, an accepted and a rejected quote apart. `expiry_date` and `currency` are not returned. Supported filters: `number`, `updated_since` and `created_since`; `customer_id` is not supported.\n\nQuickBooks Desktop does not expose a reliable cross-page total record count. Getting `total_count` requires a separate COUNT query — an extra API call that is not currently implemented. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "sap-business-one",
+                            "description": "`status` is `void` for a cancelled quote, `accepted` once it is closed (for example copied to a sales order or closed by hand), otherwise `sent`. Supported filters: `updated_since`, `created_since`, `number` and `customer_id`. `number` is the SAP Business One document number: a whole number from 0 to 2,147,483,647, and any other value returns a 400.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Fiken quotes (offers) have no status field. `status` is derived: `accepted` when Fiken records an\nacceptance date, `sent` when the quote has been dispatched, otherwise `draft`. A `draft` Fiken quote\nis already numbered and final, just not sent yet; Fiken's editable drafts are not listed.\nAmounts are converted from Fiken's øre (cents).\n",
+                        },
+                        {
+                            "connector": "e-conomic",
+                            "description": "Only draft quotes are returned, and the list returns them without `line_items`: fetch a single one to get its lines. Sent and archived quotes are not included. Supported filters: `number`, `customer_id` and `updated_since`.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "FreeAgent estimates are returned as quotes. FreeAgent stores a sent estimate as Open, which is\nreturned as `sent`; an estimate converted to an invoice is returned as `converted`.\n\n`sub_total` and `total` are after `discount_percentage`; `discount_amount` is the discount.\n`expiry_date` and `terms` are not available in FreeAgent.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "Sage Intacct has no distinct quote object: quotes are order-entry documents, and that same object also holds sales orders, invoices and credit memos. Apideck restricts the list to the document types your company defines as quote-class, so `total_count` reflects quotes only.\nThose type names are defined per company, so Apideck resolves them from your Order Entry transaction definitions on each request. If none can be resolved the list returns empty rather than returning every order-entry document.\n",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "AFAS Profit's default sales-quotes GetConnector (`Profit_Quotation`) only exists on tenants that have the sales-quotes module deployed. On tenants without it, the list returns empty. Override `quotes_connector` on the connection to point at a tenant-specific quotes GetConnector if available.\n\nThe `limit` parameter may return fewer quotes than specified. AFAS returns flat quote line rows which are grouped by `OrderNumber` into complete quotes. `limit=N` caps the raw row count, not the grouped quote count.\n",
+                        },
+                        {
+                            "connector": "alegra",
+                            "description": 'Each line\'s Alegra item must have a SAT `productKey` or creation fails (code 1035, "La clave del producto es requerida"). The customer address is returned as a single preformatted string in `billing_address.line1`, not the structured object invoices return.\n',
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks Online does not expose a reliable cross-page total record count. The `QueryResponse.totalCount` field in list responses reflects the count for that page only, not the full dataset. `meta.total_count` will not appear in list responses. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite uses the same underlying QuickBooks API. The `QueryResponse.totalCount` field in list responses reflects the per-page count only. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "pennylane",
+                            "description": "Pennylane does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Using `filter[number]` switches quotes to the SuiteQL search path, which returns header fields only — `line_items` are omitted on filtered results. Use the GET one endpoint to retrieve full line-item detail for a quote.\nThe minimum page size accepted for NetSuite is 5, and the pagination cursor expires if not used within 15 minutes of creation.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "Quotes are Order Entry transactions (`SODOCUMENT`). The list endpoint returns header fields only — `line_items` are omitted on list results; use the GET one endpoint to retrieve full line-item detail for a quote.\nQuotes are scoped by their transaction-definition class rather than by name, so every quote document type on the tenant is returned — including custom or renamed quote definitions. Sage Intacct lets a tenant define multiple quote document types with arbitrary names; all of them are matched.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -140,17 +199,19 @@ class Quotes(BaseSDK):
                 filter_=filter_,
                 pass_through=pass_through,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingQuotesAllResponse(
                 get_quotes_response=unmarshal_json_response(
-                    Optional[models.GetQuotesResponse], http_res
+                    Optional[models.GetQuotesResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -191,11 +252,10 @@ class Quotes(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingQuotesAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -213,7 +273,7 @@ class Quotes(BaseSDK):
         filter_: Optional[
             Union[models.QuotesFilter, models.QuotesFilterTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -256,7 +316,7 @@ class Quotes(BaseSDK):
             cursor=cursor,
             limit=limit,
             filter_=utils.get_pydantic_model(filter_, Optional[models.QuotesFilter]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
         )
 
         req = self._build_request_async(
@@ -276,6 +336,7 @@ class Quotes(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -300,9 +361,67 @@ class Quotes(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Quotes are QuickBooks estimates. `status` is not returned: QuickBooks only marks an estimate active or inactive, which does not tell a sent, an accepted and a rejected quote apart. `expiry_date` and `currency` are not returned. Supported filters: `number`, `updated_since` and `created_since`; `customer_id` is not supported.\n\nQuickBooks Desktop does not expose a reliable cross-page total record count. Getting `total_count` requires a separate COUNT query — an extra API call that is not currently implemented. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "sap-business-one",
+                            "description": "`status` is `void` for a cancelled quote, `accepted` once it is closed (for example copied to a sales order or closed by hand), otherwise `sent`. Supported filters: `updated_since`, `created_since`, `number` and `customer_id`. `number` is the SAP Business One document number: a whole number from 0 to 2,147,483,647, and any other value returns a 400.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Fiken quotes (offers) have no status field. `status` is derived: `accepted` when Fiken records an\nacceptance date, `sent` when the quote has been dispatched, otherwise `draft`. A `draft` Fiken quote\nis already numbered and final, just not sent yet; Fiken's editable drafts are not listed.\nAmounts are converted from Fiken's øre (cents).\n",
+                        },
+                        {
+                            "connector": "e-conomic",
+                            "description": "Only draft quotes are returned, and the list returns them without `line_items`: fetch a single one to get its lines. Sent and archived quotes are not included. Supported filters: `number`, `customer_id` and `updated_since`.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "FreeAgent estimates are returned as quotes. FreeAgent stores a sent estimate as Open, which is\nreturned as `sent`; an estimate converted to an invoice is returned as `converted`.\n\n`sub_total` and `total` are after `discount_percentage`; `discount_amount` is the discount.\n`expiry_date` and `terms` are not available in FreeAgent.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "Sage Intacct has no distinct quote object: quotes are order-entry documents, and that same object also holds sales orders, invoices and credit memos. Apideck restricts the list to the document types your company defines as quote-class, so `total_count` reflects quotes only.\nThose type names are defined per company, so Apideck resolves them from your Order Entry transaction definitions on each request. If none can be resolved the list returns empty rather than returning every order-entry document.\n",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "AFAS Profit's default sales-quotes GetConnector (`Profit_Quotation`) only exists on tenants that have the sales-quotes module deployed. On tenants without it, the list returns empty. Override `quotes_connector` on the connection to point at a tenant-specific quotes GetConnector if available.\n\nThe `limit` parameter may return fewer quotes than specified. AFAS returns flat quote line rows which are grouped by `OrderNumber` into complete quotes. `limit=N` caps the raw row count, not the grouped quote count.\n",
+                        },
+                        {
+                            "connector": "alegra",
+                            "description": 'Each line\'s Alegra item must have a SAT `productKey` or creation fails (code 1035, "La clave del producto es requerida"). The customer address is returned as a single preformatted string in `billing_address.line1`, not the structured object invoices return.\n',
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks Online does not expose a reliable cross-page total record count. The `QueryResponse.totalCount` field in list responses reflects the count for that page only, not the full dataset. `meta.total_count` will not appear in list responses. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite uses the same underlying QuickBooks API. The `QueryResponse.totalCount` field in list responses reflects the per-page count only. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "pennylane",
+                            "description": "Pennylane does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Using `filter[number]` switches quotes to the SuiteQL search path, which returns header fields only — `line_items` are omitted on filtered results. Use the GET one endpoint to retrieve full line-item detail for a quote.\nThe minimum page size accepted for NetSuite is 5, and the pagination cursor expires if not used within 15 minutes of creation.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "Quotes are Order Entry transactions (`SODOCUMENT`). The list endpoint returns header fields only — `line_items` are omitted on list results; use the GET one endpoint to retrieve full line-item detail for a quote.\nQuotes are scoped by their transaction-definition class rather than by name, so every quote document type on the tenant is returned — including custom or renamed quote definitions. Sage Intacct lets a tenant define multiple quote document types with arbitrary names; all of them are matched.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -328,17 +447,19 @@ class Quotes(BaseSDK):
                 filter_=filter_,
                 pass_through=pass_through,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingQuotesAllResponse(
                 get_quotes_response=unmarshal_json_response(
-                    Optional[models.GetQuotesResponse], http_res
+                    Optional[models.GetQuotesResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -379,11 +500,10 @@ class Quotes(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingQuotesAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -424,8 +544,8 @@ class Quotes(BaseSDK):
         customer_memo: OptionalNullable[str] = UNSET,
         line_items: Optional[
             Union[
-                List[models.QuoteLineItemInput],
-                List[models.QuoteLineItemInputTypedDict],
+                Iterable[models.QuoteLineItemInput],
+                Iterable[models.QuoteLineItemInputTypedDict],
             ]
         ] = None,
         billing_address: Optional[
@@ -436,18 +556,21 @@ class Quotes(BaseSDK):
         ] = None,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         template_id: OptionalNullable[str] = UNSET,
         source_document_url: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -589,6 +712,7 @@ class Quotes(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.quote, False, False, "json", models.QuoteInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -613,9 +737,43 @@ class Quotes(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "A `line_items[]` entry sends `unit_price`, or `total_amount` when no unit price is given. `status`, `expiry_date`, `line_items[].tax_rate` and `currency` are not written. `customer_memo` is not written either: QuickBooks holds it as a reference to its Customer Message list and refuses the document for any other text.\n\nWrites are applied on the Web Connector's next run, so a create can return a `504` timeout after 28 seconds while QuickBooks still creates the quote. List quotes to find it before retrying: sending the create again adds a second quote.\n",
+                        },
+                        {
+                            "connector": "sap-business-one",
+                            "description": "`reference` is stored as the customer reference number (*Customer Ref. No.*, `NumAtCard`).\n",
+                        },
+                        {
+                            "connector": "e-conomic",
+                            "description": "Only `customer.id` is required: the recipient (name, address and VAT zone), payment terms, layout and currency are taken from the customer unless you send them. `line_items[].item.id` is the product number. Quotes are created as drafts; an update changes only the fields you send, and `line_items`, when sent, replace all lines. An update cannot clear a field: empty values are ignored. Changing `customer.id` readdresses the quote to the new customer.\nA `status` other than `draft` is rejected with a 400, because e-conomic quotes are written as drafts only.\n`expiry_date` is not stored: e-conomic quotes have no expiry date. e-conomic numbers a new draft one above the highest number in use by draft invoices, credit notes, quotes and orders, so deleting the most recent draft frees its number for the next draft of any of these types: a stored id can later point at a different document. Keep your own reference (for example in `reference`) rather than relying on the id alone.\nSend an `Idempotency-Key` to make retrying a create safe: Unify sends e-conomic a 32-character key derived from it as e-conomic's own `Idempotency-Key` header, and e-conomic answers a repeat with the original quote instead of creating a second one. e-conomic keeps a key for one hour, and Unify remembers it for the same hour. Reusing a key with a different body returns 422, from Unify within its hour and from e-conomic while e-conomic still remembers the key; after both have forgotten it, the same key is treated as a new request. Use a new key for every quote. Unify builds the e-conomic request again on a retry, from what it reads from e-conomic and from today's date in Copenhagen when you leave the date out. If either changed between the attempts, e-conomic refuses the retry as a reused key and Unify returns 422 instead of creating a second quote. The first attempt may have created the quote: look it up before resending with a new key. Send the date to keep a retry identical across midnight.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "`number` becomes the FreeAgent estimate reference; without it FreeAgent numbers the quote\nitself. `status` can be `draft` (the default), `sent`, `accepted` or `rejected`; other\nstatuses are rejected. A line without a FreeAgent unit in `unit_of_measure` (for example\n`Hours`, `Services` or `Products`) takes one from its `type`, or `-no unit-`. Every line needs\na `description`.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Date-only fields need no configuration: NetSuite converts the datetime it receives into the\nSOAP/integration user's time zone before storing the date part, and these fields are anchored so\nthey store on the intended calendar day for any integration user between UTC-10 and UTC+13.\n\nFour zones fall outside that range and need the optional `timezone` connection setting:\n`Pacific/Pago_Pago`, `Pacific/Niue` and `Pacific/Midway` (UTC-11) store one day early without it,\nand `Pacific/Kiritimati` (UTC+14) stores one day late. Set it to the IANA zone of the NetSuite user\nthis connection authenticates as, read from that user's Home > Set Preferences > Time Zone — Setup >\nCompany > Company Information only supplies the default, so a user who overrode it needs their own\nzone.\n\nWhen the setting is used its value must be within 12 hours of that user's real zone in either\ndirection: more than ~12h east stores dates one day early, more than ~12h west stores them one day\nlate.\n\nThis applies to every NetSuite date-only write field across the accounting resources.\n\n`status` sets the estimate's sales stage: `sent` sets Proposal, `accepted` sets Purchasing and\n`rejected` sets Closed Lost, which also closes the estimate in NetSuite. Proposal, Purchasing and\nClosed Lost are matched by exact name: if one of them is renamed in NetSuite, even only in case, the\nstatus that sets it returns 422 until the stage is named back. NetSuite has no draft stage: a quote\ncreated with `draft`, or without `status`, starts at the account's default stage, which is Proposal\nunless the account changed it, so it reads back as `sent`. A different default stage reads back as\nthe status that stage maps to, or as `draft` for a stage the account added itself. `converted`,\n`void`, `expired` and `deleted` are set by NetSuite itself and return 422. When the quote's customer\nis a prospect, NetSuite also moves the prospect's own status to the same stage; an existing\ncustomer's status is not changed. A status that cannot be set rejects the whole request, including\nits other fields.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": 'Sage writes order-entry documents only against a named transaction definition\n(`document::{definition}`), and those definitions are created per company — there is no\nuniversal "quote" type. The connector resolves one for you, so no extra field is needed\non the request:\n\n- If the company has exactly one active quote definition, it is used automatically.\n- If it has several, set the one you want as the **Quote Transaction Definition**\n  (`quote_document_type`) setting on the connection. Without it the create is rejected\n  with an error naming the definitions it found, rather than guessing — the definition\n  determines the document\'s downstream workflow.\n\n`line_items[].item` is a real order-entry item reference here (unlike on invoices, where\nSage models the item as a line dimension). Sage requires a unit on every line, so send\n`unit_of_measure` — omitting it fails with "Missing unit Select a valid Unit in line no. N".\n\n`total_tax` and line-level tax are not written; see the Invoices notes for why.\n\nCreating quotes is not available on the `sage-intacct` (XML) connector.\n',
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Fiken creates a quote in two steps, a draft and then the finished quote, and the `id` returned is the finished quote's. Fiken has no quote expiry, so `expiry_date` is only used to set the number of days until the due date (14 days when it is missing or not after `quote_date`). Every line needs a `tax_rate.id` that is a Fiken VAT code such as `HIGH`.\n\n`discount_percentage` is a percentage (`10` is 10%), and `unit_price` is read back as the price before the discount. With `tax_inclusive: true`, each `unit_price` is taken to include VAT and is converted to Fiken's price excluding VAT with the rate of the line's `tax_rate` (its `rate`, or the standard rate of its Fiken VAT code), rounded to øre; a line whose VAT rate cannot be determined that way is rejected. Lines take a Fiken VAT type, so a `tax_rate` with a `rate` but no `id` is rejected. Records are always read back with prices excluding VAT.\n\nA new Fiken company has no quote counter, and creating a quote is rejected until it exists. Create one quote in Fiken, or set the starting number once through the Proxy API (`POST /offers/counter` with an empty body starts at 10001).\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -623,10 +781,9 @@ class Quotes(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingQuotesAddResponse(
                 create_quote_response=unmarshal_json_response(
-                    Optional[models.CreateQuoteResponse], http_res
+                    Optional[models.CreateQuoteResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -667,10 +824,9 @@ class Quotes(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingQuotesAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -711,8 +867,8 @@ class Quotes(BaseSDK):
         customer_memo: OptionalNullable[str] = UNSET,
         line_items: Optional[
             Union[
-                List[models.QuoteLineItemInput],
-                List[models.QuoteLineItemInputTypedDict],
+                Iterable[models.QuoteLineItemInput],
+                Iterable[models.QuoteLineItemInputTypedDict],
             ]
         ] = None,
         billing_address: Optional[
@@ -723,18 +879,21 @@ class Quotes(BaseSDK):
         ] = None,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         template_id: OptionalNullable[str] = UNSET,
         source_document_url: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -876,6 +1035,7 @@ class Quotes(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.quote, False, False, "json", models.QuoteInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -900,9 +1060,43 @@ class Quotes(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "A `line_items[]` entry sends `unit_price`, or `total_amount` when no unit price is given. `status`, `expiry_date`, `line_items[].tax_rate` and `currency` are not written. `customer_memo` is not written either: QuickBooks holds it as a reference to its Customer Message list and refuses the document for any other text.\n\nWrites are applied on the Web Connector's next run, so a create can return a `504` timeout after 28 seconds while QuickBooks still creates the quote. List quotes to find it before retrying: sending the create again adds a second quote.\n",
+                        },
+                        {
+                            "connector": "sap-business-one",
+                            "description": "`reference` is stored as the customer reference number (*Customer Ref. No.*, `NumAtCard`).\n",
+                        },
+                        {
+                            "connector": "e-conomic",
+                            "description": "Only `customer.id` is required: the recipient (name, address and VAT zone), payment terms, layout and currency are taken from the customer unless you send them. `line_items[].item.id` is the product number. Quotes are created as drafts; an update changes only the fields you send, and `line_items`, when sent, replace all lines. An update cannot clear a field: empty values are ignored. Changing `customer.id` readdresses the quote to the new customer.\nA `status` other than `draft` is rejected with a 400, because e-conomic quotes are written as drafts only.\n`expiry_date` is not stored: e-conomic quotes have no expiry date. e-conomic numbers a new draft one above the highest number in use by draft invoices, credit notes, quotes and orders, so deleting the most recent draft frees its number for the next draft of any of these types: a stored id can later point at a different document. Keep your own reference (for example in `reference`) rather than relying on the id alone.\nSend an `Idempotency-Key` to make retrying a create safe: Unify sends e-conomic a 32-character key derived from it as e-conomic's own `Idempotency-Key` header, and e-conomic answers a repeat with the original quote instead of creating a second one. e-conomic keeps a key for one hour, and Unify remembers it for the same hour. Reusing a key with a different body returns 422, from Unify within its hour and from e-conomic while e-conomic still remembers the key; after both have forgotten it, the same key is treated as a new request. Use a new key for every quote. Unify builds the e-conomic request again on a retry, from what it reads from e-conomic and from today's date in Copenhagen when you leave the date out. If either changed between the attempts, e-conomic refuses the retry as a reused key and Unify returns 422 instead of creating a second quote. The first attempt may have created the quote: look it up before resending with a new key. Send the date to keep a retry identical across midnight.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "`number` becomes the FreeAgent estimate reference; without it FreeAgent numbers the quote\nitself. `status` can be `draft` (the default), `sent`, `accepted` or `rejected`; other\nstatuses are rejected. A line without a FreeAgent unit in `unit_of_measure` (for example\n`Hours`, `Services` or `Products`) takes one from its `type`, or `-no unit-`. Every line needs\na `description`.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Date-only fields need no configuration: NetSuite converts the datetime it receives into the\nSOAP/integration user's time zone before storing the date part, and these fields are anchored so\nthey store on the intended calendar day for any integration user between UTC-10 and UTC+13.\n\nFour zones fall outside that range and need the optional `timezone` connection setting:\n`Pacific/Pago_Pago`, `Pacific/Niue` and `Pacific/Midway` (UTC-11) store one day early without it,\nand `Pacific/Kiritimati` (UTC+14) stores one day late. Set it to the IANA zone of the NetSuite user\nthis connection authenticates as, read from that user's Home > Set Preferences > Time Zone — Setup >\nCompany > Company Information only supplies the default, so a user who overrode it needs their own\nzone.\n\nWhen the setting is used its value must be within 12 hours of that user's real zone in either\ndirection: more than ~12h east stores dates one day early, more than ~12h west stores them one day\nlate.\n\nThis applies to every NetSuite date-only write field across the accounting resources.\n\n`status` sets the estimate's sales stage: `sent` sets Proposal, `accepted` sets Purchasing and\n`rejected` sets Closed Lost, which also closes the estimate in NetSuite. Proposal, Purchasing and\nClosed Lost are matched by exact name: if one of them is renamed in NetSuite, even only in case, the\nstatus that sets it returns 422 until the stage is named back. NetSuite has no draft stage: a quote\ncreated with `draft`, or without `status`, starts at the account's default stage, which is Proposal\nunless the account changed it, so it reads back as `sent`. A different default stage reads back as\nthe status that stage maps to, or as `draft` for a stage the account added itself. `converted`,\n`void`, `expired` and `deleted` are set by NetSuite itself and return 422. When the quote's customer\nis a prospect, NetSuite also moves the prospect's own status to the same stage; an existing\ncustomer's status is not changed. A status that cannot be set rejects the whole request, including\nits other fields.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": 'Sage writes order-entry documents only against a named transaction definition\n(`document::{definition}`), and those definitions are created per company — there is no\nuniversal "quote" type. The connector resolves one for you, so no extra field is needed\non the request:\n\n- If the company has exactly one active quote definition, it is used automatically.\n- If it has several, set the one you want as the **Quote Transaction Definition**\n  (`quote_document_type`) setting on the connection. Without it the create is rejected\n  with an error naming the definitions it found, rather than guessing — the definition\n  determines the document\'s downstream workflow.\n\n`line_items[].item` is a real order-entry item reference here (unlike on invoices, where\nSage models the item as a line dimension). Sage requires a unit on every line, so send\n`unit_of_measure` — omitting it fails with "Missing unit Select a valid Unit in line no. N".\n\n`total_tax` and line-level tax are not written; see the Invoices notes for why.\n\nCreating quotes is not available on the `sage-intacct` (XML) connector.\n',
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Fiken creates a quote in two steps, a draft and then the finished quote, and the `id` returned is the finished quote's. Fiken has no quote expiry, so `expiry_date` is only used to set the number of days until the due date (14 days when it is missing or not after `quote_date`). Every line needs a `tax_rate.id` that is a Fiken VAT code such as `HIGH`.\n\n`discount_percentage` is a percentage (`10` is 10%), and `unit_price` is read back as the price before the discount. With `tax_inclusive: true`, each `unit_price` is taken to include VAT and is converted to Fiken's price excluding VAT with the rate of the line's `tax_rate` (its `rate`, or the standard rate of its Fiken VAT code), rounded to øre; a line whose VAT rate cannot be determined that way is rejected. Lines take a Fiken VAT type, so a `tax_rate` with a `rate` but no `id` is rejected. Records are always read back with prices excluding VAT.\n\nA new Fiken company has no quote counter, and creating a quote is rejected until it exists. Create one quote in Fiken, or set the starting number once through the Proxy API (`POST /offers/counter` with an empty body starts at 10001).\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -910,10 +1104,9 @@ class Quotes(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingQuotesAddResponse(
                 create_quote_response=unmarshal_json_response(
-                    Optional[models.CreateQuoteResponse], http_res
+                    Optional[models.CreateQuoteResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -954,10 +1147,9 @@ class Quotes(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingQuotesAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1027,6 +1219,7 @@ class Quotes(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1051,9 +1244,11 @@ class Quotes(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={"x-apideck-api": "accounting"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1061,10 +1256,9 @@ class Quotes(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingQuotesOneResponse(
                 get_quote_response=unmarshal_json_response(
-                    Optional[models.GetQuoteResponse], http_res
+                    Optional[models.GetQuoteResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1105,10 +1299,9 @@ class Quotes(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingQuotesOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1178,6 +1371,7 @@ class Quotes(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1202,9 +1396,11 @@ class Quotes(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={"x-apideck-api": "accounting"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1212,10 +1408,9 @@ class Quotes(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingQuotesOneResponse(
                 get_quote_response=unmarshal_json_response(
-                    Optional[models.GetQuoteResponse], http_res
+                    Optional[models.GetQuoteResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1256,10 +1451,9 @@ class Quotes(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingQuotesOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1300,8 +1494,8 @@ class Quotes(BaseSDK):
         customer_memo: OptionalNullable[str] = UNSET,
         line_items: Optional[
             Union[
-                List[models.QuoteLineItemInput],
-                List[models.QuoteLineItemInputTypedDict],
+                Iterable[models.QuoteLineItemInput],
+                Iterable[models.QuoteLineItemInputTypedDict],
             ]
         ] = None,
         billing_address: Optional[
@@ -1312,18 +1506,21 @@ class Quotes(BaseSDK):
         ] = None,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         template_id: OptionalNullable[str] = UNSET,
         source_document_url: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1465,6 +1662,7 @@ class Quotes(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.quote, False, False, "json", models.QuoteInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1489,9 +1687,39 @@ class Quotes(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Only `customer`, `number`, `quote_date` and `reference` change. `line_items` sent on update are ignored; delete and recreate the quote to change its lines.\n\nUpdates need `row_version` from a prior read of the record. Writes are applied on the Web Connector's next run, so an update can return a `504` timeout after 28 seconds while QuickBooks still applies it, and the change can take a few minutes to show when the record is read back.\n",
+                        },
+                        {
+                            "connector": "sap-business-one",
+                            "description": "To change a line, send it with the `id` from a read: SAP Business One updates the line with that number. A line without an `id` is matched by its position in `line_items`, so it is added only when it comes after all of the document's existing lines; otherwise it replaces the line at that position. To add lines safely, send every existing line with its `id` followed by the new ones. Lines left out of the request are kept.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "`status` can be set to `draft`, `sent`, `accepted` or `rejected`. `converted` is not settable:\nconvert the estimate to an invoice in FreeAgent.\n\nWhen `line_items` is sent, it replaces the quote's lines: lines with an `id` are updated, lines\nwithout one are added, and existing lines left out are deleted. Leave `line_items` out to keep\nthe lines as they are.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Date-only fields need no configuration: NetSuite converts the datetime it receives into the\nSOAP/integration user's time zone before storing the date part, and these fields are anchored so\nthey store on the intended calendar day for any integration user between UTC-10 and UTC+13.\n\nFour zones fall outside that range and need the optional `timezone` connection setting:\n`Pacific/Pago_Pago`, `Pacific/Niue` and `Pacific/Midway` (UTC-11) store one day early without it,\nand `Pacific/Kiritimati` (UTC+14) stores one day late. Set it to the IANA zone of the NetSuite user\nthis connection authenticates as, read from that user's Home > Set Preferences > Time Zone — Setup >\nCompany > Company Information only supplies the default, so a user who overrode it needs their own\nzone.\n\nWhen the setting is used its value must be within 12 hours of that user's real zone in either\ndirection: more than ~12h east stores dates one day early, more than ~12h west stores them one day\nlate.\n\nThis applies to every NetSuite date-only write field across the accounting resources.\n\n`status` sets the estimate's sales stage: `sent` sets Proposal, `accepted` sets Purchasing and\n`rejected` sets Closed Lost, which also closes the estimate in NetSuite. A status the quote already\nreads as changes nothing, so a quote read and sent back unchanged still saves, and a quote at\nanother stage that reads as `sent` (In Discussion, Identified Decision Makers or In Negotiation)\nkeeps that stage. Proposal, Purchasing and Closed Lost are matched by exact name: if one of them is\nrenamed in NetSuite, even only in case, the status that sets it returns 422 until the stage is named\nback. A quote at a renamed stage, or at a stage the account added, reads as `draft`. `draft` is\naccepted but sets no sales stage, as NetSuite has no draft stage. `converted`, `void` and `expired`\nare set by NetSuite itself: they are accepted only when the quote already has that status, and\notherwise return 422, as does `deleted`. On a converted or expired quote, `accepted` changes the\nsales stage, but the quote keeps reading as `converted` or `expired`. When the quote's customer is a\nprospect, NetSuite also moves the prospect's own status to the same stage; an existing customer's\nstatus is not changed. A status that cannot be set rejects the whole request, including its other\nfields.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": 'Sage writes order-entry documents only against a named transaction definition\n(`document::{definition}`), and enforces it — addressing a quote through the wrong\ndefinition returns "could not be found" rather than touching another record. The\nconnector reads the definition off the quote being written, so this needs no\nconfiguration and cannot be pointed at the wrong document. A quote id that does not\nresolve fails the request instead of falling back to a default.\n',
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "When updating line items, each line item must include its `line_number`. Sage Intacct matches existing lines by `line_number`, not by `id`.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1499,10 +1727,9 @@ class Quotes(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingQuotesUpdateResponse(
                 update_quote_response=unmarshal_json_response(
-                    Optional[models.UpdateQuoteResponse], http_res
+                    Optional[models.UpdateQuoteResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1543,10 +1770,9 @@ class Quotes(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingQuotesUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1587,8 +1813,8 @@ class Quotes(BaseSDK):
         customer_memo: OptionalNullable[str] = UNSET,
         line_items: Optional[
             Union[
-                List[models.QuoteLineItemInput],
-                List[models.QuoteLineItemInputTypedDict],
+                Iterable[models.QuoteLineItemInput],
+                Iterable[models.QuoteLineItemInputTypedDict],
             ]
         ] = None,
         billing_address: Optional[
@@ -1599,18 +1825,21 @@ class Quotes(BaseSDK):
         ] = None,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         template_id: OptionalNullable[str] = UNSET,
         source_document_url: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1752,6 +1981,7 @@ class Quotes(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.quote, False, False, "json", models.QuoteInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1776,9 +2006,39 @@ class Quotes(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Only `customer`, `number`, `quote_date` and `reference` change. `line_items` sent on update are ignored; delete and recreate the quote to change its lines.\n\nUpdates need `row_version` from a prior read of the record. Writes are applied on the Web Connector's next run, so an update can return a `504` timeout after 28 seconds while QuickBooks still applies it, and the change can take a few minutes to show when the record is read back.\n",
+                        },
+                        {
+                            "connector": "sap-business-one",
+                            "description": "To change a line, send it with the `id` from a read: SAP Business One updates the line with that number. A line without an `id` is matched by its position in `line_items`, so it is added only when it comes after all of the document's existing lines; otherwise it replaces the line at that position. To add lines safely, send every existing line with its `id` followed by the new ones. Lines left out of the request are kept.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "`status` can be set to `draft`, `sent`, `accepted` or `rejected`. `converted` is not settable:\nconvert the estimate to an invoice in FreeAgent.\n\nWhen `line_items` is sent, it replaces the quote's lines: lines with an `id` are updated, lines\nwithout one are added, and existing lines left out are deleted. Leave `line_items` out to keep\nthe lines as they are.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Date-only fields need no configuration: NetSuite converts the datetime it receives into the\nSOAP/integration user's time zone before storing the date part, and these fields are anchored so\nthey store on the intended calendar day for any integration user between UTC-10 and UTC+13.\n\nFour zones fall outside that range and need the optional `timezone` connection setting:\n`Pacific/Pago_Pago`, `Pacific/Niue` and `Pacific/Midway` (UTC-11) store one day early without it,\nand `Pacific/Kiritimati` (UTC+14) stores one day late. Set it to the IANA zone of the NetSuite user\nthis connection authenticates as, read from that user's Home > Set Preferences > Time Zone — Setup >\nCompany > Company Information only supplies the default, so a user who overrode it needs their own\nzone.\n\nWhen the setting is used its value must be within 12 hours of that user's real zone in either\ndirection: more than ~12h east stores dates one day early, more than ~12h west stores them one day\nlate.\n\nThis applies to every NetSuite date-only write field across the accounting resources.\n\n`status` sets the estimate's sales stage: `sent` sets Proposal, `accepted` sets Purchasing and\n`rejected` sets Closed Lost, which also closes the estimate in NetSuite. A status the quote already\nreads as changes nothing, so a quote read and sent back unchanged still saves, and a quote at\nanother stage that reads as `sent` (In Discussion, Identified Decision Makers or In Negotiation)\nkeeps that stage. Proposal, Purchasing and Closed Lost are matched by exact name: if one of them is\nrenamed in NetSuite, even only in case, the status that sets it returns 422 until the stage is named\nback. A quote at a renamed stage, or at a stage the account added, reads as `draft`. `draft` is\naccepted but sets no sales stage, as NetSuite has no draft stage. `converted`, `void` and `expired`\nare set by NetSuite itself: they are accepted only when the quote already has that status, and\notherwise return 422, as does `deleted`. On a converted or expired quote, `accepted` changes the\nsales stage, but the quote keeps reading as `converted` or `expired`. When the quote's customer is a\nprospect, NetSuite also moves the prospect's own status to the same stage; an existing customer's\nstatus is not changed. A status that cannot be set rejects the whole request, including its other\nfields.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": 'Sage writes order-entry documents only against a named transaction definition\n(`document::{definition}`), and enforces it — addressing a quote through the wrong\ndefinition returns "could not be found" rather than touching another record. The\nconnector reads the definition off the quote being written, so this needs no\nconfiguration and cannot be pointed at the wrong document. A quote id that does not\nresolve fails the request instead of falling back to a default.\n',
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "When updating line items, each line item must include its `line_number`. Sage Intacct matches existing lines by `line_number`, not by `id`.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1786,10 +2046,9 @@ class Quotes(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingQuotesUpdateResponse(
                 update_quote_response=unmarshal_json_response(
-                    Optional[models.UpdateQuoteResponse], http_res
+                    Optional[models.UpdateQuoteResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1830,10 +2089,9 @@ class Quotes(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingQuotesUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1903,6 +2161,7 @@ class Quotes(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1927,9 +2186,31 @@ class Quotes(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "A delete can return a `504` timeout after 28 seconds while QuickBooks still deletes the quote. Read it back before retrying: a `404` means it is gone.\n",
+                        },
+                        {
+                            "connector": "sap-business-one",
+                            "description": "SAP Business One cannot delete quotations. `DELETE` cancels the quote (it stays readable with `status: void`). A quote that has already been copied to a sales order cannot be cancelled; SAP Business One rejects it.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "FreeAgent only deletes draft estimates, so a sent, accepted or rejected quote is set back to\ndraft and then deleted.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": 'Sage writes order-entry documents only against a named transaction definition\n(`document::{definition}`), and enforces it — addressing a quote through the wrong\ndefinition returns "could not be found" rather than touching another record. The\nconnector reads the definition off the quote being written, so this needs no\nconfiguration and cannot be pointed at the wrong document. A quote id that does not\nresolve fails the request instead of falling back to a default.\n',
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1937,10 +2218,9 @@ class Quotes(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingQuotesDeleteResponse(
                 delete_quote_response=unmarshal_json_response(
-                    Optional[models.DeleteQuoteResponse], http_res
+                    Optional[models.DeleteQuoteResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1981,10 +2261,9 @@ class Quotes(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingQuotesDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2054,6 +2333,7 @@ class Quotes(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2078,9 +2358,31 @@ class Quotes(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "A delete can return a `504` timeout after 28 seconds while QuickBooks still deletes the quote. Read it back before retrying: a `404` means it is gone.\n",
+                        },
+                        {
+                            "connector": "sap-business-one",
+                            "description": "SAP Business One cannot delete quotations. `DELETE` cancels the quote (it stays readable with `status: void`). A quote that has already been copied to a sales order cannot be cancelled; SAP Business One rejects it.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "FreeAgent only deletes draft estimates, so a sent, accepted or rejected quote is set back to\ndraft and then deleted.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": 'Sage writes order-entry documents only against a named transaction definition\n(`document::{definition}`), and enforces it — addressing a quote through the wrong\ndefinition returns "could not be found" rather than touching another record. The\nconnector reads the definition off the quote being written, so this needs no\nconfiguration and cannot be pointed at the wrong document. A quote id that does not\nresolve fails the request instead of falling back to a default.\n',
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2088,10 +2390,9 @@ class Quotes(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingQuotesDeleteResponse(
                 delete_quote_response=unmarshal_json_response(
-                    Optional[models.DeleteQuoteResponse], http_res
+                    Optional[models.DeleteQuoteResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2132,10 +2433,9 @@ class Quotes(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingQuotesDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

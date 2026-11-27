@@ -1,5 +1,4 @@
-# BillCreditNotes
-(*accounting.bill_credit_notes*)
+# Accounting.BillCreditNotes
 
 ## Overview
 
@@ -29,7 +28,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.bill_credit_notes.list(raw=False, service_id="salesforce", company_id="12345", limit=20, filter_={
@@ -104,7 +103,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.bill_credit_notes.create(raw=False, service_id="salesforce", company_id="12345", number="OIT00546", supplier={
@@ -147,7 +146,7 @@ with Apideck(
     }, department={
         "display_id": "123456",
         "name": "Acme Inc.",
-    }, currency=apideck_unify.Currency.USD, currency_rate=0.69, tax_inclusive=True, sub_total=27500, total_amount=49.99, total_tax=2500, tax_code="1234", balance=27500, remaining_credit=27500, status=apideck_unify.BillCreditNoteStatus.AUTHORISED, reference="123456", date_issued=parse_datetime("2021-05-01T12:00:00.000Z"), date_paid=parse_datetime("2021-05-01T12:00:00.000Z"), type_=apideck_unify.BillCreditNoteType.ACCOUNTS_PAYABLE_CREDIT, account={
+    }, currency=apideck_unify.Currency.USD, currency_rate=0.69, tax_inclusive=True, sub_total=27500.0, total_amount=49.99, total_tax=2500.0, tax_code="1234", balance=27500.0, remaining_credit=27500.0, status=apideck_unify.BillCreditNoteStatus.AUTHORISED, reference="123456", date_issued=parse_datetime("2021-05-01T12:00:00.000Z"), date_paid=parse_datetime("2021-05-01T12:00:00.000Z"), type_=apideck_unify.BillCreditNoteType.ACCOUNTS_PAYABLE_CREDIT, account={
         "id": "123456",
         "name": "Bank account",
         "nominal_code": "N091",
@@ -162,8 +161,8 @@ with Apideck(
             "description": "Returned goods credit",
             "type": apideck_unify.LineItemType.EXPENSE_ACCOUNT,
             "tax_amount": 27.5,
-            "total_amount": 27500,
-            "quantity": 1,
+            "total_amount": 27500.0,
+            "quantity": 1.0,
             "unit_price": 27500.5,
             "unit_of_measure": "pc.",
             "discount_percentage": 0.01,
@@ -183,7 +182,7 @@ with Apideck(
             "tax_rate": {
                 "id": "123456",
                 "code": "N-T",
-                "rate": 10,
+                "rate": 10.0,
             },
             "ledger_account": {
                 "id": "123456",
@@ -276,7 +275,7 @@ with Apideck(
 | `reference`                                                                                                                                                  | *OptionalNullable[str]*                                                                                                                                      | :heavy_minus_sign:                                                                                                                                           | Optional reference message ie: Debit remittance detail.                                                                                                      | 123456                                                                                                                                                       |
 | `date_issued`                                                                                                                                                | [date](https://docs.python.org/3/library/datetime.html#date-objects)                                                                                         | :heavy_minus_sign:                                                                                                                                           | Date bill credit note issued - YYYY:MM::DDThh:mm:ss.sTZD                                                                                                     | 2021-05-01T12:00:00.000Z                                                                                                                                     |
 | `date_paid`                                                                                                                                                  | [date](https://docs.python.org/3/library/datetime.html#date-objects)                                                                                         | :heavy_minus_sign:                                                                                                                                           | Date bill credit note paid - YYYY:MM::DDThh:mm:ss.sTZD                                                                                                       | 2021-05-01T12:00:00.000Z                                                                                                                                     |
-| `type`                                                                                                                                                       | [Optional[models.BillCreditNoteType]](../../models/billcreditnotetype.md)                                                                                    | :heavy_minus_sign:                                                                                                                                           | The type of credit note. A bill credit note is always an accounts payable (supplier-side) credit.                                                            | accounts_payable_credit                                                                                                                                      |
+| `type_`                                                                                                                                                      | [Optional[models.BillCreditNoteType]](../../models/billcreditnotetype.md)                                                                                    | :heavy_minus_sign:                                                                                                                                           | The type of credit note. A bill credit note is always an accounts payable (supplier-side) credit.                                                            | accounts_payable_credit                                                                                                                                      |
 | `account`                                                                                                                                                    | [OptionalNullable[models.LinkedLedgerAccount]](../../models/linkedledgeraccount.md)                                                                          | :heavy_minus_sign:                                                                                                                                           | N/A                                                                                                                                                          |                                                                                                                                                              |
 | `line_items`                                                                                                                                                 | List[[models.BillCreditNoteLineItemInput](../../models/billcreditnotelineiteminput.md)]                                                                      | :heavy_minus_sign:                                                                                                                                           | N/A                                                                                                                                                          |                                                                                                                                                              |
 | `allocations`                                                                                                                                                | List[[models.AllocationInput](../../models/allocationinput.md)]                                                                                              | :heavy_minus_sign:                                                                                                                                           | N/A                                                                                                                                                          |                                                                                                                                                              |
@@ -319,7 +318,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.bill_credit_notes.get(id="<id>", service_id="salesforce", company_id="12345", raw=False, fields="id,updated_at")
@@ -378,7 +377,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.bill_credit_notes.update(id="<id>", service_id="salesforce", raw=False, number="OIT00546", supplier={
@@ -421,7 +420,7 @@ with Apideck(
     }, department={
         "display_id": "123456",
         "name": "Acme Inc.",
-    }, currency=apideck_unify.Currency.USD, currency_rate=0.69, tax_inclusive=True, sub_total=27500, total_amount=49.99, total_tax=2500, tax_code="1234", balance=27500, remaining_credit=27500, status=apideck_unify.BillCreditNoteStatus.AUTHORISED, reference="123456", date_issued=parse_datetime("2021-05-01T12:00:00.000Z"), date_paid=parse_datetime("2021-05-01T12:00:00.000Z"), type_=apideck_unify.BillCreditNoteType.ACCOUNTS_PAYABLE_CREDIT, account={
+    }, currency=apideck_unify.Currency.USD, currency_rate=0.69, tax_inclusive=True, sub_total=27500.0, total_amount=49.99, total_tax=2500.0, tax_code="1234", balance=27500.0, remaining_credit=27500.0, status=apideck_unify.BillCreditNoteStatus.AUTHORISED, reference="123456", date_issued=parse_datetime("2021-05-01T12:00:00.000Z"), date_paid=parse_datetime("2021-05-01T12:00:00.000Z"), type_=apideck_unify.BillCreditNoteType.ACCOUNTS_PAYABLE_CREDIT, account={
         "id": "123456",
         "name": "Bank account",
         "nominal_code": "N091",
@@ -436,8 +435,8 @@ with Apideck(
             "description": "Returned goods credit",
             "type": apideck_unify.LineItemType.EXPENSE_ACCOUNT,
             "tax_amount": 27.5,
-            "total_amount": 27500,
-            "quantity": 1,
+            "total_amount": 27500.0,
+            "quantity": 1.0,
             "unit_price": 27500.5,
             "unit_of_measure": "pc.",
             "discount_percentage": 0.01,
@@ -460,7 +459,7 @@ with Apideck(
             "tax_rate": {
                 "id": "123456",
                 "code": "N-T",
-                "rate": 10,
+                "rate": 10.0,
             },
             "ledger_account": {
                 "id": "123456",
@@ -553,7 +552,7 @@ with Apideck(
 | `reference`                                                                                                                                             | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | Optional reference message ie: Debit remittance detail.                                                                                                 | 123456                                                                                                                                                  |
 | `date_issued`                                                                                                                                           | [date](https://docs.python.org/3/library/datetime.html#date-objects)                                                                                    | :heavy_minus_sign:                                                                                                                                      | Date bill credit note issued - YYYY:MM::DDThh:mm:ss.sTZD                                                                                                | 2021-05-01T12:00:00.000Z                                                                                                                                |
 | `date_paid`                                                                                                                                             | [date](https://docs.python.org/3/library/datetime.html#date-objects)                                                                                    | :heavy_minus_sign:                                                                                                                                      | Date bill credit note paid - YYYY:MM::DDThh:mm:ss.sTZD                                                                                                  | 2021-05-01T12:00:00.000Z                                                                                                                                |
-| `type`                                                                                                                                                  | [Optional[models.BillCreditNoteType]](../../models/billcreditnotetype.md)                                                                               | :heavy_minus_sign:                                                                                                                                      | The type of credit note. A bill credit note is always an accounts payable (supplier-side) credit.                                                       | accounts_payable_credit                                                                                                                                 |
+| `type_`                                                                                                                                                 | [Optional[models.BillCreditNoteType]](../../models/billcreditnotetype.md)                                                                               | :heavy_minus_sign:                                                                                                                                      | The type of credit note. A bill credit note is always an accounts payable (supplier-side) credit.                                                       | accounts_payable_credit                                                                                                                                 |
 | `account`                                                                                                                                               | [OptionalNullable[models.LinkedLedgerAccount]](../../models/linkedledgeraccount.md)                                                                     | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     |                                                                                                                                                         |
 | `line_items`                                                                                                                                            | List[[models.BillCreditNoteLineItemInput](../../models/billcreditnotelineiteminput.md)]                                                                 | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     |                                                                                                                                                         |
 | `allocations`                                                                                                                                           | List[[models.AllocationInput](../../models/allocationinput.md)]                                                                                         | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     |                                                                                                                                                         |
@@ -596,7 +595,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.bill_credit_notes.delete(id="<id>", service_id="salesforce", raw=False)
@@ -653,7 +652,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.accounting.bill_credit_notes.create_batch(items=[
@@ -705,12 +704,12 @@ with Apideck(
                 "currency": apideck_unify.Currency.USD,
                 "currency_rate": 0.69,
                 "tax_inclusive": True,
-                "sub_total": 27500,
+                "sub_total": 27500.0,
                 "total_amount": 49.99,
-                "total_tax": 2500,
+                "total_tax": 2500.0,
                 "tax_code": "1234",
-                "balance": 27500,
-                "remaining_credit": 27500,
+                "balance": 27500.0,
+                "remaining_credit": 27500.0,
                 "status": apideck_unify.BillCreditNoteCreateInputBillCreditNoteStatus.AUTHORISED,
                 "reference": "123456",
                 "date_issued": parse_datetime("2021-05-01T12:00:00.000Z"),
@@ -732,8 +731,8 @@ with Apideck(
                         "description": "Returned goods credit",
                         "type": apideck_unify.LineItemType.EXPENSE_ACCOUNT,
                         "tax_amount": 27.5,
-                        "total_amount": 27500,
-                        "quantity": 1,
+                        "total_amount": 27500.0,
+                        "quantity": 1.0,
                         "unit_price": 27500.5,
                         "unit_of_measure": "pc.",
                         "discount_percentage": 0.01,
@@ -756,7 +755,7 @@ with Apideck(
                         "tax_rate": {
                             "id": "123456",
                             "code": "N-T",
-                            "rate": 10,
+                            "rate": 10.0,
                         },
                         "ledger_account": {
                             "id": "123456",

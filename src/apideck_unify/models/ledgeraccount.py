@@ -14,13 +14,14 @@ from apideck_unify.types import (
     OptionalNullable,
     UNSET,
     UNSET_SENTINEL,
+    current_exclude_none,
+    serialize_with_info,
 )
-from apideck_unify.utils import validate_open_enum
+from apideck_unify.types.basemodel import current_filtered_dump
 from datetime import date, datetime
 from enum import Enum
 import pydantic
 from pydantic import field_serializer, model_serializer
-from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
@@ -103,9 +104,7 @@ class FixedAsset(BaseModel):
     acquisition_date: OptionalNullable[date] = UNSET
     r"""The date the assets were purchased - YYYY-MM-DD. Set only when every asset recorded in the account shares the same date."""
 
-    depreciation_method: Annotated[
-        OptionalNullable[DepreciationMethod], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    depreciation_method: OptionalNullable[DepreciationMethod] = UNSET
     r"""The depreciation method of the assets, normalised across accounting systems: declining-balance variants (for example 150% or 200%) are all `declining_balance`, and the accounting system's own value is in `downstream_depreciation_method`. Set only when every asset recorded in the account uses the same method."""
 
     downstream_depreciation_method: OptionalNullable[str] = UNSET
@@ -124,46 +123,52 @@ class FixedAsset(BaseModel):
         return value
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = [
-            "cost",
-            "accumulated_depreciation",
-            "acquisition_date",
-            "depreciation_method",
-            "downstream_depreciation_method",
-            "useful_life_months",
-        ]
-        nullable_fields = [
-            "cost",
-            "accumulated_depreciation",
-            "acquisition_date",
-            "depreciation_method",
-            "downstream_depreciation_method",
-            "useful_life_months",
-        ]
-        null_default_fields = []
-
+        optional_fields = set(
+            [
+                "cost",
+                "accumulated_depreciation",
+                "acquisition_date",
+                "depreciation_method",
+                "downstream_depreciation_method",
+                "useful_life_months",
+            ]
+        )
+        nullable_fields = set(
+            [
+                "cost",
+                "accumulated_depreciation",
+                "acquisition_date",
+                "depreciation_method",
+                "downstream_depreciation_method",
+                "useful_life_months",
+            ]
+        )
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m
 
@@ -188,6 +193,29 @@ class CategoriesModel(BaseModel):
     name: Optional[str] = None
     r"""The name of the category."""
 
+    @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
+    def serialize_model(self, handler):
+        optional_fields = set(["id", "name"])
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
+        serialized = handler(self)
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+
+            if val != UNSET_SENTINEL:
+                if val is not None or k not in optional_fields:
+                    m[k] = val
+
+        return m
+
 
 class ParentAccountTypedDict(TypedDict):
     id: NotRequired[str]
@@ -208,6 +236,29 @@ class ParentAccount(BaseModel):
     display_id: Optional[str] = None
     r"""The human readable display ID used when displaying the parent account"""
 
+    @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
+    def serialize_model(self, handler):
+        optional_fields = set(["id", "name", "display_id"])
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
+        serialized = handler(self)
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+
+            if val != UNSET_SENTINEL:
+                if val is not None or k not in optional_fields:
+                    m[k] = val
+
+        return m
+
 
 class SubAccountsTypedDict(TypedDict):
     id: NotRequired[str]
@@ -223,6 +274,29 @@ class SubAccounts(BaseModel):
     account_sub_name: Optional[str] = None
     r"""The name of the sub account."""
 
+    @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
+    def serialize_model(self, handler):
+        optional_fields = set(["id", "account_sub_name"])
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
+        serialized = handler(self)
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+
+            if val != UNSET_SENTINEL:
+                if val is not None or k not in optional_fields:
+                    m[k] = val
+
+        return m
+
 
 class LedgerAccountSubsidiariesTypedDict(TypedDict):
     id: NotRequired[str]
@@ -232,6 +306,29 @@ class LedgerAccountSubsidiariesTypedDict(TypedDict):
 class LedgerAccountSubsidiaries(BaseModel):
     id: Optional[str] = None
     r"""The ID of the subsidiary."""
+
+    @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
+    def serialize_model(self, handler):
+        optional_fields = set(["id"])
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
+        serialized = handler(self)
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+
+            if val != UNSET_SENTINEL:
+                if val is not None or k not in optional_fields:
+                    m[k] = val
+
+        return m
 
 
 class LedgerAccountTypedDict(TypedDict):
@@ -320,15 +417,10 @@ class LedgerAccount(BaseModel):
     code: OptionalNullable[str] = UNSET
     r"""The code assigned to the account."""
 
-    classification: Annotated[
-        OptionalNullable[LedgerAccountClassification],
-        PlainValidator(validate_open_enum(False)),
-    ] = UNSET
+    classification: OptionalNullable[LedgerAccountClassification] = UNSET
     r"""The classification of account."""
 
-    type: Annotated[
-        Optional[LedgerAccountType], PlainValidator(validate_open_enum(False))
-    ] = None
+    type: Optional[LedgerAccountType] = None
     r"""The type of account."""
 
     sub_type: OptionalNullable[str] = UNSET
@@ -352,9 +444,7 @@ class LedgerAccount(BaseModel):
     fixed_asset: OptionalNullable[FixedAsset] = UNSET
     r"""For an account that holds the cost of fixed assets, the fixed-asset register's figures for the assets recorded in it. Null for other accounts, including accumulated-depreciation accounts, and when the accounting system does not provide them."""
 
-    currency: Annotated[
-        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    currency: OptionalNullable[Currency] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     tax_type: OptionalNullable[str] = UNSET
@@ -367,9 +457,7 @@ class LedgerAccount(BaseModel):
     active: OptionalNullable[bool] = UNSET
     r"""Whether the account is active or not."""
 
-    status: Annotated[
-        OptionalNullable[AccountStatus], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    status: OptionalNullable[AccountStatus] = UNSET
     r"""The status of the account."""
 
     header: OptionalNullable[bool] = UNSET
@@ -454,93 +542,99 @@ class LedgerAccount(BaseModel):
         return value
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = [
-            "id",
-            "display_id",
-            "nominal_code",
-            "code",
-            "classification",
-            "type",
-            "sub_type",
-            "name",
-            "fully_qualified_name",
-            "description",
-            "opening_balance",
-            "current_balance",
-            "fixed_asset",
-            "currency",
-            "tax_type",
-            "tax_rate",
-            "level",
-            "active",
-            "status",
-            "header",
-            "bank_account",
-            "categories",
-            "parent_account",
-            "sub_account",
-            "sub_accounts",
-            "last_reconciliation_date",
-            "subsidiaries",
-            "custom_mappings",
-            "custom_fields",
-            "row_version",
-            "updated_by",
-            "created_by",
-            "updated_at",
-            "created_at",
-            "pass_through",
-        ]
-        nullable_fields = [
-            "nominal_code",
-            "code",
-            "classification",
-            "sub_type",
-            "name",
-            "fully_qualified_name",
-            "description",
-            "opening_balance",
-            "current_balance",
-            "fixed_asset",
-            "currency",
-            "tax_type",
-            "level",
-            "active",
-            "status",
-            "header",
-            "sub_account",
-            "last_reconciliation_date",
-            "custom_mappings",
-            "row_version",
-            "updated_by",
-            "created_by",
-            "updated_at",
-            "created_at",
-        ]
-        null_default_fields = []
-
+        optional_fields = set(
+            [
+                "id",
+                "display_id",
+                "nominal_code",
+                "code",
+                "classification",
+                "type",
+                "sub_type",
+                "name",
+                "fully_qualified_name",
+                "description",
+                "opening_balance",
+                "current_balance",
+                "fixed_asset",
+                "currency",
+                "tax_type",
+                "tax_rate",
+                "level",
+                "active",
+                "status",
+                "header",
+                "bank_account",
+                "categories",
+                "parent_account",
+                "sub_account",
+                "sub_accounts",
+                "last_reconciliation_date",
+                "subsidiaries",
+                "custom_mappings",
+                "custom_fields",
+                "row_version",
+                "updated_by",
+                "created_by",
+                "updated_at",
+                "created_at",
+                "pass_through",
+            ]
+        )
+        nullable_fields = set(
+            [
+                "nominal_code",
+                "code",
+                "classification",
+                "sub_type",
+                "name",
+                "fully_qualified_name",
+                "description",
+                "opening_balance",
+                "current_balance",
+                "fixed_asset",
+                "currency",
+                "tax_type",
+                "level",
+                "active",
+                "status",
+                "header",
+                "sub_account",
+                "last_reconciliation_date",
+                "custom_mappings",
+                "row_version",
+                "updated_by",
+                "created_by",
+                "updated_at",
+                "created_at",
+            ]
+        )
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m
 
@@ -610,15 +704,10 @@ class LedgerAccountInput(BaseModel):
     code: OptionalNullable[str] = UNSET
     r"""The code assigned to the account."""
 
-    classification: Annotated[
-        OptionalNullable[LedgerAccountClassification],
-        PlainValidator(validate_open_enum(False)),
-    ] = UNSET
+    classification: OptionalNullable[LedgerAccountClassification] = UNSET
     r"""The classification of account."""
 
-    type: Annotated[
-        Optional[LedgerAccountType], PlainValidator(validate_open_enum(False))
-    ] = None
+    type: Optional[LedgerAccountType] = None
     r"""The type of account."""
 
     sub_type: OptionalNullable[str] = UNSET
@@ -639,9 +728,7 @@ class LedgerAccountInput(BaseModel):
     current_balance: OptionalNullable[float] = UNSET
     r"""The current balance of the account."""
 
-    currency: Annotated[
-        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    currency: OptionalNullable[Currency] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     tax_type: OptionalNullable[str] = UNSET
@@ -654,9 +741,7 @@ class LedgerAccountInput(BaseModel):
     active: OptionalNullable[bool] = UNSET
     r"""Whether the account is active or not."""
 
-    status: Annotated[
-        OptionalNullable[AccountStatus], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    status: OptionalNullable[AccountStatus] = UNSET
     r"""The status of the account."""
 
     header: OptionalNullable[bool] = UNSET
@@ -720,77 +805,83 @@ class LedgerAccountInput(BaseModel):
         return value
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = [
-            "display_id",
-            "nominal_code",
-            "code",
-            "classification",
-            "type",
-            "sub_type",
-            "name",
-            "fully_qualified_name",
-            "description",
-            "opening_balance",
-            "current_balance",
-            "currency",
-            "tax_type",
-            "tax_rate",
-            "level",
-            "active",
-            "status",
-            "header",
-            "bank_account",
-            "parent_account",
-            "sub_account",
-            "last_reconciliation_date",
-            "subsidiaries",
-            "custom_fields",
-            "row_version",
-            "pass_through",
-        ]
-        nullable_fields = [
-            "nominal_code",
-            "code",
-            "classification",
-            "sub_type",
-            "name",
-            "fully_qualified_name",
-            "description",
-            "opening_balance",
-            "current_balance",
-            "currency",
-            "tax_type",
-            "level",
-            "active",
-            "status",
-            "header",
-            "sub_account",
-            "last_reconciliation_date",
-            "row_version",
-        ]
-        null_default_fields = []
-
+        optional_fields = set(
+            [
+                "display_id",
+                "nominal_code",
+                "code",
+                "classification",
+                "type",
+                "sub_type",
+                "name",
+                "fully_qualified_name",
+                "description",
+                "opening_balance",
+                "current_balance",
+                "currency",
+                "tax_type",
+                "tax_rate",
+                "level",
+                "active",
+                "status",
+                "header",
+                "bank_account",
+                "parent_account",
+                "sub_account",
+                "last_reconciliation_date",
+                "subsidiaries",
+                "custom_fields",
+                "row_version",
+                "pass_through",
+            ]
+        )
+        nullable_fields = set(
+            [
+                "nominal_code",
+                "code",
+                "classification",
+                "sub_type",
+                "name",
+                "fully_qualified_name",
+                "description",
+                "opening_balance",
+                "current_balance",
+                "currency",
+                "tax_type",
+                "level",
+                "active",
+                "status",
+                "header",
+                "sub_account",
+                "last_reconciliation_date",
+                "row_version",
+            ]
+        )
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m

@@ -8,7 +8,7 @@ from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from datetime import date
 from jsonpath import JSONPath
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
 
 
 class Invoices(BaseSDK):
@@ -26,7 +26,7 @@ class Invoices(BaseSDK):
             Union[models.InvoicesFilter, models.InvoicesFilterTypedDict]
         ] = None,
         sort: Optional[Union[models.InvoicesSort, models.InvoicesSortTypedDict]] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -73,7 +73,7 @@ class Invoices(BaseSDK):
             limit=limit,
             filter_=utils.get_pydantic_model(filter_, Optional[models.InvoicesFilter]),
             sort=utils.get_pydantic_model(sort, Optional[models.InvoicesSort]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -94,6 +94,7 @@ class Invoices(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -118,9 +119,183 @@ class Invoices(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sap-business-one",
+                            "description": "Supported filters: `updated_since`, `created_since`, `number`, `customer_id` and `po_number`. `number` is the SAP Business One document number: a whole number from 0 to 2,147,483,647, and any other value returns a 400. `po_number` matches the customer's reference (*Customer Ref. No.*) exactly and can match more than one invoice: send your own order number as `po_number` on create to find the invoice again. A deleted invoice is cancelled, and SAP Business One then adds a cancellation document with the same `po_number` and `status` `void`, so the filter returns both: an invoice whose `status` is not `void` is still in effect.\n",
+                        },
+                        {
+                            "connector": "e-conomic",
+                            "description": "The list returns booked (posted) invoices only, as headers without `line_items`: fetch a single invoice to get its lines. Draft invoices are not listed but can be read by id. `status` is derived from the outstanding balance: `paid` when nothing is outstanding, `partially_paid` when part of the total is, and `unpaid` otherwise. Invoices with a negative total are credit notes and are returned by `/accounting/credit-notes`, not here. Because e-conomic cannot filter on the total, a page can hold fewer invoices than `limit`, or none, while more pages remain: keep following the next cursor. Supported filters: `number`, `ids` and `customer_id`. Invoice created and updated webhook events also fire for credit notes, which e-conomic records as invoices: if the invoice of such an event returns `404` here, it is a credit note, available from `/accounting/credit-notes`.\n`filter[ids]` matches booked invoices only; draft ids (`draft-N`) match nothing.\nLine items of a draft have no `tax_amount` or `tax_rate.rate`; e-conomic returns VAT per line only for booked documents.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "Lists the invoices of every fiscal year in the administration. `status` and `balance` come from Minox's open items: `paid` when nothing is\nopen (an overpayment shows as a negative `balance`), `partially_paid` when part is,\n`unpaid` when all of it is. Minox keeps no open item for some older invoices; those are\n`posted` with `balance` `null`. The same applies when two of Minox's open items match one document (same number, date and kind). Sorting is not supported: Minox\nbookings have no created or updated timestamps.\n",
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "`number` is the SAP document number, which is only unique within a company code, so `filter[number]` can\nreturn invoices from more than one company code. Use the full `id`\n(`<company code>:<fiscal year>:<document number>`, e.g. `1710:2026:1800000001`) to identify an invoice.\n\n`reference` is the reference stored on the SAP document, not the document number: the value sent as\n`reference` on create, the billing document number for invoices created by SAP billing, and `null` when\nthe document has none. `customer_memo` is the document header text.\n\n`filter[updated_since]` (the last change date) and `filter[created_since]` (the posting date) compare on\nwhole days: SAP keeps only a date for both, so the time part is ignored and the filter is inclusive of the\ngiven day (in UTC). Records from earlier that day are returned again; dedupe by `id`.\n\nInvoices created by SAP billing are listed alongside invoices posted in financial accounting, but only once\nthe billing document has been posted to accounting: a billing document that SAP still shows as \"to be\nposted\" (for example because a tax condition could not be determined) has no accounting document yet\nand is not listed. Billing credit memos and cancellations are not listed.\n\n`status` is `partially_paid` when part of the invoice is still open after a partial payment in\nSAP: either the invoice itself is still open, or a residual-item payment cleared it and left a\nnew open item for the remainder. Otherwise it is `paid` when the invoice is cleared in SAP and\n`authorised` when it is not. Finding partial payments adds one SAP read per page of invoices,\nplus one for every further 40 invoices on the page and every further 500 matching items. If it\nfails, the request returns an error rather than the page.\n\nFor an invoice that comes from a billing document, `line_items` are the billing items: `item`, `quantity`, `unit_price` (net per unit), `unit_of_measure`, `total_amount` (net) and `tax_amount`. Their `id` is `<billing document>:<item>` and they have no `ledger_account`. This needs the **SAP_COM_0120** (Billing Integration) communication scenario: without it, or when the lookup fails, the lines are G/L account lines and the response carries a warning in `meta.warnings`.\n\nInvoices posted directly in financial accounting, including those created through this API, have G/L account lines only.\n\n`total_tax` is the tax SAP posted on the invoice and `sub_total` is `total` minus `total_tax`; an invoice without tax returns `total_tax` `0`. SAP posts tax as separate tax lines, which are summed into `total_tax` and are not returned in `line_items`. Each G/L account line carries SAP's tax code in `tax_rate.code`; the tax rate and a per-line `tax_amount` are not returned for G/L account lines, and `tax_code` on the invoice itself is not returned.\n\nOn G/L account lines, `total_amount` is signed against the invoice: a line on the revenue side reads\npositive, and a line on the other side (an offsetting or reversing posting inside the same document)\nreads negative. `total` stays the absolute sum of the customer lines, so the lines do not always add\nup to it (for example when a down payment is cleared on the invoice). On create, every line's `total_amount` is posted as its\nabsolute value on the revenue side, so remove or adjust negative lines before posting a read invoice again.\n\n`limit` caps the SAP posting lines read per page, not the invoices, so a page can hold fewer\ninvoices than `limit`. An invoice is never split across pages: one with more posting lines\nthan `limit` is returned complete on a page of its own. Only an invoice with more than 5,000\nposting lines, or one whose lines cannot all be read within the request's time budget, still\nappears on consecutive pages with the same `id`, each carrying part of its lines; if SAP\nfails while they are read, the request returns a retryable error. Follow `meta.cursors.next`\nuntil it is `null`. `meta.total_count` will not appear and `meta.cursors.previous` is always\n`null`. `pass_through` cannot set `$top`, `$skip` or `$orderby` on this list; such a request\nis refused with a 400.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "FreeAgent's `Overdue` status is returned as `submitted` (or `partially_paid` when part of\nthe invoice has been paid); there is no separate overdue status. Treat an invoice as overdue\nwhen `balance > 0` and `due_date` is in the past. For the same reason an invoice turning\noverdue does not by itself produce an `accounting.invoice.updated` webhook.\n",
+                        },
+                        {
+                            "connector": "exact-online-nl",
+                            "description": 'Exact Online has no balance field on an invoice, so `balance` is derived from its\ncash-flow data. When that derivation cannot run — the connection\'s app registration\nlacks cash-flow access, or the call is rate-limited or fails — `balance` comes back\n`null`, meaning *not determined*, never `0` and never the invoice total. Treat `null`\nas unknown rather than unpaid.\n\nA draft invoice is the exception: it has no number, nothing is derived for it, and its\n`balance` is its own total, which is correct since none of it has been settled.\n\nReading a single invoice by id derives the balance the same way, so the two paths agree.\n\nExact Online\'s own invoice lifecycle carries four states, mapped to `draft` (not yet\nissued, no number), `submitted` (issued, not yet due), `unpaid` (past its due date and not\nsettled) and `paid`. It has no part-paid state of its own, so `partially_paid` is derived\nhere: an invoice whose `balance` is above zero but below its `total` is reported\n`partially_paid` rather than `unpaid` or `submitted`.\n\nThat derivation needs the balance, so it is skipped whenever `balance` is `null` — an\ninvoice whose balance could not be determined keeps the state Exact gave it.\n\nAn invoice that carries no number is reported `draft`, which is also how `balance` treats\nit. Should Exact ever return an invoice with a number but no recognisable lifecycle value,\n`status` is `null` — *not determined* — rather than guessed at.\n\n**Sales credit notes are returned here too.** Exact stores them in the same entity as\ninvoices, so this endpoint serves both, and they are marked `type: "credit"` (an ordinary\ninvoice is `type: "standard"`). Three things follow. Their `balance` is what the customer\nis owed, not what they owe, and Exact does not enforce a negative sign on the amounts — a\ncredit note can carry a positive `total` and a positive `balance`. The same document is\nalso served by `/accounting/credit-notes` under a **different** id, so syncing both\nendpoints double-counts it unless `type` is used to filter here. And `status` on a credit\nnote is Exact\'s own document lifecycle, not a refund state.\n\nA filter value Exact cannot be asked about — a malformed date, an `ids` or `customer_id`\nthat is not a GUID, a non-numeric `number` — returns an **empty page rather than an\nerror**, so an empty result does not by itself mean there are no matching invoices.\n',
+                        },
+                        {
+                            "connector": "exact-online",
+                            "description": "Same as `exact-online-nl`.\n",
+                        },
+                        {
+                            "connector": "exact-online-uk",
+                            "description": "Same as `exact-online-nl`.\n",
+                        },
+                        {
+                            "connector": "campfire",
+                            "description": "`terms` returns the payment term's display name (for example `Net 30` or\n`Due on Receipt`), and `terms_id` returns its identifier. Invoices with no payment\nterm set return `null` for both.\n\nWhen creating or updating an invoice, set the payment term with `terms_id` — the\ndisplay name is read-only and is ignored on write.\n\n`sub_total` and `total_tax` are both derived, not returned by Campfire, which reports\nno invoice-level sub-total or tax figure. `total_tax` is the sum of the per-line\n`tax_amount` values and `sub_total` is `total` minus that sum, each rounded to four\ndecimal places, so `sub_total + total_tax` reconciles to `total`.\n\nOn a small number of records Campfire's own header total and line amounts disagree, and\non those the derived `sub_total` will not equal the sum of `line_items[].total_amount`.\n\nBoth are omitted rather than zero when Campfire returns no line detail for the record.\n",
+                        },
+                        {
+                            "connector": "snelstart",
+                            "description": "`line_items`, `sub_total` and `total_tax` are never returned by this connector, on any\noperation. SnelStart's list/read endpoint for invoices is a read-only summary view with no\nline-item detail; the debit/credit lines only exist on the underlying \"sales booking\"\nrecord, which `invoicesAdd`/`invoicesUpdate` write to — but has no GET endpoint of its own,\nand per the platform's write contract the create/update response returns only `id`. There\nis no way to retrieve these three fields through this connector once set.\n",
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": "Lists booked sales invoices from the configured sales daybook (setting \"Sales invoice\ndaybook\", default VRK), paid and unpaid. Credit notes are not included, and concept\ninvoices are not listed until they are finalised in Twinfield. `id` and `number` are the\ninvoice number, the same number customer payments use in `allocations[].id`.\n\n`line_items`, `sub_total` and `total_tax` are only returned when fetching an invoice by\n`id`. `balance` is in the invoice currency and changes only when a payment is matched to\nthe invoice in Twinfield.\n\n`updated_at` is Twinfield's last-modified time labelled as UTC, so it may be 1-2 hours\nahead of true UTC. It is the time the receivable line last changed, so it can differ from\nthe `updated_at` of the same invoice read by `id`. `updated_since` may return slightly more records than strictly changed;\nde-duplicate on `id`.\n\nEvery call reads the office's full sales history, so large offices see slower responses.\n",
+                        },
+                        {
+                            "connector": "dualentry",
+                            "description": "`updated_since` is inclusive and is applied at whole-second granularity, so a poll that\nreuses the newest `updated_at` it received will re-receive the records from that final\nsecond. De-duplicate on `id`, or advance the cursor past the boundary second.\n\nTwo DualEntry behaviours combine to cause this. Its `updated_after` filter is a\n`>=` comparison, and while DualEntry stores update times with sub-second precision it\nreturns them truncated to the second — so a returned timestamp is always slightly earlier\nthan the value the filter compares against. Any sub-second component supplied in\n`updated_since` is therefore rounded down before the request is sent, which guarantees no\nrecord is ever skipped at the boundary, at the cost of re-delivering that second.\n\n`filter[ids]` and `filter[number]` address the same field on this connector: a\nDualEntry invoice's unified `id`, `display_id` and `number` are all the same value.\nIf both are supplied, `filter[number]` takes precedence and `filter[ids]` is ignored\n— so a `number` outside the `ids` list still returns that invoice. Send one or the\nother, not both.\n\n`filter[ids]` returns at most 100 records per page. A list of more than 100 ids is not\ntruncated — the filter is preserved across pages, so page through the cursor to collect\nthem all.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "`sub_total` equals `total` and does not exclude tax. Sage's `accounts-receivable/invoice`\nobject exposes only document-level totals with no pre-tax subtotal field, so both unified\nfields come from the same source. For an untaxed invoice that is correct; for a taxed one\n`sub_total` is the tax-inclusive amount rather than the net. Derive the net from\n`line_items[].total_amount` when the distinction matters.\n\n`total_tax` is not populated: the object carries no header tax field, only a tax-solution\nreference. Tax exists solely as per-line entries.\n",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "AFAS Profit derives sales invoices from `Profit_SalesorderLines` (sales-orders feed). The `limit` parameter may return fewer invoices than specified — AFAS returns flat sales-order line rows which are grouped by `OrderNumber` into complete invoices. `limit=N` caps the raw row count, not the grouped invoice count.\n",
+                        },
+                        {
+                            "connector": "clearbooks-uk",
+                            "description": "Clearbooks does not support setting the pagination size.",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": 'The minimum page size accepted for Netsuite is 5. The cursor for Netsuite expires if it has not been used within 15 minutes after its creation.\n`status` is `authorised` for an open invoice, `paid` when paid in full, `submitted` while pending approval, `draft` when rejected and `void` when voided. `partially_paid` is returned only by lists that use a filter: NetSuite reports how much of an invoice has been paid only there, so the unfiltered list and a single invoice return a partly paid open invoice as `authorised`.\nWhen using filters or sort parameters (which trigger the SuiteQL path), `quantity` and `unit_price` on line items may reflect base-unit values (e.g., days) rather than selling-unit values (e.g., years) for items with Units of Measure (UOM) enabled. `total_amount` is always accurate regardless. Use the GET one endpoint for selling-unit quantities.\n`filter[subsidiary_id]` scopes results to a single subsidiary and is only supported on NetSuite OneWorld accounts; on standard (single-entity) accounts it is ignored.\n\nTax can be recorded per line or once for the whole invoice, depending on how the account is set up. Where it is recorded per line, `line_items[].tax_rate` carries that line\'s own code and rate. Where it is recorded for the whole invoice, `line_items[].taxable` reports which lines the tax applies to, `line_items[].tax_rate` carries the invoice\'s code and rate on those lines only, and `tax_code` carries the same code at the invoice level. `taxable` is read-only and is reported only on accounts that record taxability per line, so its absence means "not reported", not "not taxable" — and an absent `tax_rate` likewise does not by itself mean a line is untaxed. No per-line `tax_amount` is reported for invoice-level tax, because NetSuite does not store one.\n\n`line_items[].taxable` and `tax_code` are reported by `GET /invoices/{id}` and by an unfiltered `GET /invoices` only. Adding any `filter`, `sort` or `pass_through` parameter switches to a query path that cannot return them, so the same invoice read two ways can differ on those two fields.\n',
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Invoices in Xero can be tax inclusive, tax exclusive, or no tax. The `tax_inclusive` field is set to `true` (tax inclusive), `false` (tax exclusive), or `null` (no tax). Line items include `tax_rate` references that link to the tax-rates resource.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks uses tax codes rather than tax rates. The `tax_rate` on line items references a tax code, which may not include the actual percentage value. To get the actual rate, retrieve the full tax rate details via the tax-rates endpoint.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite uses tax codes rather than tax rates. The `tax_rate` on line items references a tax code, which may not include the actual percentage value. To get the actual rate, retrieve the full tax rate details via the tax-rates endpoint.\n",
+                        },
+                        {
+                            "connector": "freshbooks",
+                            "description": "FreshBooks supports up to two taxes per line item (`taxName1`/`taxAmount1` and `taxName2`/`taxAmount2`).\nThe unified API supports one `tax_rate` per line item, so Apideck maps the tax with the largest rate as\n`tax_rate` (name, rate, code) and sets `tax_amount` to the combined total of both taxes applied to the line.\n\nIf you need both individual tax values, use the `raw` query parameter (`?raw=true`) to access the original\nFreshBooks response, where both `taxName1`/`taxAmount1` and `taxName2`/`taxAmount2` are available on each line item.\n",
+                        },
+                        {
+                            "connector": "alegra",
+                            "description": "Invoices are created **unstamped** (as a draft), so no CFDI folio is consumed. To stamp (timbrar), send `pass_through` with `stamp.generateStamp: true` plus the SAT fields (`paymentType`, `cfdiUse`, `regimeClient`); each line's Alegra item must have a SAT `productKey`. Update and delete work only while the invoice is a draft — a stamped invoice is immutable (void it in Alegra). The CFDI itself (UUID, seals) is not mapped to unified fields; read it via `?raw=true` or the Proxy (#11099). See the Alegra usage guide for the full stamping flow.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks Online does not expose a reliable cross-page total record count. The `QueryResponse.totalCount` field in list responses reflects the count for that page only, not the full dataset. `meta.total_count` will not appear in list responses. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite uses the same underlying QuickBooks API. The `QueryResponse.totalCount` field in list responses reflects the per-page count only. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "A bundle (group item) is returned as its component lines. Each item in the bundle is its own\n`sales_item` line with its item, quantity, unit price and amount, and these lines add up to\nthe bundle's total. The bundle itself is not returned as a line item.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "A bundle (group item) is returned as its component lines. Each item in the bundle is its own\n`sales_item` line with its item, quantity, unit price and amount, and these lines add up to\nthe bundle's total. The bundle itself is not returned as a line item.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "`quotes` lists the estimates linked to the invoice with their `id` only; `quotes[].number`\nis not returned on the list. Read it from `GET /accounting/invoices/{id}` or\n`GET /accounting/quotes/{id}`.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "`quotes` lists the estimates linked to the invoice with their `id` only; `quotes[].number`\nis not returned on the list. Read it from `GET /accounting/invoices/{id}` or\n`GET /accounting/quotes/{id}`.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "`quotes` lists the estimate the invoice was created from. An invoice created from a sales\norder has no `quotes`, even when that sales order was created from an estimate. On a list\nwithout filters, sorting or `pass_through`, NetSuite does not say which kind of transaction\nan invoice was created from, so the page's invoices are checked with one extra request.\nWhen that request fails, `quotes` is omitted and `meta.warnings` has an entry with\n`operation: quotesAll`.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n\nLine-level tax is written from `line_items[].tax_rate.id` (an Odoo tax id) and read back on `line_items[].tax_rate`/`tax_amount`. `tax_rate` is present only on a line with exactly one tax; it is absent on both untaxed lines and lines with multiple taxes (which still report the aggregate `tax_amount`), so its absence does not by itself mean a line is untaxed.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics",
+                            "description": "Microsoft Dynamics 365 does not include a total record count in default list responses. `meta.total_count` will not appear. Surfacing the total requires adding `$count=true` to the OData query or calling a separate `$count` endpoint — not currently implemented.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Zoho Books does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "stripe",
+                            "description": "Stripe removed `total_count` from list responses in March 2025 (API version 2025-03-31.basil). `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "stripe-billing",
+                            "description": "Stripe removed `total_count` from list responses in March 2025 (API version 2025-03-31.basil). `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": "Moneybird does not expose a total record count in list responses. `meta.total_count` will not appear.\n\nMoneybird's native invoice `state` is normalized to unified `status` as follows: `open`, `late`,\n`reminded`, and `pending_payment` all map to `submitted` (a sent invoice awaiting payment — Moneybird\nhas no distinct unified `overdue`/`unpaid` value, so an overdue invoice reads as `submitted`, not `draft`);\n`scheduled` maps to `draft` (not yet sent); `uncollectible` maps to `void`. To distinguish these\nunderlying states (e.g. `late` vs `open`), read the native `state` via `raw: true`.\n",
+                        },
+                        {
+                            "connector": "rillet",
+                            "description": "Rillet does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "pennylane",
+                            "description": "Pennylane does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "procountor-fi",
+                            "description": "Procountor does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "access-financials",
+                            "description": "Access Financials does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "dualentry",
+                            "description": "DualEntry scopes invoices by company. Pass the `x-apideck-company-id` header (or set a Default\nCompany on the connection) to return only records belonging to that company within the tenant.\nWithout it, records across all companies in the tenant are returned.\n",
+                        },
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "QuickBooks Desktop does not expose a reliable cross-page total record count. Getting `total_count` requires a separate COUNT query — an extra API call that is not currently implemented. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "lexware-office",
+                            "description": "`status` can disagree between this list and a single-record read (`GET\n/accounting/invoices/{id}`) for the same invoice at the same point in time — for example\none endpoint reporting `unpaid` while the other reports `authorised` for an invoice that\nis open but not yet overdue. Prefer the single-record read as the source of truth for\nstatus when reconciling.\n\nThis list always excludes overdue invoices — the vendor's status filter rejects any\nrequest that combines an overdue filter with other statuses, and there is no unified\n`filter[status]` on this resource to request overdue invoices on their own. An overdue\ninvoice is still reachable via `invoices.one` by id.\n\n`due_date`, `sub_total`, `total_tax` and `billing_address` are not returned on this list\n— the vendor's list endpoint is a lighter summary view than the get-by-id response. Fetch\nthe invoice by `id` for those fields.\n",
+                        },
+                        {
+                            "connector": "oracle-fusion",
+                            "description": "Invoices are Oracle **Receivables transactions**, and the resource is not restricted to\nsales invoices: credit and debit memos come back in the same list. `type` is what\ndistinguishes them, derived from the transaction type's name — a tenant-defined name Oracle\ndoes not classify, so a custom transaction type reads as `other`.\n\n`status` combines two things Oracle keeps apart. An incomplete transaction reads as `draft`\nand one awaiting approval as `submitted`; anything completed (or frozen, which means locked\nagainst edits, not written off) reads from the balance instead — `paid`, `partially_paid`\nor `unpaid`.\n\n`customer.id` carries Oracle's internal party id and `customer.display_id` the customer\naccount number. **Use `customer.display_id` when creating an invoice** — Oracle accepts the\naccount number and nothing else, and rejects the party id outright. `filter[customer_id]`\ntakes the party id, matching `customer.id`.\n\nWhether `number` is honoured depends on the connection's Receivables Transaction Source.\nA source with automatic transaction numbering assigns Oracle's own number and ignores a\nsupplied `number` without error, so read the created invoice back for the real one. A\nsource without automatic numbering keeps the supplied `number`, requires one on every\ncreate, and refuses a number already used by another transaction.\n\n`line_items[].unit_of_measure` must be a unit of measure **name** as defined in the tenant (for example `Each`), not its short code (`Ea`); an unknown value is refused, and a tenant without units of measure defined refuses every value.\n\nOracle computes each line amount as quantity × unit price and rounds only the invoice\ntotals to the currency. Send any two of `quantity`, `unit_price` and `total_amount` and the\nthird is derived at ten decimals — so a value that is not an exact multiple (100 over 3)\nreads back as 33.3333333333 and `total_amount` 99.9999999999 while the header `total` reads\n100. This applies to a derived `quantity` just as it does to a derived `unit_price`. Send\n`quantity` and `unit_price` when the exact line amount matters.\n\nSending all three is allowed, but `quantity` × `unit_price` must agree with `total_amount`\nto within half a cent (0.005) unless a line discount explains the difference; a larger disagreement is\nrefused rather than silently resolved in favour of one of them.\n\n`line_items[].tax_rate.code` must be a **tax classification code** defined in the tenant's\ntransaction-tax setup; an unknown code is refused, and a tenant with no tax classification\ncodes refuses every value. `tax_rate.id` is not used on a create. Oracle calculates the tax\nfrom the code, so `line_items[].tax_amount` is not sent — and whether the code selects the\nrate, or the tenant's default rate applies instead, depends on the tenant's transaction-tax\nconfiguration for Receivables invoices.\n\nLine-level tax is returned on the single-invoice read only: `line_items[].tax_amount` and\n`tax_rate.rate` come back from `GET /invoices/{id}` (the rate only when one tax applies to\nthe line), while the list carries the header `total_tax` and the line's `tax_rate.code`.\n\n`custom_fields` map to the segments of the tenant's transaction descriptive flexfield.\n`custom_fields[].id` must be a deployed segment's API name (`custom_fields[].name` is\naccepted as a fallback); an unknown id is refused, a tenant with no segments deployed\nrefuses every value, and a segment holds a single text, number or date, so object and\narray values are refused. Reads return every segment that carries a value, with the\nsegment API name in both `id` and `name`. When the segments belong to a flexfield context,\nset the connection's Invoice Flexfield Context to that context code.\n\n`line_items[].item` carries the standard memo line's **name** in both `code` and `name`,\nand no `id` — Oracle's invoice lines never expose the memo line's id. Send the name in\n`item.code` (or `line_items[].code`) on a create; a line that names its item by `item.id`\nalone is refused rather than created without a memo line. The match is **case-sensitive**:\na name whose letter case differs from the one defined in the tenant is refused exactly as\nan unknown one is. When `item.code` and `item.name` are both sent and disagree, `code` is\nthe one used. Look it up through the Invoice Items\nresource. Inventory items are not supported on invoice lines.\n\n`sub_total` and `total_tax` are assembled from the transaction's installments, since Oracle\npublishes no header split between the taxable base and the tax. Freight is included in\n`sub_total`. They are reported only when they reconcile to `total` to within half a cent\n(0.005), and **omitted when they do not** — on a list, installments are capped at the\nrequest's `limit`, so a transaction with more installments than that would otherwise report\na silently understated base and tax against a header `total` that describes all of it.\nAbsent beats wrong: when both are present, `sub_total` + `total_tax` reconciles to `total`.\n`total` itself is Oracle's header amount and is always reported, even when the other two\nare omitted.\n\nOn a **list**, each record's `line_items` is capped at the request's `limit` — asking for 5\ninvoices returns at most 5 line items per invoice — while `total` is a header field and\nalways describes the whole document. A response whose lines may be incomplete carries a\n`truncated_child_collection` entry in `meta.warnings` naming the field. Fetch the invoice\n**by id** for the complete set: that read returns up to 500 lines and 500 installments, and\nis where `sub_total` and `total_tax` are reliably present. Above 500 lines or 500\ninstallments it is itself partial and says so through the same `truncated_child_collection`\nwarning — there is no route to the remainder.\n\n`filter[ids]` is not supported: Oracle cannot match a list of ids on this resource and\nfails the whole query when asked to. Use `filter[id_since]`, or fetch by id. Also\nunsupported: `filter[supplier_id]`, which has no meaning on a Receivables transaction, and\n`filter[subsidiary_id]`, because the transaction carries only the legal entity's code and\nOracle cannot query on it.\n\n`subsidiary` is not available for the same reason. A Receivables transaction carries the\nlegal entity's code but not the internal id the Subsidiaries resource is keyed by, and\nreporting the code as `subsidiary.id` would hand you an id that resolves to nothing. The\ncode is readable via `raw=true`.\n\n`billing_address` and `shipping_address` are not available. The transaction carries only\nbill-to and ship-to **site codes**, with no street, city, postal code or country anywhere\nbehind them; the codes are readable via `raw=true`.\n\nUpdating and deleting are not supported. Oracle will only create a completed invoice, and a\ncompleted invoice cannot be deleted and accepts almost no edits — not the amounts, dates or\nlines. Correct one the way Oracle intends: issue a credit memo or an adjustment against it.\n\nCreating requires two connection settings, the Receivables **business unit** and\n**transaction source**, because Oracle demands both on every transaction and defaults\nneither. The accounting date is deliberately left to Oracle so that it lands in an open\nperiod; the transaction date and payment terms default too, and the document number does on\na source with automatic numbering (see above). What the connection can **read** is a\nseparate matter: Receivables row-level visibility is secured by business unit on the Oracle\nside, through the integration user's data-access grant. No invoice read sends this setting,\nso changing it does not widen or narrow what a list returns — if invoice lists come back\nempty, the grant is what to check, not this value. Keep the two the same anyway: an invoice\ncreated against a business unit the connection cannot read is invisible to it afterwards.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -148,17 +323,19 @@ class Invoices(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingInvoicesAllResponse(
                 get_invoices_response=unmarshal_json_response(
-                    Optional[models.GetInvoicesResponse], http_res
+                    Optional[models.GetInvoicesResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -199,11 +376,10 @@ class Invoices(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingInvoicesAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -222,7 +398,7 @@ class Invoices(BaseSDK):
             Union[models.InvoicesFilter, models.InvoicesFilterTypedDict]
         ] = None,
         sort: Optional[Union[models.InvoicesSort, models.InvoicesSortTypedDict]] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -269,7 +445,7 @@ class Invoices(BaseSDK):
             limit=limit,
             filter_=utils.get_pydantic_model(filter_, Optional[models.InvoicesFilter]),
             sort=utils.get_pydantic_model(sort, Optional[models.InvoicesSort]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -290,6 +466,7 @@ class Invoices(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -314,9 +491,183 @@ class Invoices(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sap-business-one",
+                            "description": "Supported filters: `updated_since`, `created_since`, `number`, `customer_id` and `po_number`. `number` is the SAP Business One document number: a whole number from 0 to 2,147,483,647, and any other value returns a 400. `po_number` matches the customer's reference (*Customer Ref. No.*) exactly and can match more than one invoice: send your own order number as `po_number` on create to find the invoice again. A deleted invoice is cancelled, and SAP Business One then adds a cancellation document with the same `po_number` and `status` `void`, so the filter returns both: an invoice whose `status` is not `void` is still in effect.\n",
+                        },
+                        {
+                            "connector": "e-conomic",
+                            "description": "The list returns booked (posted) invoices only, as headers without `line_items`: fetch a single invoice to get its lines. Draft invoices are not listed but can be read by id. `status` is derived from the outstanding balance: `paid` when nothing is outstanding, `partially_paid` when part of the total is, and `unpaid` otherwise. Invoices with a negative total are credit notes and are returned by `/accounting/credit-notes`, not here. Because e-conomic cannot filter on the total, a page can hold fewer invoices than `limit`, or none, while more pages remain: keep following the next cursor. Supported filters: `number`, `ids` and `customer_id`. Invoice created and updated webhook events also fire for credit notes, which e-conomic records as invoices: if the invoice of such an event returns `404` here, it is a credit note, available from `/accounting/credit-notes`.\n`filter[ids]` matches booked invoices only; draft ids (`draft-N`) match nothing.\nLine items of a draft have no `tax_amount` or `tax_rate.rate`; e-conomic returns VAT per line only for booked documents.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "Lists the invoices of every fiscal year in the administration. `status` and `balance` come from Minox's open items: `paid` when nothing is\nopen (an overpayment shows as a negative `balance`), `partially_paid` when part is,\n`unpaid` when all of it is. Minox keeps no open item for some older invoices; those are\n`posted` with `balance` `null`. The same applies when two of Minox's open items match one document (same number, date and kind). Sorting is not supported: Minox\nbookings have no created or updated timestamps.\n",
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "`number` is the SAP document number, which is only unique within a company code, so `filter[number]` can\nreturn invoices from more than one company code. Use the full `id`\n(`<company code>:<fiscal year>:<document number>`, e.g. `1710:2026:1800000001`) to identify an invoice.\n\n`reference` is the reference stored on the SAP document, not the document number: the value sent as\n`reference` on create, the billing document number for invoices created by SAP billing, and `null` when\nthe document has none. `customer_memo` is the document header text.\n\n`filter[updated_since]` (the last change date) and `filter[created_since]` (the posting date) compare on\nwhole days: SAP keeps only a date for both, so the time part is ignored and the filter is inclusive of the\ngiven day (in UTC). Records from earlier that day are returned again; dedupe by `id`.\n\nInvoices created by SAP billing are listed alongside invoices posted in financial accounting, but only once\nthe billing document has been posted to accounting: a billing document that SAP still shows as \"to be\nposted\" (for example because a tax condition could not be determined) has no accounting document yet\nand is not listed. Billing credit memos and cancellations are not listed.\n\n`status` is `partially_paid` when part of the invoice is still open after a partial payment in\nSAP: either the invoice itself is still open, or a residual-item payment cleared it and left a\nnew open item for the remainder. Otherwise it is `paid` when the invoice is cleared in SAP and\n`authorised` when it is not. Finding partial payments adds one SAP read per page of invoices,\nplus one for every further 40 invoices on the page and every further 500 matching items. If it\nfails, the request returns an error rather than the page.\n\nFor an invoice that comes from a billing document, `line_items` are the billing items: `item`, `quantity`, `unit_price` (net per unit), `unit_of_measure`, `total_amount` (net) and `tax_amount`. Their `id` is `<billing document>:<item>` and they have no `ledger_account`. This needs the **SAP_COM_0120** (Billing Integration) communication scenario: without it, or when the lookup fails, the lines are G/L account lines and the response carries a warning in `meta.warnings`.\n\nInvoices posted directly in financial accounting, including those created through this API, have G/L account lines only.\n\n`total_tax` is the tax SAP posted on the invoice and `sub_total` is `total` minus `total_tax`; an invoice without tax returns `total_tax` `0`. SAP posts tax as separate tax lines, which are summed into `total_tax` and are not returned in `line_items`. Each G/L account line carries SAP's tax code in `tax_rate.code`; the tax rate and a per-line `tax_amount` are not returned for G/L account lines, and `tax_code` on the invoice itself is not returned.\n\nOn G/L account lines, `total_amount` is signed against the invoice: a line on the revenue side reads\npositive, and a line on the other side (an offsetting or reversing posting inside the same document)\nreads negative. `total` stays the absolute sum of the customer lines, so the lines do not always add\nup to it (for example when a down payment is cleared on the invoice). On create, every line's `total_amount` is posted as its\nabsolute value on the revenue side, so remove or adjust negative lines before posting a read invoice again.\n\n`limit` caps the SAP posting lines read per page, not the invoices, so a page can hold fewer\ninvoices than `limit`. An invoice is never split across pages: one with more posting lines\nthan `limit` is returned complete on a page of its own. Only an invoice with more than 5,000\nposting lines, or one whose lines cannot all be read within the request's time budget, still\nappears on consecutive pages with the same `id`, each carrying part of its lines; if SAP\nfails while they are read, the request returns a retryable error. Follow `meta.cursors.next`\nuntil it is `null`. `meta.total_count` will not appear and `meta.cursors.previous` is always\n`null`. `pass_through` cannot set `$top`, `$skip` or `$orderby` on this list; such a request\nis refused with a 400.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "FreeAgent's `Overdue` status is returned as `submitted` (or `partially_paid` when part of\nthe invoice has been paid); there is no separate overdue status. Treat an invoice as overdue\nwhen `balance > 0` and `due_date` is in the past. For the same reason an invoice turning\noverdue does not by itself produce an `accounting.invoice.updated` webhook.\n",
+                        },
+                        {
+                            "connector": "exact-online-nl",
+                            "description": 'Exact Online has no balance field on an invoice, so `balance` is derived from its\ncash-flow data. When that derivation cannot run — the connection\'s app registration\nlacks cash-flow access, or the call is rate-limited or fails — `balance` comes back\n`null`, meaning *not determined*, never `0` and never the invoice total. Treat `null`\nas unknown rather than unpaid.\n\nA draft invoice is the exception: it has no number, nothing is derived for it, and its\n`balance` is its own total, which is correct since none of it has been settled.\n\nReading a single invoice by id derives the balance the same way, so the two paths agree.\n\nExact Online\'s own invoice lifecycle carries four states, mapped to `draft` (not yet\nissued, no number), `submitted` (issued, not yet due), `unpaid` (past its due date and not\nsettled) and `paid`. It has no part-paid state of its own, so `partially_paid` is derived\nhere: an invoice whose `balance` is above zero but below its `total` is reported\n`partially_paid` rather than `unpaid` or `submitted`.\n\nThat derivation needs the balance, so it is skipped whenever `balance` is `null` — an\ninvoice whose balance could not be determined keeps the state Exact gave it.\n\nAn invoice that carries no number is reported `draft`, which is also how `balance` treats\nit. Should Exact ever return an invoice with a number but no recognisable lifecycle value,\n`status` is `null` — *not determined* — rather than guessed at.\n\n**Sales credit notes are returned here too.** Exact stores them in the same entity as\ninvoices, so this endpoint serves both, and they are marked `type: "credit"` (an ordinary\ninvoice is `type: "standard"`). Three things follow. Their `balance` is what the customer\nis owed, not what they owe, and Exact does not enforce a negative sign on the amounts — a\ncredit note can carry a positive `total` and a positive `balance`. The same document is\nalso served by `/accounting/credit-notes` under a **different** id, so syncing both\nendpoints double-counts it unless `type` is used to filter here. And `status` on a credit\nnote is Exact\'s own document lifecycle, not a refund state.\n\nA filter value Exact cannot be asked about — a malformed date, an `ids` or `customer_id`\nthat is not a GUID, a non-numeric `number` — returns an **empty page rather than an\nerror**, so an empty result does not by itself mean there are no matching invoices.\n',
+                        },
+                        {
+                            "connector": "exact-online",
+                            "description": "Same as `exact-online-nl`.\n",
+                        },
+                        {
+                            "connector": "exact-online-uk",
+                            "description": "Same as `exact-online-nl`.\n",
+                        },
+                        {
+                            "connector": "campfire",
+                            "description": "`terms` returns the payment term's display name (for example `Net 30` or\n`Due on Receipt`), and `terms_id` returns its identifier. Invoices with no payment\nterm set return `null` for both.\n\nWhen creating or updating an invoice, set the payment term with `terms_id` — the\ndisplay name is read-only and is ignored on write.\n\n`sub_total` and `total_tax` are both derived, not returned by Campfire, which reports\nno invoice-level sub-total or tax figure. `total_tax` is the sum of the per-line\n`tax_amount` values and `sub_total` is `total` minus that sum, each rounded to four\ndecimal places, so `sub_total + total_tax` reconciles to `total`.\n\nOn a small number of records Campfire's own header total and line amounts disagree, and\non those the derived `sub_total` will not equal the sum of `line_items[].total_amount`.\n\nBoth are omitted rather than zero when Campfire returns no line detail for the record.\n",
+                        },
+                        {
+                            "connector": "snelstart",
+                            "description": "`line_items`, `sub_total` and `total_tax` are never returned by this connector, on any\noperation. SnelStart's list/read endpoint for invoices is a read-only summary view with no\nline-item detail; the debit/credit lines only exist on the underlying \"sales booking\"\nrecord, which `invoicesAdd`/`invoicesUpdate` write to — but has no GET endpoint of its own,\nand per the platform's write contract the create/update response returns only `id`. There\nis no way to retrieve these three fields through this connector once set.\n",
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": "Lists booked sales invoices from the configured sales daybook (setting \"Sales invoice\ndaybook\", default VRK), paid and unpaid. Credit notes are not included, and concept\ninvoices are not listed until they are finalised in Twinfield. `id` and `number` are the\ninvoice number, the same number customer payments use in `allocations[].id`.\n\n`line_items`, `sub_total` and `total_tax` are only returned when fetching an invoice by\n`id`. `balance` is in the invoice currency and changes only when a payment is matched to\nthe invoice in Twinfield.\n\n`updated_at` is Twinfield's last-modified time labelled as UTC, so it may be 1-2 hours\nahead of true UTC. It is the time the receivable line last changed, so it can differ from\nthe `updated_at` of the same invoice read by `id`. `updated_since` may return slightly more records than strictly changed;\nde-duplicate on `id`.\n\nEvery call reads the office's full sales history, so large offices see slower responses.\n",
+                        },
+                        {
+                            "connector": "dualentry",
+                            "description": "`updated_since` is inclusive and is applied at whole-second granularity, so a poll that\nreuses the newest `updated_at` it received will re-receive the records from that final\nsecond. De-duplicate on `id`, or advance the cursor past the boundary second.\n\nTwo DualEntry behaviours combine to cause this. Its `updated_after` filter is a\n`>=` comparison, and while DualEntry stores update times with sub-second precision it\nreturns them truncated to the second — so a returned timestamp is always slightly earlier\nthan the value the filter compares against. Any sub-second component supplied in\n`updated_since` is therefore rounded down before the request is sent, which guarantees no\nrecord is ever skipped at the boundary, at the cost of re-delivering that second.\n\n`filter[ids]` and `filter[number]` address the same field on this connector: a\nDualEntry invoice's unified `id`, `display_id` and `number` are all the same value.\nIf both are supplied, `filter[number]` takes precedence and `filter[ids]` is ignored\n— so a `number` outside the `ids` list still returns that invoice. Send one or the\nother, not both.\n\n`filter[ids]` returns at most 100 records per page. A list of more than 100 ids is not\ntruncated — the filter is preserved across pages, so page through the cursor to collect\nthem all.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "`sub_total` equals `total` and does not exclude tax. Sage's `accounts-receivable/invoice`\nobject exposes only document-level totals with no pre-tax subtotal field, so both unified\nfields come from the same source. For an untaxed invoice that is correct; for a taxed one\n`sub_total` is the tax-inclusive amount rather than the net. Derive the net from\n`line_items[].total_amount` when the distinction matters.\n\n`total_tax` is not populated: the object carries no header tax field, only a tax-solution\nreference. Tax exists solely as per-line entries.\n",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "AFAS Profit derives sales invoices from `Profit_SalesorderLines` (sales-orders feed). The `limit` parameter may return fewer invoices than specified — AFAS returns flat sales-order line rows which are grouped by `OrderNumber` into complete invoices. `limit=N` caps the raw row count, not the grouped invoice count.\n",
+                        },
+                        {
+                            "connector": "clearbooks-uk",
+                            "description": "Clearbooks does not support setting the pagination size.",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": 'The minimum page size accepted for Netsuite is 5. The cursor for Netsuite expires if it has not been used within 15 minutes after its creation.\n`status` is `authorised` for an open invoice, `paid` when paid in full, `submitted` while pending approval, `draft` when rejected and `void` when voided. `partially_paid` is returned only by lists that use a filter: NetSuite reports how much of an invoice has been paid only there, so the unfiltered list and a single invoice return a partly paid open invoice as `authorised`.\nWhen using filters or sort parameters (which trigger the SuiteQL path), `quantity` and `unit_price` on line items may reflect base-unit values (e.g., days) rather than selling-unit values (e.g., years) for items with Units of Measure (UOM) enabled. `total_amount` is always accurate regardless. Use the GET one endpoint for selling-unit quantities.\n`filter[subsidiary_id]` scopes results to a single subsidiary and is only supported on NetSuite OneWorld accounts; on standard (single-entity) accounts it is ignored.\n\nTax can be recorded per line or once for the whole invoice, depending on how the account is set up. Where it is recorded per line, `line_items[].tax_rate` carries that line\'s own code and rate. Where it is recorded for the whole invoice, `line_items[].taxable` reports which lines the tax applies to, `line_items[].tax_rate` carries the invoice\'s code and rate on those lines only, and `tax_code` carries the same code at the invoice level. `taxable` is read-only and is reported only on accounts that record taxability per line, so its absence means "not reported", not "not taxable" — and an absent `tax_rate` likewise does not by itself mean a line is untaxed. No per-line `tax_amount` is reported for invoice-level tax, because NetSuite does not store one.\n\n`line_items[].taxable` and `tax_code` are reported by `GET /invoices/{id}` and by an unfiltered `GET /invoices` only. Adding any `filter`, `sort` or `pass_through` parameter switches to a query path that cannot return them, so the same invoice read two ways can differ on those two fields.\n',
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Invoices in Xero can be tax inclusive, tax exclusive, or no tax. The `tax_inclusive` field is set to `true` (tax inclusive), `false` (tax exclusive), or `null` (no tax). Line items include `tax_rate` references that link to the tax-rates resource.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks uses tax codes rather than tax rates. The `tax_rate` on line items references a tax code, which may not include the actual percentage value. To get the actual rate, retrieve the full tax rate details via the tax-rates endpoint.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite uses tax codes rather than tax rates. The `tax_rate` on line items references a tax code, which may not include the actual percentage value. To get the actual rate, retrieve the full tax rate details via the tax-rates endpoint.\n",
+                        },
+                        {
+                            "connector": "freshbooks",
+                            "description": "FreshBooks supports up to two taxes per line item (`taxName1`/`taxAmount1` and `taxName2`/`taxAmount2`).\nThe unified API supports one `tax_rate` per line item, so Apideck maps the tax with the largest rate as\n`tax_rate` (name, rate, code) and sets `tax_amount` to the combined total of both taxes applied to the line.\n\nIf you need both individual tax values, use the `raw` query parameter (`?raw=true`) to access the original\nFreshBooks response, where both `taxName1`/`taxAmount1` and `taxName2`/`taxAmount2` are available on each line item.\n",
+                        },
+                        {
+                            "connector": "alegra",
+                            "description": "Invoices are created **unstamped** (as a draft), so no CFDI folio is consumed. To stamp (timbrar), send `pass_through` with `stamp.generateStamp: true` plus the SAT fields (`paymentType`, `cfdiUse`, `regimeClient`); each line's Alegra item must have a SAT `productKey`. Update and delete work only while the invoice is a draft — a stamped invoice is immutable (void it in Alegra). The CFDI itself (UUID, seals) is not mapped to unified fields; read it via `?raw=true` or the Proxy (#11099). See the Alegra usage guide for the full stamping flow.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks Online does not expose a reliable cross-page total record count. The `QueryResponse.totalCount` field in list responses reflects the count for that page only, not the full dataset. `meta.total_count` will not appear in list responses. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite uses the same underlying QuickBooks API. The `QueryResponse.totalCount` field in list responses reflects the per-page count only. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "A bundle (group item) is returned as its component lines. Each item in the bundle is its own\n`sales_item` line with its item, quantity, unit price and amount, and these lines add up to\nthe bundle's total. The bundle itself is not returned as a line item.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "A bundle (group item) is returned as its component lines. Each item in the bundle is its own\n`sales_item` line with its item, quantity, unit price and amount, and these lines add up to\nthe bundle's total. The bundle itself is not returned as a line item.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "`quotes` lists the estimates linked to the invoice with their `id` only; `quotes[].number`\nis not returned on the list. Read it from `GET /accounting/invoices/{id}` or\n`GET /accounting/quotes/{id}`.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "`quotes` lists the estimates linked to the invoice with their `id` only; `quotes[].number`\nis not returned on the list. Read it from `GET /accounting/invoices/{id}` or\n`GET /accounting/quotes/{id}`.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "`quotes` lists the estimate the invoice was created from. An invoice created from a sales\norder has no `quotes`, even when that sales order was created from an estimate. On a list\nwithout filters, sorting or `pass_through`, NetSuite does not say which kind of transaction\nan invoice was created from, so the page's invoices are checked with one extra request.\nWhen that request fails, `quotes` is omitted and `meta.warnings` has an entry with\n`operation: quotesAll`.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n\nLine-level tax is written from `line_items[].tax_rate.id` (an Odoo tax id) and read back on `line_items[].tax_rate`/`tax_amount`. `tax_rate` is present only on a line with exactly one tax; it is absent on both untaxed lines and lines with multiple taxes (which still report the aggregate `tax_amount`), so its absence does not by itself mean a line is untaxed.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics",
+                            "description": "Microsoft Dynamics 365 does not include a total record count in default list responses. `meta.total_count` will not appear. Surfacing the total requires adding `$count=true` to the OData query or calling a separate `$count` endpoint — not currently implemented.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Zoho Books does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "stripe",
+                            "description": "Stripe removed `total_count` from list responses in March 2025 (API version 2025-03-31.basil). `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "stripe-billing",
+                            "description": "Stripe removed `total_count` from list responses in March 2025 (API version 2025-03-31.basil). `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": "Moneybird does not expose a total record count in list responses. `meta.total_count` will not appear.\n\nMoneybird's native invoice `state` is normalized to unified `status` as follows: `open`, `late`,\n`reminded`, and `pending_payment` all map to `submitted` (a sent invoice awaiting payment — Moneybird\nhas no distinct unified `overdue`/`unpaid` value, so an overdue invoice reads as `submitted`, not `draft`);\n`scheduled` maps to `draft` (not yet sent); `uncollectible` maps to `void`. To distinguish these\nunderlying states (e.g. `late` vs `open`), read the native `state` via `raw: true`.\n",
+                        },
+                        {
+                            "connector": "rillet",
+                            "description": "Rillet does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "pennylane",
+                            "description": "Pennylane does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "procountor-fi",
+                            "description": "Procountor does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "access-financials",
+                            "description": "Access Financials does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "dualentry",
+                            "description": "DualEntry scopes invoices by company. Pass the `x-apideck-company-id` header (or set a Default\nCompany on the connection) to return only records belonging to that company within the tenant.\nWithout it, records across all companies in the tenant are returned.\n",
+                        },
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "QuickBooks Desktop does not expose a reliable cross-page total record count. Getting `total_count` requires a separate COUNT query — an extra API call that is not currently implemented. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "lexware-office",
+                            "description": "`status` can disagree between this list and a single-record read (`GET\n/accounting/invoices/{id}`) for the same invoice at the same point in time — for example\none endpoint reporting `unpaid` while the other reports `authorised` for an invoice that\nis open but not yet overdue. Prefer the single-record read as the source of truth for\nstatus when reconciling.\n\nThis list always excludes overdue invoices — the vendor's status filter rejects any\nrequest that combines an overdue filter with other statuses, and there is no unified\n`filter[status]` on this resource to request overdue invoices on their own. An overdue\ninvoice is still reachable via `invoices.one` by id.\n\n`due_date`, `sub_total`, `total_tax` and `billing_address` are not returned on this list\n— the vendor's list endpoint is a lighter summary view than the get-by-id response. Fetch\nthe invoice by `id` for those fields.\n",
+                        },
+                        {
+                            "connector": "oracle-fusion",
+                            "description": "Invoices are Oracle **Receivables transactions**, and the resource is not restricted to\nsales invoices: credit and debit memos come back in the same list. `type` is what\ndistinguishes them, derived from the transaction type's name — a tenant-defined name Oracle\ndoes not classify, so a custom transaction type reads as `other`.\n\n`status` combines two things Oracle keeps apart. An incomplete transaction reads as `draft`\nand one awaiting approval as `submitted`; anything completed (or frozen, which means locked\nagainst edits, not written off) reads from the balance instead — `paid`, `partially_paid`\nor `unpaid`.\n\n`customer.id` carries Oracle's internal party id and `customer.display_id` the customer\naccount number. **Use `customer.display_id` when creating an invoice** — Oracle accepts the\naccount number and nothing else, and rejects the party id outright. `filter[customer_id]`\ntakes the party id, matching `customer.id`.\n\nWhether `number` is honoured depends on the connection's Receivables Transaction Source.\nA source with automatic transaction numbering assigns Oracle's own number and ignores a\nsupplied `number` without error, so read the created invoice back for the real one. A\nsource without automatic numbering keeps the supplied `number`, requires one on every\ncreate, and refuses a number already used by another transaction.\n\n`line_items[].unit_of_measure` must be a unit of measure **name** as defined in the tenant (for example `Each`), not its short code (`Ea`); an unknown value is refused, and a tenant without units of measure defined refuses every value.\n\nOracle computes each line amount as quantity × unit price and rounds only the invoice\ntotals to the currency. Send any two of `quantity`, `unit_price` and `total_amount` and the\nthird is derived at ten decimals — so a value that is not an exact multiple (100 over 3)\nreads back as 33.3333333333 and `total_amount` 99.9999999999 while the header `total` reads\n100. This applies to a derived `quantity` just as it does to a derived `unit_price`. Send\n`quantity` and `unit_price` when the exact line amount matters.\n\nSending all three is allowed, but `quantity` × `unit_price` must agree with `total_amount`\nto within half a cent (0.005) unless a line discount explains the difference; a larger disagreement is\nrefused rather than silently resolved in favour of one of them.\n\n`line_items[].tax_rate.code` must be a **tax classification code** defined in the tenant's\ntransaction-tax setup; an unknown code is refused, and a tenant with no tax classification\ncodes refuses every value. `tax_rate.id` is not used on a create. Oracle calculates the tax\nfrom the code, so `line_items[].tax_amount` is not sent — and whether the code selects the\nrate, or the tenant's default rate applies instead, depends on the tenant's transaction-tax\nconfiguration for Receivables invoices.\n\nLine-level tax is returned on the single-invoice read only: `line_items[].tax_amount` and\n`tax_rate.rate` come back from `GET /invoices/{id}` (the rate only when one tax applies to\nthe line), while the list carries the header `total_tax` and the line's `tax_rate.code`.\n\n`custom_fields` map to the segments of the tenant's transaction descriptive flexfield.\n`custom_fields[].id` must be a deployed segment's API name (`custom_fields[].name` is\naccepted as a fallback); an unknown id is refused, a tenant with no segments deployed\nrefuses every value, and a segment holds a single text, number or date, so object and\narray values are refused. Reads return every segment that carries a value, with the\nsegment API name in both `id` and `name`. When the segments belong to a flexfield context,\nset the connection's Invoice Flexfield Context to that context code.\n\n`line_items[].item` carries the standard memo line's **name** in both `code` and `name`,\nand no `id` — Oracle's invoice lines never expose the memo line's id. Send the name in\n`item.code` (or `line_items[].code`) on a create; a line that names its item by `item.id`\nalone is refused rather than created without a memo line. The match is **case-sensitive**:\na name whose letter case differs from the one defined in the tenant is refused exactly as\nan unknown one is. When `item.code` and `item.name` are both sent and disagree, `code` is\nthe one used. Look it up through the Invoice Items\nresource. Inventory items are not supported on invoice lines.\n\n`sub_total` and `total_tax` are assembled from the transaction's installments, since Oracle\npublishes no header split between the taxable base and the tax. Freight is included in\n`sub_total`. They are reported only when they reconcile to `total` to within half a cent\n(0.005), and **omitted when they do not** — on a list, installments are capped at the\nrequest's `limit`, so a transaction with more installments than that would otherwise report\na silently understated base and tax against a header `total` that describes all of it.\nAbsent beats wrong: when both are present, `sub_total` + `total_tax` reconciles to `total`.\n`total` itself is Oracle's header amount and is always reported, even when the other two\nare omitted.\n\nOn a **list**, each record's `line_items` is capped at the request's `limit` — asking for 5\ninvoices returns at most 5 line items per invoice — while `total` is a header field and\nalways describes the whole document. A response whose lines may be incomplete carries a\n`truncated_child_collection` entry in `meta.warnings` naming the field. Fetch the invoice\n**by id** for the complete set: that read returns up to 500 lines and 500 installments, and\nis where `sub_total` and `total_tax` are reliably present. Above 500 lines or 500\ninstallments it is itself partial and says so through the same `truncated_child_collection`\nwarning — there is no route to the remainder.\n\n`filter[ids]` is not supported: Oracle cannot match a list of ids on this resource and\nfails the whole query when asked to. Use `filter[id_since]`, or fetch by id. Also\nunsupported: `filter[supplier_id]`, which has no meaning on a Receivables transaction, and\n`filter[subsidiary_id]`, because the transaction carries only the legal entity's code and\nOracle cannot query on it.\n\n`subsidiary` is not available for the same reason. A Receivables transaction carries the\nlegal entity's code but not the internal id the Subsidiaries resource is keyed by, and\nreporting the code as `subsidiary.id` would hand you an id that resolves to nothing. The\ncode is readable via `raw=true`.\n\n`billing_address` and `shipping_address` are not available. The transaction carries only\nbill-to and ship-to **site codes**, with no street, city, postal code or country anywhere\nbehind them; the codes are readable via `raw=true`.\n\nUpdating and deleting are not supported. Oracle will only create a completed invoice, and a\ncompleted invoice cannot be deleted and accepts almost no edits — not the amounts, dates or\nlines. Correct one the way Oracle intends: issue a credit memo or an adjustment against it.\n\nCreating requires two connection settings, the Receivables **business unit** and\n**transaction source**, because Oracle demands both on every transaction and defaults\nneither. The accounting date is deliberately left to Oracle so that it lands in an open\nperiod; the transaction date and payment terms default too, and the document number does on\na source with automatic numbering (see above). What the connection can **read** is a\nseparate matter: Receivables row-level visibility is secured by business unit on the Oracle\nside, through the integration user's data-access grant. No invoice read sends this setting,\nso changing it does not widen or narrow what a list returns — if invoice lists come back\nempty, the grant is what to check, not this value. Keep the two the same anyway: an invoice\ncreated against a business unit the connection cannot read is invisible to it afterwards.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -344,17 +695,19 @@ class Invoices(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingInvoicesAllResponse(
                 get_invoices_response=unmarshal_json_response(
-                    Optional[models.GetInvoicesResponse], http_res
+                    Optional[models.GetInvoicesResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -395,11 +748,10 @@ class Invoices(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingInvoicesAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -453,14 +805,14 @@ class Invoices(BaseSDK):
         ] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         line_items: Optional[
             Union[
-                List[models.InvoiceLineItemInput],
-                List[models.InvoiceLineItemInputTypedDict],
+                Iterable[models.InvoiceLineItemInput],
+                Iterable[models.InvoiceLineItemInputTypedDict],
             ]
         ] = None,
         billing_address: Optional[
@@ -473,13 +825,14 @@ class Invoices(BaseSDK):
         source_document_url: OptionalNullable[str] = UNSET,
         payment_allocations: OptionalNullable[
             Union[
-                List[models.PaymentAllocations],
-                List[models.PaymentAllocationsTypedDict],
+                Iterable[models.PaymentAllocations],
+                Iterable[models.PaymentAllocationsTypedDict],
             ]
         ] = UNSET,
         quotes: OptionalNullable[
             Union[
-                List[models.LinkedQuotesInput], List[models.LinkedQuotesInputTypedDict]
+                Iterable[models.LinkedQuotesInput],
+                Iterable[models.LinkedQuotesInputTypedDict],
             ]
         ] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
@@ -493,11 +846,14 @@ class Invoices(BaseSDK):
             Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -515,7 +871,7 @@ class Invoices(BaseSDK):
         :param company_id_param: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param idempotency_key: A unique key you generate for one create or update, to make retrying it safe. If the request times out or fails with an uncertain outcome, resend it with the same key and the same body: the record is created, or the update applied, at most once. Keys are 1-255 printable ASCII characters (a UUID is recommended) and are accepted bare or as a quoted string. A key is remembered for 24 hours from its first use, or for the connector's own deduplication window where that is shorter (Xero: 6 minutes; Sage Intacct REST and e-conomic: 1 hour); after that, the same key is treated as a new request, so retry within the window. Some connectors also replay an error to retries with the same key: if retries keep returning the same error, check whether the record exists before sending it again with a new key. Reusing a key with a different body returns 422, and retrying while the first attempt is still running returns 409. A key is bound to its first request even if that request was rejected, so after fixing a rejected body, send it with a new key. Connectors that cannot honour the key on this operation reject the request with 400 instead of writing unprotected.
         :param display_id: Id to be displayed.
-        :param type: Invoice type
+        :param type_: Invoice type
         :param number: Invoice number.
         :param customer: The customer this entity is linked to.
         :param company_id: The company ID the transaction belongs to
@@ -681,6 +1037,7 @@ class Invoices(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.invoice, False, False, "json", models.InvoiceInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -705,9 +1062,182 @@ class Invoices(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sap-business-one",
+                            "description": "`reference` cannot be written: SAP Business One sets it to the document number. Use `po_number` for the customer's reference (*Customer Ref. No.*). `number` is assigned by the document numbering series. Invoices are posted when created: `status` is not written, because SAP Business One keeps drafts in a separate Drafts object.\nOn a company with sales tax (US localization), a line without `line_items[].tax_rate.id` gets the tax code set on the customer's default ship-to address. When that address has none, the invoice is rejected with a 400 that names the field. Send `tax_rate.id` with the id of a tax rate from `/accounting/tax-rates` to choose the tax code yourself.\n",
+                        },
+                        {
+                            "connector": "e-conomic",
+                            "description": "Invoices are created as drafts and returned with an id of the form `draft-{number}` and `status` `draft`; booking them is done in e-conomic, after which they get a new booked invoice number. Only `customer.id` is required: the recipient (name, address and VAT zone), payment terms, invoice layout and currency are taken from the customer unless you send them. `line_items[].item.id` is the product number; VAT is calculated by e-conomic from the product group and the customer's VAT zone. Only draft invoices can be updated or deleted; an update changes only the fields you send, and `line_items`, when sent, replace all lines. Booked invoices are final and cannot be changed. On create, `due_date` is ignored: e-conomic calculates the due date from the payment terms (`terms_id`). An update can set `due_date`; an update that changes `invoice_date` without sending `due_date` makes e-conomic recalculate the due date from the payment terms. An invoice whose lines add up to a negative total is rejected; create a credit note instead. An update cannot clear a field: empty values are ignored. Changing `customer.id` readdresses the draft to the new customer.\nA `status` other than `draft` is rejected with a 400, because e-conomic invoices are written as drafts only.\n`number` is assigned by e-conomic and a sent `number` is ignored. `po_number` is not stored: e-conomic has no purchase order field, and its free-text reference holds `reference`. e-conomic numbers a new draft one above the highest number in use by draft invoices, credit notes, quotes and orders, so deleting the most recent draft frees its number for the next draft of any of these types: a stored id can later point at a different document. Keep your own reference (for example in `reference`) rather than relying on the id alone.\nSend an `Idempotency-Key` to make retrying a create safe: Unify sends e-conomic a 32-character key derived from it as e-conomic's own `Idempotency-Key` header, and e-conomic answers a repeat with the original invoice instead of creating a second one. e-conomic keeps a key for one hour, and Unify remembers it for the same hour. Reusing a key with a different body returns 422, from Unify within its hour and from e-conomic while e-conomic still remembers the key; after both have forgotten it, the same key is treated as a new request. Use a new key for every invoice. Unify builds the e-conomic request again on a retry, from what it reads from e-conomic and from today's date in Copenhagen when you leave the date out. If either changed between the attempts, e-conomic refuses the retry as a reused key and Unify returns 422 instead of creating a second invoice. The first attempt may have created the invoice: look it up before resending with a new key. Send the date to keep a retry identical across midnight.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "Creates the invoice as a booking on the administration's sales journal, which\nupdates the receivables straight away. Required: `number` (a whole number of at most\n8 digits; Minox stores no letters in invoice numbers), `customer.id`, `invoice_date`\nand, on every line, `ledger_account.id` plus either `total_amount` or `quantity` and\n`unit_price`.\n\nVAT is calculated per line from the `tax_rate` percentage, rounded to the cent,\nunless the line sends its own `tax_amount`; with `tax_inclusive: true` the line\namounts include VAT. A `total` that does not match the lines is rejected. The total\nmust be positive: book credits as credit notes. `due_date` defaults to the\ncustomer's payment terms.\n\nA `number` the same customer already used in that fiscal year is rejected with\n`409`; the same number on a different customer is accepted. Updating is not\nsupported: delete the invoice and create it again.\n\nMinox bookings have no discounts: `discount_percentage` and `discount_amount`, on the\ndocument or a line, are rejected; send the discounted amounts. A line `tax_amount`\nneeds a `tax_rate`.\n\nBookings are posted on create: `status: draft` is rejected. `currency` must be the\nadministration's own currency: Minox needs an exchange rate with any other, which this record\nhas no field for, so another currency is rejected with a `400`. `currency_rate`,\ndocument-level `tracking_categories` and `terms` are not stored. The booking goes on the\nadministration's sales journal; when it has more than one, choose it in the\nconnection's sales journal setting, or the create is rejected with a `400`.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "FreeAgent needs payment terms in days. Send `terms` containing the number of days (for\nexample `Net 30`), or a `due_date`, from which the days after `invoice_date` are used. An\ninvoice with neither is rejected.\n\nFreeAgent creates every invoice as a draft. Send `status: submitted` (or `authorised`) to\nhave it marked as sent straight after creation; the customer is not emailed. If that step\nfails the invoice is still created, as a draft, and the response carries a warning. Other\nstatuses cannot be set on create.\n",
+                        },
+                        {
+                            "connector": "e-boekhouden",
+                            "description": "This connector maps `invoices` to e-Boekhouden's Mutation booking object rather than its\nseparate, richer `/v1/invoice` endpoint — a payment can only be matched to an invoice\nbooked this way (see the `payments` gotcha), so mapping the richer endpoint instead would\nbreak payment matching. This means no templates, no PDF generation and no priced-line-item\ncatalog — every line item is sent as a plain amount + description + VAT code.\n\nA line's own `description` is not preserved — e-Boekhouden always returns the invoice's\nown top-level memo for every line, regardless of what was sent for that specific line.\n\n`line_items[].tax_rate.code` must be one of e-Boekhouden's own VAT code strings (there is\nno tax-rates resource/endpoint to look these up). Supplying `tax_rate.rate` or\n`tax_rate.id` instead of `.code` is not recognized and the line silently falls back to\nthe \"no VAT\" code rather than being rejected.\n",
+                        },
+                        {
+                            "connector": "campfire",
+                            "description": "Every invoice line must reference a product. Set `line_items[].item.id` on each line —\nif any line omits it, Campfire rejects the entire request with\n`lines[0]: Invoice line must have either a product or a bundle set` and no invoice is\ncreated. The rejection applies to the whole request, not just the offending line.\n\nRetrieve the values to pass from `GET /accounting/invoice-items` and use the `id` it\nreturns. The product must already exist in Campfire; an id that does not resolve is\nrejected too.\n\n`due_date` is also required on create, even though the unified schema treats it as\noptional — omitting it fails with `due_date: This field is required.`\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": 'Moneybird creates every invoice as a draft. Send `status: "submitted"` (or `"authorised"`)\nto finalise it on create: it is marked as sent, without Moneybird emailing the customer, and\nis returned with `status: "submitted"`. Any other status leaves a draft.\n\nPayments can only be registered on a finalised invoice; a payment allocated to a draft is\nrejected with `Cannot register a payment for this SalesInvoice`.\n',
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": "`quotes` links the invoice to an existing Moneybird estimate: send the quote's `id`\n(`number` is read-only and is not sent). Moneybird links one estimate per invoice, so only\nthe first quote in `quotes` is sent.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "`reference` maps to NetSuite's `externalId`, which NetSuite requires to be unique across every\ninvoice in the account — reusing a value already on another invoice fails with `DUP_RCRD`\n(\"This record already exists\"). Send a distinct `reference` per invoice, or delete the record\nholding it first (`DELETE /accounting/invoices/{id}`). This is also why retrying a create that\ntimed out returns `DUP_RCRD` rather than creating a second record: read the `retriable` and\n`outcome` fields on the error before retrying.\n\nDate-only fields need no configuration: NetSuite converts the datetime it receives into the\nSOAP/integration user's time zone before storing the date part, and these fields are anchored so\nthey store on the intended calendar day for any integration user between UTC-10 and UTC+13.\n\nFour zones fall outside that range and need the optional `timezone` connection setting:\n`Pacific/Pago_Pago`, `Pacific/Niue` and `Pacific/Midway` (UTC-11) store one day early without it,\nand `Pacific/Kiritimati` (UTC+14) stores one day late. Set it to the IANA zone of the NetSuite user\nthis connection authenticates as, read from that user's Home > Set Preferences > Time Zone — Setup >\nCompany > Company Information only supplies the default, so a user who overrode it needs their own\nzone.\n\nWhen the setting is used its value must be within 12 hours of that user's real zone in either\ndirection: more than ~12h east stores dates one day early, more than ~12h west stores them one day\nlate.\n\nThis applies to every NetSuite date-only write field across the accounting resources.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "`line_items[].item` must reference the item by its Sage item code (`ITEMID`), not by the\nnumeric record number. Pass the value Invoice Items returns in `code` — either as\n`item.code` (preferred; it wins when both are sent) or as `item.id`. The numeric `id`\nreturned by Invoice Items is rejected by Sage with \"Item 'N' specified is not valid\"\n(BL01001973). No automatic translation is applied: Sage item codes may themselves be\nnumeric, so a record number cannot be told apart from a code.\n\nSage Intacct accepts a second invoice whose `number` already exists for the same customer.\nTo have it rejected instead, set **If duplicate numbers** to **Do not allow transactions to\nbe created** in the company's Accounts Receivable configuration (Document sequencing\nsection). The check is per customer, covers invoices and credit notes, and matters when you\nsend `number`; invoices numbered by a document sequence do not collide. It does not apply\nto journal entries.\n\nSend an `Idempotency-Key` to make retrying a create safe: Unify sends Sage Intacct a\n32-character control id derived from it, and Intacct rejects a second create with the same\ncontrol id as already recorded instead of creating a second invoice. When you sent\n`number` (or `code`), Unify then finds the invoice by that number and its customer and\nreturns the original invoice's id. Without either there is nothing to find it by, and\nwith document sequencing on Intacct replaces the number you sent with its own, so in both\ncases the retry returns Sage Intacct's \"already recorded\" error: no second invoice is\ncreated, and the invoice can be found by listing the customer's invoices. If several\ninvoices for that customer share the number, the error is\nreturned as well. A create Sage Intacct rejected can be retried with the same key and the\nsame body; a corrected body needs a new key. Use a new key for every invoice.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "Line-level `item` is written as Sage's item dimension, so `line_items[].item.id` must be an item id as\nreturned by Invoice Items (Sage's internal key); `item.code` is accepted as a fallback and matches Sage's\nhuman-readable item id. This tags the line with the item — it does not create an order-entry document, so\nit has no inventory or fulfilment effect.\n\nLine-level tax is not written. Sage only captures per-line tax under an Advanced Tax solution with\nmulti-line tax enabled; where it is not, a tax entry on a line is either rejected outright (\"You cannot use\nTax solution '<name>' to capture tax in this transaction\") or accepted with a 201 and silently discarded.\n`line_items[].tax_rate` and `tax_amount` are therefore not sent.\n\nHeader-level `total_tax` is not supported: Sage's `accounts-receivable/invoice` object carries no tax field\nat all, only a tax-solution reference. Tax exists solely as per-line entries on this object.\n\n`sub_total` equals `total` and does not exclude tax. Sage's object exposes only\ndocument-level totals with no pre-tax subtotal field, so both unified fields come from the\nsame source. For an untaxed document that is correct; for a taxed one `sub_total` is the\ntax-inclusive amount rather than the net. Derive the net from `line_items[].total_amount`\nwhen the distinction matters.\n\nSend an `Idempotency-Key` to make retrying a create safe: Unify sends Sage Intacct a\n32-character key derived from it as Sage's own `Idempotency-Key` header, and Sage answers a\nrepeat with the original invoice instead of creating a second one. Sage does not publish\nhow long it keeps a key; it still replayed the original after an hour, so Unify remembers\na key for one hour, after which the same key is treated as a new request. Reusing a key\nwith a different body returns 422, within that hour from Unify and after it from Sage\nwhile Sage still remembers the key (`REST-6005`). Use a new key for every invoice.\n",
+                        },
+                        {
+                            "connector": "sage-business-cloud-accounting",
+                            "description": 'Only `draft` and `submitted` can be set as the invoice `status` on create/update. `status: "draft"` saves a\nnon-posting draft (Sage `DRAFT`) that does not affect the accounts; `status: "submitted"` posts the invoice as\n`UNPAID` (awaiting payment). `paid` and `partially_paid` cannot be set via the `status` field — Sage derives\nthose from recorded payments, so register a payment/allocation against the invoice instead.\n\nPosted (non-draft) invoices require a `due_date` when the customer has no default credit days configured; draft\ninvoices have no such requirement.\n',
+                        },
+                        {
+                            "connector": "sage-business-cloud-accounting",
+                            "description": "`quotes` links the invoice to an existing Sage quote or estimate: send the quote's `id`\n(`number` is read-only and is not sent). Sage links one quote or estimate per invoice, so\nonly the first quote in `quotes` is sent. A quote `id` that is not an existing Sage quote or\nestimate fails the request. Sage offers quotes on Accounting Standard and Plus and estimates\non Accounting Plus only, so no quote can be linked on Accounting Start.\n",
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "SAP S/4HANA Cloud creates the invoice as a financial accounting posting, not a billing document: no\npricing, output or billing workflow is triggered.\n\nRequired: `company_id`, `customer.id`, `currency`, `total`, and at least one line item with\n`ledger_account.id`.\n\n- Without tax, `total` must equal the sum of `line_items[].total_amount`. With tax, see below.\n- The G/L account is taken from each line's `ledger_account`. The top-level `ledger_account` is not used.\n- The customer and each line's G/L account must already be set up in the company code given in\n  `company_id`. `GET /accounting/subsidiaries` lists the company codes.\n- Optional per line: `department_id` (cost center) and `tracking_categories[0].id` (profit center).\n\nTax: SAP does not calculate tax on this posting and does not check a tax amount against the rate, so you\nsend the amounts. Set `line_items[].tax_rate.code` to the SAP tax code (for example `A1`) on each taxed\nline; the line amounts are net of tax, and `total` is the sum of the lines plus the tax. The tax of a taxed\nline is its `tax_amount`, or else its `total_amount` times `tax_rate.rate` (a percentage), rounded half up\nto the currency's smallest unit on that line. When a taxed line has neither and the invoice has a single\ntax code, `total_tax` is the tax of the invoice; with several tax codes every taxed line needs `tax_amount`\nor `tax_rate.rate`, because `total_tax` can't be split across them. `total` must equal the lines plus the\ntax exactly, so if you round tax on the whole invoice rather than per line, send `tax_amount` or\n`total_tax`. The request fails with a `400` and nothing is posted when a taxed line has no tax and nothing\nelse states it, when `total` is not the lines plus the tax, when `total_tax` does not match the lines' tax\n(or, when some lines have none, is less than the tax they state), when a non-zero `tax_amount` has no\n`tax_rate.code`, when `tax_rate.rate` is not a number of zero or more (or has more than 8 decimals), when a tax amount is negative or\nhas more decimals than the currency allows, or when a line's `total_amount` is negative or, on a taxed\nline, zero (an untaxed line of `0`, such as a free item, is posted). Two more requests are refused on an invoice with a tax code,\nbecause SAP would post a different invoice: `tax_inclusive: true` (SAP posts the line amounts without tax;\nsend the lines without tax) and a non-zero `discount_amount` or `discount_percentage` on the invoice or a line (SAP\nposts no discount; send the lines after discount). A tax of zero is posted as stated (a zero `tax_amount`,\na rate of 0 or `total_tax: 0`); SAP does not check it against the rate. Invoices post output tax, so SAP\nrefuses an input tax code. Reading an invoice back returns the same fields, so a read invoice with one tax\ncode can be posted back as it is, unless it has a negative line (an offsetting posting, see List Invoices),\nwhich a create refuses. `tax_code` and `sub_total` on the invoice are ignored, and so are `tax_inclusive`\nand the discount fields on an invoice without a tax code. Tax is supported for company codes where SAP\ncalculates tax per document and uses time-dependent taxes; company codes that require tax per item (such as\nUS jurisdiction tax) or that take no tax date are refused by SAP, and the request fails with a `400`.\n\nSome revenue accounts need a profitability assignment. When SAP refuses the posting for that, Unify posts\nit again with the invoice's customer as the profitability assignment on the revenue lines, unless SAP's\nanswer also names a problem a second attempt cannot fix (an unbalanced invoice, a missing or wrong tax\ncode, or a tax date the company code does not take). If SAP refuses that too, the `400` names SAP's reason\nand says the assignment was tried. SAP does not derive a profit center for that assignment: send the line's\nprofit center in `tracking_categories[0].id`, or the posting is refused.\n\n`reference` (up to 16 characters), `customer_memo` (up to 25 characters) and `line_items[].description`\n(up to 50 characters) are stored on the posting and returned when the invoice is read; longer values are\ncut to these lengths. SAP stores `reference` in upper case, so `inv-2026-a` is returned as `INV-2026-A`;\n`customer_memo` and line descriptions keep their case. `number` is assigned by SAP and cannot be set: a\n`number` sent on create is ignored. Send your own identifier as `reference`.\n\nIf SAP rejects the posting (for example an unknown ledger account, a customer not set up in the company, or an\nunbalanced document), the request fails with a `400` and nothing is posted.\n\nBecause the invoice is a financial accounting posting, reading it back returns G/L account lines without `item` or `quantity`.\n\nCreating invoices is not yet available on SAP S/4HANA On-Premise and Private Cloud connections\n(connections whose SAP System URL is your own gateway rather than an SAP-hosted Public Edition tenant on `*.s4hana.cloud.sap` or `*.s4hana.ondemand.com`):\nthe request returns `501` and nothing is posted. Reading invoices works on those connections.\n",
+                        },
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": 'On create, QuickBooks Desktop only honors `customer`, `invoice_date`, `number`, `reference` (memo), and `line_items`. Header fields such as `due_date`, `terms`, `po_number`, `customer_memo`, billing/shipping address, currency, and tracking category are ignored at create time — set them with a follow-up update. Each line item must include an `item` (QBD rejects invoices whose lines have no item). On update, line items cannot be modified — only header fields (customer, dates, ref number, memo) change; resend line edits by voiding and recreating.\n\n`number` is limited to 11 characters; a longer value is rejected ("RefNumber is too long", error 3070). Writes are applied on the Web Connector\'s next run, so a create can return a `504` timeout after 28 seconds while QuickBooks still creates the invoice; list invoices by `number` before retrying.\n',
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "When providing both customer.id and customer.display_name (or customer.name), Xero will update the contact's name if the ContactID exists. If the ContactID doesn't exist, Xero will automatically create a new contact using the provided name. This allows for automatic contact creation but may update existing contact names if the display_name differs from the stored name.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "Quickbooks offers limited (regional) support for applying discount on a Line Item. Including discount_percentage or discount_amount applies to entire invoice. The default type for a Line Item is a sales item if no type has been provided.\nSend an `Idempotency-Key` to make retrying a create safe: it reaches QuickBooks as its `requestid`. QuickBooks keeps a `requestid` for at least 24 hours and can keep it longer, so after the 24-hour window a key reused for a different invoice may get the original invoice back, with the new body ignored. Use a new key for every invoice. Your key can be 1-255 characters: Unify sends QuickBooks a 32-character `requestid` derived from it, so QuickBooks' 50-character `requestid` limit never applies.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite offers limited (regional) support for applying discount on a Line Item. Including discount_percentage or discount_amount applies to entire invoice. The default type for a Line Item is a sales item if no type has been provided.\nSend an `Idempotency-Key` to make retrying a create safe: it reaches Intuit Enterprise Suite as its `requestid`. Intuit Enterprise Suite keeps a `requestid` for at least 24 hours and can keep it longer, so after the 24-hour window a key reused for a different invoice may get the original invoice back, with the new body ignored. Use a new key for every invoice. Your key can be 1-255 characters: Unify sends Intuit Enterprise Suite a 32-character `requestid` derived from it, so Intuit Enterprise Suite's 50-character `requestid` limit never applies.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "`quotes` links the invoice to existing QuickBooks estimates: send each quote's `id`\n(`number` is read-only and is not sent). Only Pending or Accepted estimates are linked. An\nestimate that is closed, rejected or already linked to an invoice is ignored without an\nerror: the request succeeds and that quote is missing from the invoice's `quotes` when it is\nread back. A quote `id` that does not exist fails the request with a `400`. An estimate can\nbe linked to only one invoice. Linking does not copy the estimate's lines onto the invoice;\nsend `line_items` yourself. Linking changes the estimate's status: it reads back from\n`GET /accounting/quotes/{id}` as `void`.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "`quotes` links the invoice to existing Intuit Enterprise Suite estimates: send each quote's\n`id` (`number` is read-only and is not sent). Only Pending or Accepted estimates are linked.\nAn estimate that is closed, rejected or already linked to an invoice is ignored without an\nerror: the request succeeds and that quote is missing from the invoice's `quotes` when it is\nread back. A quote `id` that does not exist fails the request with a `400`. An estimate can\nbe linked to only one invoice. Linking does not copy the estimate's lines onto the invoice;\nsend `line_items` yourself. Linking changes the estimate's status: it reads back from\n`GET /accounting/quotes/{id}` as `converted`.\n",
+                        },
+                        {
+                            "Procountor only accepts the following values for the channel field": "EMAIL, MAIL, ELECTRONIC_INVOICE, EDIFACT, PAPER_INVOICE, NO_SENDING.",
+                            "Procountor only accepts the following values for the language field": "EN, FI, SV, ET, NO, and DA.",
+                            "Procountor only accepts the following values for the payment_method field": "BANK_TRANSFER, DIRECT_PAYMENT, CLEARING, CREDIT_CARD_CHARGE, FOREIGN_PAYMENT, OTHER, CASH, DOMESTIC_PAYMENT_PLUSGIRO, DOMESTIC_PAYMENT_BANKGIRO, DOMESTIC_PAYMENT_CREDITOR, DKLMPKRE, NETS.",
+                            "connector": "procountor-fi",
+                            "description": "",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "`tax_inclusive` cannot be set on sales documents — the returned value reflects the Customer Card's \"Prices Including VAT\" setting. When `tax_inclusive: true` is sent for a document stored as tax-exclusive, line `unit_price` is written as its net value so the document totals match the sent tax-inclusive amounts.\nWhen a line omits `tax_rate`, the VAT group configured on the Item or G/L Account Card applies. A foreign customer's VAT business posting group can zero the line VAT regardless of the `tax_rate` sent.\nA '400 Bad Request' error \"Control 'fieldName' is read-only\" means that field's 'editable' property is disabled in Business Central.\n",
+                        },
+                        {
+                            "connector": "freshbooks",
+                            "description": 'The status field can be set to either "submitted", "partially_paid", "paid" or "draft". The due_date and invoice_date fields are required for the invoice to be created.\n',
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": 'By default, the status of the invoice will be set to "draft".\n',
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "`quotes` links the invoice to an existing Zoho Books estimate: send the quote's `id`\n(`number` is read-only and is not sent). Zoho Books links one estimate per invoice, so only\nthe first quote in `quotes` is sent. The estimate must belong to the invoice's customer: a\nquote `id` that does not exist, or that belongs to another customer, fails the request.\nZoho Books does not check the estimate's status (draft and declined estimates are linked\ntoo), and one estimate can be linked to more than one invoice. Linking does not copy the\nestimate's lines onto the invoice; send `line_items` yourself. Linking marks the estimate as\ninvoiced in Zoho Books.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Netsuite only supports one tracking category at a time so only the first item in the tracking_categories list will be used. While creating an invoice, revenue start date and revenue end date should be passed in the custom fields object inside the line items.\n",
+                        },
+                        {
+                            "connector": "workday",
+                            "description": "It is required to provide tracking_categories.id in the line items, which corresponds to the worktag/cost_center_id in Workday. It is required to provide the item.id in the line items.\n",
+                        },
+                        {
+                            "connector": "myob-acumatica",
+                            "description": "When filling line items, you can either link an existing item by providing the item code or create a new item by filling in the item details. Using both options at the same time is not supported.\n",
+                        },
+                        {
+                            "connector": "acumatica",
+                            "description": "When filling line items, you can either link an existing item by providing the item code or create a new item by filling in the item details. Using both options at the same time is not supported.\n",
+                        },
+                        {
+                            "connector": "access-financials",
+                            "description": "Access Financials creates invoices as live/posted transactions immediately. Live transactions cannot be updated, so to correct an invoice you must create a credit note and issue a new invoice.\n",
+                        },
+                        {
+                            "connector": "dualentry",
+                            "description": "Posted invoices (`status: posted`) require `due_date`, an invoice-level memo (`customer_memo`, or `reference`\nas a fallback), and a `description` on every line item. Omitting any of these returns\n`400 ... Required for posted records`. A company must also be resolved — supplied by the connection's\nDefault Company setting, the `x-apideck-company-id` header, or `company_id` in the body (any one suffices).\nDraft invoices (`status: draft`) have none of these requirements.\n",
+                        },
+                        {
+                            "connector": "holded",
+                            "description": "Holded ignores the `status` field on create and update. An invoice's payment status (`unpaid`,\n`partially_paid`, `paid`) is derived by Holded from recorded payments — set it by registering\npayments against the invoice, not by sending `status`. Draft-vs-finalized is controlled by Holded's\nown `approveDoc` flag, which is not currently settable through the unified API. On read, `status`\nreflects the payment state (`unpaid`/`partially_paid`/`paid`), or `draft` for unapproved documents.\n",
+                        },
+                        {
+                            "connector": "exact-online",
+                            "description": "Exact Online assigns invoice status automatically (`open` by default) and ignores the `status` field on create — invoices are finalized/processed in Exact Online, not via the API.\nSet VAT via `line_items[].tax_rate.code`; Exact derives the percentage from the code, so `line_items[].tax_rate.rate` is ignored on create.\n`shipping_address` creates a CRM address record against the customer, but **does not\nattach it to the invoice**: the invoice is saved with whatever delivery address the\ncustomer already had, so only the first address ever sent for a given customer takes\neffect. A later, different address is stored on the customer and then ignored by the\ninvoice. Set the delivery address on the customer record when it needs to change.\n\nOn read, `shipping_address.string` returns that address record's identifier rather than a\nformatted address, and the individual lines are not returned.\n",
+                        },
+                        {
+                            "connector": "exact-online-nl",
+                            "description": "Exact Online assigns invoice status automatically (`open` by default) and ignores the `status` field on create — invoices are finalized/processed in Exact Online, not via the API.\nSet VAT via `line_items[].tax_rate.code`; Exact derives the percentage from the code, so `line_items[].tax_rate.rate` is ignored on create.\n`shipping_address` creates a CRM address record against the customer, but **does not\nattach it to the invoice**: the invoice is saved with whatever delivery address the\ncustomer already had, so only the first address ever sent for a given customer takes\neffect. A later, different address is stored on the customer and then ignored by the\ninvoice. Set the delivery address on the customer record when it needs to change.\n\nOn read, `shipping_address.string` returns that address record's identifier rather than a\nformatted address, and the individual lines are not returned.\n",
+                        },
+                        {
+                            "connector": "exact-online-uk",
+                            "description": "Exact Online assigns invoice status automatically (`open` by default) and ignores the `status` field on create — invoices are finalized/processed in Exact Online, not via the API.\nSet VAT via `line_items[].tax_rate.code`; Exact derives the percentage from the code, so `line_items[].tax_rate.rate` is ignored on create.\n`shipping_address` creates a CRM address record against the customer, but **does not\nattach it to the invoice**: the invoice is saved with whatever delivery address the\ncustomer already had, so only the first address ever sent for a given customer takes\neffect. A later, different address is stored on the customer and then ignored by the\ninvoice. Set the delivery address on the customer record when it needs to change.\n\nOn read, `shipping_address.string` returns that address record's identifier rather than a\nformatted address, and the individual lines are not returned.\n",
+                        },
+                        {
+                            "connector": "snelstart",
+                            "description": "Only `Laag`, `Hoog`, `Overig` and `Verlegd` are recognized `line_items[].tax_rate.code`\nvalues on write (SnelStart's sales-side VAT types); any other value — including `Geen` —\nresults in that line being booked with no VAT allocation, silently, not as an error.\n\n`invoice_date` falling in a period your accountant has locked for review or already closed\nis rejected — see the `journal-entries` create gotcha, which this connector's bookings\nshare the same restriction with.\n",
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": '`line_items[].ledger_account.id` must reference a profit-and-loss (income or expense)\nledger account — Twinfield rejects an invoice line that posts to a balance-sheet account\n(e.g. a bank or receivables account) with "Grootboekrekening bestaat niet (in de\nPNL-groep)".\n\n`line_items[].description` is not preserved on the created invoice line. Twinfield derives\nthe line\'s description from the ledger account it posts to, so the created invoice shows a\nfixed label for that ledger account instead of the text you sent.\n',
+                        },
+                        {
+                            "connector": "sevdesk",
+                            "description": "sevDesk requires every invoice to have an internal contact person (the sevDesk user\nacting as biller) assigned — there is no field on this endpoint to choose one. This\nconnector automatically assigns the account's active administrator, falling back to any\nother active user, and — only if the account has no active user at all — the first user\nreturned by sevDesk regardless of status. On a multi-user account, invoices created\nthrough this API are always attributed to that auto-selected user rather than a specific\nperson you choose.\n\nThere is no header-level tax rate field — set `line_items[].tax_rate.rate` on each line;\nthe invoice's overall tax/subtotal/total are computed from the line items.\n\nInvoices are created under a fixed VAT rule (\"Regelbesteuerung\") — there is no field on\nthis endpoint to change it. Only 0%, 7% and 19% tax rates are accepted under this rule; a\n`line_items[].tax_rate.rate` outside that set is rounded to the nearest of the three\nrather than rejected.\n\nNew invoices are always created as `draft`, regardless of the `status` you send — sevDesk\nrejects creating an invoice in any other status. Transition it to a later status from\nwithin sevDesk after creation.\n\nOnce created, an invoice's line items are fixed — update only changes header fields\n(customer memo, reference). There is no void action either: cancelling an invoice creates\na separate reversal document rather than removing or editing the original.\n\n`type` only maps to two distinct sevDesk document types, not the full unified enum:\n`standard` and `credit`/`service`/`product`/`supplier` (which have no sevDesk equivalent)\nall create sevDesk's normal invoice type; `other` creates a second, different sevDesk\ntype. sevDesk also has down-payment, partial and final invoice variants, but the unified\nAPI has no value that selects them, and on read they are indistinguishable from a normal\ninvoice — `type` always reports back `standard` or `other`, never a more specific variant.\n\n`line_items[].unit_of_measure` only recognizes a fixed set of German abbreviations\n(`Stk`, `kg`, `m`, `Std`, ...). Any other value — including a plain English word like\n`hour` — is silently mapped to `Stk` (piece) instead of being rejected.\n",
+                        },
+                        {
+                            "connector": "oracle-fusion",
+                            "description": 'Creating an invoice in a `currency` other than the ledger\'s own currency requires\n`currency_rate` — send the conversion rate as of the invoice date. Without it, Oracle\nrefuses the request rather than defaulting or looking up a rate itself.\n\n`line_items[].ledger_account` and `line_items[].tracking_categories` are accepted and then\nignored: the invoice is created, and neither value appears when it is read back. Oracle\nReceivables derives a transaction\'s accounts itself rather than taking them per line — an\ninvoice created here comes back with a receivable account and a revenue account per line,\nboth chosen by the AutoAccounting rules configured in Oracle, and the cost centre is one\nsegment of that same account. To change which accounts an invoice posts to, change those\nrules in Oracle; there is no per-line override through this API. A tracking category that\ndoes not exist in the tenant is accepted for the same reason — the value is never used.\n\n`line_items[].item` must name a memo line Oracle will accept on an invoice line, and the\n`invoice-items` list is wider than that set: it returns every standard memo line the tenant\nhas, including ones Oracle refuses here with "the memo line you entered doesn\'t exist". The\nlist carries nothing that distinguishes the two, so confirm the memo lines you intend to\nuse before relying on them, or leave `item` off and let the line stand on its description\nand amount.\n\nOnly `type: "standard"` (and omitting `type`) create a Receivables invoice through this\nendpoint. `type: "credit"` is refused: Oracle represents a credit memo as a separate\ndocument type this connector does not implement. `type: "service"`, `"product"` and\n`"supplier"` are also refused — Oracle Receivables has no transaction class equivalent to\nany of them. For a standard invoice — `type: "standard"`, or no `type` at all — the Oracle\ntransaction type name applied is the connection\'s **Invoice Transaction Type** setting (a\ntenant-defined name; Oracle seeds one called "Invoice" by default), not a fixed translation\nof the unified value. Send `type: "other"`, or leave that setting blank, to let Oracle apply\nits own default instead.\n\nBecause the transaction type name is read from a free-text connection setting rather than\na fixed list, an invoice created while **Invoice Transaction Type** is set to a name outside\nthis connector\'s own recognized standard-type list (Invoice, Intercompany, PA Invoice, PA\nInternal Invoice, PSFT Invoice, and a handful of module-specific names) reads back with\n`type: "other"` rather than `"standard"` — the create still succeeds and the invoice is a\ngenuine standard Receivables transaction, only the unified `type` on subsequent reads is\naffected. This only matters for a renamed or custom transaction type; the default "Invoice"\nround-trips correctly.\n\nA `customer` Oracle can resolve is required: send the customer **account number** in\n`customer.display_id`. A create with no `customer`, or one carrying only a `name` or an\n`email`, is refused — Oracle rejects those without saying why, so the connector names the\nfield instead. `customer.id` is accepted only when it holds the account number; the party\nid it carries on reads is not accepted on a create.\n\n`tax_inclusive: true` is refused. Receivables calculates tax on top of the line amount from\nthe tax classification code, so a price declared tax-inclusive would be billed with the tax\nadded on top of it. Send tax-exclusive amounts.\n\nA **header** `discount_amount` or `discount_percentage` is refused. Oracle applies no\nheader-level discount to a Receivables transaction, so accepting one would bill the\nundiscounted total with no error. Put the discount on the `line_items`, where both fields\nare applied.\n\n`line_items[].tax_rate` must carry `code`. A tax rate given by `name` alone is refused —\nonly the tax classification code selects a rate, and a name would create the invoice with\nno tax at all. `tax_rate.id` is not used on a create.\n\n`line_items[].description` holds at most 240 characters; a longer one is refused naming the\nline and the limit.\n\n`pass_through` cannot overwrite a field this connector computes or checks before sending:\nthe business unit, transaction source and transaction type, the bill-to customer, the\ninvoice lines and the descriptive flexfield row. A `pass_through` value for one of those is\nrefused naming the field, because it would be applied after the check and change what is\nsent. Every other field remains writable through `pass_through` as usual.\n\nA line\'s `discount_amount`/`discount_percentage` is applied by reducing the unit price —\nReceivables has no discount field of its own. When the line also states `total_amount`,\nthat total is honoured as the intended (discounted) amount. When it does not, the\ndiscounted total is computed from `quantity x unit_price` and the reduction instead.\nSending both a `discount_amount` and a `discount_percentage` that disagree with each other\nis refused, as is a discount that would take the line amount negative.\n',
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Invoices are final the moment they are created. Fiken has no draft invoice through this API: the invoice gets its number immediately, it cannot be deleted, and afterwards only `due_date` can be changed. Correct a mistake with a credit note.\n\nThe bank account the invoice is paid into is required: send `bank_account.id` (from `/accounting/bank-accounts`), or the 11-digit `bank_account.account_number` that invoice and bank-account reads return. Every line needs a `tax_rate.id` that is a Fiken VAT code such as `HIGH` (25%), `MEDIUM` (15%), `LOW` (12%), `NONE`, `EXEMPT` or `OUTSIDE`, or a `tax_rate.rate`. A line needs a `ledger_account.id` unless its `item` already defines an income account.\n\nA company that has never issued an invoice may need its invoice number counter set up before the first invoice can be created. If the create call is rejected for that reason, set the counter once with the Proxy API (`POST /invoices/counter`) or create one invoice in Fiken.\n\n`discount_percentage` is a percentage (`10` is 10%), and `unit_price` is read back as the price before the discount. With `tax_inclusive: true`, each `unit_price` is taken to include VAT and is converted to Fiken's price excluding VAT with the rate of the line's `tax_rate` (its `rate`, or the standard rate of its Fiken VAT code), rounded to øre; a line whose VAT rate cannot be determined that way is rejected. Records are always read back with prices excluding VAT.\n",
+                        },
+                        {
+                            "connector": "visma-netvisor",
+                            "description": "`number` must be numeric: Netvisor stores invoice numbers as integers, so a value such as `INV-001` is rejected.\nEach line's `code` must be the code of an existing Netvisor product; letter case is ignored, accents are not. Any other code is rejected as product not found.\nSend `status` `draft` (saved as unsent) or `submitted` (saved as open). Any other value, or no `status`, is rejected.\n`total` is required: Netvisor needs the invoice amount. Without it the request is rejected with an XML validation error that names `invoicetype`, not the missing amount.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -715,10 +1245,9 @@ class Invoices(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingInvoicesAddResponse(
                 create_invoice_response=unmarshal_json_response(
-                    Optional[models.CreateInvoiceResponse], http_res
+                    Optional[models.CreateInvoiceResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -759,10 +1288,9 @@ class Invoices(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingInvoicesAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -816,14 +1344,14 @@ class Invoices(BaseSDK):
         ] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         line_items: Optional[
             Union[
-                List[models.InvoiceLineItemInput],
-                List[models.InvoiceLineItemInputTypedDict],
+                Iterable[models.InvoiceLineItemInput],
+                Iterable[models.InvoiceLineItemInputTypedDict],
             ]
         ] = None,
         billing_address: Optional[
@@ -836,13 +1364,14 @@ class Invoices(BaseSDK):
         source_document_url: OptionalNullable[str] = UNSET,
         payment_allocations: OptionalNullable[
             Union[
-                List[models.PaymentAllocations],
-                List[models.PaymentAllocationsTypedDict],
+                Iterable[models.PaymentAllocations],
+                Iterable[models.PaymentAllocationsTypedDict],
             ]
         ] = UNSET,
         quotes: OptionalNullable[
             Union[
-                List[models.LinkedQuotesInput], List[models.LinkedQuotesInputTypedDict]
+                Iterable[models.LinkedQuotesInput],
+                Iterable[models.LinkedQuotesInputTypedDict],
             ]
         ] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
@@ -856,11 +1385,14 @@ class Invoices(BaseSDK):
             Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -878,7 +1410,7 @@ class Invoices(BaseSDK):
         :param company_id_param: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param idempotency_key: A unique key you generate for one create or update, to make retrying it safe. If the request times out or fails with an uncertain outcome, resend it with the same key and the same body: the record is created, or the update applied, at most once. Keys are 1-255 printable ASCII characters (a UUID is recommended) and are accepted bare or as a quoted string. A key is remembered for 24 hours from its first use, or for the connector's own deduplication window where that is shorter (Xero: 6 minutes; Sage Intacct REST and e-conomic: 1 hour); after that, the same key is treated as a new request, so retry within the window. Some connectors also replay an error to retries with the same key: if retries keep returning the same error, check whether the record exists before sending it again with a new key. Reusing a key with a different body returns 422, and retrying while the first attempt is still running returns 409. A key is bound to its first request even if that request was rejected, so after fixing a rejected body, send it with a new key. Connectors that cannot honour the key on this operation reject the request with 400 instead of writing unprotected.
         :param display_id: Id to be displayed.
-        :param type: Invoice type
+        :param type_: Invoice type
         :param number: Invoice number.
         :param customer: The customer this entity is linked to.
         :param company_id: The company ID the transaction belongs to
@@ -1044,6 +1576,7 @@ class Invoices(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.invoice, False, False, "json", models.InvoiceInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1068,9 +1601,182 @@ class Invoices(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sap-business-one",
+                            "description": "`reference` cannot be written: SAP Business One sets it to the document number. Use `po_number` for the customer's reference (*Customer Ref. No.*). `number` is assigned by the document numbering series. Invoices are posted when created: `status` is not written, because SAP Business One keeps drafts in a separate Drafts object.\nOn a company with sales tax (US localization), a line without `line_items[].tax_rate.id` gets the tax code set on the customer's default ship-to address. When that address has none, the invoice is rejected with a 400 that names the field. Send `tax_rate.id` with the id of a tax rate from `/accounting/tax-rates` to choose the tax code yourself.\n",
+                        },
+                        {
+                            "connector": "e-conomic",
+                            "description": "Invoices are created as drafts and returned with an id of the form `draft-{number}` and `status` `draft`; booking them is done in e-conomic, after which they get a new booked invoice number. Only `customer.id` is required: the recipient (name, address and VAT zone), payment terms, invoice layout and currency are taken from the customer unless you send them. `line_items[].item.id` is the product number; VAT is calculated by e-conomic from the product group and the customer's VAT zone. Only draft invoices can be updated or deleted; an update changes only the fields you send, and `line_items`, when sent, replace all lines. Booked invoices are final and cannot be changed. On create, `due_date` is ignored: e-conomic calculates the due date from the payment terms (`terms_id`). An update can set `due_date`; an update that changes `invoice_date` without sending `due_date` makes e-conomic recalculate the due date from the payment terms. An invoice whose lines add up to a negative total is rejected; create a credit note instead. An update cannot clear a field: empty values are ignored. Changing `customer.id` readdresses the draft to the new customer.\nA `status` other than `draft` is rejected with a 400, because e-conomic invoices are written as drafts only.\n`number` is assigned by e-conomic and a sent `number` is ignored. `po_number` is not stored: e-conomic has no purchase order field, and its free-text reference holds `reference`. e-conomic numbers a new draft one above the highest number in use by draft invoices, credit notes, quotes and orders, so deleting the most recent draft frees its number for the next draft of any of these types: a stored id can later point at a different document. Keep your own reference (for example in `reference`) rather than relying on the id alone.\nSend an `Idempotency-Key` to make retrying a create safe: Unify sends e-conomic a 32-character key derived from it as e-conomic's own `Idempotency-Key` header, and e-conomic answers a repeat with the original invoice instead of creating a second one. e-conomic keeps a key for one hour, and Unify remembers it for the same hour. Reusing a key with a different body returns 422, from Unify within its hour and from e-conomic while e-conomic still remembers the key; after both have forgotten it, the same key is treated as a new request. Use a new key for every invoice. Unify builds the e-conomic request again on a retry, from what it reads from e-conomic and from today's date in Copenhagen when you leave the date out. If either changed between the attempts, e-conomic refuses the retry as a reused key and Unify returns 422 instead of creating a second invoice. The first attempt may have created the invoice: look it up before resending with a new key. Send the date to keep a retry identical across midnight.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "Creates the invoice as a booking on the administration's sales journal, which\nupdates the receivables straight away. Required: `number` (a whole number of at most\n8 digits; Minox stores no letters in invoice numbers), `customer.id`, `invoice_date`\nand, on every line, `ledger_account.id` plus either `total_amount` or `quantity` and\n`unit_price`.\n\nVAT is calculated per line from the `tax_rate` percentage, rounded to the cent,\nunless the line sends its own `tax_amount`; with `tax_inclusive: true` the line\namounts include VAT. A `total` that does not match the lines is rejected. The total\nmust be positive: book credits as credit notes. `due_date` defaults to the\ncustomer's payment terms.\n\nA `number` the same customer already used in that fiscal year is rejected with\n`409`; the same number on a different customer is accepted. Updating is not\nsupported: delete the invoice and create it again.\n\nMinox bookings have no discounts: `discount_percentage` and `discount_amount`, on the\ndocument or a line, are rejected; send the discounted amounts. A line `tax_amount`\nneeds a `tax_rate`.\n\nBookings are posted on create: `status: draft` is rejected. `currency` must be the\nadministration's own currency: Minox needs an exchange rate with any other, which this record\nhas no field for, so another currency is rejected with a `400`. `currency_rate`,\ndocument-level `tracking_categories` and `terms` are not stored. The booking goes on the\nadministration's sales journal; when it has more than one, choose it in the\nconnection's sales journal setting, or the create is rejected with a `400`.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "FreeAgent needs payment terms in days. Send `terms` containing the number of days (for\nexample `Net 30`), or a `due_date`, from which the days after `invoice_date` are used. An\ninvoice with neither is rejected.\n\nFreeAgent creates every invoice as a draft. Send `status: submitted` (or `authorised`) to\nhave it marked as sent straight after creation; the customer is not emailed. If that step\nfails the invoice is still created, as a draft, and the response carries a warning. Other\nstatuses cannot be set on create.\n",
+                        },
+                        {
+                            "connector": "e-boekhouden",
+                            "description": "This connector maps `invoices` to e-Boekhouden's Mutation booking object rather than its\nseparate, richer `/v1/invoice` endpoint — a payment can only be matched to an invoice\nbooked this way (see the `payments` gotcha), so mapping the richer endpoint instead would\nbreak payment matching. This means no templates, no PDF generation and no priced-line-item\ncatalog — every line item is sent as a plain amount + description + VAT code.\n\nA line's own `description` is not preserved — e-Boekhouden always returns the invoice's\nown top-level memo for every line, regardless of what was sent for that specific line.\n\n`line_items[].tax_rate.code` must be one of e-Boekhouden's own VAT code strings (there is\nno tax-rates resource/endpoint to look these up). Supplying `tax_rate.rate` or\n`tax_rate.id` instead of `.code` is not recognized and the line silently falls back to\nthe \"no VAT\" code rather than being rejected.\n",
+                        },
+                        {
+                            "connector": "campfire",
+                            "description": "Every invoice line must reference a product. Set `line_items[].item.id` on each line —\nif any line omits it, Campfire rejects the entire request with\n`lines[0]: Invoice line must have either a product or a bundle set` and no invoice is\ncreated. The rejection applies to the whole request, not just the offending line.\n\nRetrieve the values to pass from `GET /accounting/invoice-items` and use the `id` it\nreturns. The product must already exist in Campfire; an id that does not resolve is\nrejected too.\n\n`due_date` is also required on create, even though the unified schema treats it as\noptional — omitting it fails with `due_date: This field is required.`\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": 'Moneybird creates every invoice as a draft. Send `status: "submitted"` (or `"authorised"`)\nto finalise it on create: it is marked as sent, without Moneybird emailing the customer, and\nis returned with `status: "submitted"`. Any other status leaves a draft.\n\nPayments can only be registered on a finalised invoice; a payment allocated to a draft is\nrejected with `Cannot register a payment for this SalesInvoice`.\n',
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": "`quotes` links the invoice to an existing Moneybird estimate: send the quote's `id`\n(`number` is read-only and is not sent). Moneybird links one estimate per invoice, so only\nthe first quote in `quotes` is sent.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "`reference` maps to NetSuite's `externalId`, which NetSuite requires to be unique across every\ninvoice in the account — reusing a value already on another invoice fails with `DUP_RCRD`\n(\"This record already exists\"). Send a distinct `reference` per invoice, or delete the record\nholding it first (`DELETE /accounting/invoices/{id}`). This is also why retrying a create that\ntimed out returns `DUP_RCRD` rather than creating a second record: read the `retriable` and\n`outcome` fields on the error before retrying.\n\nDate-only fields need no configuration: NetSuite converts the datetime it receives into the\nSOAP/integration user's time zone before storing the date part, and these fields are anchored so\nthey store on the intended calendar day for any integration user between UTC-10 and UTC+13.\n\nFour zones fall outside that range and need the optional `timezone` connection setting:\n`Pacific/Pago_Pago`, `Pacific/Niue` and `Pacific/Midway` (UTC-11) store one day early without it,\nand `Pacific/Kiritimati` (UTC+14) stores one day late. Set it to the IANA zone of the NetSuite user\nthis connection authenticates as, read from that user's Home > Set Preferences > Time Zone — Setup >\nCompany > Company Information only supplies the default, so a user who overrode it needs their own\nzone.\n\nWhen the setting is used its value must be within 12 hours of that user's real zone in either\ndirection: more than ~12h east stores dates one day early, more than ~12h west stores them one day\nlate.\n\nThis applies to every NetSuite date-only write field across the accounting resources.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "`line_items[].item` must reference the item by its Sage item code (`ITEMID`), not by the\nnumeric record number. Pass the value Invoice Items returns in `code` — either as\n`item.code` (preferred; it wins when both are sent) or as `item.id`. The numeric `id`\nreturned by Invoice Items is rejected by Sage with \"Item 'N' specified is not valid\"\n(BL01001973). No automatic translation is applied: Sage item codes may themselves be\nnumeric, so a record number cannot be told apart from a code.\n\nSage Intacct accepts a second invoice whose `number` already exists for the same customer.\nTo have it rejected instead, set **If duplicate numbers** to **Do not allow transactions to\nbe created** in the company's Accounts Receivable configuration (Document sequencing\nsection). The check is per customer, covers invoices and credit notes, and matters when you\nsend `number`; invoices numbered by a document sequence do not collide. It does not apply\nto journal entries.\n\nSend an `Idempotency-Key` to make retrying a create safe: Unify sends Sage Intacct a\n32-character control id derived from it, and Intacct rejects a second create with the same\ncontrol id as already recorded instead of creating a second invoice. When you sent\n`number` (or `code`), Unify then finds the invoice by that number and its customer and\nreturns the original invoice's id. Without either there is nothing to find it by, and\nwith document sequencing on Intacct replaces the number you sent with its own, so in both\ncases the retry returns Sage Intacct's \"already recorded\" error: no second invoice is\ncreated, and the invoice can be found by listing the customer's invoices. If several\ninvoices for that customer share the number, the error is\nreturned as well. A create Sage Intacct rejected can be retried with the same key and the\nsame body; a corrected body needs a new key. Use a new key for every invoice.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "Line-level `item` is written as Sage's item dimension, so `line_items[].item.id` must be an item id as\nreturned by Invoice Items (Sage's internal key); `item.code` is accepted as a fallback and matches Sage's\nhuman-readable item id. This tags the line with the item — it does not create an order-entry document, so\nit has no inventory or fulfilment effect.\n\nLine-level tax is not written. Sage only captures per-line tax under an Advanced Tax solution with\nmulti-line tax enabled; where it is not, a tax entry on a line is either rejected outright (\"You cannot use\nTax solution '<name>' to capture tax in this transaction\") or accepted with a 201 and silently discarded.\n`line_items[].tax_rate` and `tax_amount` are therefore not sent.\n\nHeader-level `total_tax` is not supported: Sage's `accounts-receivable/invoice` object carries no tax field\nat all, only a tax-solution reference. Tax exists solely as per-line entries on this object.\n\n`sub_total` equals `total` and does not exclude tax. Sage's object exposes only\ndocument-level totals with no pre-tax subtotal field, so both unified fields come from the\nsame source. For an untaxed document that is correct; for a taxed one `sub_total` is the\ntax-inclusive amount rather than the net. Derive the net from `line_items[].total_amount`\nwhen the distinction matters.\n\nSend an `Idempotency-Key` to make retrying a create safe: Unify sends Sage Intacct a\n32-character key derived from it as Sage's own `Idempotency-Key` header, and Sage answers a\nrepeat with the original invoice instead of creating a second one. Sage does not publish\nhow long it keeps a key; it still replayed the original after an hour, so Unify remembers\na key for one hour, after which the same key is treated as a new request. Reusing a key\nwith a different body returns 422, within that hour from Unify and after it from Sage\nwhile Sage still remembers the key (`REST-6005`). Use a new key for every invoice.\n",
+                        },
+                        {
+                            "connector": "sage-business-cloud-accounting",
+                            "description": 'Only `draft` and `submitted` can be set as the invoice `status` on create/update. `status: "draft"` saves a\nnon-posting draft (Sage `DRAFT`) that does not affect the accounts; `status: "submitted"` posts the invoice as\n`UNPAID` (awaiting payment). `paid` and `partially_paid` cannot be set via the `status` field — Sage derives\nthose from recorded payments, so register a payment/allocation against the invoice instead.\n\nPosted (non-draft) invoices require a `due_date` when the customer has no default credit days configured; draft\ninvoices have no such requirement.\n',
+                        },
+                        {
+                            "connector": "sage-business-cloud-accounting",
+                            "description": "`quotes` links the invoice to an existing Sage quote or estimate: send the quote's `id`\n(`number` is read-only and is not sent). Sage links one quote or estimate per invoice, so\nonly the first quote in `quotes` is sent. A quote `id` that is not an existing Sage quote or\nestimate fails the request. Sage offers quotes on Accounting Standard and Plus and estimates\non Accounting Plus only, so no quote can be linked on Accounting Start.\n",
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "SAP S/4HANA Cloud creates the invoice as a financial accounting posting, not a billing document: no\npricing, output or billing workflow is triggered.\n\nRequired: `company_id`, `customer.id`, `currency`, `total`, and at least one line item with\n`ledger_account.id`.\n\n- Without tax, `total` must equal the sum of `line_items[].total_amount`. With tax, see below.\n- The G/L account is taken from each line's `ledger_account`. The top-level `ledger_account` is not used.\n- The customer and each line's G/L account must already be set up in the company code given in\n  `company_id`. `GET /accounting/subsidiaries` lists the company codes.\n- Optional per line: `department_id` (cost center) and `tracking_categories[0].id` (profit center).\n\nTax: SAP does not calculate tax on this posting and does not check a tax amount against the rate, so you\nsend the amounts. Set `line_items[].tax_rate.code` to the SAP tax code (for example `A1`) on each taxed\nline; the line amounts are net of tax, and `total` is the sum of the lines plus the tax. The tax of a taxed\nline is its `tax_amount`, or else its `total_amount` times `tax_rate.rate` (a percentage), rounded half up\nto the currency's smallest unit on that line. When a taxed line has neither and the invoice has a single\ntax code, `total_tax` is the tax of the invoice; with several tax codes every taxed line needs `tax_amount`\nor `tax_rate.rate`, because `total_tax` can't be split across them. `total` must equal the lines plus the\ntax exactly, so if you round tax on the whole invoice rather than per line, send `tax_amount` or\n`total_tax`. The request fails with a `400` and nothing is posted when a taxed line has no tax and nothing\nelse states it, when `total` is not the lines plus the tax, when `total_tax` does not match the lines' tax\n(or, when some lines have none, is less than the tax they state), when a non-zero `tax_amount` has no\n`tax_rate.code`, when `tax_rate.rate` is not a number of zero or more (or has more than 8 decimals), when a tax amount is negative or\nhas more decimals than the currency allows, or when a line's `total_amount` is negative or, on a taxed\nline, zero (an untaxed line of `0`, such as a free item, is posted). Two more requests are refused on an invoice with a tax code,\nbecause SAP would post a different invoice: `tax_inclusive: true` (SAP posts the line amounts without tax;\nsend the lines without tax) and a non-zero `discount_amount` or `discount_percentage` on the invoice or a line (SAP\nposts no discount; send the lines after discount). A tax of zero is posted as stated (a zero `tax_amount`,\na rate of 0 or `total_tax: 0`); SAP does not check it against the rate. Invoices post output tax, so SAP\nrefuses an input tax code. Reading an invoice back returns the same fields, so a read invoice with one tax\ncode can be posted back as it is, unless it has a negative line (an offsetting posting, see List Invoices),\nwhich a create refuses. `tax_code` and `sub_total` on the invoice are ignored, and so are `tax_inclusive`\nand the discount fields on an invoice without a tax code. Tax is supported for company codes where SAP\ncalculates tax per document and uses time-dependent taxes; company codes that require tax per item (such as\nUS jurisdiction tax) or that take no tax date are refused by SAP, and the request fails with a `400`.\n\nSome revenue accounts need a profitability assignment. When SAP refuses the posting for that, Unify posts\nit again with the invoice's customer as the profitability assignment on the revenue lines, unless SAP's\nanswer also names a problem a second attempt cannot fix (an unbalanced invoice, a missing or wrong tax\ncode, or a tax date the company code does not take). If SAP refuses that too, the `400` names SAP's reason\nand says the assignment was tried. SAP does not derive a profit center for that assignment: send the line's\nprofit center in `tracking_categories[0].id`, or the posting is refused.\n\n`reference` (up to 16 characters), `customer_memo` (up to 25 characters) and `line_items[].description`\n(up to 50 characters) are stored on the posting and returned when the invoice is read; longer values are\ncut to these lengths. SAP stores `reference` in upper case, so `inv-2026-a` is returned as `INV-2026-A`;\n`customer_memo` and line descriptions keep their case. `number` is assigned by SAP and cannot be set: a\n`number` sent on create is ignored. Send your own identifier as `reference`.\n\nIf SAP rejects the posting (for example an unknown ledger account, a customer not set up in the company, or an\nunbalanced document), the request fails with a `400` and nothing is posted.\n\nBecause the invoice is a financial accounting posting, reading it back returns G/L account lines without `item` or `quantity`.\n\nCreating invoices is not yet available on SAP S/4HANA On-Premise and Private Cloud connections\n(connections whose SAP System URL is your own gateway rather than an SAP-hosted Public Edition tenant on `*.s4hana.cloud.sap` or `*.s4hana.ondemand.com`):\nthe request returns `501` and nothing is posted. Reading invoices works on those connections.\n",
+                        },
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": 'On create, QuickBooks Desktop only honors `customer`, `invoice_date`, `number`, `reference` (memo), and `line_items`. Header fields such as `due_date`, `terms`, `po_number`, `customer_memo`, billing/shipping address, currency, and tracking category are ignored at create time — set them with a follow-up update. Each line item must include an `item` (QBD rejects invoices whose lines have no item). On update, line items cannot be modified — only header fields (customer, dates, ref number, memo) change; resend line edits by voiding and recreating.\n\n`number` is limited to 11 characters; a longer value is rejected ("RefNumber is too long", error 3070). Writes are applied on the Web Connector\'s next run, so a create can return a `504` timeout after 28 seconds while QuickBooks still creates the invoice; list invoices by `number` before retrying.\n',
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "When providing both customer.id and customer.display_name (or customer.name), Xero will update the contact's name if the ContactID exists. If the ContactID doesn't exist, Xero will automatically create a new contact using the provided name. This allows for automatic contact creation but may update existing contact names if the display_name differs from the stored name.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "Quickbooks offers limited (regional) support for applying discount on a Line Item. Including discount_percentage or discount_amount applies to entire invoice. The default type for a Line Item is a sales item if no type has been provided.\nSend an `Idempotency-Key` to make retrying a create safe: it reaches QuickBooks as its `requestid`. QuickBooks keeps a `requestid` for at least 24 hours and can keep it longer, so after the 24-hour window a key reused for a different invoice may get the original invoice back, with the new body ignored. Use a new key for every invoice. Your key can be 1-255 characters: Unify sends QuickBooks a 32-character `requestid` derived from it, so QuickBooks' 50-character `requestid` limit never applies.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite offers limited (regional) support for applying discount on a Line Item. Including discount_percentage or discount_amount applies to entire invoice. The default type for a Line Item is a sales item if no type has been provided.\nSend an `Idempotency-Key` to make retrying a create safe: it reaches Intuit Enterprise Suite as its `requestid`. Intuit Enterprise Suite keeps a `requestid` for at least 24 hours and can keep it longer, so after the 24-hour window a key reused for a different invoice may get the original invoice back, with the new body ignored. Use a new key for every invoice. Your key can be 1-255 characters: Unify sends Intuit Enterprise Suite a 32-character `requestid` derived from it, so Intuit Enterprise Suite's 50-character `requestid` limit never applies.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "`quotes` links the invoice to existing QuickBooks estimates: send each quote's `id`\n(`number` is read-only and is not sent). Only Pending or Accepted estimates are linked. An\nestimate that is closed, rejected or already linked to an invoice is ignored without an\nerror: the request succeeds and that quote is missing from the invoice's `quotes` when it is\nread back. A quote `id` that does not exist fails the request with a `400`. An estimate can\nbe linked to only one invoice. Linking does not copy the estimate's lines onto the invoice;\nsend `line_items` yourself. Linking changes the estimate's status: it reads back from\n`GET /accounting/quotes/{id}` as `void`.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "`quotes` links the invoice to existing Intuit Enterprise Suite estimates: send each quote's\n`id` (`number` is read-only and is not sent). Only Pending or Accepted estimates are linked.\nAn estimate that is closed, rejected or already linked to an invoice is ignored without an\nerror: the request succeeds and that quote is missing from the invoice's `quotes` when it is\nread back. A quote `id` that does not exist fails the request with a `400`. An estimate can\nbe linked to only one invoice. Linking does not copy the estimate's lines onto the invoice;\nsend `line_items` yourself. Linking changes the estimate's status: it reads back from\n`GET /accounting/quotes/{id}` as `converted`.\n",
+                        },
+                        {
+                            "Procountor only accepts the following values for the channel field": "EMAIL, MAIL, ELECTRONIC_INVOICE, EDIFACT, PAPER_INVOICE, NO_SENDING.",
+                            "Procountor only accepts the following values for the language field": "EN, FI, SV, ET, NO, and DA.",
+                            "Procountor only accepts the following values for the payment_method field": "BANK_TRANSFER, DIRECT_PAYMENT, CLEARING, CREDIT_CARD_CHARGE, FOREIGN_PAYMENT, OTHER, CASH, DOMESTIC_PAYMENT_PLUSGIRO, DOMESTIC_PAYMENT_BANKGIRO, DOMESTIC_PAYMENT_CREDITOR, DKLMPKRE, NETS.",
+                            "connector": "procountor-fi",
+                            "description": "",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "`tax_inclusive` cannot be set on sales documents — the returned value reflects the Customer Card's \"Prices Including VAT\" setting. When `tax_inclusive: true` is sent for a document stored as tax-exclusive, line `unit_price` is written as its net value so the document totals match the sent tax-inclusive amounts.\nWhen a line omits `tax_rate`, the VAT group configured on the Item or G/L Account Card applies. A foreign customer's VAT business posting group can zero the line VAT regardless of the `tax_rate` sent.\nA '400 Bad Request' error \"Control 'fieldName' is read-only\" means that field's 'editable' property is disabled in Business Central.\n",
+                        },
+                        {
+                            "connector": "freshbooks",
+                            "description": 'The status field can be set to either "submitted", "partially_paid", "paid" or "draft". The due_date and invoice_date fields are required for the invoice to be created.\n',
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": 'By default, the status of the invoice will be set to "draft".\n',
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "`quotes` links the invoice to an existing Zoho Books estimate: send the quote's `id`\n(`number` is read-only and is not sent). Zoho Books links one estimate per invoice, so only\nthe first quote in `quotes` is sent. The estimate must belong to the invoice's customer: a\nquote `id` that does not exist, or that belongs to another customer, fails the request.\nZoho Books does not check the estimate's status (draft and declined estimates are linked\ntoo), and one estimate can be linked to more than one invoice. Linking does not copy the\nestimate's lines onto the invoice; send `line_items` yourself. Linking marks the estimate as\ninvoiced in Zoho Books.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Netsuite only supports one tracking category at a time so only the first item in the tracking_categories list will be used. While creating an invoice, revenue start date and revenue end date should be passed in the custom fields object inside the line items.\n",
+                        },
+                        {
+                            "connector": "workday",
+                            "description": "It is required to provide tracking_categories.id in the line items, which corresponds to the worktag/cost_center_id in Workday. It is required to provide the item.id in the line items.\n",
+                        },
+                        {
+                            "connector": "myob-acumatica",
+                            "description": "When filling line items, you can either link an existing item by providing the item code or create a new item by filling in the item details. Using both options at the same time is not supported.\n",
+                        },
+                        {
+                            "connector": "acumatica",
+                            "description": "When filling line items, you can either link an existing item by providing the item code or create a new item by filling in the item details. Using both options at the same time is not supported.\n",
+                        },
+                        {
+                            "connector": "access-financials",
+                            "description": "Access Financials creates invoices as live/posted transactions immediately. Live transactions cannot be updated, so to correct an invoice you must create a credit note and issue a new invoice.\n",
+                        },
+                        {
+                            "connector": "dualentry",
+                            "description": "Posted invoices (`status: posted`) require `due_date`, an invoice-level memo (`customer_memo`, or `reference`\nas a fallback), and a `description` on every line item. Omitting any of these returns\n`400 ... Required for posted records`. A company must also be resolved — supplied by the connection's\nDefault Company setting, the `x-apideck-company-id` header, or `company_id` in the body (any one suffices).\nDraft invoices (`status: draft`) have none of these requirements.\n",
+                        },
+                        {
+                            "connector": "holded",
+                            "description": "Holded ignores the `status` field on create and update. An invoice's payment status (`unpaid`,\n`partially_paid`, `paid`) is derived by Holded from recorded payments — set it by registering\npayments against the invoice, not by sending `status`. Draft-vs-finalized is controlled by Holded's\nown `approveDoc` flag, which is not currently settable through the unified API. On read, `status`\nreflects the payment state (`unpaid`/`partially_paid`/`paid`), or `draft` for unapproved documents.\n",
+                        },
+                        {
+                            "connector": "exact-online",
+                            "description": "Exact Online assigns invoice status automatically (`open` by default) and ignores the `status` field on create — invoices are finalized/processed in Exact Online, not via the API.\nSet VAT via `line_items[].tax_rate.code`; Exact derives the percentage from the code, so `line_items[].tax_rate.rate` is ignored on create.\n`shipping_address` creates a CRM address record against the customer, but **does not\nattach it to the invoice**: the invoice is saved with whatever delivery address the\ncustomer already had, so only the first address ever sent for a given customer takes\neffect. A later, different address is stored on the customer and then ignored by the\ninvoice. Set the delivery address on the customer record when it needs to change.\n\nOn read, `shipping_address.string` returns that address record's identifier rather than a\nformatted address, and the individual lines are not returned.\n",
+                        },
+                        {
+                            "connector": "exact-online-nl",
+                            "description": "Exact Online assigns invoice status automatically (`open` by default) and ignores the `status` field on create — invoices are finalized/processed in Exact Online, not via the API.\nSet VAT via `line_items[].tax_rate.code`; Exact derives the percentage from the code, so `line_items[].tax_rate.rate` is ignored on create.\n`shipping_address` creates a CRM address record against the customer, but **does not\nattach it to the invoice**: the invoice is saved with whatever delivery address the\ncustomer already had, so only the first address ever sent for a given customer takes\neffect. A later, different address is stored on the customer and then ignored by the\ninvoice. Set the delivery address on the customer record when it needs to change.\n\nOn read, `shipping_address.string` returns that address record's identifier rather than a\nformatted address, and the individual lines are not returned.\n",
+                        },
+                        {
+                            "connector": "exact-online-uk",
+                            "description": "Exact Online assigns invoice status automatically (`open` by default) and ignores the `status` field on create — invoices are finalized/processed in Exact Online, not via the API.\nSet VAT via `line_items[].tax_rate.code`; Exact derives the percentage from the code, so `line_items[].tax_rate.rate` is ignored on create.\n`shipping_address` creates a CRM address record against the customer, but **does not\nattach it to the invoice**: the invoice is saved with whatever delivery address the\ncustomer already had, so only the first address ever sent for a given customer takes\neffect. A later, different address is stored on the customer and then ignored by the\ninvoice. Set the delivery address on the customer record when it needs to change.\n\nOn read, `shipping_address.string` returns that address record's identifier rather than a\nformatted address, and the individual lines are not returned.\n",
+                        },
+                        {
+                            "connector": "snelstart",
+                            "description": "Only `Laag`, `Hoog`, `Overig` and `Verlegd` are recognized `line_items[].tax_rate.code`\nvalues on write (SnelStart's sales-side VAT types); any other value — including `Geen` —\nresults in that line being booked with no VAT allocation, silently, not as an error.\n\n`invoice_date` falling in a period your accountant has locked for review or already closed\nis rejected — see the `journal-entries` create gotcha, which this connector's bookings\nshare the same restriction with.\n",
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": '`line_items[].ledger_account.id` must reference a profit-and-loss (income or expense)\nledger account — Twinfield rejects an invoice line that posts to a balance-sheet account\n(e.g. a bank or receivables account) with "Grootboekrekening bestaat niet (in de\nPNL-groep)".\n\n`line_items[].description` is not preserved on the created invoice line. Twinfield derives\nthe line\'s description from the ledger account it posts to, so the created invoice shows a\nfixed label for that ledger account instead of the text you sent.\n',
+                        },
+                        {
+                            "connector": "sevdesk",
+                            "description": "sevDesk requires every invoice to have an internal contact person (the sevDesk user\nacting as biller) assigned — there is no field on this endpoint to choose one. This\nconnector automatically assigns the account's active administrator, falling back to any\nother active user, and — only if the account has no active user at all — the first user\nreturned by sevDesk regardless of status. On a multi-user account, invoices created\nthrough this API are always attributed to that auto-selected user rather than a specific\nperson you choose.\n\nThere is no header-level tax rate field — set `line_items[].tax_rate.rate` on each line;\nthe invoice's overall tax/subtotal/total are computed from the line items.\n\nInvoices are created under a fixed VAT rule (\"Regelbesteuerung\") — there is no field on\nthis endpoint to change it. Only 0%, 7% and 19% tax rates are accepted under this rule; a\n`line_items[].tax_rate.rate` outside that set is rounded to the nearest of the three\nrather than rejected.\n\nNew invoices are always created as `draft`, regardless of the `status` you send — sevDesk\nrejects creating an invoice in any other status. Transition it to a later status from\nwithin sevDesk after creation.\n\nOnce created, an invoice's line items are fixed — update only changes header fields\n(customer memo, reference). There is no void action either: cancelling an invoice creates\na separate reversal document rather than removing or editing the original.\n\n`type` only maps to two distinct sevDesk document types, not the full unified enum:\n`standard` and `credit`/`service`/`product`/`supplier` (which have no sevDesk equivalent)\nall create sevDesk's normal invoice type; `other` creates a second, different sevDesk\ntype. sevDesk also has down-payment, partial and final invoice variants, but the unified\nAPI has no value that selects them, and on read they are indistinguishable from a normal\ninvoice — `type` always reports back `standard` or `other`, never a more specific variant.\n\n`line_items[].unit_of_measure` only recognizes a fixed set of German abbreviations\n(`Stk`, `kg`, `m`, `Std`, ...). Any other value — including a plain English word like\n`hour` — is silently mapped to `Stk` (piece) instead of being rejected.\n",
+                        },
+                        {
+                            "connector": "oracle-fusion",
+                            "description": 'Creating an invoice in a `currency` other than the ledger\'s own currency requires\n`currency_rate` — send the conversion rate as of the invoice date. Without it, Oracle\nrefuses the request rather than defaulting or looking up a rate itself.\n\n`line_items[].ledger_account` and `line_items[].tracking_categories` are accepted and then\nignored: the invoice is created, and neither value appears when it is read back. Oracle\nReceivables derives a transaction\'s accounts itself rather than taking them per line — an\ninvoice created here comes back with a receivable account and a revenue account per line,\nboth chosen by the AutoAccounting rules configured in Oracle, and the cost centre is one\nsegment of that same account. To change which accounts an invoice posts to, change those\nrules in Oracle; there is no per-line override through this API. A tracking category that\ndoes not exist in the tenant is accepted for the same reason — the value is never used.\n\n`line_items[].item` must name a memo line Oracle will accept on an invoice line, and the\n`invoice-items` list is wider than that set: it returns every standard memo line the tenant\nhas, including ones Oracle refuses here with "the memo line you entered doesn\'t exist". The\nlist carries nothing that distinguishes the two, so confirm the memo lines you intend to\nuse before relying on them, or leave `item` off and let the line stand on its description\nand amount.\n\nOnly `type: "standard"` (and omitting `type`) create a Receivables invoice through this\nendpoint. `type: "credit"` is refused: Oracle represents a credit memo as a separate\ndocument type this connector does not implement. `type: "service"`, `"product"` and\n`"supplier"` are also refused — Oracle Receivables has no transaction class equivalent to\nany of them. For a standard invoice — `type: "standard"`, or no `type` at all — the Oracle\ntransaction type name applied is the connection\'s **Invoice Transaction Type** setting (a\ntenant-defined name; Oracle seeds one called "Invoice" by default), not a fixed translation\nof the unified value. Send `type: "other"`, or leave that setting blank, to let Oracle apply\nits own default instead.\n\nBecause the transaction type name is read from a free-text connection setting rather than\na fixed list, an invoice created while **Invoice Transaction Type** is set to a name outside\nthis connector\'s own recognized standard-type list (Invoice, Intercompany, PA Invoice, PA\nInternal Invoice, PSFT Invoice, and a handful of module-specific names) reads back with\n`type: "other"` rather than `"standard"` — the create still succeeds and the invoice is a\ngenuine standard Receivables transaction, only the unified `type` on subsequent reads is\naffected. This only matters for a renamed or custom transaction type; the default "Invoice"\nround-trips correctly.\n\nA `customer` Oracle can resolve is required: send the customer **account number** in\n`customer.display_id`. A create with no `customer`, or one carrying only a `name` or an\n`email`, is refused — Oracle rejects those without saying why, so the connector names the\nfield instead. `customer.id` is accepted only when it holds the account number; the party\nid it carries on reads is not accepted on a create.\n\n`tax_inclusive: true` is refused. Receivables calculates tax on top of the line amount from\nthe tax classification code, so a price declared tax-inclusive would be billed with the tax\nadded on top of it. Send tax-exclusive amounts.\n\nA **header** `discount_amount` or `discount_percentage` is refused. Oracle applies no\nheader-level discount to a Receivables transaction, so accepting one would bill the\nundiscounted total with no error. Put the discount on the `line_items`, where both fields\nare applied.\n\n`line_items[].tax_rate` must carry `code`. A tax rate given by `name` alone is refused —\nonly the tax classification code selects a rate, and a name would create the invoice with\nno tax at all. `tax_rate.id` is not used on a create.\n\n`line_items[].description` holds at most 240 characters; a longer one is refused naming the\nline and the limit.\n\n`pass_through` cannot overwrite a field this connector computes or checks before sending:\nthe business unit, transaction source and transaction type, the bill-to customer, the\ninvoice lines and the descriptive flexfield row. A `pass_through` value for one of those is\nrefused naming the field, because it would be applied after the check and change what is\nsent. Every other field remains writable through `pass_through` as usual.\n\nA line\'s `discount_amount`/`discount_percentage` is applied by reducing the unit price —\nReceivables has no discount field of its own. When the line also states `total_amount`,\nthat total is honoured as the intended (discounted) amount. When it does not, the\ndiscounted total is computed from `quantity x unit_price` and the reduction instead.\nSending both a `discount_amount` and a `discount_percentage` that disagree with each other\nis refused, as is a discount that would take the line amount negative.\n',
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Invoices are final the moment they are created. Fiken has no draft invoice through this API: the invoice gets its number immediately, it cannot be deleted, and afterwards only `due_date` can be changed. Correct a mistake with a credit note.\n\nThe bank account the invoice is paid into is required: send `bank_account.id` (from `/accounting/bank-accounts`), or the 11-digit `bank_account.account_number` that invoice and bank-account reads return. Every line needs a `tax_rate.id` that is a Fiken VAT code such as `HIGH` (25%), `MEDIUM` (15%), `LOW` (12%), `NONE`, `EXEMPT` or `OUTSIDE`, or a `tax_rate.rate`. A line needs a `ledger_account.id` unless its `item` already defines an income account.\n\nA company that has never issued an invoice may need its invoice number counter set up before the first invoice can be created. If the create call is rejected for that reason, set the counter once with the Proxy API (`POST /invoices/counter`) or create one invoice in Fiken.\n\n`discount_percentage` is a percentage (`10` is 10%), and `unit_price` is read back as the price before the discount. With `tax_inclusive: true`, each `unit_price` is taken to include VAT and is converted to Fiken's price excluding VAT with the rate of the line's `tax_rate` (its `rate`, or the standard rate of its Fiken VAT code), rounded to øre; a line whose VAT rate cannot be determined that way is rejected. Records are always read back with prices excluding VAT.\n",
+                        },
+                        {
+                            "connector": "visma-netvisor",
+                            "description": "`number` must be numeric: Netvisor stores invoice numbers as integers, so a value such as `INV-001` is rejected.\nEach line's `code` must be the code of an existing Netvisor product; letter case is ignored, accents are not. Any other code is rejected as product not found.\nSend `status` `draft` (saved as unsent) or `submitted` (saved as open). Any other value, or no `status`, is rejected.\n`total` is required: Netvisor needs the invoice amount. Without it the request is rejected with an XML validation error that names `invoicetype`, not the missing amount.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1078,10 +1784,9 @@ class Invoices(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingInvoicesAddResponse(
                 create_invoice_response=unmarshal_json_response(
-                    Optional[models.CreateInvoiceResponse], http_res
+                    Optional[models.CreateInvoiceResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1122,10 +1827,9 @@ class Invoices(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingInvoicesAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1198,6 +1902,7 @@ class Invoices(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1222,9 +1927,63 @@ class Invoices(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "For an invoice that comes from a billing document, `line_items` are the billing items (`item`, `quantity`, `unit_price`, `unit_of_measure`, `total_amount`, `tax_amount`) with ids `<billing document>:<item>` and no `ledger_account`, as when listing invoices. This needs the **SAP_COM_0120** communication scenario; without it the lines are G/L account lines and the response carries a warning in `meta.warnings`. Invoices posted directly in financial accounting have G/L account lines only.\nA billing document that is not yet posted to accounting has no invoice here: it appears once SAP has\ncreated its accounting document.\n\n`status` is `partially_paid` when part of the invoice is still open after a partial payment in\nSAP: either the invoice itself is still open, or a residual-item payment cleared it and left a\nnew open item for the remainder. Otherwise it is `paid` when the invoice is cleared in SAP and\n`authorised` when it is not. Finding partial payments adds one SAP read; if it fails, the\nrequest returns an error.\n\n`total_tax`, `sub_total` and `line_items[].tax_rate.code` are returned as when listing invoices: SAP's\ntax lines are summed into `total_tax` and are not part of `line_items`.\n",
+                        },
+                        {
+                            "connector": "exact-online-nl",
+                            "description": 'Exact Online has no balance field on an invoice, so `balance` is derived from its\ncash-flow data. When that derivation cannot run — the connection\'s app registration\nlacks cash-flow access, or the call is rate-limited or fails — `balance` comes back\n`null`, meaning *not determined*, never `0` and never the invoice total. Treat `null`\nas unknown rather than unpaid.\n\nA draft invoice is the exception: it has no number, nothing is derived for it, and its\n`balance` is its own total, which is correct since none of it has been settled.\n\nThe list endpoint derives the balance the same way, so the two paths agree.\n\nExact Online\'s own invoice lifecycle carries four states, mapped to `draft` (not yet\nissued, no number), `submitted` (issued, not yet due), `unpaid` (past its due date and not\nsettled) and `paid`. It has no part-paid state of its own, so `partially_paid` is derived\nhere: an invoice whose `balance` is above zero but below its `total` is reported\n`partially_paid` rather than `unpaid` or `submitted`.\n\nThat derivation needs the balance, so it is skipped whenever `balance` is `null` — an\ninvoice whose balance could not be determined keeps the state Exact gave it.\n\nAn invoice that carries no number is reported `draft`, which is also how `balance` treats\nit. Should Exact ever return an invoice with a number but no recognisable lifecycle value,\n`status` is `null` — *not determined* — rather than guessed at.\n\n**Sales credit notes are returned here too.** Exact stores them in the same entity as\ninvoices, so this endpoint serves both, and they are marked `type: "credit"` (an ordinary\ninvoice is `type: "standard"`). Three things follow. Their `balance` is what the customer\nis owed, not what they owe, and Exact does not enforce a negative sign on the amounts — a\ncredit note can carry a positive `total` and a positive `balance`. The same document is\nalso served by `/accounting/credit-notes` under a **different** id, so syncing both\nendpoints double-counts it unless `type` is used to filter here. And `status` on a credit\nnote is Exact\'s own document lifecycle, not a refund state.\n',
+                        },
+                        {
+                            "connector": "exact-online",
+                            "description": "Same as `exact-online-nl`.\n",
+                        },
+                        {
+                            "connector": "exact-online-uk",
+                            "description": "Same as `exact-online-nl`.\n",
+                        },
+                        {
+                            "connector": "freshbooks",
+                            "description": "FreshBooks supports up to two taxes per line item (`taxName1`/`taxAmount1` and `taxName2`/`taxAmount2`).\nThe unified API supports one `tax_rate` per line item, so Apideck maps the tax with the largest rate as\n`tax_rate` (name, rate, code) and sets `tax_amount` to the combined total of both taxes applied to the line.\n\nIf you need both individual tax values, use the `raw` query parameter (`?raw=true`) to access the original\nFreshBooks response, where both `taxName1`/`taxAmount1` and `taxName2`/`taxAmount2` are available on each line item.\n",
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": "`line_items[].total_amount` is the booked net line amount (excl. VAT) and there is no VAT\nline item. `sub_total` + `total_tax` = `total`.\n\n`balance` is the open amount in the invoice currency. For an invoice in a currency other\nthan the office's base currency, Twinfield may only return the open amount in the base\ncurrency; `balance` is then left empty and `status` is worked out in the base currency. A\nfully paid invoice returns `balance` 0, and an overpaid one a negative `balance`.\n\n`id` is the invoice number, the same number customer payments use in\n`allocations[].id`. Twinfield does not enforce unique invoice numbers: when two booked\ntransactions in the sales daybook share one, the read returns 409. A credit note's\ninvoice number returns `type: credit`.\n\nAn invoice that is not booked yet (a concept created through this API) is read from\nTwinfield's invoicing module, which gives `quantity` and `unit_price` and no customer\nname.\n\n`updated_at` is the transaction's modification time, which can differ from the\n`updated_at` the list returns for the same invoice (the list uses the time the\nreceivable line last changed).\n",
+                        },
+                        {
+                            "connector": "lexware-office",
+                            "description": "`balance` reports the full gross amount for any invoice that is not yet fully paid,\nincluding one that is partially paid — the vendor's status field only distinguishes\nfinalized from paid/paidoff, with no distinct partially-paid state and no applied/\nremaining amount field. A fully paid invoice correctly reports `balance` as `0`.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "A bundle (group item) is returned as its component lines. Each item in the bundle is its own\n`sales_item` line with its item, quantity, unit price and amount, and these lines add up to\nthe bundle's total. The bundle itself is not returned as a line item.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "A bundle (group item) is returned as its component lines. Each item in the bundle is its own\n`sales_item` line with its item, quantity, unit price and amount, and these lines add up to\nthe bundle's total. The bundle itself is not returned as a line item.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "`quotes` lists the estimates linked to the invoice.\n`quotes[].number` is read from the linked estimates with one extra request. When that\nrequest fails, or the invoice links more quotes than fit in one request, `quotes[].number`\nis omitted and `meta.warnings` has an entry with `operation: quotesAll`.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "`quotes` lists the estimates linked to the invoice.\n`quotes[].number` is read from the linked estimates with one extra request. When that\nrequest fails, or the invoice links more quotes than fit in one request, `quotes[].number`\nis omitted and `meta.warnings` has an entry with `operation: quotesAll`.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "`quotes` lists the estimate the invoice was created from. An invoice created from a sales\norder has no `quotes`, even when that sales order was created from an estimate. NetSuite\ndoes not say which kind of transaction an invoice was created from, so it is checked with\none extra request. When that request fails, `quotes` is omitted and `meta.warnings` has an\nentry with `operation: quotesAll`.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1232,10 +1991,9 @@ class Invoices(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingInvoicesOneResponse(
                 get_invoice_response=unmarshal_json_response(
-                    Optional[models.GetInvoiceResponse], http_res
+                    Optional[models.GetInvoiceResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1276,10 +2034,9 @@ class Invoices(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingInvoicesOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1352,6 +2109,7 @@ class Invoices(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1376,9 +2134,63 @@ class Invoices(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "For an invoice that comes from a billing document, `line_items` are the billing items (`item`, `quantity`, `unit_price`, `unit_of_measure`, `total_amount`, `tax_amount`) with ids `<billing document>:<item>` and no `ledger_account`, as when listing invoices. This needs the **SAP_COM_0120** communication scenario; without it the lines are G/L account lines and the response carries a warning in `meta.warnings`. Invoices posted directly in financial accounting have G/L account lines only.\nA billing document that is not yet posted to accounting has no invoice here: it appears once SAP has\ncreated its accounting document.\n\n`status` is `partially_paid` when part of the invoice is still open after a partial payment in\nSAP: either the invoice itself is still open, or a residual-item payment cleared it and left a\nnew open item for the remainder. Otherwise it is `paid` when the invoice is cleared in SAP and\n`authorised` when it is not. Finding partial payments adds one SAP read; if it fails, the\nrequest returns an error.\n\n`total_tax`, `sub_total` and `line_items[].tax_rate.code` are returned as when listing invoices: SAP's\ntax lines are summed into `total_tax` and are not part of `line_items`.\n",
+                        },
+                        {
+                            "connector": "exact-online-nl",
+                            "description": 'Exact Online has no balance field on an invoice, so `balance` is derived from its\ncash-flow data. When that derivation cannot run — the connection\'s app registration\nlacks cash-flow access, or the call is rate-limited or fails — `balance` comes back\n`null`, meaning *not determined*, never `0` and never the invoice total. Treat `null`\nas unknown rather than unpaid.\n\nA draft invoice is the exception: it has no number, nothing is derived for it, and its\n`balance` is its own total, which is correct since none of it has been settled.\n\nThe list endpoint derives the balance the same way, so the two paths agree.\n\nExact Online\'s own invoice lifecycle carries four states, mapped to `draft` (not yet\nissued, no number), `submitted` (issued, not yet due), `unpaid` (past its due date and not\nsettled) and `paid`. It has no part-paid state of its own, so `partially_paid` is derived\nhere: an invoice whose `balance` is above zero but below its `total` is reported\n`partially_paid` rather than `unpaid` or `submitted`.\n\nThat derivation needs the balance, so it is skipped whenever `balance` is `null` — an\ninvoice whose balance could not be determined keeps the state Exact gave it.\n\nAn invoice that carries no number is reported `draft`, which is also how `balance` treats\nit. Should Exact ever return an invoice with a number but no recognisable lifecycle value,\n`status` is `null` — *not determined* — rather than guessed at.\n\n**Sales credit notes are returned here too.** Exact stores them in the same entity as\ninvoices, so this endpoint serves both, and they are marked `type: "credit"` (an ordinary\ninvoice is `type: "standard"`). Three things follow. Their `balance` is what the customer\nis owed, not what they owe, and Exact does not enforce a negative sign on the amounts — a\ncredit note can carry a positive `total` and a positive `balance`. The same document is\nalso served by `/accounting/credit-notes` under a **different** id, so syncing both\nendpoints double-counts it unless `type` is used to filter here. And `status` on a credit\nnote is Exact\'s own document lifecycle, not a refund state.\n',
+                        },
+                        {
+                            "connector": "exact-online",
+                            "description": "Same as `exact-online-nl`.\n",
+                        },
+                        {
+                            "connector": "exact-online-uk",
+                            "description": "Same as `exact-online-nl`.\n",
+                        },
+                        {
+                            "connector": "freshbooks",
+                            "description": "FreshBooks supports up to two taxes per line item (`taxName1`/`taxAmount1` and `taxName2`/`taxAmount2`).\nThe unified API supports one `tax_rate` per line item, so Apideck maps the tax with the largest rate as\n`tax_rate` (name, rate, code) and sets `tax_amount` to the combined total of both taxes applied to the line.\n\nIf you need both individual tax values, use the `raw` query parameter (`?raw=true`) to access the original\nFreshBooks response, where both `taxName1`/`taxAmount1` and `taxName2`/`taxAmount2` are available on each line item.\n",
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": "`line_items[].total_amount` is the booked net line amount (excl. VAT) and there is no VAT\nline item. `sub_total` + `total_tax` = `total`.\n\n`balance` is the open amount in the invoice currency. For an invoice in a currency other\nthan the office's base currency, Twinfield may only return the open amount in the base\ncurrency; `balance` is then left empty and `status` is worked out in the base currency. A\nfully paid invoice returns `balance` 0, and an overpaid one a negative `balance`.\n\n`id` is the invoice number, the same number customer payments use in\n`allocations[].id`. Twinfield does not enforce unique invoice numbers: when two booked\ntransactions in the sales daybook share one, the read returns 409. A credit note's\ninvoice number returns `type: credit`.\n\nAn invoice that is not booked yet (a concept created through this API) is read from\nTwinfield's invoicing module, which gives `quantity` and `unit_price` and no customer\nname.\n\n`updated_at` is the transaction's modification time, which can differ from the\n`updated_at` the list returns for the same invoice (the list uses the time the\nreceivable line last changed).\n",
+                        },
+                        {
+                            "connector": "lexware-office",
+                            "description": "`balance` reports the full gross amount for any invoice that is not yet fully paid,\nincluding one that is partially paid — the vendor's status field only distinguishes\nfinalized from paid/paidoff, with no distinct partially-paid state and no applied/\nremaining amount field. A fully paid invoice correctly reports `balance` as `0`.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "A bundle (group item) is returned as its component lines. Each item in the bundle is its own\n`sales_item` line with its item, quantity, unit price and amount, and these lines add up to\nthe bundle's total. The bundle itself is not returned as a line item.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "A bundle (group item) is returned as its component lines. Each item in the bundle is its own\n`sales_item` line with its item, quantity, unit price and amount, and these lines add up to\nthe bundle's total. The bundle itself is not returned as a line item.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "`quotes` lists the estimates linked to the invoice.\n`quotes[].number` is read from the linked estimates with one extra request. When that\nrequest fails, or the invoice links more quotes than fit in one request, `quotes[].number`\nis omitted and `meta.warnings` has an entry with `operation: quotesAll`.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "`quotes` lists the estimates linked to the invoice.\n`quotes[].number` is read from the linked estimates with one extra request. When that\nrequest fails, or the invoice links more quotes than fit in one request, `quotes[].number`\nis omitted and `meta.warnings` has an entry with `operation: quotesAll`.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "`quotes` lists the estimate the invoice was created from. An invoice created from a sales\norder has no `quotes`, even when that sales order was created from an estimate. NetSuite\ndoes not say which kind of transaction an invoice was created from, so it is checked with\none extra request. When that request fails, `quotes` is omitted and `meta.warnings` has an\nentry with `operation: quotesAll`.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1386,10 +2198,9 @@ class Invoices(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingInvoicesOneResponse(
                 get_invoice_response=unmarshal_json_response(
-                    Optional[models.GetInvoiceResponse], http_res
+                    Optional[models.GetInvoiceResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1430,10 +2241,9 @@ class Invoices(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingInvoicesOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1487,14 +2297,14 @@ class Invoices(BaseSDK):
         ] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         line_items: Optional[
             Union[
-                List[models.InvoiceLineItemInput],
-                List[models.InvoiceLineItemInputTypedDict],
+                Iterable[models.InvoiceLineItemInput],
+                Iterable[models.InvoiceLineItemInputTypedDict],
             ]
         ] = None,
         billing_address: Optional[
@@ -1507,13 +2317,14 @@ class Invoices(BaseSDK):
         source_document_url: OptionalNullable[str] = UNSET,
         payment_allocations: OptionalNullable[
             Union[
-                List[models.PaymentAllocations],
-                List[models.PaymentAllocationsTypedDict],
+                Iterable[models.PaymentAllocations],
+                Iterable[models.PaymentAllocationsTypedDict],
             ]
         ] = UNSET,
         quotes: OptionalNullable[
             Union[
-                List[models.LinkedQuotesInput], List[models.LinkedQuotesInputTypedDict]
+                Iterable[models.LinkedQuotesInput],
+                Iterable[models.LinkedQuotesInputTypedDict],
             ]
         ] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
@@ -1527,11 +2338,14 @@ class Invoices(BaseSDK):
             Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1549,7 +2363,7 @@ class Invoices(BaseSDK):
         :param raw: Include raw response. Mostly used for debugging purposes
         :param idempotency_key: A unique key you generate for one create or update, to make retrying it safe. If the request times out or fails with an uncertain outcome, resend it with the same key and the same body: the record is created, or the update applied, at most once. Keys are 1-255 printable ASCII characters (a UUID is recommended) and are accepted bare or as a quoted string. A key is remembered for 24 hours from its first use, or for the connector's own deduplication window where that is shorter (Xero: 6 minutes; Sage Intacct REST and e-conomic: 1 hour); after that, the same key is treated as a new request, so retry within the window. Some connectors also replay an error to retries with the same key: if retries keep returning the same error, check whether the record exists before sending it again with a new key. Reusing a key with a different body returns 422, and retrying while the first attempt is still running returns 409. A key is bound to its first request even if that request was rejected, so after fixing a rejected body, send it with a new key. Connectors that cannot honour the key on this operation reject the request with 400 instead of writing unprotected.
         :param display_id: Id to be displayed.
-        :param type: Invoice type
+        :param type_: Invoice type
         :param number: Invoice number.
         :param customer: The customer this entity is linked to.
         :param company_id: The company ID the transaction belongs to
@@ -1715,6 +2529,7 @@ class Invoices(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.invoice, False, False, "json", models.InvoiceInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1739,9 +2554,118 @@ class Invoices(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Updates need `row_version` from a prior read of the record: without it the update is rejected with `Missing required field: data.editSequence`.\n\nWrites are applied on the Web Connector's next run, so an update can return a `504` timeout after 28 seconds while QuickBooks still applies it. Read the record back before retrying.\n",
+                        },
+                        {
+                            "connector": "sap-business-one",
+                            "description": "To change a line, send it with the `id` from a read: SAP Business One updates the line with that number. A line without an `id` is matched by its position in `line_items`, so it is added only when it comes after all of the document's existing lines; otherwise it replaces the line at that position. To add lines safely, send every existing line with its `id` followed by the new ones. Lines left out of the request are kept.\n",
+                        },
+                        {
+                            "connector": "campfire",
+                            "description": "Every invoice line must reference a product. When you send `line_items`, set\n`line_items[].item.id` on each line — if any line omits it, Campfire rejects the entire\nrequest with `lines[0]: Invoice line must have either a product or a bundle set` and no\nchange is applied.\n\nRetrieve the values to pass from `GET /accounting/invoice-items` and use the `id` it\nreturns. The product must already exist in Campfire; an id that does not resolve is\nrejected too.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Date-only fields need no configuration: NetSuite converts the datetime it receives into the\nSOAP/integration user's time zone before storing the date part, and these fields are anchored so\nthey store on the intended calendar day for any integration user between UTC-10 and UTC+13.\n\nFour zones fall outside that range and need the optional `timezone` connection setting:\n`Pacific/Pago_Pago`, `Pacific/Niue` and `Pacific/Midway` (UTC-11) store one day early without it,\nand `Pacific/Kiritimati` (UTC+14) stores one day late. Set it to the IANA zone of the NetSuite user\nthis connection authenticates as, read from that user's Home > Set Preferences > Time Zone — Setup >\nCompany > Company Information only supplies the default, so a user who overrode it needs their own\nzone.\n\nWhen the setting is used its value must be within 12 hours of that user's real zone in either\ndirection: more than ~12h east stores dates one day early, more than ~12h west stores them one day\nlate.\n\nThis applies to every NetSuite date-only write field across the accounting resources.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "Send `line_items[].id` for every line you want to UPDATE. Sage matches existing lines by\nthat id; a line sent without one is added as a new line rather than replacing anything. So\nreading an invoice and posting its lines back without their ids doubles the invoice.\n\nLines you leave out of the request are kept as they are — a partial update touches only the\nlines it names, and does not delete the rest.\n\nThe same applies to bills, credit notes, journal entries and quotes.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "`line_items[].item` must reference the item by its Sage item code (`ITEMID`), not by the\nnumeric record number. Pass the value Invoice Items returns in `code` — either as\n`item.code` (preferred; it wins when both are sent) or as `item.id`. The numeric `id`\nreturned by Invoice Items is rejected by Sage with \"Item 'N' specified is not valid\"\n(BL01001973). No automatic translation is applied: Sage item codes may themselves be\nnumeric, so a record number cannot be told apart from a code.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "Sending `line_items` replaces every line on the invoice. A bundle (group item) is read as its\ncomponent lines, so writing those lines back stores them as separate lines: the totals stay\nthe same, but the bundle grouping is lost. To keep a bundle, update the invoice without\n`line_items`.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Sending `line_items` replaces every line on the invoice. A bundle (group item) is read as its\ncomponent lines, so writing those lines back stores them as separate lines: the totals stay\nthe same, but the bundle grouping is lost. To keep a bundle, update the invoice without\n`line_items`.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "Quickbooks offers limited (regional) support for applying discount on a Line Item. Including discount_percentage or discount_amount applies to entire invoice. The default type for a Line Item is a sales item if no type has been provided. When setting status to `void`, do not include any other fields in the request body. Send an `Idempotency-Key` to make retrying an update (including a void) safe: it reaches QuickBooks as its `requestid`. QuickBooks keeps a `requestid` for at least 24 hours and can keep it longer, so after the 24-hour window a key reused for a different update may get the original update's result back, with the new body ignored. Use a new key for every update. Your key can be 1-255 characters: Unify sends QuickBooks a 32-character `requestid` derived from it, so QuickBooks' 50-character `requestid` limit never applies.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite offers limited (regional) support for applying discount on a Line Item. Including discount_percentage or discount_amount applies to entire invoice. The default type for a Line Item is a sales item if no type has been provided. When setting status to `void`, do not include any other fields in the request body. Send an `Idempotency-Key` to make retrying an update (including a void) safe: it reaches Intuit Enterprise Suite as its `requestid`. Intuit Enterprise Suite keeps a `requestid` for at least 24 hours and can keep it longer, so after the 24-hour window a key reused for a different update may get the original update's result back, with the new body ignored. Use a new key for every update. Your key can be 1-255 characters: Unify sends Intuit Enterprise Suite a 32-character `requestid` derived from it, so Intuit Enterprise Suite's 50-character `requestid` limit never applies.\n",
+                        },
+                        {
+                            "Procountor only accepts the following values for the channel field": "EMAIL, MAIL, ELECTRONIC_INVOICE, EDIFACT, PAPER_INVOICE, NO_SENDING.",
+                            "Procountor only accepts the following values for the language field": "EN, FI, SV, ET, NO, and DA.",
+                            "Procountor only accepts the following values for the payment_method field": "BANK_TRANSFER, DIRECT_PAYMENT, CLEARING, CREDIT_CARD_CHARGE, FOREIGN_PAYMENT, OTHER, CASH, DOMESTIC_PAYMENT_PLUSGIRO, DOMESTIC_PAYMENT_BANKGIRO, DOMESTIC_PAYMENT_CREDITOR, DKLMPKRE, NETS.",
+                            "connector": "procountor-fi",
+                            "description": "",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "For updating invoices, there are some limitations. Check out [here](https://developers.apideck.com/connectors/xero/docs/application_owner+oauth_credentials#1-limitations-and-rules-for-updating-xero-invoices)",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Invoices in Xero can be tax inclusive, tax exclusive, or no tax. Set `tax_inclusive` to `true` (amounts include tax), `false` (amounts exclude tax), or `null` (no tax applied). When updating, changing `tax_inclusive` recalculates all line item amounts.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "When setting tax rates on line items, QuickBooks requires valid tax codes. The `tax_rate.id` must reference an existing tax code from the tax-rates endpoint. QuickBooks automatically calculates tax amounts based on the tax code's rate.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "When setting tax rates on line items, Intuit Enterprise Suite requires valid tax codes. The `tax_rate.id` must reference an existing tax code from the tax-rates endpoint. Intuit Enterprise Suite automatically calculates tax amounts based on the tax code's rate.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "`quotes` only adds quote links. Each quote `id` you send is linked to the invoice, and\nquotes that are already linked stay linked. Sending `quotes: []`, `null` or a shorter list\nremoves no quote link: quote links cannot be removed by updating the invoice. The invoice's\nother linked transactions (payments, time activities and billable charges) are kept. The\nlinking rules of invoice create apply: only Pending or Accepted estimates are linked, others\nare ignored without an error, and a quote `id` that does not exist fails with a `400`.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "`quotes` only adds quote links. Each quote `id` you send is linked to the invoice, and\nquotes that are already linked stay linked. Sending `quotes: []`, `null` or a shorter list\nremoves no quote link: quote links cannot be removed by updating the invoice. The invoice's\nother linked transactions (payments, time activities and billable charges) are kept. The\nlinking rules of invoice create apply: only Pending or Accepted estimates are linked, others\nare ignored without an error, and a quote `id` that does not exist fails with a `400`.\n",
+                        },
+                        {
+                            "connector": "freshbooks",
+                            "description": 'The status field can be set to either "submitted" or "draft". The other available statuses are set by the Freshbooks API and cannot be updated manually. The due_date and invoice_date fields are required for the due date to be updated.\n',
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": 'The allowed values for the status field are "draft", "submitted", and "void" when using the update method.\nPlease ensure that status updates are sent separately from other invoice updates.\n',
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Netsuite only supports one tracking category at a time so only the first item in the tracking_categories list will be used.",
+                        },
+                        {
+                            "connector": "sage-business-cloud-accounting",
+                            "description": "To fetch service items, you must include filter[type]=service in your request parameters\n",
+                        },
+                        {
+                            "connector": "workday",
+                            "description": "It is required to provide tracking_categories.id in the line items, which corresponds to the worktag/cost_center_id in Workday. It is required to provide the item.id in the line items. Workday only supports `sales_item` and `service` types for line items and this is required.\n",
+                        },
+                        {
+                            "connector": "lexware-office",
+                            "description": "Invoices cannot be updated through this connector once created — there is no update\noperation for this resource. To correct a mistake on an issued invoice, create a credit\nnote against it and issue a new, corrected invoice instead.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Only `due_date` can be updated on a Fiken invoice. Any other field in the request is ignored. Invoices cannot be deleted; issue a credit note to reverse one.\n",
+                        },
+                        {
+                            "connector": "visma-netvisor",
+                            "description": "Send the full invoice, including `status` and every line item: a body with only the changed fields is rejected with `400` and nothing is changed.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1749,10 +2673,9 @@ class Invoices(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingInvoicesUpdateResponse(
                 update_invoice_response=unmarshal_json_response(
-                    Optional[models.UpdateInvoiceResponse], http_res
+                    Optional[models.UpdateInvoiceResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1793,10 +2716,9 @@ class Invoices(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingInvoicesUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1850,14 +2772,14 @@ class Invoices(BaseSDK):
         ] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         line_items: Optional[
             Union[
-                List[models.InvoiceLineItemInput],
-                List[models.InvoiceLineItemInputTypedDict],
+                Iterable[models.InvoiceLineItemInput],
+                Iterable[models.InvoiceLineItemInputTypedDict],
             ]
         ] = None,
         billing_address: Optional[
@@ -1870,13 +2792,14 @@ class Invoices(BaseSDK):
         source_document_url: OptionalNullable[str] = UNSET,
         payment_allocations: OptionalNullable[
             Union[
-                List[models.PaymentAllocations],
-                List[models.PaymentAllocationsTypedDict],
+                Iterable[models.PaymentAllocations],
+                Iterable[models.PaymentAllocationsTypedDict],
             ]
         ] = UNSET,
         quotes: OptionalNullable[
             Union[
-                List[models.LinkedQuotesInput], List[models.LinkedQuotesInputTypedDict]
+                Iterable[models.LinkedQuotesInput],
+                Iterable[models.LinkedQuotesInputTypedDict],
             ]
         ] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
@@ -1890,11 +2813,14 @@ class Invoices(BaseSDK):
             Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1912,7 +2838,7 @@ class Invoices(BaseSDK):
         :param raw: Include raw response. Mostly used for debugging purposes
         :param idempotency_key: A unique key you generate for one create or update, to make retrying it safe. If the request times out or fails with an uncertain outcome, resend it with the same key and the same body: the record is created, or the update applied, at most once. Keys are 1-255 printable ASCII characters (a UUID is recommended) and are accepted bare or as a quoted string. A key is remembered for 24 hours from its first use, or for the connector's own deduplication window where that is shorter (Xero: 6 minutes; Sage Intacct REST and e-conomic: 1 hour); after that, the same key is treated as a new request, so retry within the window. Some connectors also replay an error to retries with the same key: if retries keep returning the same error, check whether the record exists before sending it again with a new key. Reusing a key with a different body returns 422, and retrying while the first attempt is still running returns 409. A key is bound to its first request even if that request was rejected, so after fixing a rejected body, send it with a new key. Connectors that cannot honour the key on this operation reject the request with 400 instead of writing unprotected.
         :param display_id: Id to be displayed.
-        :param type: Invoice type
+        :param type_: Invoice type
         :param number: Invoice number.
         :param customer: The customer this entity is linked to.
         :param company_id: The company ID the transaction belongs to
@@ -2078,6 +3004,7 @@ class Invoices(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.invoice, False, False, "json", models.InvoiceInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2102,9 +3029,118 @@ class Invoices(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Updates need `row_version` from a prior read of the record: without it the update is rejected with `Missing required field: data.editSequence`.\n\nWrites are applied on the Web Connector's next run, so an update can return a `504` timeout after 28 seconds while QuickBooks still applies it. Read the record back before retrying.\n",
+                        },
+                        {
+                            "connector": "sap-business-one",
+                            "description": "To change a line, send it with the `id` from a read: SAP Business One updates the line with that number. A line without an `id` is matched by its position in `line_items`, so it is added only when it comes after all of the document's existing lines; otherwise it replaces the line at that position. To add lines safely, send every existing line with its `id` followed by the new ones. Lines left out of the request are kept.\n",
+                        },
+                        {
+                            "connector": "campfire",
+                            "description": "Every invoice line must reference a product. When you send `line_items`, set\n`line_items[].item.id` on each line — if any line omits it, Campfire rejects the entire\nrequest with `lines[0]: Invoice line must have either a product or a bundle set` and no\nchange is applied.\n\nRetrieve the values to pass from `GET /accounting/invoice-items` and use the `id` it\nreturns. The product must already exist in Campfire; an id that does not resolve is\nrejected too.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Date-only fields need no configuration: NetSuite converts the datetime it receives into the\nSOAP/integration user's time zone before storing the date part, and these fields are anchored so\nthey store on the intended calendar day for any integration user between UTC-10 and UTC+13.\n\nFour zones fall outside that range and need the optional `timezone` connection setting:\n`Pacific/Pago_Pago`, `Pacific/Niue` and `Pacific/Midway` (UTC-11) store one day early without it,\nand `Pacific/Kiritimati` (UTC+14) stores one day late. Set it to the IANA zone of the NetSuite user\nthis connection authenticates as, read from that user's Home > Set Preferences > Time Zone — Setup >\nCompany > Company Information only supplies the default, so a user who overrode it needs their own\nzone.\n\nWhen the setting is used its value must be within 12 hours of that user's real zone in either\ndirection: more than ~12h east stores dates one day early, more than ~12h west stores them one day\nlate.\n\nThis applies to every NetSuite date-only write field across the accounting resources.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "Send `line_items[].id` for every line you want to UPDATE. Sage matches existing lines by\nthat id; a line sent without one is added as a new line rather than replacing anything. So\nreading an invoice and posting its lines back without their ids doubles the invoice.\n\nLines you leave out of the request are kept as they are — a partial update touches only the\nlines it names, and does not delete the rest.\n\nThe same applies to bills, credit notes, journal entries and quotes.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "`line_items[].item` must reference the item by its Sage item code (`ITEMID`), not by the\nnumeric record number. Pass the value Invoice Items returns in `code` — either as\n`item.code` (preferred; it wins when both are sent) or as `item.id`. The numeric `id`\nreturned by Invoice Items is rejected by Sage with \"Item 'N' specified is not valid\"\n(BL01001973). No automatic translation is applied: Sage item codes may themselves be\nnumeric, so a record number cannot be told apart from a code.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "Sending `line_items` replaces every line on the invoice. A bundle (group item) is read as its\ncomponent lines, so writing those lines back stores them as separate lines: the totals stay\nthe same, but the bundle grouping is lost. To keep a bundle, update the invoice without\n`line_items`.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Sending `line_items` replaces every line on the invoice. A bundle (group item) is read as its\ncomponent lines, so writing those lines back stores them as separate lines: the totals stay\nthe same, but the bundle grouping is lost. To keep a bundle, update the invoice without\n`line_items`.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "Quickbooks offers limited (regional) support for applying discount on a Line Item. Including discount_percentage or discount_amount applies to entire invoice. The default type for a Line Item is a sales item if no type has been provided. When setting status to `void`, do not include any other fields in the request body. Send an `Idempotency-Key` to make retrying an update (including a void) safe: it reaches QuickBooks as its `requestid`. QuickBooks keeps a `requestid` for at least 24 hours and can keep it longer, so after the 24-hour window a key reused for a different update may get the original update's result back, with the new body ignored. Use a new key for every update. Your key can be 1-255 characters: Unify sends QuickBooks a 32-character `requestid` derived from it, so QuickBooks' 50-character `requestid` limit never applies.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite offers limited (regional) support for applying discount on a Line Item. Including discount_percentage or discount_amount applies to entire invoice. The default type for a Line Item is a sales item if no type has been provided. When setting status to `void`, do not include any other fields in the request body. Send an `Idempotency-Key` to make retrying an update (including a void) safe: it reaches Intuit Enterprise Suite as its `requestid`. Intuit Enterprise Suite keeps a `requestid` for at least 24 hours and can keep it longer, so after the 24-hour window a key reused for a different update may get the original update's result back, with the new body ignored. Use a new key for every update. Your key can be 1-255 characters: Unify sends Intuit Enterprise Suite a 32-character `requestid` derived from it, so Intuit Enterprise Suite's 50-character `requestid` limit never applies.\n",
+                        },
+                        {
+                            "Procountor only accepts the following values for the channel field": "EMAIL, MAIL, ELECTRONIC_INVOICE, EDIFACT, PAPER_INVOICE, NO_SENDING.",
+                            "Procountor only accepts the following values for the language field": "EN, FI, SV, ET, NO, and DA.",
+                            "Procountor only accepts the following values for the payment_method field": "BANK_TRANSFER, DIRECT_PAYMENT, CLEARING, CREDIT_CARD_CHARGE, FOREIGN_PAYMENT, OTHER, CASH, DOMESTIC_PAYMENT_PLUSGIRO, DOMESTIC_PAYMENT_BANKGIRO, DOMESTIC_PAYMENT_CREDITOR, DKLMPKRE, NETS.",
+                            "connector": "procountor-fi",
+                            "description": "",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "For updating invoices, there are some limitations. Check out [here](https://developers.apideck.com/connectors/xero/docs/application_owner+oauth_credentials#1-limitations-and-rules-for-updating-xero-invoices)",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Invoices in Xero can be tax inclusive, tax exclusive, or no tax. Set `tax_inclusive` to `true` (amounts include tax), `false` (amounts exclude tax), or `null` (no tax applied). When updating, changing `tax_inclusive` recalculates all line item amounts.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "When setting tax rates on line items, QuickBooks requires valid tax codes. The `tax_rate.id` must reference an existing tax code from the tax-rates endpoint. QuickBooks automatically calculates tax amounts based on the tax code's rate.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "When setting tax rates on line items, Intuit Enterprise Suite requires valid tax codes. The `tax_rate.id` must reference an existing tax code from the tax-rates endpoint. Intuit Enterprise Suite automatically calculates tax amounts based on the tax code's rate.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "`quotes` only adds quote links. Each quote `id` you send is linked to the invoice, and\nquotes that are already linked stay linked. Sending `quotes: []`, `null` or a shorter list\nremoves no quote link: quote links cannot be removed by updating the invoice. The invoice's\nother linked transactions (payments, time activities and billable charges) are kept. The\nlinking rules of invoice create apply: only Pending or Accepted estimates are linked, others\nare ignored without an error, and a quote `id` that does not exist fails with a `400`.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "`quotes` only adds quote links. Each quote `id` you send is linked to the invoice, and\nquotes that are already linked stay linked. Sending `quotes: []`, `null` or a shorter list\nremoves no quote link: quote links cannot be removed by updating the invoice. The invoice's\nother linked transactions (payments, time activities and billable charges) are kept. The\nlinking rules of invoice create apply: only Pending or Accepted estimates are linked, others\nare ignored without an error, and a quote `id` that does not exist fails with a `400`.\n",
+                        },
+                        {
+                            "connector": "freshbooks",
+                            "description": 'The status field can be set to either "submitted" or "draft". The other available statuses are set by the Freshbooks API and cannot be updated manually. The due_date and invoice_date fields are required for the due date to be updated.\n',
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": 'The allowed values for the status field are "draft", "submitted", and "void" when using the update method.\nPlease ensure that status updates are sent separately from other invoice updates.\n',
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Netsuite only supports one tracking category at a time so only the first item in the tracking_categories list will be used.",
+                        },
+                        {
+                            "connector": "sage-business-cloud-accounting",
+                            "description": "To fetch service items, you must include filter[type]=service in your request parameters\n",
+                        },
+                        {
+                            "connector": "workday",
+                            "description": "It is required to provide tracking_categories.id in the line items, which corresponds to the worktag/cost_center_id in Workday. It is required to provide the item.id in the line items. Workday only supports `sales_item` and `service` types for line items and this is required.\n",
+                        },
+                        {
+                            "connector": "lexware-office",
+                            "description": "Invoices cannot be updated through this connector once created — there is no update\noperation for this resource. To correct a mistake on an issued invoice, create a credit\nnote against it and issue a new, corrected invoice instead.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "Only `due_date` can be updated on a Fiken invoice. Any other field in the request is ignored. Invoices cannot be deleted; issue a credit note to reverse one.\n",
+                        },
+                        {
+                            "connector": "visma-netvisor",
+                            "description": "Send the full invoice, including `status` and every line item: a body with only the changed fields is rejected with `400` and nothing is changed.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2112,10 +3148,9 @@ class Invoices(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingInvoicesUpdateResponse(
                 update_invoice_response=unmarshal_json_response(
-                    Optional[models.UpdateInvoiceResponse], http_res
+                    Optional[models.UpdateInvoiceResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2156,10 +3191,9 @@ class Invoices(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingInvoicesUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2226,6 +3260,7 @@ class Invoices(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2250,9 +3285,19 @@ class Invoices(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "freshbooks",
+                            "description": "Delete will set the invoice to inactive and will soft delete it, meaning it will stop appearing in the list API call. However, it can still be found via the get by id call.\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2260,10 +3305,9 @@ class Invoices(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingInvoicesDeleteResponse(
                 delete_invoice_response=unmarshal_json_response(
-                    Optional[models.DeleteInvoiceResponse], http_res
+                    Optional[models.DeleteInvoiceResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2304,10 +3348,9 @@ class Invoices(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingInvoicesDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2374,6 +3417,7 @@ class Invoices(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2398,9 +3442,19 @@ class Invoices(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "freshbooks",
+                            "description": "Delete will set the invoice to inactive and will soft delete it, meaning it will stop appearing in the list API call. However, it can still be found via the get by id call.\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2408,10 +3462,9 @@ class Invoices(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingInvoicesDeleteResponse(
                 delete_invoice_response=unmarshal_json_response(
-                    Optional[models.DeleteInvoiceResponse], http_res
+                    Optional[models.DeleteInvoiceResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2452,10 +3505,9 @@ class Invoices(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingInvoicesDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2464,8 +3516,8 @@ class Invoices(BaseSDK):
         self,
         *,
         items: Union[
-            List[models.BatchInvoicesRequestItems],
-            List[models.BatchInvoicesRequestItemsTypedDict],
+            Iterable[models.BatchInvoicesRequestItems],
+            Iterable[models.BatchInvoicesRequestItemsTypedDict],
         ],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
@@ -2539,6 +3591,7 @@ class Invoices(BaseSDK):
                 "json",
                 models.BatchInvoicesRequest,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2563,9 +3616,31 @@ class Invoices(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "xero",
+                            "description": "The whole request is one call to the provider, so it counts as **one request**\nagainst your plan however many records it carries.\n\nAt most 20 invoices per request. A request carrying more is rejected before any\ninvoice is written.\n\nHow much of your Xero rate limit a request uses depends on how you reference ledger\naccounts on line items. Sending `line_items[].ledger_account.code` costs one Xero\ncall for the whole request. Sending `line_items[].ledger_account.id` instead costs\nmore than two calls per invoice, because each account has to be looked up — prefer\n`code` when you have it, and set client timeouts accordingly.\n\nA request that times out may still have created some or all of its invoices. When\nthat happens no ids are returned for them, so treat a timed-out batch as uncertain\nrather than failed: list invoices to find what was written before retrying, or a\nretry will duplicate them.\n\nResults are returned in the order the items were sent. Supply `_ref` on every item\nif you need to tie outcomes back to your own records.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Records are written one at a time, so the request counts as **one request per\nrecord** against your plan — batching saves you round trips, not quota.\n\nAt most 10 records per request.\n\nRecords are written one at a time, so a request of N invoices takes about N times as\nlong as a single write and counts as N requests against your plan. Each record\nsucceeds or fails on its own; read the per-item `status` to see which were written.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "The whole request is one call to the provider, so it counts as **one request**\nagainst your plan however many records it carries.\n\nAt most 20 invoices per request. A request carrying more is rejected before any\ninvoice is created.\n\nResponse time scales with the number of records rather than being a fixed cost:\na full request of 20 takes roughly 27 seconds. Set client timeouts accordingly.\n\nA request that times out may still have created some or all of its invoices. When\nthat happens no ids are returned for them, so treat a timed-out batch as uncertain\nrather than failed: list invoices to find what was written before retrying, or a\nretry will duplicate them.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "The whole request is one call to the provider, so it counts as **one request**\nagainst your plan however many records it carries.\n\nAt most 20 invoices per request. A request carrying more is rejected before any\ninvoice is created.\n\nResponse time scales with the number of records rather than being a fixed cost:\na full request of 20 takes roughly 27 seconds. Set client timeouts accordingly.\n\nA request that times out may still have created some or all of its invoices. When\nthat happens no ids are returned for them, so treat a timed-out batch as uncertain\nrather than failed: list invoices to find what was written before retrying, or a\nretry will duplicate them.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2573,10 +3648,9 @@ class Invoices(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingInvoicesBatchAddResponse(
                 batch_invoices_response=unmarshal_json_response(
-                    Optional[models.BatchInvoicesResponse], http_res
+                    Optional[models.BatchInvoicesResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2617,10 +3691,9 @@ class Invoices(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingInvoicesBatchAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2629,8 +3702,8 @@ class Invoices(BaseSDK):
         self,
         *,
         items: Union[
-            List[models.BatchInvoicesRequestItems],
-            List[models.BatchInvoicesRequestItemsTypedDict],
+            Iterable[models.BatchInvoicesRequestItems],
+            Iterable[models.BatchInvoicesRequestItemsTypedDict],
         ],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
@@ -2704,6 +3777,7 @@ class Invoices(BaseSDK):
                 "json",
                 models.BatchInvoicesRequest,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2728,9 +3802,31 @@ class Invoices(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "xero",
+                            "description": "The whole request is one call to the provider, so it counts as **one request**\nagainst your plan however many records it carries.\n\nAt most 20 invoices per request. A request carrying more is rejected before any\ninvoice is written.\n\nHow much of your Xero rate limit a request uses depends on how you reference ledger\naccounts on line items. Sending `line_items[].ledger_account.code` costs one Xero\ncall for the whole request. Sending `line_items[].ledger_account.id` instead costs\nmore than two calls per invoice, because each account has to be looked up — prefer\n`code` when you have it, and set client timeouts accordingly.\n\nA request that times out may still have created some or all of its invoices. When\nthat happens no ids are returned for them, so treat a timed-out batch as uncertain\nrather than failed: list invoices to find what was written before retrying, or a\nretry will duplicate them.\n\nResults are returned in the order the items were sent. Supply `_ref` on every item\nif you need to tie outcomes back to your own records.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Records are written one at a time, so the request counts as **one request per\nrecord** against your plan — batching saves you round trips, not quota.\n\nAt most 10 records per request.\n\nRecords are written one at a time, so a request of N invoices takes about N times as\nlong as a single write and counts as N requests against your plan. Each record\nsucceeds or fails on its own; read the per-item `status` to see which were written.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "The whole request is one call to the provider, so it counts as **one request**\nagainst your plan however many records it carries.\n\nAt most 20 invoices per request. A request carrying more is rejected before any\ninvoice is created.\n\nResponse time scales with the number of records rather than being a fixed cost:\na full request of 20 takes roughly 27 seconds. Set client timeouts accordingly.\n\nA request that times out may still have created some or all of its invoices. When\nthat happens no ids are returned for them, so treat a timed-out batch as uncertain\nrather than failed: list invoices to find what was written before retrying, or a\nretry will duplicate them.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "The whole request is one call to the provider, so it counts as **one request**\nagainst your plan however many records it carries.\n\nAt most 20 invoices per request. A request carrying more is rejected before any\ninvoice is created.\n\nResponse time scales with the number of records rather than being a fixed cost:\na full request of 20 takes roughly 27 seconds. Set client timeouts accordingly.\n\nA request that times out may still have created some or all of its invoices. When\nthat happens no ids are returned for them, so treat a timed-out batch as uncertain\nrather than failed: list invoices to find what was written before retrying, or a\nretry will duplicate them.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2738,10 +3834,9 @@ class Invoices(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingInvoicesBatchAddResponse(
                 batch_invoices_response=unmarshal_json_response(
-                    Optional[models.BatchInvoicesResponse], http_res
+                    Optional[models.BatchInvoicesResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2782,10 +3877,9 @@ class Invoices(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingInvoicesBatchAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

@@ -2,6 +2,16 @@
 
 Invoice type
 
+## Example Usage
+
+```python
+from apideck_unify.models import InvoiceType
+
+value = InvoiceType.STANDARD
+
+# Open enum: unrecognized values are captured as UnrecognizedStr
+```
+
 
 ## Values
 

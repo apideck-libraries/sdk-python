@@ -2,6 +2,16 @@
 
 Current phase of the project lifecycle
 
+## Example Usage
+
+```python
+from apideck_unify.models import ProjectPhase
+
+value = ProjectPhase.INITIATION
+
+# Open enum: unrecognized values are captured as UnrecognizedStr
+```
+
 
 ## Values
 

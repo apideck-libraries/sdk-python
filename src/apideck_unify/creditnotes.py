@@ -8,7 +8,7 @@ from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from datetime import datetime
 from jsonpath import JSONPath
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
 
 
 class CreditNotes(BaseSDK):
@@ -28,7 +28,7 @@ class CreditNotes(BaseSDK):
         sort: Optional[
             Union[models.CreditNotesSort, models.CreditNotesSortTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -77,7 +77,7 @@ class CreditNotes(BaseSDK):
                 filter_, Optional[models.CreditNotesFilter]
             ),
             sort=utils.get_pydantic_model(sort, Optional[models.CreditNotesSort]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -98,6 +98,7 @@ class CreditNotes(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -122,9 +123,123 @@ class CreditNotes(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sap-business-one",
+                            "description": "Supported filters: `updated_since`, `created_since`, `number` and `customer_id`. `number` is the SAP Business One document number: a whole number from 0 to 2,147,483,647, and any other value returns a 400.\n",
+                        },
+                        {
+                            "connector": "e-conomic",
+                            "description": "e-conomic has no separate credit note document: credit notes are invoices with a negative total. Amounts and quantities are returned as positive values. Booked credit notes are listed without `line_items` (fetch one to get its lines); draft credit notes are not listed but can be read by id (`draft-{number}`). Because e-conomic cannot filter on the total, a page can hold fewer credit notes than `limit`, or none, while more pages remain: keep following the next cursor. Credit notes have no webhook events of their own: their changes arrive as invoice events.\ne-conomic sends the same webhook events for credit notes as for invoices, so a booked or changed credit note is delivered as an `invoice.created` or `invoice.updated` event; its id is read through credit notes, not invoices. No `credit_note.*` events are sent.\n`filter[ids]` matches booked credit notes only; draft ids (`draft-N`) match nothing.\nLine items of a draft have no `tax_amount` or `tax_rate.rate`; e-conomic returns VAT per line only for booked documents.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "Lists the credit notes of every fiscal year in the administration. A Minox credit note is a\nnegative booking on a sales journal; it is returned here with positive amounts and does not\nappear in the invoices list. `status`, `balance` and\n`remaining_credit` come from Minox's open items (`paid`, `partially_paid`, or `authorised` while all of\nit is open; `posted` with `balance` and `remaining_credit` `null` when Minox has no open item, or when two of Minox's open items match one credit note (same number, date and kind));\nallocations are not returned. Sorting is not supported.\n",
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "Credit notes are SAP FI customer credit memos read from the accounting-document line\nitems, grouped into one record per document. `type` is always\n`accounts_receivable_credit`; `status` is `authorised`, or `paid` once the customer item has\nbeen cleared. Every posting line of the document other than the customer line and the tax\nlines is returned as a `line_items` entry, with SAP's tax code in `tax_rate.code`. The tax\nlines are summed into `total_tax`, and `sub_total` is `total_amount` minus `total_tax`; a\ncredit note without tax returns `total_tax` `0`. `balance` and `allocations` are not\nreturned. `created_at` is the date the document was entered and `date_issued` its document\ndate; both carry a date only (midnight UTC).\n\nA line's `total_amount` is signed against the credit note: a line on the revenue side reads\npositive, and a line on the other side (an offsetting posting inside the same document) reads\nnegative. `total_amount` stays the absolute sum of the customer lines, so the lines do not always\nadd up to it. On create, every line's `total_amount` is posted as its\nabsolute value on the revenue side, so remove or adjust negative lines before posting a read\ncredit note again.\n\nSupported filters are `updated_since`, `created_since` and `number`; `customer_id` is not\nsupported. The date filters compare on whole days (the time part is ignored) and are\ninclusive of the day given. `number` is the SAP document number and is only unique within a\ncompany and fiscal year, so `filter[number]` can return several records — use `id`\n(`company:fiscal_year:document`) to address a single one.\n\nResults are newest first. `limit` caps the SAP posting lines read per page, not the credit\nnotes, so a page can hold fewer credit notes than `limit`. A credit note is never split\nacross pages: one with more posting lines than `limit` is returned complete on a page of its\nown. Only a credit note with more than 5,000 posting lines, or one whose lines cannot all be\nread within the request's time budget, still appears on consecutive pages with the same\n`id`, each carrying part of its lines; if SAP fails while they are read, the request returns\na retryable error. Follow `meta.cursors.next` until it is `null`. `meta.total_count` will\nnot appear and `meta.cursors.previous` is always `null`. `pass_through` cannot set `$top`,\n`$skip` or `$orderby` on this list; such a request is refused with a 400.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "FreeAgent's `Overdue` status is returned as `authorised` (or `partially_paid` when part of\nthe credit note has been refunded); there is no separate overdue status. `balance` is the\namount FreeAgent still has to refund, carrying FreeAgent's sign (negative, like\n`total_amount`), and is `0` once the credit note is `paid`.\n",
+                        },
+                        {
+                            "connector": "dualentry",
+                            "description": "`updated_since` is inclusive and is applied at whole-second granularity, so a poll that\nreuses the newest `updated_at` it received will re-receive the records from that final\nsecond. De-duplicate on `id`, or advance the cursor past the boundary second.\n\nTwo DualEntry behaviours combine to cause this. Its `updated_after` filter is a\n`>=` comparison, and while DualEntry stores update times with sub-second precision it\nreturns them truncated to the second — so a returned timestamp is always slightly earlier\nthan the value the filter compares against. Any sub-second component supplied in\n`updated_since` is therefore rounded down before the request is sent, which guarantees no\nrecord is ever skipped at the boundary, at the cost of re-delivering that second.\n\n`filter[ids]` and `filter[number]` address the same field on this connector: a\nDualEntry credit note's unified `id` and `number` are the same value. If both are\nsupplied, `filter[number]` takes precedence and `filter[ids]` is ignored — so a\n`number` outside the `ids` list still returns that credit note. Send one or the\nother, not both.\n\n`filter[ids]` returns at most 100 records per page. A list of more than 100 ids is not\ntruncated — the filter is preserved across pages, so page through the cursor to collect\nthem all.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "`sub_total` equals `total` and does not exclude tax. Sage's `accounts-receivable/adjustment`\nobject exposes only document-level totals with no pre-tax subtotal field, so both unified\nfields come from the same source. Derive the net from `line_items[].total_amount` when the\ndistinction matters.\n\nAmounts are SIGNED as Sage stores them, so a credit adjustment reports a negative\n`total_amount` while a debit adjustment on the same endpoint reports a positive one. Nothing\nelse on the record distinguishes the two.\n\nOn create and update, `line_items[].total_amount` is accepted in either sign and always\nstored as a credit (negative) in Sage — this endpoint only ever creates credit adjustments,\nnever debit ones. A positive amount is not rejected or misread; it is simply normalized.\n",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "AFAS Profit derives credit notes from `Profit_SalesorderLines` by filtering rows with a negative `AmtTotal` or a credit-style `Ordersoort` (e.g. `CR`). Tenants that store credit notes in a separate journal (and not as negative sales-order lines) will return an empty list — set the `credit_notes_connector` setting to a tenant-specific GetConnector to override.\n\nThe `limit` parameter may return fewer credit notes than specified. AFAS returns flat sales-order line rows which are grouped by `OrderNumber` into complete credit notes. `limit=N` caps the raw row count, not the grouped credit-note count.\n",
+                        },
+                        {
+                            "connector": "clearbooks-uk",
+                            "description": "Clearbooks does not support setting the pagination size.",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "The minimun page size accepted for Netsuite is 5. The cursor for Netsuite expires if they have not been used within 15 minutes after its creation.\n`status` reflects how much of the credit has been applied: `authorised` when none of it has, `partially_paid` when part of it has, `paid` when all of it has, and `voided` for voided credit memos. NetSuite itself only reports Open, Fully Applied or Voided.\n`filter[subsidiary_id]` scopes results to a single subsidiary and is only supported on NetSuite OneWorld accounts; on standard (single-entity) accounts it is ignored.\nVendor Credits / Bill Credits are not returned by this resource, nor by `bills` — NetSuite models them as a separate transaction type that neither resource's query is scoped to. Requesting one by id returns a `400` (`INVALID_TRANS_TYP`); a list or `updated_since` poll that happens to cover only vendor-credit activity returns an empty `200` with no error and no other signal that matching records were withheld.\n",
+                        },
+                        {
+                            "connector": "sage-business-cloud-accounting",
+                            "description": "The `allocations` field is not returned in responses. To retrieve allocation details, use the proxy API to call `/contact_allocations?contact_id={customer_id}`.\n",
+                        },
+                        {
+                            "connector": "alegra",
+                            "description": "`allocations` is not populated — Alegra exposes only the aggregate applied amount, not which invoices a credit note offset. A stamped credit note is immutable; update and delete work only while it is unstamped (open).\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks Online does not expose a reliable cross-page total record count. The `QueryResponse.totalCount` field in list responses reflects the count for that page only, not the full dataset. `meta.total_count` will not appear in list responses. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n\n`filter[updated_since]` and `filter[created_since]` are exclusive (`>`) and `Metadata.LastUpdatedTime` / `Metadata.CreateTime` have second granularity, so a record whose timestamp equals the cursor to the exact second is skipped. For incremental sync, set the cursor one second behind the highest `updated_at` seen in the previous run and de-duplicate by `id`.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite uses the same underlying QuickBooks API. The `QueryResponse.totalCount` field in list responses reflects the per-page count only. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n\n`filter[updated_since]` and `filter[created_since]` are exclusive (`>`) and `Metadata.LastUpdatedTime` / `Metadata.CreateTime` have second granularity, so a record whose timestamp equals the cursor to the exact second is skipped. For incremental sync, set the cursor one second behind the highest `updated_at` seen in the previous run and de-duplicate by `id`.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n\nLine-level tax is written from `line_items[].tax_rate.id` (an Odoo tax id) and read back on `line_items[].tax_rate`/`tax_amount`. `tax_rate` is present only on a line with exactly one tax; it is absent on both untaxed lines and lines with multiple taxes (which still report the aggregate `tax_amount`), so its absence does not by itself mean a line is untaxed.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics",
+                            "description": "Microsoft Dynamics 365 does not include a total record count in default list responses. `meta.total_count` will not appear. Surfacing the total requires adding `$count=true` to the OData query or calling a separate `$count` endpoint — not currently implemented.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Zoho Books does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "stripe",
+                            "description": "Stripe removed `total_count` from list responses in March 2025 (API version 2025-03-31.basil). `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "rillet",
+                            "description": "Rillet does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "access-financials",
+                            "description": "Access Financials does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "dualentry",
+                            "description": "DualEntry scopes credit notes by company. Pass the `x-apideck-company-id` header (or set a Default\nCompany on the connection) to return only records belonging to that company within the tenant.\nWithout it, records across all companies in the tenant are returned.\n",
+                        },
+                        {
+                            "connector": "freshbooks",
+                            "description": "The Freshbooks Bills api is currently in beta.",
+                        },
+                        {
+                            "connector": "myob-acumatica",
+                            "description": "The Apideck service type is used for MYOB Acumatica non-stock items, and inventory is used for stock items.\n",
+                        },
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "QuickBooks Desktop does not expose a reliable cross-page total record count. Getting `total_count` requires a separate COUNT query — an extra API call that is not currently implemented. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "acumatica",
+                            "description": "The Apideck service type is used for Acumatica non-stock items, and inventory is used for stock items.\n",
+                        },
+                        {
+                            "connector": "myob",
+                            "description": 'MYOB AccountRight has no dedicated credit note endpoint. Credit notes are MYOB Sale/Invoice records with Status "Credit" (a negative balance), so credit notes share the invoice id space and numbering — the same record is visible through both the invoices and credit-notes resources.\n\nMYOB stores credit amounts as negative numbers. Unified `total_amount`, `sub_total`, `total_tax`, `balance` and `remaining_credit` are normalized to positive values; `line_items` amounts are passed through as returned by MYOB (negative for credit lines).\n\nLine items are only available on the detail endpoint (get one), not on the list endpoint.\n\nWrite operations (create, update, delete) are not supported on the credit-notes resource. Create a credit note via the invoices endpoint with negative line amounts — MYOB then sets its Status to "Credit" — and update or delete the underlying invoice record the same way.\n',
+                        },
+                        {
+                            "connector": "lexware-office",
+                            "description": "This list always excludes overdue credit notes — the vendor's status filter rejects any\nrequest that combines an overdue filter with other statuses, and there is no unified\n`filter[status]` on this resource to request overdue credit notes on their own. An\noverdue credit note is still reachable via `credit-notes.one` by id.\n\n`sub_total` and `total_tax` are not returned on this list — the vendor's list endpoint\nis a lighter summary view than the get-by-id response. Fetch the credit note by `id` for\nthose fields.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -152,17 +267,19 @@ class CreditNotes(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingCreditNotesAllResponse(
                 get_credit_notes_response=unmarshal_json_response(
-                    Optional[models.GetCreditNotesResponse], http_res
+                    Optional[models.GetCreditNotesResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -203,11 +320,10 @@ class CreditNotes(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingCreditNotesAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -228,7 +344,7 @@ class CreditNotes(BaseSDK):
         sort: Optional[
             Union[models.CreditNotesSort, models.CreditNotesSortTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -277,7 +393,7 @@ class CreditNotes(BaseSDK):
                 filter_, Optional[models.CreditNotesFilter]
             ),
             sort=utils.get_pydantic_model(sort, Optional[models.CreditNotesSort]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -298,6 +414,7 @@ class CreditNotes(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -322,9 +439,123 @@ class CreditNotes(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sap-business-one",
+                            "description": "Supported filters: `updated_since`, `created_since`, `number` and `customer_id`. `number` is the SAP Business One document number: a whole number from 0 to 2,147,483,647, and any other value returns a 400.\n",
+                        },
+                        {
+                            "connector": "e-conomic",
+                            "description": "e-conomic has no separate credit note document: credit notes are invoices with a negative total. Amounts and quantities are returned as positive values. Booked credit notes are listed without `line_items` (fetch one to get its lines); draft credit notes are not listed but can be read by id (`draft-{number}`). Because e-conomic cannot filter on the total, a page can hold fewer credit notes than `limit`, or none, while more pages remain: keep following the next cursor. Credit notes have no webhook events of their own: their changes arrive as invoice events.\ne-conomic sends the same webhook events for credit notes as for invoices, so a booked or changed credit note is delivered as an `invoice.created` or `invoice.updated` event; its id is read through credit notes, not invoices. No `credit_note.*` events are sent.\n`filter[ids]` matches booked credit notes only; draft ids (`draft-N`) match nothing.\nLine items of a draft have no `tax_amount` or `tax_rate.rate`; e-conomic returns VAT per line only for booked documents.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "Lists the credit notes of every fiscal year in the administration. A Minox credit note is a\nnegative booking on a sales journal; it is returned here with positive amounts and does not\nappear in the invoices list. `status`, `balance` and\n`remaining_credit` come from Minox's open items (`paid`, `partially_paid`, or `authorised` while all of\nit is open; `posted` with `balance` and `remaining_credit` `null` when Minox has no open item, or when two of Minox's open items match one credit note (same number, date and kind));\nallocations are not returned. Sorting is not supported.\n",
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "Credit notes are SAP FI customer credit memos read from the accounting-document line\nitems, grouped into one record per document. `type` is always\n`accounts_receivable_credit`; `status` is `authorised`, or `paid` once the customer item has\nbeen cleared. Every posting line of the document other than the customer line and the tax\nlines is returned as a `line_items` entry, with SAP's tax code in `tax_rate.code`. The tax\nlines are summed into `total_tax`, and `sub_total` is `total_amount` minus `total_tax`; a\ncredit note without tax returns `total_tax` `0`. `balance` and `allocations` are not\nreturned. `created_at` is the date the document was entered and `date_issued` its document\ndate; both carry a date only (midnight UTC).\n\nA line's `total_amount` is signed against the credit note: a line on the revenue side reads\npositive, and a line on the other side (an offsetting posting inside the same document) reads\nnegative. `total_amount` stays the absolute sum of the customer lines, so the lines do not always\nadd up to it. On create, every line's `total_amount` is posted as its\nabsolute value on the revenue side, so remove or adjust negative lines before posting a read\ncredit note again.\n\nSupported filters are `updated_since`, `created_since` and `number`; `customer_id` is not\nsupported. The date filters compare on whole days (the time part is ignored) and are\ninclusive of the day given. `number` is the SAP document number and is only unique within a\ncompany and fiscal year, so `filter[number]` can return several records — use `id`\n(`company:fiscal_year:document`) to address a single one.\n\nResults are newest first. `limit` caps the SAP posting lines read per page, not the credit\nnotes, so a page can hold fewer credit notes than `limit`. A credit note is never split\nacross pages: one with more posting lines than `limit` is returned complete on a page of its\nown. Only a credit note with more than 5,000 posting lines, or one whose lines cannot all be\nread within the request's time budget, still appears on consecutive pages with the same\n`id`, each carrying part of its lines; if SAP fails while they are read, the request returns\na retryable error. Follow `meta.cursors.next` until it is `null`. `meta.total_count` will\nnot appear and `meta.cursors.previous` is always `null`. `pass_through` cannot set `$top`,\n`$skip` or `$orderby` on this list; such a request is refused with a 400.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "FreeAgent's `Overdue` status is returned as `authorised` (or `partially_paid` when part of\nthe credit note has been refunded); there is no separate overdue status. `balance` is the\namount FreeAgent still has to refund, carrying FreeAgent's sign (negative, like\n`total_amount`), and is `0` once the credit note is `paid`.\n",
+                        },
+                        {
+                            "connector": "dualentry",
+                            "description": "`updated_since` is inclusive and is applied at whole-second granularity, so a poll that\nreuses the newest `updated_at` it received will re-receive the records from that final\nsecond. De-duplicate on `id`, or advance the cursor past the boundary second.\n\nTwo DualEntry behaviours combine to cause this. Its `updated_after` filter is a\n`>=` comparison, and while DualEntry stores update times with sub-second precision it\nreturns them truncated to the second — so a returned timestamp is always slightly earlier\nthan the value the filter compares against. Any sub-second component supplied in\n`updated_since` is therefore rounded down before the request is sent, which guarantees no\nrecord is ever skipped at the boundary, at the cost of re-delivering that second.\n\n`filter[ids]` and `filter[number]` address the same field on this connector: a\nDualEntry credit note's unified `id` and `number` are the same value. If both are\nsupplied, `filter[number]` takes precedence and `filter[ids]` is ignored — so a\n`number` outside the `ids` list still returns that credit note. Send one or the\nother, not both.\n\n`filter[ids]` returns at most 100 records per page. A list of more than 100 ids is not\ntruncated — the filter is preserved across pages, so page through the cursor to collect\nthem all.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "`sub_total` equals `total` and does not exclude tax. Sage's `accounts-receivable/adjustment`\nobject exposes only document-level totals with no pre-tax subtotal field, so both unified\nfields come from the same source. Derive the net from `line_items[].total_amount` when the\ndistinction matters.\n\nAmounts are SIGNED as Sage stores them, so a credit adjustment reports a negative\n`total_amount` while a debit adjustment on the same endpoint reports a positive one. Nothing\nelse on the record distinguishes the two.\n\nOn create and update, `line_items[].total_amount` is accepted in either sign and always\nstored as a credit (negative) in Sage — this endpoint only ever creates credit adjustments,\nnever debit ones. A positive amount is not rejected or misread; it is simply normalized.\n",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "AFAS Profit derives credit notes from `Profit_SalesorderLines` by filtering rows with a negative `AmtTotal` or a credit-style `Ordersoort` (e.g. `CR`). Tenants that store credit notes in a separate journal (and not as negative sales-order lines) will return an empty list — set the `credit_notes_connector` setting to a tenant-specific GetConnector to override.\n\nThe `limit` parameter may return fewer credit notes than specified. AFAS returns flat sales-order line rows which are grouped by `OrderNumber` into complete credit notes. `limit=N` caps the raw row count, not the grouped credit-note count.\n",
+                        },
+                        {
+                            "connector": "clearbooks-uk",
+                            "description": "Clearbooks does not support setting the pagination size.",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "The minimun page size accepted for Netsuite is 5. The cursor for Netsuite expires if they have not been used within 15 minutes after its creation.\n`status` reflects how much of the credit has been applied: `authorised` when none of it has, `partially_paid` when part of it has, `paid` when all of it has, and `voided` for voided credit memos. NetSuite itself only reports Open, Fully Applied or Voided.\n`filter[subsidiary_id]` scopes results to a single subsidiary and is only supported on NetSuite OneWorld accounts; on standard (single-entity) accounts it is ignored.\nVendor Credits / Bill Credits are not returned by this resource, nor by `bills` — NetSuite models them as a separate transaction type that neither resource's query is scoped to. Requesting one by id returns a `400` (`INVALID_TRANS_TYP`); a list or `updated_since` poll that happens to cover only vendor-credit activity returns an empty `200` with no error and no other signal that matching records were withheld.\n",
+                        },
+                        {
+                            "connector": "sage-business-cloud-accounting",
+                            "description": "The `allocations` field is not returned in responses. To retrieve allocation details, use the proxy API to call `/contact_allocations?contact_id={customer_id}`.\n",
+                        },
+                        {
+                            "connector": "alegra",
+                            "description": "`allocations` is not populated — Alegra exposes only the aggregate applied amount, not which invoices a credit note offset. A stamped credit note is immutable; update and delete work only while it is unstamped (open).\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks Online does not expose a reliable cross-page total record count. The `QueryResponse.totalCount` field in list responses reflects the count for that page only, not the full dataset. `meta.total_count` will not appear in list responses. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n\n`filter[updated_since]` and `filter[created_since]` are exclusive (`>`) and `Metadata.LastUpdatedTime` / `Metadata.CreateTime` have second granularity, so a record whose timestamp equals the cursor to the exact second is skipped. For incremental sync, set the cursor one second behind the highest `updated_at` seen in the previous run and de-duplicate by `id`.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite uses the same underlying QuickBooks API. The `QueryResponse.totalCount` field in list responses reflects the per-page count only. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n\n`filter[updated_since]` and `filter[created_since]` are exclusive (`>`) and `Metadata.LastUpdatedTime` / `Metadata.CreateTime` have second granularity, so a record whose timestamp equals the cursor to the exact second is skipped. For incremental sync, set the cursor one second behind the highest `updated_at` seen in the previous run and de-duplicate by `id`.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n\nLine-level tax is written from `line_items[].tax_rate.id` (an Odoo tax id) and read back on `line_items[].tax_rate`/`tax_amount`. `tax_rate` is present only on a line with exactly one tax; it is absent on both untaxed lines and lines with multiple taxes (which still report the aggregate `tax_amount`), so its absence does not by itself mean a line is untaxed.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics",
+                            "description": "Microsoft Dynamics 365 does not include a total record count in default list responses. `meta.total_count` will not appear. Surfacing the total requires adding `$count=true` to the OData query or calling a separate `$count` endpoint — not currently implemented.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Zoho Books does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "stripe",
+                            "description": "Stripe removed `total_count` from list responses in March 2025 (API version 2025-03-31.basil). `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "rillet",
+                            "description": "Rillet does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "access-financials",
+                            "description": "Access Financials does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "dualentry",
+                            "description": "DualEntry scopes credit notes by company. Pass the `x-apideck-company-id` header (or set a Default\nCompany on the connection) to return only records belonging to that company within the tenant.\nWithout it, records across all companies in the tenant are returned.\n",
+                        },
+                        {
+                            "connector": "freshbooks",
+                            "description": "The Freshbooks Bills api is currently in beta.",
+                        },
+                        {
+                            "connector": "myob-acumatica",
+                            "description": "The Apideck service type is used for MYOB Acumatica non-stock items, and inventory is used for stock items.\n",
+                        },
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "QuickBooks Desktop does not expose a reliable cross-page total record count. Getting `total_count` requires a separate COUNT query — an extra API call that is not currently implemented. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "acumatica",
+                            "description": "The Apideck service type is used for Acumatica non-stock items, and inventory is used for stock items.\n",
+                        },
+                        {
+                            "connector": "myob",
+                            "description": 'MYOB AccountRight has no dedicated credit note endpoint. Credit notes are MYOB Sale/Invoice records with Status "Credit" (a negative balance), so credit notes share the invoice id space and numbering — the same record is visible through both the invoices and credit-notes resources.\n\nMYOB stores credit amounts as negative numbers. Unified `total_amount`, `sub_total`, `total_tax`, `balance` and `remaining_credit` are normalized to positive values; `line_items` amounts are passed through as returned by MYOB (negative for credit lines).\n\nLine items are only available on the detail endpoint (get one), not on the list endpoint.\n\nWrite operations (create, update, delete) are not supported on the credit-notes resource. Create a credit note via the invoices endpoint with negative line amounts — MYOB then sets its Status to "Credit" — and update or delete the underlying invoice record the same way.\n',
+                        },
+                        {
+                            "connector": "lexware-office",
+                            "description": "This list always excludes overdue credit notes — the vendor's status filter rejects any\nrequest that combines an overdue filter with other statuses, and there is no unified\n`filter[status]` on this resource to request overdue credit notes on their own. An\noverdue credit note is still reachable via `credit-notes.one` by id.\n\n`sub_total` and `total_tax` are not returned on this list — the vendor's list endpoint\nis a lighter summary view than the get-by-id response. Fetch the credit note by `id` for\nthose fields.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -352,17 +583,19 @@ class CreditNotes(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingCreditNotesAllResponse(
                 get_credit_notes_response=unmarshal_json_response(
-                    Optional[models.GetCreditNotesResponse], http_res
+                    Optional[models.GetCreditNotesResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -403,11 +636,10 @@ class CreditNotes(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingCreditNotesAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -450,12 +682,15 @@ class CreditNotes(BaseSDK):
         ] = UNSET,
         line_items: Optional[
             Union[
-                List[models.InvoiceLineItemInput],
-                List[models.InvoiceLineItemInputTypedDict],
+                Iterable[models.InvoiceLineItemInput],
+                Iterable[models.InvoiceLineItemInputTypedDict],
             ]
         ] = None,
         allocations: Optional[
-            Union[List[models.AllocationInput], List[models.AllocationInputTypedDict]]
+            Union[
+                Iterable[models.AllocationInput],
+                Iterable[models.AllocationInputTypedDict],
+            ]
         ] = None,
         note: OptionalNullable[str] = UNSET,
         terms: OptionalNullable[str] = UNSET,
@@ -468,16 +703,19 @@ class CreditNotes(BaseSDK):
         ] = None,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -513,7 +751,7 @@ class CreditNotes(BaseSDK):
         :param reference: Optional reference message ie: Debit remittance detail.
         :param date_issued: Date credit note issued - YYYY:MM::DDThh:mm:ss.sTZD
         :param date_paid: Date credit note paid - YYYY:MM::DDThh:mm:ss.sTZD
-        :param type: Whether this credit note reduces an amount owed by a customer (accounts receivable) or owed to a supplier (accounts payable). `accounts_payable_credit` support is connector-specific — most connectors only expose the accounts-receivable side. Check the connector's gotchas for known deviations.
+        :param type_: Whether this credit note reduces an amount owed by a customer (accounts receivable) or owed to a supplier (accounts payable). `accounts_payable_credit` support is connector-specific — most connectors only expose the accounts-receivable side. Check the connector's gotchas for known deviations.
         :param account:
         :param line_items:
         :param allocations:
@@ -625,6 +863,7 @@ class CreditNotes(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.credit_note, False, False, "json", models.CreditNoteInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -649,9 +888,91 @@ class CreditNotes(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sap-business-one",
+                            "description": "`reference` is stored as the customer reference number (*Customer Ref. No.*, `NumAtCard`). `total_amount` is required by the API but SAP Business One computes the document total from the lines, including tax, so the value sent is not stored. Credit notes are posted when created: `status` is not written, because SAP Business One keeps drafts in a separate Drafts object.\nOn a company with sales tax (US localization), a line without `line_items[].tax_rate.id` gets the tax code set on the customer's default ship-to address. When that address has none, the credit note is rejected with a 400 that names the field. Send `tax_rate.id` with the id of a tax rate from `/accounting/tax-rates` to choose the tax code yourself.\n",
+                        },
+                        {
+                            "connector": "e-conomic",
+                            "description": "Credit notes are created as draft invoices with negative line quantities: send the quantities you credit as positive numbers, and a charge on the credit note (such as a fee) as a negative quantity, the same signs a read returns. The id has the form `draft-{number}`; booking is done in e-conomic. Only `customer.id` is needed besides the lines; the recipient, VAT zone, payment terms, layout and currency come from the customer unless you send them. Only draft credit notes can be updated or deleted. Lines must add up to a credit: a credit note whose charges outweigh the credited lines is rejected, because e-conomic would store it as an invoice. `total_amount` is required by the request schema but not used; the total is calculated from the lines.\nA `status` other than `draft` is rejected with a 400, because e-conomic credit notes are written as drafts only.\n`number` is assigned by e-conomic and a sent `number` is ignored. e-conomic numbers a new draft one above the highest number in use by draft invoices, credit notes, quotes and orders, so deleting the most recent draft frees its number for the next draft of any of these types: a stored id can later point at a different document. Keep your own reference (for example in `reference`) rather than relying on the id alone.\nSend an `Idempotency-Key` to make retrying a create safe: Unify sends e-conomic a 32-character key derived from it as e-conomic's own `Idempotency-Key` header, and e-conomic answers a repeat with the original credit note instead of creating a second one. e-conomic keeps a key for one hour, and Unify remembers it for the same hour. Reusing a key with a different body returns 422, from Unify within its hour and from e-conomic while e-conomic still remembers the key; after both have forgotten it, the same key is treated as a new request. Use a new key for every credit note. Unify builds the e-conomic request again on a retry, from what it reads from e-conomic and from today's date in Copenhagen when you leave the date out. If either changed between the attempts, e-conomic refuses the retry as a reused key and Unify returns 422 instead of creating a second credit note. The first attempt may have created the credit note: look it up before resending with a new key. Send the date to keep a retry identical across midnight.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "Books the credit note on the administration's sales journal, which updates the\nreceivables straight away. Required: `number` (a whole number of at most 8 digits),\n`customer.id`, `date_issued`, `total_amount` and, on every line, `ledger_account.id` plus\neither `total_amount` or `quantity` and `unit_price`. Send the credited amounts as positive\nnumbers. A `total_amount` that does not match the lines is rejected, and a `number` the same\ncustomer already used in that fiscal year (on an invoice or a credit note) is rejected with\n`409`. Updating is not supported: delete the credit note and create it again.\n\nMinox bookings have no discounts: `discount_percentage` and `discount_amount`, on the\ndocument or a line, are rejected; send the discounted amounts. A line `tax_amount`\nneeds a `tax_rate`.\n\nBookings are posted on create: `status: draft` is rejected. `currency` must be the\nadministration's own currency: Minox needs an exchange rate with any other, which this record\nhas no field for, so another currency is rejected with a `400`. `currency_rate`,\ndocument-level `tracking_categories` and `terms` are not stored. The booking goes on the\nadministration's sales journal; when it has more than one, choose it in the\nconnection's sales journal setting, or the create is rejected with a `400`.\n",
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "SAP S/4HANA Cloud creates a pure FI customer credit memo (the accounts-receivable mirror of\nan invoice on this connector). This is not an SD credit memo request or billing document —\nno pricing, no sales-order link, and it will not appear in SD reporting. `company_id`,\n`customer.id`, `currency`, a positive `total_amount` and at least one `line_items[]` entry\nwith `ledger_account.id` or `ledger_account.code` (the revenue account to debit) are\nrequired; a zero or negative `total_amount` is rejected, because the connector always posts\nthe credit direction and SAP would otherwise accept a reversed document silently. The\n`line_items[].total_amount` values must add up to `total_amount`, each as a positive\nnumber (with tax, see below) — SAP rejects an unbalanced document, an unknown ledger\naccount, a customer not set up in the company, and an account that requires a line\ndescription; the request then fails with a `400` and nothing is posted.\n\n`note` is written as the 25-character document header text and `reference` as the\n16-character document reference; both are returned on reads. `line_items[].description`\nis written as the line text (50 characters) and is required by SAP for some accounts.\n`line_items[].department_id` posts the cost center and `line_items[].tracking_categories[0].id`\nthe profit center; the header-level `department_id` and `tracking_categories` are ignored.\nTax: SAP does not calculate tax on this posting and does not check a tax amount against the rate, so you\nsend the amounts. Set `line_items[].tax_rate.code` to the SAP tax code (for example `A1`) on each taxed\nline; the line amounts are net of tax, and `total_amount` is the sum of the lines plus the tax (a taxed\ncredit note no longer needs the lines to add up to `total_amount` by themselves). The tax of a taxed line\nis its `tax_amount`, or else its `total_amount` times `tax_rate.rate` (a percentage), rounded half up to\nthe currency's smallest unit on that line. When a taxed line has neither and the credit note has a single\ntax code, `total_tax` is the tax of the credit note; with several tax codes every taxed line needs\n`tax_amount` or `tax_rate.rate`, because `total_tax` can't be split across them. `total_amount` must equal\nthe lines plus the tax exactly, and every line's `total_amount` must still be positive, taxed or not, so if you round tax on the whole credit note rather than per line, send\n`tax_amount` or `total_tax`. The request fails with a `400` and nothing is posted when a taxed line has no\ntax and nothing else states it, when `total_amount` is not the lines plus the tax, when `total_tax` does\nnot match the lines' tax (or, when some lines have none, is less than the tax they state), when a non-zero\n`tax_amount` has no `tax_rate.code`, when `tax_rate.rate` is not a number of zero or more (or has more than 8 decimals), or when a tax\namount is negative or has more decimals than the currency allows. Two more requests are refused on a credit\nnote with a tax code, because SAP would post a different credit note: `tax_inclusive: true` (SAP posts the\nline amounts without tax; send the lines without tax) and a non-zero `discount_amount` or `discount_percentage` on the\ncredit note or a line (SAP posts no discount; send the lines after discount). A tax of zero is posted as stated (a zero\n`tax_amount`, a rate of 0 or `total_tax: 0`); SAP does not check it against the rate. Credit notes post\noutput tax, so SAP refuses an input tax code, and an untaxed line on an account that requires a tax code.\nReading a credit note back returns the same fields, so a read credit note with one tax code can be posted\nback as it is, unless it has a negative line (an offsetting posting, see List Credit Notes), which a create\nrefuses. `tax_code` and `sub_total` on the credit note are ignored, and so is `tax_inclusive` on a credit\nnote without a tax code. Tax is supported for company codes where SAP calculates tax per document and uses\ntime-dependent taxes; company codes that require tax per item (such as US jurisdiction tax) or that take no\ntax date are refused by SAP, and the request fails with a `400`.\n\nSome revenue accounts need a profitability assignment. When SAP refuses the posting for that, Unify posts\nit again with the credit note's customer as the profitability assignment on the revenue lines, unless SAP's\nanswer also names a problem a second attempt cannot fix (an unbalanced credit note, a missing or wrong tax\ncode, or a tax date the company code does not take). If SAP refuses that too, the `400` names SAP's reason\nand says the assignment was tried. SAP does not derive a profit center for that assignment: send the line's\nprofit center in `tracking_categories[0].id`, or the posting is refused.\n\n`allocations` and `terms` are ignored; the credit is not applied to any\ninvoice. `number` is assigned by SAP and cannot be set. Posted credit notes are immutable:\n`update` and `delete` are unsupported, and SAP's correction path is a separate reversal\ndocument.\n\nCreating credit notes is not yet available on SAP S/4HANA On-Premise and Private Cloud connections\n(connections whose SAP System URL is your own gateway rather than an SAP-hosted Public Edition tenant on `*.s4hana.cloud.sap` or `*.s4hana.ondemand.com`):\nthe request returns `501` and nothing is posted. Reading credit notes works on those connections.\n",
+                        },
+                        {
+                            "connector": "restaurant365",
+                            "description": "`location_id` is optional in the unified schema but effectively required by R365 —\nR365's create-credit-memo endpoint requires a `LocationId`. Omitting it on create risks a\nrejected write rather than a credit memo created against a default location.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "Line-level `item` is written as Sage's item dimension on the AR adjustment line, reaching parity with\ninvoices: `line_items[].item.id` takes an Invoice Items id (Sage's internal key), with `item.code` as a\nfallback. It tags the line only — there is no inventory effect.\n\nLine-level tax is not written, for the same reason as invoices: Sage captures per-line tax only under an\nAdvanced Tax solution with multi-line tax enabled, and otherwise discards a tax entry silently despite\nreturning 201. There is also no header-level tax field on Sage's `accounts-receivable/adjustment` object,\nso `total_tax` cannot be set.\n\n`sub_total` equals `total` and does not exclude tax. Sage's object exposes only\ndocument-level totals with no pre-tax subtotal field, so both unified fields come from the\nsame source. For an untaxed document that is correct; for a taxed one `sub_total` is the\ntax-inclusive amount rather than the net. Derive the net from `line_items[].total_amount`\nwhen the distinction matters.\n\nSend an `Idempotency-Key` to make retrying a create safe: Unify sends Sage Intacct a\n32-character key derived from it as Sage's own `Idempotency-Key` header, and Sage answers a\nrepeat with the original credit note instead of creating a second one. Sage does not publish\nhow long it keeps a key; it still replayed the original after an hour, so Unify remembers\na key for one hour, after which the same key is treated as a new request. Reusing a key\nwith a different body returns 422, within that hour from Unify and after it from Sage\nwhile Sage still remembers the key (`REST-6005`). Use a new key for every credit note.\n\n`allocations` set on this resource have no effect — Sage has no way to apply a credit memo\nto an invoice from the credit memo record itself. To apply a credit memo, create a payment\non the `payments` resource with two allocations: one of type `invoice` for the invoice\nbeing credited and one of type `credit_memo` for this credit memo, both carrying the\namount being applied. The payment still requires an `account` (financial entity) even\nthough no cash moves, since Sage requires one on every payment record.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "`tax_inclusive` cannot be set on sales documents — the returned value reflects the Customer Card's \"Prices Including VAT\" setting. When `tax_inclusive: true` is sent for a document stored as tax-exclusive, line `unit_price` is written as its net value so the document totals match the sent tax-inclusive amounts.\nWhen a line omits `tax_rate`, the VAT group configured on the Item or G/L Account Card applies. A foreign customer's VAT business posting group can zero the line VAT regardless of the `tax_rate` sent.\nA '400 Bad Request' error \"Control 'fieldName' is read-only\" means that field's 'editable' property is disabled in Business Central.\n",
+                        },
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Credit-note lines cannot be changed after creation; see the update operation.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": '- `type` is required. Without it Xero returns a 400 ("Please ensure the invoice type is set") and nothing is created.\n- Allocations are applied after the credit note is created. The credit note and the invoice must both be `authorised`, with the same contact and currency, and the allocation amount can\'t be more than the invoice balance.\n- If an allocation fails, the request returns a 400 and the credit note is rolled back: an `authorised` credit note is voided (after removing the allocations that already succeeded), a `draft` one is deleted. If the rollback itself fails, the error says the credit note is still in Xero and gives its id; void or delete it before retrying.\n',
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": 'By default, the status of the bill will be set to "authorised".\n',
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Netsuite only supports one tracking category at a time so only the first item in the tracking_categories list will be used.\n\n`reference` maps to NetSuite's `externalId`, which NetSuite requires to be unique across every\ncredit memo in the account — reusing a value already on another credit note fails with `DUP_RCRD`\n(\"This record already exists\"). Send a distinct `reference` per credit note, or delete the record\nholding it first (`DELETE /accounting/credit-notes/{id}`). This is also why retrying a create that\ntimed out returns `DUP_RCRD` rather than creating a second record: read the `retriable` and\n`outcome` fields on the error before retrying.\n\nDate-only fields need no configuration: NetSuite converts the datetime it receives into the\nSOAP/integration user's time zone before storing the date part, and these fields are anchored so\nthey store on the intended calendar day for any integration user between UTC-10 and UTC+13.\n\nFour zones fall outside that range and need the optional `timezone` connection setting:\n`Pacific/Pago_Pago`, `Pacific/Niue` and `Pacific/Midway` (UTC-11) store one day early without it,\nand `Pacific/Kiritimati` (UTC+14) stores one day late. Set it to the IANA zone of the NetSuite user\nthis connection authenticates as, read from that user's Home > Set Preferences > Time Zone — Setup >\nCompany > Company Information only supplies the default, so a user who overrode it needs their own\nzone.\n\nWhen the setting is used its value must be within 12 hours of that user's real zone in either\ndirection: more than ~12h east stores dates one day early, more than ~12h west stores them one day\nlate.\n\nThis applies to every NetSuite date-only write field across the accounting resources.\n",
+                        },
+                        {
+                            "connector": "sage-business-cloud-accounting",
+                            "description": 'Pass allocations in the `allocations` array. The first allocation is supported on all plans; additional allocations (2+) require higher than "Start" plan.\nThe `allocations` field is not returned in responses. To retrieve allocation details, use the proxy API to call `/contact_allocations?contact_id={customer_id}`.\n',
+                        },
+                        {
+                            "connector": "access-financials",
+                            "description": "Access Financials creates credit notes as live/posted transactions immediately. Live transactions cannot be updated, so to correct a credit note you must delete it and create a new one.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "`allocations[]` is not applied on create — the credit is created as a standalone `ARADJUSTMENT`. To apply it to invoices, follow up via `/vault/proxy` with `create_arpymt` drawing from the new credit's `RECORDNO` against the target `ARINVOICE`. `allocations` is not returned on read.\n\n`reference` cannot be stored — Sage Intacct's `create_aradjustment` rejects a `docnumber` element, and while it accepts an `externalid` element on create, that value is silently dropped and never returned on read (verified live). The `reference` field is only returned on reads when `DOCNUMBER` was set through another channel; it cannot be set on create or update via this API.\n\nSage Intacct accepts a second credit note whose `number` already exists for the same customer. To have it rejected instead, set **If duplicate numbers** to **Do not allow transactions to be created** in the company's Accounts Receivable configuration (Document sequencing section). The check is per customer, covers invoices and credit notes, and matters when you send `number`; credit notes numbered by a document sequence do not collide. It does not apply to journal entries.\n\nSend an `Idempotency-Key` to make retrying a create safe: Unify sends Sage Intacct a 32-character control id derived from it, and Intacct rejects a second create with the same control id as already recorded instead of creating a second credit note. When you sent `number`, Unify then finds the credit note by its number and customer and returns the original credit note's id. `filter[number]` finds a credit note by its number (exact match). Without `number` there is nothing to find it by, and with document sequencing on Intacct replaces the number you sent with its own, so in both cases the retry returns Sage Intacct's \"already recorded\" error: no second credit note is created. If several credit notes for that customer share the number, the error is returned as well. A create Sage Intacct rejected can be retried with the same key and the same body; a corrected body needs a new key. Use a new key for every credit note.\n",
+                        },
+                        {
+                            "connector": "lexware-office",
+                            "description": "`line_items[].discount_percentage` is silently discarded on credit notes — the request\nreturns 201, but the line is stored at full price with no discount applied. Apply the\ndiscount to `unit_price` directly instead.\n",
+                        },
+                        {
+                            "connector": "sevdesk",
+                            "description": "sevDesk requires every credit note to have an internal contact person (the sevDesk user\nacting as biller) assigned — there is no field on this endpoint to choose one. This\nconnector automatically assigns the account's active administrator, falling back to any\nother active user, and — only if the account has no active user at all — the first user\nreturned by sevDesk regardless of status. On a multi-user account, credit notes created\nthrough this API are always attributed to that auto-selected user rather than a specific\nperson you choose.\n\nCredit notes are created with a fixed internal booking category and VAT rule — there is\nno field on this endpoint to change either. Only 0%, 7% and 19% tax rates are accepted\nunder this rule; a `line_items[].tax_rate.rate` outside that set is rounded to the\nnearest of the three rather than rejected. `type` is always `accounts_receivable_credit`;\nsevDesk has no accounts-payable credit note concept on this endpoint.\n\nNew credit notes are always created as `draft`, regardless of the `status` you send —\nsevDesk rejects creating a credit note in any other status. Transition it to a later\nstatus from within sevDesk after creation.\n\n`line_items[].unit_of_measure` only recognizes a fixed set of German abbreviations\n(`Stk`, `kg`, `m`, `Std`, ...). Any other value — including a plain English word like\n`hour` — is silently mapped to `Stk` (piece) instead of being rejected.\n\n`billing_address.country_code` defaults to Germany when omitted or when it doesn't match\na recognized country. This affects the tax rule sevDesk applies (this endpoint uses a\ncross-border OSS VAT rule), so an omitted or unrecognized country code is treated as a\ndomestic (Germany) transaction rather than being rejected.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "To credit a specific invoice, pass it as an `allocations` entry with `type` set to `invoice` and `allocation_id` set to the invoice id. Every line needs a `tax_rate.id` that is a Fiken VAT code (for example `HIGH`). Amounts are returned as positive numbers, although Fiken stores credit notes with negative amounts. Fiken calculates the totals from the lines, so `total_amount` is not sent.\n\n`discount_percentage` is a percentage (`10` is 10%), and `unit_price` is read back as the price before the discount. With `tax_inclusive: true`, each `unit_price` is taken to include VAT and is converted to Fiken's price excluding VAT with the rate of the line's `tax_rate` (its `rate`, or the standard rate of its Fiken VAT code), rounded to øre; a line whose VAT rate cannot be determined that way is rejected. Lines take a Fiken VAT type, so a `tax_rate` with a `rate` but no `id` is rejected. Records are always read back with prices excluding VAT.\n\nA new Fiken company has no credit note counter, and creating a credit note is rejected until it exists. Create one credit note in Fiken, or set the starting number once through the Proxy API (`POST /creditNotes/counter` with an empty body starts at 10001).\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "Send an `Idempotency-Key` to make retrying a create safe: it reaches QuickBooks as its `requestid`. QuickBooks keeps a `requestid` for at least 24 hours and can keep it longer, so after the 24-hour window a key reused for a different credit note may get the original credit note back, with the new body ignored. Use a new key for every credit note. Your key can be 1-255 characters: Unify sends QuickBooks a 32-character `requestid` derived from it, so QuickBooks' 50-character `requestid` limit never applies.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Send an `Idempotency-Key` to make retrying a create safe: it reaches Intuit Enterprise Suite as its `requestid`. Intuit Enterprise Suite keeps a `requestid` for at least 24 hours and can keep it longer, so after the 24-hour window a key reused for a different credit note may get the original credit note back, with the new body ignored. Use a new key for every credit note. Your key can be 1-255 characters: Unify sends Intuit Enterprise Suite a 32-character `requestid` derived from it, so Intuit Enterprise Suite's 50-character `requestid` limit never applies.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -659,10 +980,9 @@ class CreditNotes(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingCreditNotesAddResponse(
                 create_credit_note_response=unmarshal_json_response(
-                    Optional[models.CreateCreditNoteResponse], http_res
+                    Optional[models.CreateCreditNoteResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -703,10 +1023,9 @@ class CreditNotes(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingCreditNotesAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -749,12 +1068,15 @@ class CreditNotes(BaseSDK):
         ] = UNSET,
         line_items: Optional[
             Union[
-                List[models.InvoiceLineItemInput],
-                List[models.InvoiceLineItemInputTypedDict],
+                Iterable[models.InvoiceLineItemInput],
+                Iterable[models.InvoiceLineItemInputTypedDict],
             ]
         ] = None,
         allocations: Optional[
-            Union[List[models.AllocationInput], List[models.AllocationInputTypedDict]]
+            Union[
+                Iterable[models.AllocationInput],
+                Iterable[models.AllocationInputTypedDict],
+            ]
         ] = None,
         note: OptionalNullable[str] = UNSET,
         terms: OptionalNullable[str] = UNSET,
@@ -767,16 +1089,19 @@ class CreditNotes(BaseSDK):
         ] = None,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -812,7 +1137,7 @@ class CreditNotes(BaseSDK):
         :param reference: Optional reference message ie: Debit remittance detail.
         :param date_issued: Date credit note issued - YYYY:MM::DDThh:mm:ss.sTZD
         :param date_paid: Date credit note paid - YYYY:MM::DDThh:mm:ss.sTZD
-        :param type: Whether this credit note reduces an amount owed by a customer (accounts receivable) or owed to a supplier (accounts payable). `accounts_payable_credit` support is connector-specific — most connectors only expose the accounts-receivable side. Check the connector's gotchas for known deviations.
+        :param type_: Whether this credit note reduces an amount owed by a customer (accounts receivable) or owed to a supplier (accounts payable). `accounts_payable_credit` support is connector-specific — most connectors only expose the accounts-receivable side. Check the connector's gotchas for known deviations.
         :param account:
         :param line_items:
         :param allocations:
@@ -924,6 +1249,7 @@ class CreditNotes(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.credit_note, False, False, "json", models.CreditNoteInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -948,9 +1274,91 @@ class CreditNotes(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sap-business-one",
+                            "description": "`reference` is stored as the customer reference number (*Customer Ref. No.*, `NumAtCard`). `total_amount` is required by the API but SAP Business One computes the document total from the lines, including tax, so the value sent is not stored. Credit notes are posted when created: `status` is not written, because SAP Business One keeps drafts in a separate Drafts object.\nOn a company with sales tax (US localization), a line without `line_items[].tax_rate.id` gets the tax code set on the customer's default ship-to address. When that address has none, the credit note is rejected with a 400 that names the field. Send `tax_rate.id` with the id of a tax rate from `/accounting/tax-rates` to choose the tax code yourself.\n",
+                        },
+                        {
+                            "connector": "e-conomic",
+                            "description": "Credit notes are created as draft invoices with negative line quantities: send the quantities you credit as positive numbers, and a charge on the credit note (such as a fee) as a negative quantity, the same signs a read returns. The id has the form `draft-{number}`; booking is done in e-conomic. Only `customer.id` is needed besides the lines; the recipient, VAT zone, payment terms, layout and currency come from the customer unless you send them. Only draft credit notes can be updated or deleted. Lines must add up to a credit: a credit note whose charges outweigh the credited lines is rejected, because e-conomic would store it as an invoice. `total_amount` is required by the request schema but not used; the total is calculated from the lines.\nA `status` other than `draft` is rejected with a 400, because e-conomic credit notes are written as drafts only.\n`number` is assigned by e-conomic and a sent `number` is ignored. e-conomic numbers a new draft one above the highest number in use by draft invoices, credit notes, quotes and orders, so deleting the most recent draft frees its number for the next draft of any of these types: a stored id can later point at a different document. Keep your own reference (for example in `reference`) rather than relying on the id alone.\nSend an `Idempotency-Key` to make retrying a create safe: Unify sends e-conomic a 32-character key derived from it as e-conomic's own `Idempotency-Key` header, and e-conomic answers a repeat with the original credit note instead of creating a second one. e-conomic keeps a key for one hour, and Unify remembers it for the same hour. Reusing a key with a different body returns 422, from Unify within its hour and from e-conomic while e-conomic still remembers the key; after both have forgotten it, the same key is treated as a new request. Use a new key for every credit note. Unify builds the e-conomic request again on a retry, from what it reads from e-conomic and from today's date in Copenhagen when you leave the date out. If either changed between the attempts, e-conomic refuses the retry as a reused key and Unify returns 422 instead of creating a second credit note. The first attempt may have created the credit note: look it up before resending with a new key. Send the date to keep a retry identical across midnight.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "Books the credit note on the administration's sales journal, which updates the\nreceivables straight away. Required: `number` (a whole number of at most 8 digits),\n`customer.id`, `date_issued`, `total_amount` and, on every line, `ledger_account.id` plus\neither `total_amount` or `quantity` and `unit_price`. Send the credited amounts as positive\nnumbers. A `total_amount` that does not match the lines is rejected, and a `number` the same\ncustomer already used in that fiscal year (on an invoice or a credit note) is rejected with\n`409`. Updating is not supported: delete the credit note and create it again.\n\nMinox bookings have no discounts: `discount_percentage` and `discount_amount`, on the\ndocument or a line, are rejected; send the discounted amounts. A line `tax_amount`\nneeds a `tax_rate`.\n\nBookings are posted on create: `status: draft` is rejected. `currency` must be the\nadministration's own currency: Minox needs an exchange rate with any other, which this record\nhas no field for, so another currency is rejected with a `400`. `currency_rate`,\ndocument-level `tracking_categories` and `terms` are not stored. The booking goes on the\nadministration's sales journal; when it has more than one, choose it in the\nconnection's sales journal setting, or the create is rejected with a `400`.\n",
+                        },
+                        {
+                            "connector": "sap-s4hana-cloud",
+                            "description": "SAP S/4HANA Cloud creates a pure FI customer credit memo (the accounts-receivable mirror of\nan invoice on this connector). This is not an SD credit memo request or billing document —\nno pricing, no sales-order link, and it will not appear in SD reporting. `company_id`,\n`customer.id`, `currency`, a positive `total_amount` and at least one `line_items[]` entry\nwith `ledger_account.id` or `ledger_account.code` (the revenue account to debit) are\nrequired; a zero or negative `total_amount` is rejected, because the connector always posts\nthe credit direction and SAP would otherwise accept a reversed document silently. The\n`line_items[].total_amount` values must add up to `total_amount`, each as a positive\nnumber (with tax, see below) — SAP rejects an unbalanced document, an unknown ledger\naccount, a customer not set up in the company, and an account that requires a line\ndescription; the request then fails with a `400` and nothing is posted.\n\n`note` is written as the 25-character document header text and `reference` as the\n16-character document reference; both are returned on reads. `line_items[].description`\nis written as the line text (50 characters) and is required by SAP for some accounts.\n`line_items[].department_id` posts the cost center and `line_items[].tracking_categories[0].id`\nthe profit center; the header-level `department_id` and `tracking_categories` are ignored.\nTax: SAP does not calculate tax on this posting and does not check a tax amount against the rate, so you\nsend the amounts. Set `line_items[].tax_rate.code` to the SAP tax code (for example `A1`) on each taxed\nline; the line amounts are net of tax, and `total_amount` is the sum of the lines plus the tax (a taxed\ncredit note no longer needs the lines to add up to `total_amount` by themselves). The tax of a taxed line\nis its `tax_amount`, or else its `total_amount` times `tax_rate.rate` (a percentage), rounded half up to\nthe currency's smallest unit on that line. When a taxed line has neither and the credit note has a single\ntax code, `total_tax` is the tax of the credit note; with several tax codes every taxed line needs\n`tax_amount` or `tax_rate.rate`, because `total_tax` can't be split across them. `total_amount` must equal\nthe lines plus the tax exactly, and every line's `total_amount` must still be positive, taxed or not, so if you round tax on the whole credit note rather than per line, send\n`tax_amount` or `total_tax`. The request fails with a `400` and nothing is posted when a taxed line has no\ntax and nothing else states it, when `total_amount` is not the lines plus the tax, when `total_tax` does\nnot match the lines' tax (or, when some lines have none, is less than the tax they state), when a non-zero\n`tax_amount` has no `tax_rate.code`, when `tax_rate.rate` is not a number of zero or more (or has more than 8 decimals), or when a tax\namount is negative or has more decimals than the currency allows. Two more requests are refused on a credit\nnote with a tax code, because SAP would post a different credit note: `tax_inclusive: true` (SAP posts the\nline amounts without tax; send the lines without tax) and a non-zero `discount_amount` or `discount_percentage` on the\ncredit note or a line (SAP posts no discount; send the lines after discount). A tax of zero is posted as stated (a zero\n`tax_amount`, a rate of 0 or `total_tax: 0`); SAP does not check it against the rate. Credit notes post\noutput tax, so SAP refuses an input tax code, and an untaxed line on an account that requires a tax code.\nReading a credit note back returns the same fields, so a read credit note with one tax code can be posted\nback as it is, unless it has a negative line (an offsetting posting, see List Credit Notes), which a create\nrefuses. `tax_code` and `sub_total` on the credit note are ignored, and so is `tax_inclusive` on a credit\nnote without a tax code. Tax is supported for company codes where SAP calculates tax per document and uses\ntime-dependent taxes; company codes that require tax per item (such as US jurisdiction tax) or that take no\ntax date are refused by SAP, and the request fails with a `400`.\n\nSome revenue accounts need a profitability assignment. When SAP refuses the posting for that, Unify posts\nit again with the credit note's customer as the profitability assignment on the revenue lines, unless SAP's\nanswer also names a problem a second attempt cannot fix (an unbalanced credit note, a missing or wrong tax\ncode, or a tax date the company code does not take). If SAP refuses that too, the `400` names SAP's reason\nand says the assignment was tried. SAP does not derive a profit center for that assignment: send the line's\nprofit center in `tracking_categories[0].id`, or the posting is refused.\n\n`allocations` and `terms` are ignored; the credit is not applied to any\ninvoice. `number` is assigned by SAP and cannot be set. Posted credit notes are immutable:\n`update` and `delete` are unsupported, and SAP's correction path is a separate reversal\ndocument.\n\nCreating credit notes is not yet available on SAP S/4HANA On-Premise and Private Cloud connections\n(connections whose SAP System URL is your own gateway rather than an SAP-hosted Public Edition tenant on `*.s4hana.cloud.sap` or `*.s4hana.ondemand.com`):\nthe request returns `501` and nothing is posted. Reading credit notes works on those connections.\n",
+                        },
+                        {
+                            "connector": "restaurant365",
+                            "description": "`location_id` is optional in the unified schema but effectively required by R365 —\nR365's create-credit-memo endpoint requires a `LocationId`. Omitting it on create risks a\nrejected write rather than a credit memo created against a default location.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "Line-level `item` is written as Sage's item dimension on the AR adjustment line, reaching parity with\ninvoices: `line_items[].item.id` takes an Invoice Items id (Sage's internal key), with `item.code` as a\nfallback. It tags the line only — there is no inventory effect.\n\nLine-level tax is not written, for the same reason as invoices: Sage captures per-line tax only under an\nAdvanced Tax solution with multi-line tax enabled, and otherwise discards a tax entry silently despite\nreturning 201. There is also no header-level tax field on Sage's `accounts-receivable/adjustment` object,\nso `total_tax` cannot be set.\n\n`sub_total` equals `total` and does not exclude tax. Sage's object exposes only\ndocument-level totals with no pre-tax subtotal field, so both unified fields come from the\nsame source. For an untaxed document that is correct; for a taxed one `sub_total` is the\ntax-inclusive amount rather than the net. Derive the net from `line_items[].total_amount`\nwhen the distinction matters.\n\nSend an `Idempotency-Key` to make retrying a create safe: Unify sends Sage Intacct a\n32-character key derived from it as Sage's own `Idempotency-Key` header, and Sage answers a\nrepeat with the original credit note instead of creating a second one. Sage does not publish\nhow long it keeps a key; it still replayed the original after an hour, so Unify remembers\na key for one hour, after which the same key is treated as a new request. Reusing a key\nwith a different body returns 422, within that hour from Unify and after it from Sage\nwhile Sage still remembers the key (`REST-6005`). Use a new key for every credit note.\n\n`allocations` set on this resource have no effect — Sage has no way to apply a credit memo\nto an invoice from the credit memo record itself. To apply a credit memo, create a payment\non the `payments` resource with two allocations: one of type `invoice` for the invoice\nbeing credited and one of type `credit_memo` for this credit memo, both carrying the\namount being applied. The payment still requires an `account` (financial entity) even\nthough no cash moves, since Sage requires one on every payment record.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "`tax_inclusive` cannot be set on sales documents — the returned value reflects the Customer Card's \"Prices Including VAT\" setting. When `tax_inclusive: true` is sent for a document stored as tax-exclusive, line `unit_price` is written as its net value so the document totals match the sent tax-inclusive amounts.\nWhen a line omits `tax_rate`, the VAT group configured on the Item or G/L Account Card applies. A foreign customer's VAT business posting group can zero the line VAT regardless of the `tax_rate` sent.\nA '400 Bad Request' error \"Control 'fieldName' is read-only\" means that field's 'editable' property is disabled in Business Central.\n",
+                        },
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Credit-note lines cannot be changed after creation; see the update operation.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": '- `type` is required. Without it Xero returns a 400 ("Please ensure the invoice type is set") and nothing is created.\n- Allocations are applied after the credit note is created. The credit note and the invoice must both be `authorised`, with the same contact and currency, and the allocation amount can\'t be more than the invoice balance.\n- If an allocation fails, the request returns a 400 and the credit note is rolled back: an `authorised` credit note is voided (after removing the allocations that already succeeded), a `draft` one is deleted. If the rollback itself fails, the error says the credit note is still in Xero and gives its id; void or delete it before retrying.\n',
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": 'By default, the status of the bill will be set to "authorised".\n',
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Netsuite only supports one tracking category at a time so only the first item in the tracking_categories list will be used.\n\n`reference` maps to NetSuite's `externalId`, which NetSuite requires to be unique across every\ncredit memo in the account — reusing a value already on another credit note fails with `DUP_RCRD`\n(\"This record already exists\"). Send a distinct `reference` per credit note, or delete the record\nholding it first (`DELETE /accounting/credit-notes/{id}`). This is also why retrying a create that\ntimed out returns `DUP_RCRD` rather than creating a second record: read the `retriable` and\n`outcome` fields on the error before retrying.\n\nDate-only fields need no configuration: NetSuite converts the datetime it receives into the\nSOAP/integration user's time zone before storing the date part, and these fields are anchored so\nthey store on the intended calendar day for any integration user between UTC-10 and UTC+13.\n\nFour zones fall outside that range and need the optional `timezone` connection setting:\n`Pacific/Pago_Pago`, `Pacific/Niue` and `Pacific/Midway` (UTC-11) store one day early without it,\nand `Pacific/Kiritimati` (UTC+14) stores one day late. Set it to the IANA zone of the NetSuite user\nthis connection authenticates as, read from that user's Home > Set Preferences > Time Zone — Setup >\nCompany > Company Information only supplies the default, so a user who overrode it needs their own\nzone.\n\nWhen the setting is used its value must be within 12 hours of that user's real zone in either\ndirection: more than ~12h east stores dates one day early, more than ~12h west stores them one day\nlate.\n\nThis applies to every NetSuite date-only write field across the accounting resources.\n",
+                        },
+                        {
+                            "connector": "sage-business-cloud-accounting",
+                            "description": 'Pass allocations in the `allocations` array. The first allocation is supported on all plans; additional allocations (2+) require higher than "Start" plan.\nThe `allocations` field is not returned in responses. To retrieve allocation details, use the proxy API to call `/contact_allocations?contact_id={customer_id}`.\n',
+                        },
+                        {
+                            "connector": "access-financials",
+                            "description": "Access Financials creates credit notes as live/posted transactions immediately. Live transactions cannot be updated, so to correct a credit note you must delete it and create a new one.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "`allocations[]` is not applied on create — the credit is created as a standalone `ARADJUSTMENT`. To apply it to invoices, follow up via `/vault/proxy` with `create_arpymt` drawing from the new credit's `RECORDNO` against the target `ARINVOICE`. `allocations` is not returned on read.\n\n`reference` cannot be stored — Sage Intacct's `create_aradjustment` rejects a `docnumber` element, and while it accepts an `externalid` element on create, that value is silently dropped and never returned on read (verified live). The `reference` field is only returned on reads when `DOCNUMBER` was set through another channel; it cannot be set on create or update via this API.\n\nSage Intacct accepts a second credit note whose `number` already exists for the same customer. To have it rejected instead, set **If duplicate numbers** to **Do not allow transactions to be created** in the company's Accounts Receivable configuration (Document sequencing section). The check is per customer, covers invoices and credit notes, and matters when you send `number`; credit notes numbered by a document sequence do not collide. It does not apply to journal entries.\n\nSend an `Idempotency-Key` to make retrying a create safe: Unify sends Sage Intacct a 32-character control id derived from it, and Intacct rejects a second create with the same control id as already recorded instead of creating a second credit note. When you sent `number`, Unify then finds the credit note by its number and customer and returns the original credit note's id. `filter[number]` finds a credit note by its number (exact match). Without `number` there is nothing to find it by, and with document sequencing on Intacct replaces the number you sent with its own, so in both cases the retry returns Sage Intacct's \"already recorded\" error: no second credit note is created. If several credit notes for that customer share the number, the error is returned as well. A create Sage Intacct rejected can be retried with the same key and the same body; a corrected body needs a new key. Use a new key for every credit note.\n",
+                        },
+                        {
+                            "connector": "lexware-office",
+                            "description": "`line_items[].discount_percentage` is silently discarded on credit notes — the request\nreturns 201, but the line is stored at full price with no discount applied. Apply the\ndiscount to `unit_price` directly instead.\n",
+                        },
+                        {
+                            "connector": "sevdesk",
+                            "description": "sevDesk requires every credit note to have an internal contact person (the sevDesk user\nacting as biller) assigned — there is no field on this endpoint to choose one. This\nconnector automatically assigns the account's active administrator, falling back to any\nother active user, and — only if the account has no active user at all — the first user\nreturned by sevDesk regardless of status. On a multi-user account, credit notes created\nthrough this API are always attributed to that auto-selected user rather than a specific\nperson you choose.\n\nCredit notes are created with a fixed internal booking category and VAT rule — there is\nno field on this endpoint to change either. Only 0%, 7% and 19% tax rates are accepted\nunder this rule; a `line_items[].tax_rate.rate` outside that set is rounded to the\nnearest of the three rather than rejected. `type` is always `accounts_receivable_credit`;\nsevDesk has no accounts-payable credit note concept on this endpoint.\n\nNew credit notes are always created as `draft`, regardless of the `status` you send —\nsevDesk rejects creating a credit note in any other status. Transition it to a later\nstatus from within sevDesk after creation.\n\n`line_items[].unit_of_measure` only recognizes a fixed set of German abbreviations\n(`Stk`, `kg`, `m`, `Std`, ...). Any other value — including a plain English word like\n`hour` — is silently mapped to `Stk` (piece) instead of being rejected.\n\n`billing_address.country_code` defaults to Germany when omitted or when it doesn't match\na recognized country. This affects the tax rule sevDesk applies (this endpoint uses a\ncross-border OSS VAT rule), so an omitted or unrecognized country code is treated as a\ndomestic (Germany) transaction rather than being rejected.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "To credit a specific invoice, pass it as an `allocations` entry with `type` set to `invoice` and `allocation_id` set to the invoice id. Every line needs a `tax_rate.id` that is a Fiken VAT code (for example `HIGH`). Amounts are returned as positive numbers, although Fiken stores credit notes with negative amounts. Fiken calculates the totals from the lines, so `total_amount` is not sent.\n\n`discount_percentage` is a percentage (`10` is 10%), and `unit_price` is read back as the price before the discount. With `tax_inclusive: true`, each `unit_price` is taken to include VAT and is converted to Fiken's price excluding VAT with the rate of the line's `tax_rate` (its `rate`, or the standard rate of its Fiken VAT code), rounded to øre; a line whose VAT rate cannot be determined that way is rejected. Lines take a Fiken VAT type, so a `tax_rate` with a `rate` but no `id` is rejected. Records are always read back with prices excluding VAT.\n\nA new Fiken company has no credit note counter, and creating a credit note is rejected until it exists. Create one credit note in Fiken, or set the starting number once through the Proxy API (`POST /creditNotes/counter` with an empty body starts at 10001).\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "Send an `Idempotency-Key` to make retrying a create safe: it reaches QuickBooks as its `requestid`. QuickBooks keeps a `requestid` for at least 24 hours and can keep it longer, so after the 24-hour window a key reused for a different credit note may get the original credit note back, with the new body ignored. Use a new key for every credit note. Your key can be 1-255 characters: Unify sends QuickBooks a 32-character `requestid` derived from it, so QuickBooks' 50-character `requestid` limit never applies.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Send an `Idempotency-Key` to make retrying a create safe: it reaches Intuit Enterprise Suite as its `requestid`. Intuit Enterprise Suite keeps a `requestid` for at least 24 hours and can keep it longer, so after the 24-hour window a key reused for a different credit note may get the original credit note back, with the new body ignored. Use a new key for every credit note. Your key can be 1-255 characters: Unify sends Intuit Enterprise Suite a 32-character `requestid` derived from it, so Intuit Enterprise Suite's 50-character `requestid` limit never applies.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -958,10 +1366,9 @@ class CreditNotes(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingCreditNotesAddResponse(
                 create_credit_note_response=unmarshal_json_response(
-                    Optional[models.CreateCreditNoteResponse], http_res
+                    Optional[models.CreateCreditNoteResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1002,10 +1409,9 @@ class CreditNotes(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingCreditNotesAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1078,6 +1484,7 @@ class CreditNotes(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1102,9 +1509,27 @@ class CreditNotes(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sage-business-cloud-accounting",
+                            "description": "The `allocations` field is not returned in responses. To retrieve allocation details, use the proxy API to call `/contact_allocations?contact_id={customer_id}`.\n",
+                        },
+                        {
+                            "connector": "sevdesk",
+                            "description": "`balance` and `remaining_credit` report the full gross amount for any credit note that\nis not yet fully paid, including one that is partially applied — sevDesk does not expose\nthe applied/remaining amount on a credit note, only its total. A fully paid credit note\ncorrectly reports both fields as `0`.\n",
+                        },
+                        {
+                            "connector": "lexware-office",
+                            "description": "`balance` reports the full gross amount for any credit note that is not yet fully paid,\nincluding one that is partially applied — the vendor's status field only distinguishes\nfinalized from paid/paidoff, with no distinct partially-paid state and no applied/\nremaining amount field. A fully paid credit note correctly reports `balance` as `0`.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1112,10 +1537,9 @@ class CreditNotes(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingCreditNotesOneResponse(
                 get_credit_note_response=unmarshal_json_response(
-                    Optional[models.GetCreditNoteResponse], http_res
+                    Optional[models.GetCreditNoteResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1156,10 +1580,9 @@ class CreditNotes(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingCreditNotesOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1232,6 +1655,7 @@ class CreditNotes(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1256,9 +1680,27 @@ class CreditNotes(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "sage-business-cloud-accounting",
+                            "description": "The `allocations` field is not returned in responses. To retrieve allocation details, use the proxy API to call `/contact_allocations?contact_id={customer_id}`.\n",
+                        },
+                        {
+                            "connector": "sevdesk",
+                            "description": "`balance` and `remaining_credit` report the full gross amount for any credit note that\nis not yet fully paid, including one that is partially applied — sevDesk does not expose\nthe applied/remaining amount on a credit note, only its total. A fully paid credit note\ncorrectly reports both fields as `0`.\n",
+                        },
+                        {
+                            "connector": "lexware-office",
+                            "description": "`balance` reports the full gross amount for any credit note that is not yet fully paid,\nincluding one that is partially applied — the vendor's status field only distinguishes\nfinalized from paid/paidoff, with no distinct partially-paid state and no applied/\nremaining amount field. A fully paid credit note correctly reports `balance` as `0`.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1266,10 +1708,9 @@ class CreditNotes(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingCreditNotesOneResponse(
                 get_credit_note_response=unmarshal_json_response(
-                    Optional[models.GetCreditNoteResponse], http_res
+                    Optional[models.GetCreditNoteResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1310,10 +1751,9 @@ class CreditNotes(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingCreditNotesOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1355,12 +1795,15 @@ class CreditNotes(BaseSDK):
         ] = UNSET,
         line_items: Optional[
             Union[
-                List[models.InvoiceLineItemInput],
-                List[models.InvoiceLineItemInputTypedDict],
+                Iterable[models.InvoiceLineItemInput],
+                Iterable[models.InvoiceLineItemInputTypedDict],
             ]
         ] = None,
         allocations: Optional[
-            Union[List[models.AllocationInput], List[models.AllocationInputTypedDict]]
+            Union[
+                Iterable[models.AllocationInput],
+                Iterable[models.AllocationInputTypedDict],
+            ]
         ] = None,
         note: OptionalNullable[str] = UNSET,
         terms: OptionalNullable[str] = UNSET,
@@ -1373,16 +1816,19 @@ class CreditNotes(BaseSDK):
         ] = None,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1417,7 +1863,7 @@ class CreditNotes(BaseSDK):
         :param reference: Optional reference message ie: Debit remittance detail.
         :param date_issued: Date credit note issued - YYYY:MM::DDThh:mm:ss.sTZD
         :param date_paid: Date credit note paid - YYYY:MM::DDThh:mm:ss.sTZD
-        :param type: Whether this credit note reduces an amount owed by a customer (accounts receivable) or owed to a supplier (accounts payable). `accounts_payable_credit` support is connector-specific — most connectors only expose the accounts-receivable side. Check the connector's gotchas for known deviations.
+        :param type_: Whether this credit note reduces an amount owed by a customer (accounts receivable) or owed to a supplier (accounts payable). `accounts_payable_credit` support is connector-specific — most connectors only expose the accounts-receivable side. Check the connector's gotchas for known deviations.
         :param account:
         :param line_items:
         :param allocations:
@@ -1532,6 +1978,7 @@ class CreditNotes(BaseSDK):
                 "json",
                 models.CreditNoteUpdateInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1556,9 +2003,67 @@ class CreditNotes(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "QuickBooks Desktop cannot modify credit-note line items, the AR account or the tracking category: `line_items` sent on update are ignored and the response still returns the credit note `id`. Only `customer`, `date_issued`, `number` and `note` change. Delete and recreate the credit note to change its lines.\n\nUpdates need `row_version` from a prior read of the record: without it the update is rejected with `Missing required field: data.editSequence`. Writes are applied on the Web Connector's next run, so an update can return a `504` timeout after 28 seconds while QuickBooks still applies it; read the record back before retrying.\n",
+                        },
+                        {
+                            "connector": "sap-business-one",
+                            "description": "To change a line, send it with the `id` from a read: SAP Business One updates the line with that number. A line without an `id` is matched by its position in `line_items`, so it is added only when it comes after all of the document's existing lines; otherwise it replaces the line at that position. To add lines safely, send every existing line with its `id` followed by the new ones. Lines left out of the request are kept.\n",
+                        },
+                        {
+                            "connector": "restaurant365",
+                            "description": "Credit notes cannot be updated through this connector at all — the update operation is\nunsupported, not merely limited. R365's own PATCH endpoint accepts only an\n`approvalStatus` field, and only the value `Approved` (unlike bills, R365 has no reject\npath for credit memos) — not general field updates, so mapping it under the unified update\noperation would have silently discarded any other field the caller sent. There is no\nworkaround; credit notes can only be created and read.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "- Netsuite doesn't support voiding credit notes via API. Options: 1) Remove allocations and delete, or 2) Create a reversing invoice for the same amount.\n\nDate-only fields need no configuration: NetSuite converts the datetime it receives into the\nSOAP/integration user's time zone before storing the date part, and these fields are anchored so\nthey store on the intended calendar day for any integration user between UTC-10 and UTC+13.\n\nFour zones fall outside that range and need the optional `timezone` connection setting:\n`Pacific/Pago_Pago`, `Pacific/Niue` and `Pacific/Midway` (UTC-11) store one day early without it,\nand `Pacific/Kiritimati` (UTC+14) stores one day late. Set it to the IANA zone of the NetSuite user\nthis connection authenticates as, read from that user's Home > Set Preferences > Time Zone — Setup >\nCompany > Company Information only supplies the default, so a user who overrode it needs their own\nzone.\n\nWhen the setting is used its value must be within 12 hours of that user's real zone in either\ndirection: more than ~12h east stores dates one day early, more than ~12h west stores them one day\nlate.\n\nThis applies to every NetSuite date-only write field across the accounting resources.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "- Authorised Credit Note can only be updated to voided status and cannot be deleted once authorised.\n- Any invoice allocation and payment must be deleted before updating the authorised Credit Note to status voided.\n- To delete payments, use the payment ID from the raw data and delete it using the Delete Payment endpoint.\n- For adding and removing invoice allocations, use the proxy API. [Know more](https://developers.apideck.com/connectors/xero/docs/application_owner+oauth_credentials#2-curl-requests-for-adding-and-removing-allocations-from-xero-credit-note)\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Credit notes in xero can be tax inclusive, tax exclusive or no tax. The tax_inclusive field should be set to true, false or null if the credit note is tax inclusive, tax exclusive or no tax.",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": 'Allowed values for the status are "draft", "authorised", and "voided" when using the update method.\nPlease send status updates separately from other updates for Credit Notes.\n',
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Netsuite only supports one tracking category at a time so only the first item in the tracking_categories list will be used.",
+                        },
+                        {
+                            "connector": "sage-business-cloud-accounting",
+                            "description": "Allocations cannot be modified after credit note creation.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "`reference` cannot be stored — Sage Intacct's `update_aradjustment` rejects a `docnumber` element, and the `externalid` element it accepts is a create-only integration key that is never returned on read (verified live), so it cannot round-trip. The `reference` field cannot be set on create or update via this API.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "`allocations` set on this resource have no effect — Sage has no way to apply a credit memo\nto an invoice from the credit memo record itself. To apply a credit memo, create a payment\non the `payments` resource with two allocations: one of type `invoice` for the invoice\nbeing credited and one of type `credit_memo` for this credit memo, both carrying the\namount being applied. The payment still requires an `account` (financial entity) even\nthough no cash moves, since Sage requires one on every payment record.\n\n`line_items[].total_amount` is accepted in either sign and always stored as a credit\n(negative) in Sage — this endpoint only ever updates credit adjustments, never debit ones.\n",
+                        },
+                        {
+                            "connector": "lexware-office",
+                            "description": "Credit notes cannot be updated through this connector once created — there is no update\noperation for this resource. Credit notes can only be created and read.\n",
+                        },
+                        {
+                            "connector": "sevdesk",
+                            "description": "Only `reference` and `currency` can be changed after creation. `note` is accepted by\nthis endpoint but not persisted — sending it has no effect and reading the credit note\nback afterward will not reflect it. `status` cannot be changed through this endpoint at\nall; transition a credit note's status from within sevDesk directly.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1566,10 +2071,9 @@ class CreditNotes(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingCreditNotesUpdateResponse(
                 update_credit_note_response=unmarshal_json_response(
-                    Optional[models.UpdateCreditNoteResponse], http_res
+                    Optional[models.UpdateCreditNoteResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1610,10 +2114,9 @@ class CreditNotes(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingCreditNotesUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1655,12 +2158,15 @@ class CreditNotes(BaseSDK):
         ] = UNSET,
         line_items: Optional[
             Union[
-                List[models.InvoiceLineItemInput],
-                List[models.InvoiceLineItemInputTypedDict],
+                Iterable[models.InvoiceLineItemInput],
+                Iterable[models.InvoiceLineItemInputTypedDict],
             ]
         ] = None,
         allocations: Optional[
-            Union[List[models.AllocationInput], List[models.AllocationInputTypedDict]]
+            Union[
+                Iterable[models.AllocationInput],
+                Iterable[models.AllocationInputTypedDict],
+            ]
         ] = None,
         note: OptionalNullable[str] = UNSET,
         terms: OptionalNullable[str] = UNSET,
@@ -1673,16 +2179,19 @@ class CreditNotes(BaseSDK):
         ] = None,
         tracking_categories: OptionalNullable[
             Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                Iterable[Nullable[models.LinkedTrackingCategory]],
+                Iterable[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1717,7 +2226,7 @@ class CreditNotes(BaseSDK):
         :param reference: Optional reference message ie: Debit remittance detail.
         :param date_issued: Date credit note issued - YYYY:MM::DDThh:mm:ss.sTZD
         :param date_paid: Date credit note paid - YYYY:MM::DDThh:mm:ss.sTZD
-        :param type: Whether this credit note reduces an amount owed by a customer (accounts receivable) or owed to a supplier (accounts payable). `accounts_payable_credit` support is connector-specific — most connectors only expose the accounts-receivable side. Check the connector's gotchas for known deviations.
+        :param type_: Whether this credit note reduces an amount owed by a customer (accounts receivable) or owed to a supplier (accounts payable). `accounts_payable_credit` support is connector-specific — most connectors only expose the accounts-receivable side. Check the connector's gotchas for known deviations.
         :param account:
         :param line_items:
         :param allocations:
@@ -1832,6 +2341,7 @@ class CreditNotes(BaseSDK):
                 "json",
                 models.CreditNoteUpdateInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1856,9 +2366,67 @@ class CreditNotes(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "QuickBooks Desktop cannot modify credit-note line items, the AR account or the tracking category: `line_items` sent on update are ignored and the response still returns the credit note `id`. Only `customer`, `date_issued`, `number` and `note` change. Delete and recreate the credit note to change its lines.\n\nUpdates need `row_version` from a prior read of the record: without it the update is rejected with `Missing required field: data.editSequence`. Writes are applied on the Web Connector's next run, so an update can return a `504` timeout after 28 seconds while QuickBooks still applies it; read the record back before retrying.\n",
+                        },
+                        {
+                            "connector": "sap-business-one",
+                            "description": "To change a line, send it with the `id` from a read: SAP Business One updates the line with that number. A line without an `id` is matched by its position in `line_items`, so it is added only when it comes after all of the document's existing lines; otherwise it replaces the line at that position. To add lines safely, send every existing line with its `id` followed by the new ones. Lines left out of the request are kept.\n",
+                        },
+                        {
+                            "connector": "restaurant365",
+                            "description": "Credit notes cannot be updated through this connector at all — the update operation is\nunsupported, not merely limited. R365's own PATCH endpoint accepts only an\n`approvalStatus` field, and only the value `Approved` (unlike bills, R365 has no reject\npath for credit memos) — not general field updates, so mapping it under the unified update\noperation would have silently discarded any other field the caller sent. There is no\nworkaround; credit notes can only be created and read.\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "- Netsuite doesn't support voiding credit notes via API. Options: 1) Remove allocations and delete, or 2) Create a reversing invoice for the same amount.\n\nDate-only fields need no configuration: NetSuite converts the datetime it receives into the\nSOAP/integration user's time zone before storing the date part, and these fields are anchored so\nthey store on the intended calendar day for any integration user between UTC-10 and UTC+13.\n\nFour zones fall outside that range and need the optional `timezone` connection setting:\n`Pacific/Pago_Pago`, `Pacific/Niue` and `Pacific/Midway` (UTC-11) store one day early without it,\nand `Pacific/Kiritimati` (UTC+14) stores one day late. Set it to the IANA zone of the NetSuite user\nthis connection authenticates as, read from that user's Home > Set Preferences > Time Zone — Setup >\nCompany > Company Information only supplies the default, so a user who overrode it needs their own\nzone.\n\nWhen the setting is used its value must be within 12 hours of that user's real zone in either\ndirection: more than ~12h east stores dates one day early, more than ~12h west stores them one day\nlate.\n\nThis applies to every NetSuite date-only write field across the accounting resources.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "- Authorised Credit Note can only be updated to voided status and cannot be deleted once authorised.\n- Any invoice allocation and payment must be deleted before updating the authorised Credit Note to status voided.\n- To delete payments, use the payment ID from the raw data and delete it using the Delete Payment endpoint.\n- For adding and removing invoice allocations, use the proxy API. [Know more](https://developers.apideck.com/connectors/xero/docs/application_owner+oauth_credentials#2-curl-requests-for-adding-and-removing-allocations-from-xero-credit-note)\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Credit notes in xero can be tax inclusive, tax exclusive or no tax. The tax_inclusive field should be set to true, false or null if the credit note is tax inclusive, tax exclusive or no tax.",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": 'Allowed values for the status are "draft", "authorised", and "voided" when using the update method.\nPlease send status updates separately from other updates for Credit Notes.\n',
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "Netsuite only supports one tracking category at a time so only the first item in the tracking_categories list will be used.",
+                        },
+                        {
+                            "connector": "sage-business-cloud-accounting",
+                            "description": "Allocations cannot be modified after credit note creation.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "`reference` cannot be stored — Sage Intacct's `update_aradjustment` rejects a `docnumber` element, and the `externalid` element it accepts is a create-only integration key that is never returned on read (verified live), so it cannot round-trip. The `reference` field cannot be set on create or update via this API.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "`allocations` set on this resource have no effect — Sage has no way to apply a credit memo\nto an invoice from the credit memo record itself. To apply a credit memo, create a payment\non the `payments` resource with two allocations: one of type `invoice` for the invoice\nbeing credited and one of type `credit_memo` for this credit memo, both carrying the\namount being applied. The payment still requires an `account` (financial entity) even\nthough no cash moves, since Sage requires one on every payment record.\n\n`line_items[].total_amount` is accepted in either sign and always stored as a credit\n(negative) in Sage — this endpoint only ever updates credit adjustments, never debit ones.\n",
+                        },
+                        {
+                            "connector": "lexware-office",
+                            "description": "Credit notes cannot be updated through this connector once created — there is no update\noperation for this resource. Credit notes can only be created and read.\n",
+                        },
+                        {
+                            "connector": "sevdesk",
+                            "description": "Only `reference` and `currency` can be changed after creation. `note` is accepted by\nthis endpoint but not persisted — sending it has no effect and reading the credit note\nback afterward will not reflect it. `status` cannot be changed through this endpoint at\nall; transition a credit note's status from within sevDesk directly.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1866,10 +2434,9 @@ class CreditNotes(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingCreditNotesUpdateResponse(
                 update_credit_note_response=unmarshal_json_response(
-                    Optional[models.UpdateCreditNoteResponse], http_res
+                    Optional[models.UpdateCreditNoteResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1910,10 +2477,9 @@ class CreditNotes(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingCreditNotesUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1980,6 +2546,7 @@ class CreditNotes(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2004,9 +2571,27 @@ class CreditNotes(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "restaurant365",
+                            "description": "Credit notes cannot be deleted through this connector — R365's Public API exposes no\ndelete endpoint for AP credit memos. There is no soft-delete or status-based workaround;\ncredit notes can only be created and read.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": 'Xero will only allow deleting a Credit Note if it is in draft status.\nCredit notes with "authorised" status cannot be deleted directly. Instead:\n- If the credit note is empty (i.e., has no invoice allocations and payments), its status can be updated to "voided" by update Credit Note endpoint.\n- If the credit note has invoice allocations and payments, these must be removed first. Once all invoice allocations and payments are deleted, the credit note\'s status can be updated to "Voided" by update Credit Note endpoint.\n  [Know more](https://developers.apideck.com/connectors/xero/docs/application_owner+oauth_credentials#2-curl-requests-for-adding-and-removing-allocations-from-xero-credit-note)\n',
+                        },
+                        {
+                            "connector": "freshbooks",
+                            "description": "Delete will set the credit note to inactive and will soft delete it, meaning it will stop appearing in the list API call. However, it can still be found via the get by id call.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2014,10 +2599,9 @@ class CreditNotes(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingCreditNotesDeleteResponse(
                 delete_credit_note_response=unmarshal_json_response(
-                    Optional[models.DeleteCreditNoteResponse], http_res
+                    Optional[models.DeleteCreditNoteResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2058,10 +2642,9 @@ class CreditNotes(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingCreditNotesDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2128,6 +2711,7 @@ class CreditNotes(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2152,9 +2736,27 @@ class CreditNotes(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "restaurant365",
+                            "description": "Credit notes cannot be deleted through this connector — R365's Public API exposes no\ndelete endpoint for AP credit memos. There is no soft-delete or status-based workaround;\ncredit notes can only be created and read.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": 'Xero will only allow deleting a Credit Note if it is in draft status.\nCredit notes with "authorised" status cannot be deleted directly. Instead:\n- If the credit note is empty (i.e., has no invoice allocations and payments), its status can be updated to "voided" by update Credit Note endpoint.\n- If the credit note has invoice allocations and payments, these must be removed first. Once all invoice allocations and payments are deleted, the credit note\'s status can be updated to "Voided" by update Credit Note endpoint.\n  [Know more](https://developers.apideck.com/connectors/xero/docs/application_owner+oauth_credentials#2-curl-requests-for-adding-and-removing-allocations-from-xero-credit-note)\n',
+                        },
+                        {
+                            "connector": "freshbooks",
+                            "description": "Delete will set the credit note to inactive and will soft delete it, meaning it will stop appearing in the list API call. However, it can still be found via the get by id call.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2162,10 +2764,9 @@ class CreditNotes(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingCreditNotesDeleteResponse(
                 delete_credit_note_response=unmarshal_json_response(
-                    Optional[models.DeleteCreditNoteResponse], http_res
+                    Optional[models.DeleteCreditNoteResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2206,10 +2807,9 @@ class CreditNotes(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingCreditNotesDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2218,8 +2818,8 @@ class CreditNotes(BaseSDK):
         self,
         *,
         items: Union[
-            List[models.BatchCreditNotesRequestItems],
-            List[models.BatchCreditNotesRequestItemsTypedDict],
+            Iterable[models.BatchCreditNotesRequestItems],
+            Iterable[models.BatchCreditNotesRequestItemsTypedDict],
         ],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
@@ -2293,6 +2893,7 @@ class CreditNotes(BaseSDK):
                 "json",
                 models.BatchCreditNotesRequest,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2317,9 +2918,31 @@ class CreditNotes(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "xero",
+                            "description": "Records are written one at a time, so the request counts as **one request per\nrecord** against your plan — batching saves you round trips, not quota.\n\nRecords are written one at a time rather than in a single batched call, because\nthis resource runs a per-record step after the write (an allocations step) and\nthat step has to see its own record. A request of N records therefore takes\nabout N times as long as a single write and counts as N calls against your\nXero rate limit.\n\nAt most 20 records per request. That ceiling has not been measured for records\nwritten one at a time on this resource, so treat it as an upper\nbound rather than a safe size: prefer smaller requests and set client timeouts from\nyour own observed per-record latency.\n\nA credit note sent with `allocations` is allocated to those invoices right after it is\ncreated. If an allocation fails, the item comes back with an `error` even when its\n`status` is `created`: Xero may have kept the credit note without its allocations (an\nauthorised credit note cannot be removed) or removed it. List credit notes before\nretrying that item, or a retry may duplicate it.\n\nEach record succeeds or fails on its own; read the per-item `status` to see which\nwere written. If the request times out, the items it could not confirm come back\nwith `status: uncertain` rather than `failed` — some of them may well have been\nwritten, and no ids are returned for those. Verify before retrying an `uncertain`\nitem: list the resource to find what exists, or a retry will duplicate it.\n\nResults come back in the order the items were sent. Supply `_ref` on every item if\nyou need to tie an outcome back to your own record — it is echoed on every result,\nincluding failures, and is never sent to the connector.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Records are written one at a time, so the request counts as **one request per\nrecord** against your plan — batching saves you round trips, not quota.\n\nAt most 10 records per request.\n\nRecords are written one at a time, so a request of N credit notes takes about N times as\nlong as a single write and counts as N requests against your plan. Each record\nsucceeds or fails on its own; read the per-item `status` to see which were written.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "The whole request is one call to the provider, so it counts as **one request**\nagainst your plan however many records it carries.\n\nAt most 20 credit notes per request. A request carrying more is rejected before any\nrecord is written.\n\nResponse time scales with the number of records rather than being a fixed cost:\na full request of 20 takes roughly 27 seconds. Set client timeouts accordingly.\n\nA request that times out may still have written some or all of its records. When\nthat happens no ids are returned for them, so treat a timed-out batch as uncertain\nrather than failed: list the records to find what was written before retrying, or a\nretry will duplicate them.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "The whole request is one call to the provider, so it counts as **one request**\nagainst your plan however many records it carries.\n\nAt most 20 credit notes per request. A request carrying more is rejected before any\nrecord is written.\n\nResponse time scales with the number of records rather than being a fixed cost:\na full request of 20 takes roughly 27 seconds. Set client timeouts accordingly.\n\nA request that times out may still have written some or all of its records. When\nthat happens no ids are returned for them, so treat a timed-out batch as uncertain\nrather than failed: list the records to find what was written before retrying, or a\nretry will duplicate them.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2327,10 +2950,9 @@ class CreditNotes(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingCreditNotesBatchAddResponse(
                 batch_credit_notes_response=unmarshal_json_response(
-                    Optional[models.BatchCreditNotesResponse], http_res
+                    Optional[models.BatchCreditNotesResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2371,10 +2993,9 @@ class CreditNotes(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingCreditNotesBatchAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2383,8 +3004,8 @@ class CreditNotes(BaseSDK):
         self,
         *,
         items: Union[
-            List[models.BatchCreditNotesRequestItems],
-            List[models.BatchCreditNotesRequestItemsTypedDict],
+            Iterable[models.BatchCreditNotesRequestItems],
+            Iterable[models.BatchCreditNotesRequestItemsTypedDict],
         ],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
@@ -2458,6 +3079,7 @@ class CreditNotes(BaseSDK):
                 "json",
                 models.BatchCreditNotesRequest,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -2482,9 +3104,31 @@ class CreditNotes(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "xero",
+                            "description": "Records are written one at a time, so the request counts as **one request per\nrecord** against your plan — batching saves you round trips, not quota.\n\nRecords are written one at a time rather than in a single batched call, because\nthis resource runs a per-record step after the write (an allocations step) and\nthat step has to see its own record. A request of N records therefore takes\nabout N times as long as a single write and counts as N calls against your\nXero rate limit.\n\nAt most 20 records per request. That ceiling has not been measured for records\nwritten one at a time on this resource, so treat it as an upper\nbound rather than a safe size: prefer smaller requests and set client timeouts from\nyour own observed per-record latency.\n\nA credit note sent with `allocations` is allocated to those invoices right after it is\ncreated. If an allocation fails, the item comes back with an `error` even when its\n`status` is `created`: Xero may have kept the credit note without its allocations (an\nauthorised credit note cannot be removed) or removed it. List credit notes before\nretrying that item, or a retry may duplicate it.\n\nEach record succeeds or fails on its own; read the per-item `status` to see which\nwere written. If the request times out, the items it could not confirm come back\nwith `status: uncertain` rather than `failed` — some of them may well have been\nwritten, and no ids are returned for those. Verify before retrying an `uncertain`\nitem: list the resource to find what exists, or a retry will duplicate it.\n\nResults come back in the order the items were sent. Supply `_ref` on every item if\nyou need to tie an outcome back to your own record — it is echoed on every result,\nincluding failures, and is never sent to the connector.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Records are written one at a time, so the request counts as **one request per\nrecord** against your plan — batching saves you round trips, not quota.\n\nAt most 10 records per request.\n\nRecords are written one at a time, so a request of N credit notes takes about N times as\nlong as a single write and counts as N requests against your plan. Each record\nsucceeds or fails on its own; read the per-item `status` to see which were written.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "The whole request is one call to the provider, so it counts as **one request**\nagainst your plan however many records it carries.\n\nAt most 20 credit notes per request. A request carrying more is rejected before any\nrecord is written.\n\nResponse time scales with the number of records rather than being a fixed cost:\na full request of 20 takes roughly 27 seconds. Set client timeouts accordingly.\n\nA request that times out may still have written some or all of its records. When\nthat happens no ids are returned for them, so treat a timed-out batch as uncertain\nrather than failed: list the records to find what was written before retrying, or a\nretry will duplicate them.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "The whole request is one call to the provider, so it counts as **one request**\nagainst your plan however many records it carries.\n\nAt most 20 credit notes per request. A request carrying more is rejected before any\nrecord is written.\n\nResponse time scales with the number of records rather than being a fixed cost:\na full request of 20 takes roughly 27 seconds. Set client timeouts accordingly.\n\nA request that times out may still have written some or all of its records. When\nthat happens no ids are returned for them, so treat a timed-out batch as uncertain\nrather than failed: list the records to find what was written before retrying, or a\nretry will duplicate them.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -2492,10 +3136,9 @@ class CreditNotes(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingCreditNotesBatchAddResponse(
                 batch_credit_notes_response=unmarshal_json_response(
-                    Optional[models.BatchCreditNotesResponse], http_res
+                    Optional[models.BatchCreditNotesResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2536,10 +3179,9 @@ class CreditNotes(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingCreditNotesBatchAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

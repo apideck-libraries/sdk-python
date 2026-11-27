@@ -24,13 +24,14 @@ from apideck_unify.types import (
     OptionalNullable,
     UNSET,
     UNSET_SENTINEL,
+    current_exclude_none,
+    serialize_with_info,
 )
-from apideck_unify.utils import validate_open_enum
+from apideck_unify.types.basemodel import current_filtered_dump
 from datetime import datetime
 from pydantic import field_serializer, model_serializer
-from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
-from typing_extensions import Annotated, NotRequired, TypedDict
+from typing_extensions import NotRequired, TypedDict
 
 
 class RefundTypedDict(TypedDict):
@@ -124,9 +125,7 @@ class Refund(BaseModel):
     company_id: OptionalNullable[str] = UNSET
     r"""The company ID the transaction belongs to"""
 
-    currency: Annotated[
-        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    currency: OptionalNullable[Currency] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     currency_rate: OptionalNullable[float] = UNSET
@@ -144,14 +143,10 @@ class Refund(BaseModel):
     refund_date: OptionalNullable[datetime] = UNSET
     r"""The date of the refund - YYYY-MM-DDThh:mm:ss.sTZD"""
 
-    status: Annotated[
-        Optional[RefundStatus], PlainValidator(validate_open_enum(False))
-    ] = None
+    status: Optional[RefundStatus] = None
     r"""Status of refund. Maps to: QBO (limited status), NetSuite CashRefund status, Sage Intacct state (draft/posted/voided), Zoho Books vis_state."""
 
-    type: Annotated[Optional[RefundType], PlainValidator(validate_open_enum(False))] = (
-        None
-    )
+    type: Optional[RefundType] = None
     r"""Type of refund. `refund_receipt` for itemized refunds with product/service lines and payment (QBO RefundReceipt; also NetSuite's apply-list-based CustomerRefund). `cash_refund` for cash-out refunds with GL distribution or allocations (Sage Intacct). `credit_note_refund` for refunds applied against a credit note (Zoho Books). `sale_refund` for itemized refunds tied to a cash sale or return authorization, without an apply-list (NetSuite CashRefund) — NetSuite's apply-list-based CustomerRefund reports as `refund_receipt` instead."""
 
     payment_method: OptionalNullable[str] = UNSET
@@ -253,98 +248,104 @@ class Refund(BaseModel):
         return value
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = [
-            "number",
-            "customer",
-            "company_id",
-            "currency",
-            "currency_rate",
-            "tax_inclusive",
-            "sub_total",
-            "total_tax",
-            "refund_date",
-            "status",
-            "type",
-            "payment_method",
-            "payment_method_reference",
-            "payment_method_id",
-            "account",
-            "line_items",
-            "allocations",
-            "tax_code",
-            "discount_percentage",
-            "discount_amount",
-            "note",
-            "customer_memo",
-            "reference",
-            "billing_address",
-            "shipping_address",
-            "department",
-            "location",
-            "tracking_categories",
-            "custom_mappings",
-            "custom_fields",
-            "row_version",
-            "updated_by",
-            "created_by",
-            "updated_at",
-            "created_at",
-            "pass_through",
-        ]
-        nullable_fields = [
-            "number",
-            "customer",
-            "company_id",
-            "currency",
-            "currency_rate",
-            "tax_inclusive",
-            "sub_total",
-            "total_amount",
-            "total_tax",
-            "refund_date",
-            "payment_method",
-            "payment_method_reference",
-            "payment_method_id",
-            "account",
-            "tax_code",
-            "discount_percentage",
-            "discount_amount",
-            "note",
-            "customer_memo",
-            "reference",
-            "department",
-            "location",
-            "tracking_categories",
-            "custom_mappings",
-            "row_version",
-            "updated_by",
-            "created_by",
-            "updated_at",
-            "created_at",
-        ]
-        null_default_fields = []
-
+        optional_fields = set(
+            [
+                "number",
+                "customer",
+                "company_id",
+                "currency",
+                "currency_rate",
+                "tax_inclusive",
+                "sub_total",
+                "total_tax",
+                "refund_date",
+                "status",
+                "type",
+                "payment_method",
+                "payment_method_reference",
+                "payment_method_id",
+                "account",
+                "line_items",
+                "allocations",
+                "tax_code",
+                "discount_percentage",
+                "discount_amount",
+                "note",
+                "customer_memo",
+                "reference",
+                "billing_address",
+                "shipping_address",
+                "department",
+                "location",
+                "tracking_categories",
+                "custom_mappings",
+                "custom_fields",
+                "row_version",
+                "updated_by",
+                "created_by",
+                "updated_at",
+                "created_at",
+                "pass_through",
+            ]
+        )
+        nullable_fields = set(
+            [
+                "number",
+                "customer",
+                "company_id",
+                "currency",
+                "currency_rate",
+                "tax_inclusive",
+                "sub_total",
+                "total_amount",
+                "total_tax",
+                "refund_date",
+                "payment_method",
+                "payment_method_reference",
+                "payment_method_id",
+                "account",
+                "tax_code",
+                "discount_percentage",
+                "discount_amount",
+                "note",
+                "customer_memo",
+                "reference",
+                "department",
+                "location",
+                "tracking_categories",
+                "custom_mappings",
+                "row_version",
+                "updated_by",
+                "created_by",
+                "updated_at",
+                "created_at",
+            ]
+        )
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m

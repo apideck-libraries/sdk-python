@@ -2,6 +2,16 @@
 
 The field on which to sort the Opportunities
 
+## Example Usage
+
+```python
+from apideck_unify.models import OpportunitiesSortBy
+
+value = OpportunitiesSortBy.CREATED_AT
+
+# Open enum: unrecognized values are captured as UnrecognizedStr
+```
+
 
 ## Values
 

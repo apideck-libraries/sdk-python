@@ -2,6 +2,16 @@
 
 Name of Apideck Unified API
 
+## Example Usage
+
+```python
+from apideck_unify.models import UnifiedAPIID
+
+value = UnifiedAPIID.ACCOUNTING
+
+# Open enum: unrecognized values are captured as UnrecognizedStr
+```
+
 
 ## Values
 

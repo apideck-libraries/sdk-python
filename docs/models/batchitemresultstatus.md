@@ -10,6 +10,16 @@ A `created` or `updated` result can also carry an `error`: the record was writte
 
 Read this rather than `id` to decide what happened. `id` is present when the identifier could also be read back, which is not the same question — a written record whose id could not be parsed still reports `created`.
 
+## Example Usage
+
+```python
+from apideck_unify.models import BatchItemResultStatus
+
+value = BatchItemResultStatus.CREATED
+
+# Open enum: unrecognized values are captured as UnrecognizedStr
+```
+
 
 ## Values
 

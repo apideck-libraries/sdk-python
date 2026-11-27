@@ -65,6 +65,7 @@ class APIResourceCoverageSDK(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -89,9 +90,11 @@ class APIResourceCoverageSDK(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["connector"],
+                extensions={"x-apideck-api": "connector"},
             ),
             request=req,
-            error_status_codes=["401", "402", "404", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -99,10 +102,11 @@ class APIResourceCoverageSDK(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.ConnectorAPIResourceCoverageOneResponse(
                 get_api_resource_coverage_response=unmarshal_json_response(
-                    Optional[models.GetAPIResourceCoverageResponse], http_res
+                    Optional[models.GetAPIResourceCoverageResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "401", "application/json"):
             response_data = unmarshal_json_response(
@@ -128,10 +132,9 @@ class APIResourceCoverageSDK(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.ConnectorAPIResourceCoverageOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -191,6 +194,7 @@ class APIResourceCoverageSDK(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -215,9 +219,11 @@ class APIResourceCoverageSDK(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["connector"],
+                extensions={"x-apideck-api": "connector"},
             ),
             request=req,
-            error_status_codes=["401", "402", "404", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -225,10 +231,11 @@ class APIResourceCoverageSDK(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.ConnectorAPIResourceCoverageOneResponse(
                 get_api_resource_coverage_response=unmarshal_json_response(
-                    Optional[models.GetAPIResourceCoverageResponse], http_res
+                    Optional[models.GetAPIResourceCoverageResponse],
+                    http_res,
+                    validate=False,
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "401", "application/json"):
             response_data = unmarshal_json_response(
@@ -254,10 +261,9 @@ class APIResourceCoverageSDK(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.ConnectorAPIResourceCoverageOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

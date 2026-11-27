@@ -7,7 +7,7 @@ from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from jsonpath import JSONPath
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
 
 
 class TaxRates(BaseSDK):
@@ -24,7 +24,7 @@ class TaxRates(BaseSDK):
         filter_: Optional[
             Union[models.TaxRatesFilter, models.TaxRatesFilterTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -70,7 +70,7 @@ class TaxRates(BaseSDK):
             cursor=cursor,
             limit=limit,
             filter_=utils.get_pydantic_model(filter_, Optional[models.TaxRatesFilter]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -91,6 +91,7 @@ class TaxRates(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -115,9 +116,135 @@ class TaxRates(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "fiken",
+                            "description": "Fiken has no VAT-code endpoint, so tax rates are a fixed list of Fiken's VAT types (HIGH 25%, MEDIUM 15%, LOW 12%, RAW_FISH 11.11%, the zero-rated, exempt and outside types, and the purchase-only reverse-charge, basis and foreign-service types) that is the same for every company. It does not reflect whether the company is VAT-registered, and it is not read from the company's account.\n\nUse the tax rate `id` (the Fiken VAT type, for example `HIGH`) as `tax_rate.id` when creating invoices, bills and products. `type` shows where it is valid: `sales`, `purchase` or `both`; Fiken documents each type as valid for sales, purchases or both, so use only types valid for the document you create. Types ending in `_BASIS` only report the VAT base and carry no VAT amount, so their `effective_tax_rate` is `0`.\n\nThe list is not paginated and does not support filtering. `tax_payable_account_id` and `tax_remitted_account_id` are not available.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "Tax rates read Sage Intacct's `tax/tax-detail` objects, and those only exist once the\ncompany has a configured **tax solution**. A company without one returns an empty list —\nthat is a configuration state, not an error, and no API call can distinguish the two.\n\nA tax solution requires the Taxes subscription, an accrual accounting method, and a\nbusiness user with admin privileges, and it is created in the Sage UI under\n`Taxes > Setup > Tax solutions`. It cannot be created through the API, so an empty result\nhere is not something an integration can resolve on the customer's behalf — the customer\nhas to complete tax setup in Sage first.\n\nEach tax detail belongs to exactly one tax solution. In a multi-entity company, verify the\nentity is assigned the intended tax solution, operating country and tax ID: entities\nconfigured against a different solution return a different set of rates.\n\nSee Sage's [advanced tax setup guide](https://www.intacct.com/ia/docs/en_US/help_action/Taxes/Indirect_Tax/VAT_and_GST/Setup/Taxes_application/Tax_solution_setup/taxes-setup-advanced.htm).\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": 'The minimum page size accepted for NetSuite is 5. The cursor expires if it has not been used within 15 minutes of creation.\n\nListing tax rates requires NetSuite\'s legacy "Not SuiteTax" feature. On an account with\nSuiteTax enabled, every tax-rates request fails outright rather than returning an empty or\npartial result — this is a NetSuite platform restriction on the underlying search, not a\nconnector limitation, and there is no workaround available. This is specific to the\ntax-rates resource: bills and expenses already support per-line tax on SuiteTax accounts\nthrough a separate mechanism.\n\nNetSuite supports compound taxes through the `components` array, allowing multi-tier tax structures (e.g. state + county).\n\n**A `null` `effective_tax_rate` does not mean 0%.** It means the tax code carries no single stored rate, and that happens in two cases which must not be conflated:\n- **Exempt / zero-rated / not-liable** codes — effectively `0%`.\n- **US sales-tax jurisdiction codes** (State / County / City / District) — these are **taxable**, but NetSuite assembles the rate from the jurisdiction at transaction time rather than storing it on the code. Treating them as `0%` understates tax.\n\nKey on `effective_tax_rate`. `total_tax_rate` is a secondary non-compounded sum of components: it may be `null` or `0` on a code with no stored rate, and on accounts without SuiteTax it is never populated.\n',
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "In quickbooks, the tax rates resource does not support pagination. QuickBooks returns tax codes rather than complete tax rate data. `effective_tax_rate` is populated (as the sum of the code's component rates) but `total_tax_rate` is **not** returned — key on `effective_tax_rate`, not `total_tax_rate`, when reading a single percentage. When `effective_tax_rate` is unavailable, use `code` to reference the tax in invoice line items.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "In Intuit Enterprise Suite, the tax rates resource does not support pagination. Intuit Enterprise Suite uses the same underlying QuickBooks API: `effective_tax_rate` is populated (as the sum of the code's component rates) but `total_tax_rate` is **not** returned — key on `effective_tax_rate`, not `total_tax_rate`, when reading a single percentage. When `effective_tax_rate` is unavailable, use `code` to reference the tax in invoice line items.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Xero tax rates include `effective_tax_rate` for the combined percentage. Tax types are categorized as INPUT (purchases), OUTPUT (sales), or NONE. Use the appropriate tax type when applying rates to invoices vs bills.\n",
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": "Listing tax rates returns only the VAT code and its description; `effective_tax_rate` and\n`total_tax_rate` are not populated on the list operation. Reading a single tax rate by its\nknown VAT code does return the rate.\n\n`name` and `description` are read from a Dutch-language field key. Verified only against a\nDutch-language office; on a non-Dutch-language office these fields would come back empty.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "Sage Intacct supports multi-component taxes through the `components` array. Each component can have its own rate and tax authority. Use compound taxes for jurisdictions with multiple tax layers (e.g., GST + PST in Canada).\n",
+                        },
+                        {
+                            "connector": "dualentry",
+                            "description": "DualEntry returns the Product Tax Code catalog (e.g. `TAXABLE - System`, `NON_TAXABLE - System`, plus Avalara codes) from `/public/v2/product-tax-codes`. These are categorical tax codes, not rate-based — `effective_tax_rate` and `total_tax_rate` are always `0`. Use the returned `id` and `code` to reference the tax on invoice-items (`sales_details.tax_rate.id`).\n\nRead-only catalog: `add`, `update`, `delete` are not exposed in this release. Global system-managed codes are list-only and return 403 on `GET /tax-rates/{id}`; org-scoped codes (when present) support get-by-id.\n\nThe product tax code catalog is tenant-wide and cannot be scoped by company. The `x-apideck-company-id` header is accepted but has no effect on the returned catalog.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks Online does not expose a reliable cross-page total record count. The `QueryResponse.totalCount` field in list responses reflects the count for that page only, not the full dataset. `meta.total_count` will not appear in list responses. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite uses the same underlying QuickBooks API. The `QueryResponse.totalCount` field in list responses reflects the per-page count only. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Zoho Books does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "stripe",
+                            "description": "Stripe removed `total_count` from list responses in March 2025 (API version 2025-03-31.basil). `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": "Moneybird does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "rillet",
+                            "description": "Rillet does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "pennylane",
+                            "description": "Pennylane does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "procountor-fi",
+                            "description": "Procountor does not expose a total record count in list responses. `meta.total_count` will not appear. This connector returns VAT codes without rate values, so `effective_tax_rate` and `total_tax_rate` are not populated. Reference the tax by `id` or `name`.\n",
+                        },
+                        {
+                            "connector": "workday",
+                            "description": "Workday returns transaction tax codes without rate values: `effective_tax_rate` and `total_tax_rate` are not populated, and each entry in `components` carries only the tax rate's `id` and `name`, without a `rate`. Reference the tax by `code`, or by a component `id`.\n",
+                        },
+                        {
+                            "connector": "access-financials",
+                            "description": "Access Financials does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "If you encounter a '400 Bad Request' error indicating \"Control 'fieldName' is read-only\" it means the 'editable' property for this field in Microsoft Dynamics 365 Business Central is currently set to false. To resolve this issue and make the field writable, simply update the 'editable' property to true in Microsoft Dynamics 365 Business Central. Additionally, line item tax rates must be specified by tax rate *code* (e.g., \"G3\"), not by ID. In U.S.-regionalized Business Central tenants, the `tax_inclusive` field cannot be set to `true`. Business Central returns tax groups without rate values, so `effective_tax_rate` and `total_tax_rate` are both `null` on this connector. Reference the tax by `code` rather than by rate.\n",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "AFAS does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "freshbooks",
+                            "description": "The Freshbooks Bills api is currently in beta.",
+                        },
+                        {
+                            "connector": "myob-acumatica",
+                            "description": "The Apideck service type is used for MYOB Acumatica non-stock items, and inventory is used for stock items.\n",
+                        },
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "QuickBooks Desktop does not expose a reliable cross-page total record count. Getting `total_count` requires a separate COUNT query — an extra API call that is not currently implemented. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "acumatica",
+                            "description": "The Apideck service type is used for Acumatica non-stock items, and inventory is used for stock items.\n",
+                        },
+                        {
+                            "connector": "pennylane",
+                            "description": "Pennylane has no dedicated tax rates API — VAT rates are a fixed, documented enum of 176 codes (e.g. `FR_200` for France's 20% rate) used directly on invoice/bill lines and ledger accounts, with no per-company variation and no listing endpoint. `taxRatesAll` and `taxRatesOne` return records from this fixed reference list rather than live per-company data; `add`, `update` and `delete` are not supported. A handful of codes (`FR_1_05`, `FR_1_75`, `FR_15_385`, Germany's extra-EU codes, and Spain's reverse-charge codes) encode a rate Pennylane does not document the meaning of, or have no numeric rate at all, and are returned with `effective_tax_rate: null` rather than a guessed value. Despite returning static data, each `taxRatesAll`/`taxRatesOne` call still makes one live request to Pennylane's `/me` endpoint as a required carrier call (its response is ignored) — a valid, connected Pennylane account is required, and the call still counts against Pennylane's rate limit.\n",
+                        },
+                        {
+                            "connector": "exact-online",
+                            "description": "`status` is derived from Exact's `IsBlocked` flag (`false` -> `active`, `true` -> `inactive`). Live-verified against a real division: the raw VATCode object has no `Active`-equivalent field of its own, only `IsBlocked`. Exact has no third state, so `archived` is never returned.\n",
+                        },
+                        {
+                            "connector": "exact-online-nl",
+                            "description": "`status` is derived from Exact's `IsBlocked` flag (`false` -> `active`, `true` -> `inactive`). Live-verified against a real division: the raw VATCode object has no `Active`-equivalent field of its own, only `IsBlocked`. Exact has no third state, so `archived` is never returned.\n",
+                        },
+                        {
+                            "connector": "exact-online-uk",
+                            "description": "`status` is derived from Exact's `IsBlocked` flag (`false` -> `active`, `true` -> `inactive`). Live-verified against a real division: the raw VATCode object has no `Active`-equivalent field of its own, only `IsBlocked`. Exact has no third state, so `archived` is never returned.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -144,17 +271,19 @@ class TaxRates(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingTaxRatesAllResponse(
                 get_tax_rates_response=unmarshal_json_response(
-                    Optional[models.GetTaxRatesResponse], http_res
+                    Optional[models.GetTaxRatesResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -195,11 +324,10 @@ class TaxRates(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingTaxRatesAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -217,7 +345,7 @@ class TaxRates(BaseSDK):
         filter_: Optional[
             Union[models.TaxRatesFilter, models.TaxRatesFilterTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -263,7 +391,7 @@ class TaxRates(BaseSDK):
             cursor=cursor,
             limit=limit,
             filter_=utils.get_pydantic_model(filter_, Optional[models.TaxRatesFilter]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -284,6 +412,7 @@ class TaxRates(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -308,9 +437,135 @@ class TaxRates(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "fiken",
+                            "description": "Fiken has no VAT-code endpoint, so tax rates are a fixed list of Fiken's VAT types (HIGH 25%, MEDIUM 15%, LOW 12%, RAW_FISH 11.11%, the zero-rated, exempt and outside types, and the purchase-only reverse-charge, basis and foreign-service types) that is the same for every company. It does not reflect whether the company is VAT-registered, and it is not read from the company's account.\n\nUse the tax rate `id` (the Fiken VAT type, for example `HIGH`) as `tax_rate.id` when creating invoices, bills and products. `type` shows where it is valid: `sales`, `purchase` or `both`; Fiken documents each type as valid for sales, purchases or both, so use only types valid for the document you create. Types ending in `_BASIS` only report the VAT base and carry no VAT amount, so their `effective_tax_rate` is `0`.\n\nThe list is not paginated and does not support filtering. `tax_payable_account_id` and `tax_remitted_account_id` are not available.\n",
+                        },
+                        {
+                            "connector": "sage-intacct-rest",
+                            "description": "Tax rates read Sage Intacct's `tax/tax-detail` objects, and those only exist once the\ncompany has a configured **tax solution**. A company without one returns an empty list —\nthat is a configuration state, not an error, and no API call can distinguish the two.\n\nA tax solution requires the Taxes subscription, an accrual accounting method, and a\nbusiness user with admin privileges, and it is created in the Sage UI under\n`Taxes > Setup > Tax solutions`. It cannot be created through the API, so an empty result\nhere is not something an integration can resolve on the customer's behalf — the customer\nhas to complete tax setup in Sage first.\n\nEach tax detail belongs to exactly one tax solution. In a multi-entity company, verify the\nentity is assigned the intended tax solution, operating country and tax ID: entities\nconfigured against a different solution return a different set of rates.\n\nSee Sage's [advanced tax setup guide](https://www.intacct.com/ia/docs/en_US/help_action/Taxes/Indirect_Tax/VAT_and_GST/Setup/Taxes_application/Tax_solution_setup/taxes-setup-advanced.htm).\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": 'The minimum page size accepted for NetSuite is 5. The cursor expires if it has not been used within 15 minutes of creation.\n\nListing tax rates requires NetSuite\'s legacy "Not SuiteTax" feature. On an account with\nSuiteTax enabled, every tax-rates request fails outright rather than returning an empty or\npartial result — this is a NetSuite platform restriction on the underlying search, not a\nconnector limitation, and there is no workaround available. This is specific to the\ntax-rates resource: bills and expenses already support per-line tax on SuiteTax accounts\nthrough a separate mechanism.\n\nNetSuite supports compound taxes through the `components` array, allowing multi-tier tax structures (e.g. state + county).\n\n**A `null` `effective_tax_rate` does not mean 0%.** It means the tax code carries no single stored rate, and that happens in two cases which must not be conflated:\n- **Exempt / zero-rated / not-liable** codes — effectively `0%`.\n- **US sales-tax jurisdiction codes** (State / County / City / District) — these are **taxable**, but NetSuite assembles the rate from the jurisdiction at transaction time rather than storing it on the code. Treating them as `0%` understates tax.\n\nKey on `effective_tax_rate`. `total_tax_rate` is a secondary non-compounded sum of components: it may be `null` or `0` on a code with no stored rate, and on accounts without SuiteTax it is never populated.\n',
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "In quickbooks, the tax rates resource does not support pagination. QuickBooks returns tax codes rather than complete tax rate data. `effective_tax_rate` is populated (as the sum of the code's component rates) but `total_tax_rate` is **not** returned — key on `effective_tax_rate`, not `total_tax_rate`, when reading a single percentage. When `effective_tax_rate` is unavailable, use `code` to reference the tax in invoice line items.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "In Intuit Enterprise Suite, the tax rates resource does not support pagination. Intuit Enterprise Suite uses the same underlying QuickBooks API: `effective_tax_rate` is populated (as the sum of the code's component rates) but `total_tax_rate` is **not** returned — key on `effective_tax_rate`, not `total_tax_rate`, when reading a single percentage. When `effective_tax_rate` is unavailable, use `code` to reference the tax in invoice line items.\n",
+                        },
+                        {
+                            "connector": "xero",
+                            "description": "Xero tax rates include `effective_tax_rate` for the combined percentage. Tax types are categorized as INPUT (purchases), OUTPUT (sales), or NONE. Use the appropriate tax type when applying rates to invoices vs bills.\n",
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": "Listing tax rates returns only the VAT code and its description; `effective_tax_rate` and\n`total_tax_rate` are not populated on the list operation. Reading a single tax rate by its\nknown VAT code does return the rate.\n\n`name` and `description` are read from a Dutch-language field key. Verified only against a\nDutch-language office; on a non-Dutch-language office these fields would come back empty.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "Sage Intacct supports multi-component taxes through the `components` array. Each component can have its own rate and tax authority. Use compound taxes for jurisdictions with multiple tax layers (e.g., GST + PST in Canada).\n",
+                        },
+                        {
+                            "connector": "dualentry",
+                            "description": "DualEntry returns the Product Tax Code catalog (e.g. `TAXABLE - System`, `NON_TAXABLE - System`, plus Avalara codes) from `/public/v2/product-tax-codes`. These are categorical tax codes, not rate-based — `effective_tax_rate` and `total_tax_rate` are always `0`. Use the returned `id` and `code` to reference the tax on invoice-items (`sales_details.tax_rate.id`).\n\nRead-only catalog: `add`, `update`, `delete` are not exposed in this release. Global system-managed codes are list-only and return 403 on `GET /tax-rates/{id}`; org-scoped codes (when present) support get-by-id.\n\nThe product tax code catalog is tenant-wide and cannot be scoped by company. The `x-apideck-company-id` header is accepted but has no effect on the returned catalog.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "QuickBooks Online does not expose a reliable cross-page total record count. The `QueryResponse.totalCount` field in list responses reflects the count for that page only, not the full dataset. `meta.total_count` will not appear in list responses. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "Intuit Enterprise Suite uses the same underlying QuickBooks API. The `QueryResponse.totalCount` field in list responses reflects the per-page count only. `meta.total_count` will not appear. Surfacing the true total requires a separate `SELECT COUNT(*) FROM {Entity}` query — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Zoho Books does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "stripe",
+                            "description": "Stripe removed `total_count` from list responses in March 2025 (API version 2025-03-31.basil). `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": "Moneybird does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "rillet",
+                            "description": "Rillet does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "pennylane",
+                            "description": "Pennylane does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "procountor-fi",
+                            "description": "Procountor does not expose a total record count in list responses. `meta.total_count` will not appear. This connector returns VAT codes without rate values, so `effective_tax_rate` and `total_tax_rate` are not populated. Reference the tax by `id` or `name`.\n",
+                        },
+                        {
+                            "connector": "workday",
+                            "description": "Workday returns transaction tax codes without rate values: `effective_tax_rate` and `total_tax_rate` are not populated, and each entry in `components` carries only the tax rate's `id` and `name`, without a `rate`. Reference the tax by `code`, or by a component `id`.\n",
+                        },
+                        {
+                            "connector": "access-financials",
+                            "description": "Access Financials does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "If you encounter a '400 Bad Request' error indicating \"Control 'fieldName' is read-only\" it means the 'editable' property for this field in Microsoft Dynamics 365 Business Central is currently set to false. To resolve this issue and make the field writable, simply update the 'editable' property to true in Microsoft Dynamics 365 Business Central. Additionally, line item tax rates must be specified by tax rate *code* (e.g., \"G3\"), not by ID. In U.S.-regionalized Business Central tenants, the `tax_inclusive` field cannot be set to `true`. Business Central returns tax groups without rate values, so `effective_tax_rate` and `total_tax_rate` are both `null` on this connector. Reference the tax by `code` rather than by rate.\n",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "AFAS does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "freshbooks",
+                            "description": "The Freshbooks Bills api is currently in beta.",
+                        },
+                        {
+                            "connector": "myob-acumatica",
+                            "description": "The Apideck service type is used for MYOB Acumatica non-stock items, and inventory is used for stock items.\n",
+                        },
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "QuickBooks Desktop does not expose a reliable cross-page total record count. Getting `total_count` requires a separate COUNT query — an extra API call that is not currently implemented. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "acumatica",
+                            "description": "The Apideck service type is used for Acumatica non-stock items, and inventory is used for stock items.\n",
+                        },
+                        {
+                            "connector": "pennylane",
+                            "description": "Pennylane has no dedicated tax rates API — VAT rates are a fixed, documented enum of 176 codes (e.g. `FR_200` for France's 20% rate) used directly on invoice/bill lines and ledger accounts, with no per-company variation and no listing endpoint. `taxRatesAll` and `taxRatesOne` return records from this fixed reference list rather than live per-company data; `add`, `update` and `delete` are not supported. A handful of codes (`FR_1_05`, `FR_1_75`, `FR_15_385`, Germany's extra-EU codes, and Spain's reverse-charge codes) encode a rate Pennylane does not document the meaning of, or have no numeric rate at all, and are returned with `effective_tax_rate: null` rather than a guessed value. Despite returning static data, each `taxRatesAll`/`taxRatesOne` call still makes one live request to Pennylane's `/me` endpoint as a required carrier call (its response is ignored) — a valid, connected Pennylane account is required, and the call still counts against Pennylane's rate limit.\n",
+                        },
+                        {
+                            "connector": "exact-online",
+                            "description": "`status` is derived from Exact's `IsBlocked` flag (`false` -> `active`, `true` -> `inactive`). Live-verified against a real division: the raw VATCode object has no `Active`-equivalent field of its own, only `IsBlocked`. Exact has no third state, so `archived` is never returned.\n",
+                        },
+                        {
+                            "connector": "exact-online-nl",
+                            "description": "`status` is derived from Exact's `IsBlocked` flag (`false` -> `active`, `true` -> `inactive`). Live-verified against a real division: the raw VATCode object has no `Active`-equivalent field of its own, only `IsBlocked`. Exact has no third state, so `archived` is never returned.\n",
+                        },
+                        {
+                            "connector": "exact-online-uk",
+                            "description": "`status` is derived from Exact's `IsBlocked` flag (`false` -> `active`, `true` -> `inactive`). Live-verified against a real division: the raw VATCode object has no `Active`-equivalent field of its own, only `IsBlocked`. Exact has no third state, so `archived` is never returned.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -337,17 +592,19 @@ class TaxRates(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingTaxRatesAllResponse(
                 get_tax_rates_response=unmarshal_json_response(
-                    Optional[models.GetTaxRatesResponse], http_res
+                    Optional[models.GetTaxRatesResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -388,11 +645,10 @@ class TaxRates(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingTaxRatesAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -416,7 +672,7 @@ class TaxRates(BaseSDK):
         tax_payable_account_id: OptionalNullable[str] = UNSET,
         tax_remitted_account_id: OptionalNullable[str] = UNSET,
         components: OptionalNullable[
-            Union[List[models.Components], List[models.ComponentsTypedDict]]
+            Union[Iterable[models.Components], Iterable[models.ComponentsTypedDict]]
         ] = UNSET,
         type_: OptionalNullable[str] = UNSET,
         report_tax_type: OptionalNullable[str] = UNSET,
@@ -424,15 +680,19 @@ class TaxRates(BaseSDK):
         status: OptionalNullable[models.TaxRateStatus] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         subsidiaries: Optional[
             Union[
-                List[models.SubsidiariesModel], List[models.SubsidiariesModelTypedDict]
+                Iterable[models.SubsidiariesModel],
+                Iterable[models.SubsidiariesModelTypedDict],
             ]
         ] = None,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -459,7 +719,7 @@ class TaxRates(BaseSDK):
         :param tax_payable_account_id: Unique identifier for the account for tax collected.
         :param tax_remitted_account_id: Unique identifier for the account for tax remitted.
         :param components:
-        :param type: Tax type used to indicate the source of tax collected or paid
+        :param type_: Tax type used to indicate the source of tax collected or paid
         :param report_tax_type: Report Tax type to aggregate tax collected or paid for reporting purposes
         :param original_tax_rate_id: ID of the original tax rate from which the new tax rate is derived. Helps to understand the relationship between corresponding tax rate entities.
         :param status: Tax rate status
@@ -539,6 +799,7 @@ class TaxRates(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.tax_rate, False, False, "json", models.TaxRateInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -563,9 +824,27 @@ class TaxRates(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks",
+                            "description": "To create a tax rate, `effective_tax_rate`, `tax_payable_account_id`, `name` and a `component` is required. If `tax_payable_account_id` is unknown, make a proxy call to get list of TaxAgency. [TaxAgency doc](https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/taxagency#query-a-taxagency)\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "To create a tax rate, `effective_tax_rate`, `tax_payable_account_id`, `name` and a `component` is required. If `tax_payable_account_id` is unknown, make a proxy call to get list of TaxAgency. [TaxAgency doc](https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/taxagency#query-a-taxagency)\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": 'Creating a tax rate requires NetSuite\'s legacy "Not SuiteTax" feature. On an account with SuiteTax enabled, the request fails outright rather than returning a validation error about a specific field — this is a NetSuite platform restriction, not a connector limitation, and there is no workaround available.\n',
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -573,10 +852,9 @@ class TaxRates(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingTaxRatesAddResponse(
                 create_tax_rate_response=unmarshal_json_response(
-                    Optional[models.CreateTaxRateResponse], http_res
+                    Optional[models.CreateTaxRateResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -617,10 +895,9 @@ class TaxRates(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingTaxRatesAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -644,7 +921,7 @@ class TaxRates(BaseSDK):
         tax_payable_account_id: OptionalNullable[str] = UNSET,
         tax_remitted_account_id: OptionalNullable[str] = UNSET,
         components: OptionalNullable[
-            Union[List[models.Components], List[models.ComponentsTypedDict]]
+            Union[Iterable[models.Components], Iterable[models.ComponentsTypedDict]]
         ] = UNSET,
         type_: OptionalNullable[str] = UNSET,
         report_tax_type: OptionalNullable[str] = UNSET,
@@ -652,15 +929,19 @@ class TaxRates(BaseSDK):
         status: OptionalNullable[models.TaxRateStatus] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         subsidiaries: Optional[
             Union[
-                List[models.SubsidiariesModel], List[models.SubsidiariesModelTypedDict]
+                Iterable[models.SubsidiariesModel],
+                Iterable[models.SubsidiariesModelTypedDict],
             ]
         ] = None,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -687,7 +968,7 @@ class TaxRates(BaseSDK):
         :param tax_payable_account_id: Unique identifier for the account for tax collected.
         :param tax_remitted_account_id: Unique identifier for the account for tax remitted.
         :param components:
-        :param type: Tax type used to indicate the source of tax collected or paid
+        :param type_: Tax type used to indicate the source of tax collected or paid
         :param report_tax_type: Report Tax type to aggregate tax collected or paid for reporting purposes
         :param original_tax_rate_id: ID of the original tax rate from which the new tax rate is derived. Helps to understand the relationship between corresponding tax rate entities.
         :param status: Tax rate status
@@ -767,6 +1048,7 @@ class TaxRates(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.tax_rate, False, False, "json", models.TaxRateInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -791,9 +1073,27 @@ class TaxRates(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks",
+                            "description": "To create a tax rate, `effective_tax_rate`, `tax_payable_account_id`, `name` and a `component` is required. If `tax_payable_account_id` is unknown, make a proxy call to get list of TaxAgency. [TaxAgency doc](https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/taxagency#query-a-taxagency)\n",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "To create a tax rate, `effective_tax_rate`, `tax_payable_account_id`, `name` and a `component` is required. If `tax_payable_account_id` is unknown, make a proxy call to get list of TaxAgency. [TaxAgency doc](https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/taxagency#query-a-taxagency)\n",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": 'Creating a tax rate requires NetSuite\'s legacy "Not SuiteTax" feature. On an account with SuiteTax enabled, the request fails outright rather than returning a validation error about a specific field — this is a NetSuite platform restriction, not a connector limitation, and there is no workaround available.\n',
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -801,10 +1101,9 @@ class TaxRates(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingTaxRatesAddResponse(
                 create_tax_rate_response=unmarshal_json_response(
-                    Optional[models.CreateTaxRateResponse], http_res
+                    Optional[models.CreateTaxRateResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -845,10 +1144,9 @@ class TaxRates(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingTaxRatesAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -922,6 +1220,7 @@ class TaxRates(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -946,9 +1245,19 @@ class TaxRates(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "fiken",
+                            "description": "Fiken has no VAT-code endpoint, so tax rates are a fixed list that is the same for every company. The `id` is the Fiken VAT type (for example `HIGH`), matched case-insensitively. The numeric Fiken VAT code that general ledger lines report (for example `3` for sales or `1` for purchases at the high rate) is also accepted and returns the same VAT type.\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -956,10 +1265,9 @@ class TaxRates(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingTaxRatesOneResponse(
                 get_tax_rate_response=unmarshal_json_response(
-                    Optional[models.GetTaxRateResponse], http_res
+                    Optional[models.GetTaxRateResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1000,10 +1308,9 @@ class TaxRates(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingTaxRatesOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1077,6 +1384,7 @@ class TaxRates(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1101,9 +1409,19 @@ class TaxRates(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "fiken",
+                            "description": "Fiken has no VAT-code endpoint, so tax rates are a fixed list that is the same for every company. The `id` is the Fiken VAT type (for example `HIGH`), matched case-insensitively. The numeric Fiken VAT code that general ledger lines report (for example `3` for sales or `1` for purchases at the high rate) is also accepted and returns the same VAT type.\n",
+                        }
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1111,10 +1429,9 @@ class TaxRates(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingTaxRatesOneResponse(
                 get_tax_rate_response=unmarshal_json_response(
-                    Optional[models.GetTaxRateResponse], http_res
+                    Optional[models.GetTaxRateResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1155,10 +1472,9 @@ class TaxRates(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingTaxRatesOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1183,7 +1499,7 @@ class TaxRates(BaseSDK):
         tax_payable_account_id: OptionalNullable[str] = UNSET,
         tax_remitted_account_id: OptionalNullable[str] = UNSET,
         components: OptionalNullable[
-            Union[List[models.Components], List[models.ComponentsTypedDict]]
+            Union[Iterable[models.Components], Iterable[models.ComponentsTypedDict]]
         ] = UNSET,
         type_: OptionalNullable[str] = UNSET,
         report_tax_type: OptionalNullable[str] = UNSET,
@@ -1191,15 +1507,19 @@ class TaxRates(BaseSDK):
         status: OptionalNullable[models.TaxRateStatus] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         subsidiaries: Optional[
             Union[
-                List[models.SubsidiariesModel], List[models.SubsidiariesModelTypedDict]
+                Iterable[models.SubsidiariesModel],
+                Iterable[models.SubsidiariesModelTypedDict],
             ]
         ] = None,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1227,7 +1547,7 @@ class TaxRates(BaseSDK):
         :param tax_payable_account_id: Unique identifier for the account for tax collected.
         :param tax_remitted_account_id: Unique identifier for the account for tax remitted.
         :param components:
-        :param type: Tax type used to indicate the source of tax collected or paid
+        :param type_: Tax type used to indicate the source of tax collected or paid
         :param report_tax_type: Report Tax type to aggregate tax collected or paid for reporting purposes
         :param original_tax_rate_id: ID of the original tax rate from which the new tax rate is derived. Helps to understand the relationship between corresponding tax rate entities.
         :param status: Tax rate status
@@ -1308,6 +1628,7 @@ class TaxRates(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.tax_rate, False, False, "json", models.TaxRateInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1332,9 +1653,11 @@ class TaxRates(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={"x-apideck-api": "accounting"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1342,10 +1665,9 @@ class TaxRates(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingTaxRatesUpdateResponse(
                 update_tax_rate_response=unmarshal_json_response(
-                    Optional[models.UpdateTaxRateResponse], http_res
+                    Optional[models.UpdateTaxRateResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1386,10 +1708,9 @@ class TaxRates(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingTaxRatesUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1414,7 +1735,7 @@ class TaxRates(BaseSDK):
         tax_payable_account_id: OptionalNullable[str] = UNSET,
         tax_remitted_account_id: OptionalNullable[str] = UNSET,
         components: OptionalNullable[
-            Union[List[models.Components], List[models.ComponentsTypedDict]]
+            Union[Iterable[models.Components], Iterable[models.ComponentsTypedDict]]
         ] = UNSET,
         type_: OptionalNullable[str] = UNSET,
         report_tax_type: OptionalNullable[str] = UNSET,
@@ -1422,15 +1743,19 @@ class TaxRates(BaseSDK):
         status: OptionalNullable[models.TaxRateStatus] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+            Union[
+                Iterable[models.PassThroughBody],
+                Iterable[models.PassThroughBodyTypedDict],
+            ]
         ] = None,
         subsidiaries: Optional[
             Union[
-                List[models.SubsidiariesModel], List[models.SubsidiariesModelTypedDict]
+                Iterable[models.SubsidiariesModel],
+                Iterable[models.SubsidiariesModelTypedDict],
             ]
         ] = None,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1458,7 +1783,7 @@ class TaxRates(BaseSDK):
         :param tax_payable_account_id: Unique identifier for the account for tax collected.
         :param tax_remitted_account_id: Unique identifier for the account for tax remitted.
         :param components:
-        :param type: Tax type used to indicate the source of tax collected or paid
+        :param type_: Tax type used to indicate the source of tax collected or paid
         :param report_tax_type: Report Tax type to aggregate tax collected or paid for reporting purposes
         :param original_tax_rate_id: ID of the original tax rate from which the new tax rate is derived. Helps to understand the relationship between corresponding tax rate entities.
         :param status: Tax rate status
@@ -1539,6 +1864,7 @@ class TaxRates(BaseSDK):
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.tax_rate, False, False, "json", models.TaxRateInput
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1563,9 +1889,11 @@ class TaxRates(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={"x-apideck-api": "accounting"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1573,10 +1901,9 @@ class TaxRates(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingTaxRatesUpdateResponse(
                 update_tax_rate_response=unmarshal_json_response(
-                    Optional[models.UpdateTaxRateResponse], http_res
+                    Optional[models.UpdateTaxRateResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1617,10 +1944,9 @@ class TaxRates(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingTaxRatesUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1690,6 +2016,7 @@ class TaxRates(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1714,9 +2041,11 @@ class TaxRates(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={"x-apideck-api": "accounting"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1724,10 +2053,9 @@ class TaxRates(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingTaxRatesDeleteResponse(
                 delete_tax_rate_response=unmarshal_json_response(
-                    Optional[models.DeleteTaxRateResponse], http_res
+                    Optional[models.DeleteTaxRateResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1768,10 +2096,9 @@ class TaxRates(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingTaxRatesDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1841,6 +2168,7 @@ class TaxRates(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1865,9 +2193,11 @@ class TaxRates(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={"x-apideck-api": "accounting"},
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1875,10 +2205,9 @@ class TaxRates(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingTaxRatesDeleteResponse(
                 delete_tax_rate_response=unmarshal_json_response(
-                    Optional[models.DeleteTaxRateResponse], http_res
+                    Optional[models.DeleteTaxRateResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1919,10 +2248,9 @@ class TaxRates(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingTaxRatesDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

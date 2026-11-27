@@ -12,20 +12,24 @@ from .unexpectederrorresponse import (
     UnexpectedErrorResponseTypedDict,
 )
 from apideck_unify import models
-from apideck_unify.types import BaseModel
+from apideck_unify.types import (
+    BaseModel,
+    UNSET_SENTINEL,
+    current_exclude_none,
+    serialize_with_info,
+)
+from apideck_unify.types.basemodel import current_filtered_dump
 from apideck_unify.utils import (
     FieldMetadata,
     HeaderMetadata,
     PathParamMetadata,
     QueryParamMetadata,
     RequestMetadata,
-    validate_open_enum,
 )
 import io
 import pydantic
-from pydantic import field_serializer
-from pydantic.functional_validators import PlainValidator
-from typing import Dict, IO, List, Optional, Union
+from pydantic import field_serializer, model_serializer
+from typing import IO, Optional, Union
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -56,13 +60,36 @@ class AccountingAttachmentsUploadGlobals(BaseModel):
     ] = None
     r"""The ID of your Unify application"""
 
+    @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
+    def serialize_model(self, handler):
+        optional_fields = set(["consumerId", "appId"])
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
+        serialized = handler(self)
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+
+            if val != UNSET_SENTINEL:
+                if val is not None or k not in optional_fields:
+                    m[k] = val
+
+        return m
+
 
 class AccountingAttachmentsUploadRequestTypedDict(TypedDict):
     reference_type: AttachmentReferenceType
     r"""The reference type of the document."""
     reference_id: str
     r"""The reference id of the object to retrieve."""
-    request_body: Union[bytes, IO[bytes], io.BufferedReader]
+    request_body: Union[bytes, IO[bytes], io.IOBase]
     raw: NotRequired[bool]
     r"""Include raw response. Mostly used for debugging purposes"""
     x_apideck_metadata: NotRequired[str]
@@ -77,7 +104,7 @@ class AccountingAttachmentsUploadRequestTypedDict(TypedDict):
 
 class AccountingAttachmentsUploadRequest(BaseModel):
     reference_type: Annotated[
-        Annotated[AttachmentReferenceType, PlainValidator(validate_open_enum(False))],
+        AttachmentReferenceType,
         FieldMetadata(path=PathParamMetadata(style="simple", explode=False)),
     ]
     r"""The reference type of the document."""
@@ -88,7 +115,7 @@ class AccountingAttachmentsUploadRequest(BaseModel):
     r"""The reference id of the object to retrieve."""
 
     request_body: Annotated[
-        Union[bytes, IO[bytes], io.BufferedReader],
+        Union[bytes, IO[bytes], io.IOBase],
         FieldMetadata(request=RequestMetadata(media_type="*/*")),
     ]
 
@@ -135,10 +162,34 @@ class AccountingAttachmentsUploadRequest(BaseModel):
                 return value
         return value
 
+    @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
+    def serialize_model(self, handler):
+        optional_fields = set(
+            ["raw", "x-apideck-metadata", "consumerId", "appId", "serviceId"]
+        )
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
+        serialized = handler(self)
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+
+            if val != UNSET_SENTINEL:
+                if val is not None or k not in optional_fields:
+                    m[k] = val
+
+        return m
+
 
 class AccountingAttachmentsUploadResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
-    headers: Dict[str, List[str]]
     create_attachment_response: NotRequired[CreateAttachmentResponseTypedDict]
     r"""Attachments"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -148,10 +199,31 @@ class AccountingAttachmentsUploadResponseTypedDict(TypedDict):
 class AccountingAttachmentsUploadResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
 
-    headers: Dict[str, List[str]]
-
     create_attachment_response: Optional[CreateAttachmentResponse] = None
     r"""Attachments"""
 
     unexpected_error_response: Optional[UnexpectedErrorResponse] = None
     r"""Unexpected error"""
+
+    @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
+    def serialize_model(self, handler):
+        optional_fields = set(["CreateAttachmentResponse", "UnexpectedErrorResponse"])
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
+        serialized = handler(self)
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+
+            if val != UNSET_SENTINEL:
+                if val is not None or k not in optional_fields:
+                    m[k] = val
+
+        return m

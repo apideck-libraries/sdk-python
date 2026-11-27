@@ -2,8 +2,15 @@
 
 from __future__ import annotations
 from .paymentcreateinput import PaymentCreateInput, PaymentCreateInputTypedDict
-from apideck_unify.types import BaseModel
+from apideck_unify.types import (
+    BaseModel,
+    UNSET_SENTINEL,
+    current_exclude_none,
+    serialize_with_info,
+)
+from apideck_unify.types.basemodel import current_filtered_dump
 import pydantic
+from pydantic import model_serializer
 from typing import List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
@@ -22,6 +29,29 @@ class BatchPaymentsRequestItems(BaseModel):
     ref: Annotated[Optional[str], pydantic.Field(alias="_ref")] = None
     r"""A caller-supplied reference for this item, echoed back on the matching result so each outcome can be tied to the record it came from. Must be unique within the request. Never sent to the connector."""
 
+    @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
+    def serialize_model(self, handler):
+        optional_fields = set(["_ref"])
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
+        serialized = handler(self)
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+
+            if val != UNSET_SENTINEL:
+                if val is not None or k not in optional_fields:
+                    m[k] = val
+
+        return m
+
 
 class BatchPaymentsRequestTypedDict(TypedDict):
     r"""A batch of payments to write in a single request. Each item is processed independently: some may succeed while others fail, and the response carries one result per item in the order they were sent."""
@@ -35,3 +65,9 @@ class BatchPaymentsRequest(BaseModel):
 
     items: List[BatchPaymentsRequestItems]
     r"""The records to write. The per-connector limit is the real cap and is usually lower than the ceiling here: read `batch_support.resources[<resource>].max_items` on the Connector API for the connector you are calling, or the resource gotchas. This ceiling exists so an oversized array is rejected by request validation before any per-item work runs, rather than after it."""
+
+
+try:
+    BatchPaymentsRequestItems.model_rebuild()
+except NameError:
+    pass

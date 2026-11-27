@@ -1,5 +1,4 @@
-# Notes
-(*crm.notes*)
+# Crm.Notes
 
 ## Overview
 
@@ -26,7 +25,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.crm.notes.list(raw=False, service_id="salesforce", limit=20, filter_={
@@ -88,7 +87,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.crm.notes.create(raw=False, service_id="salesforce", title="Meeting Notes", content="Office hours are 9AM-6PM", owner_id="12345", contact_id="12345", company_id="12345", opportunity_id="12345", activity_id="12345", lead_id="12345", active=True, pass_through=[
@@ -215,7 +214,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.crm.notes.get(id="<id>", service_id="salesforce", raw=False, fields="id,updated_at")
@@ -270,7 +269,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.crm.notes.update(id="<id>", service_id="salesforce", raw=False, title="Meeting Notes", content="Office hours are 9AM-6PM", owner_id="12345", contact_id="12345", company_id="12345", opportunity_id="12345", activity_id="12345", lead_id="12345", active=True, pass_through=[
@@ -398,7 +397,7 @@ import os
 with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.crm.notes.delete(id="<id>", service_id="salesforce", raw=False)

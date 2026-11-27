@@ -2,6 +2,16 @@
 
 The classification of account.
 
+## Example Usage
+
+```python
+from apideck_unify.models import LedgerAccountClassification
+
+value = LedgerAccountClassification.ASSET
+
+# Open enum: unrecognized values are captured as UnrecognizedStr
+```
+
 
 ## Values
 

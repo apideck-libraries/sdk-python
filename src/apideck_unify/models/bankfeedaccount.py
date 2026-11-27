@@ -14,14 +14,15 @@ from apideck_unify.types import (
     OptionalNullable,
     UNSET,
     UNSET_SENTINEL,
+    current_exclude_none,
+    serialize_with_info,
 )
-from apideck_unify.utils import validate_open_enum
+from apideck_unify.types.basemodel import current_filtered_dump
 from datetime import datetime
 from enum import Enum
 from pydantic import field_serializer, model_serializer
-from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
-from typing_extensions import Annotated, NotRequired, TypedDict
+from typing_extensions import NotRequired, TypedDict
 
 
 class BankAccountType(str, Enum, metaclass=utils.OpenEnumMeta):
@@ -101,9 +102,7 @@ class BankFeedAccount(BaseModel):
     id: str
     r"""A unique identifier for an object."""
 
-    bank_account_type: Annotated[
-        Optional[BankAccountType], PlainValidator(validate_open_enum(False))
-    ] = None
+    bank_account_type: Optional[BankAccountType] = None
     r"""Type of the bank account."""
 
     source_account_id: Optional[str] = None
@@ -133,19 +132,13 @@ class BankFeedAccount(BaseModel):
     balance_as_of: OptionalNullable[datetime] = UNSET
     r"""When `balance` was true, as an ISO 8601 date-time with a UTC offset. Connectors that record it stamp the time they received the balance when it is omitted."""
 
-    currency: Annotated[
-        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    currency: OptionalNullable[Currency] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
-    feed_status: Annotated[
-        Optional[FeedStatus], PlainValidator(validate_open_enum(False))
-    ] = None
+    feed_status: Optional[FeedStatus] = None
     r"""Current status of the bank feed."""
 
-    status: Annotated[
-        Optional[BankFeedAccountStatus], PlainValidator(validate_open_enum(False))
-    ] = None
+    status: Optional[BankFeedAccountStatus] = None
     r"""Whether the data consumer may see this account. `revoked` hides it from the consumer without deleting it; `active` restores it. Unrelated to `feed_status`. Only connectors that list it support it; others ignore the field, so setting it there changes nothing."""
 
     country: OptionalNullable[str] = UNSET
@@ -217,70 +210,76 @@ class BankFeedAccount(BaseModel):
         return value
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = [
-            "bank_account_type",
-            "source_account_id",
-            "source_routing_number",
-            "source_account_number",
-            "target_account_id",
-            "target_account_name",
-            "target_account_number",
-            "balance",
-            "available_balance",
-            "balance_as_of",
-            "currency",
-            "feed_status",
-            "status",
-            "country",
-            "account_holders",
-            "emails",
-            "addresses",
-            "phone_numbers",
-            "custom_fields",
-            "custom_mappings",
-            "created_at",
-            "updated_at",
-            "updated_by",
-            "created_by",
-        ]
-        nullable_fields = [
-            "source_routing_number",
-            "source_account_number",
-            "balance",
-            "available_balance",
-            "balance_as_of",
-            "currency",
-            "country",
-            "custom_mappings",
-            "created_at",
-            "updated_at",
-            "updated_by",
-            "created_by",
-        ]
-        null_default_fields = []
-
+        optional_fields = set(
+            [
+                "bank_account_type",
+                "source_account_id",
+                "source_routing_number",
+                "source_account_number",
+                "target_account_id",
+                "target_account_name",
+                "target_account_number",
+                "balance",
+                "available_balance",
+                "balance_as_of",
+                "currency",
+                "feed_status",
+                "status",
+                "country",
+                "account_holders",
+                "emails",
+                "addresses",
+                "phone_numbers",
+                "custom_fields",
+                "custom_mappings",
+                "created_at",
+                "updated_at",
+                "updated_by",
+                "created_by",
+            ]
+        )
+        nullable_fields = set(
+            [
+                "source_routing_number",
+                "source_account_number",
+                "balance",
+                "available_balance",
+                "balance_as_of",
+                "currency",
+                "country",
+                "custom_mappings",
+                "created_at",
+                "updated_at",
+                "updated_by",
+                "created_by",
+            ]
+        )
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m
 
@@ -326,9 +325,7 @@ class BankFeedAccountInputTypedDict(TypedDict):
 
 
 class BankFeedAccountInput(BaseModel):
-    bank_account_type: Annotated[
-        Optional[BankAccountType], PlainValidator(validate_open_enum(False))
-    ] = None
+    bank_account_type: Optional[BankAccountType] = None
     r"""Type of the bank account."""
 
     source_account_id: Optional[str] = None
@@ -358,19 +355,13 @@ class BankFeedAccountInput(BaseModel):
     balance_as_of: OptionalNullable[datetime] = UNSET
     r"""When `balance` was true, as an ISO 8601 date-time with a UTC offset. Connectors that record it stamp the time they received the balance when it is omitted."""
 
-    currency: Annotated[
-        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    currency: OptionalNullable[Currency] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
-    feed_status: Annotated[
-        Optional[FeedStatus], PlainValidator(validate_open_enum(False))
-    ] = None
+    feed_status: Optional[FeedStatus] = None
     r"""Current status of the bank feed."""
 
-    status: Annotated[
-        Optional[BankFeedAccountStatus], PlainValidator(validate_open_enum(False))
-    ] = None
+    status: Optional[BankFeedAccountStatus] = None
     r"""Whether the data consumer may see this account. `revoked` hides it from the consumer without deleting it; `active` restores it. Unrelated to `feed_status`. Only connectors that list it support it; others ignore the field, so setting it there changes nothing."""
 
     country: OptionalNullable[str] = UNSET
@@ -427,59 +418,65 @@ class BankFeedAccountInput(BaseModel):
         return value
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = [
-            "bank_account_type",
-            "source_account_id",
-            "source_routing_number",
-            "source_account_number",
-            "target_account_id",
-            "target_account_name",
-            "target_account_number",
-            "balance",
-            "available_balance",
-            "balance_as_of",
-            "currency",
-            "feed_status",
-            "status",
-            "country",
-            "account_holders",
-            "emails",
-            "addresses",
-            "phone_numbers",
-            "custom_fields",
-        ]
-        nullable_fields = [
-            "source_routing_number",
-            "source_account_number",
-            "balance",
-            "available_balance",
-            "balance_as_of",
-            "currency",
-            "country",
-        ]
-        null_default_fields = []
-
+        optional_fields = set(
+            [
+                "bank_account_type",
+                "source_account_id",
+                "source_routing_number",
+                "source_account_number",
+                "target_account_id",
+                "target_account_name",
+                "target_account_number",
+                "balance",
+                "available_balance",
+                "balance_as_of",
+                "currency",
+                "feed_status",
+                "status",
+                "country",
+                "account_holders",
+                "emails",
+                "addresses",
+                "phone_numbers",
+                "custom_fields",
+            ]
+        )
+        nullable_fields = set(
+            [
+                "source_routing_number",
+                "source_account_number",
+                "balance",
+                "available_balance",
+                "balance_as_of",
+                "currency",
+                "country",
+            ]
+        )
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m

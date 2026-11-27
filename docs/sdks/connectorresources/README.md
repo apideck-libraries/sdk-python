@@ -1,5 +1,4 @@
-# ConnectorResources
-(*connector.connector_resources*)
+# Connector.ConnectorResources
 
 ## Overview
 
@@ -22,7 +21,7 @@ import os
 
 with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    api_key=os.getenv("APIDECK_API_KEY", ""),
+    api_key=os.getenv("APIDECK_API_KEY"),
 ) as apideck:
 
     res = apideck.connector.connector_resources.get(id="<id>", resource_id="<id>", unified_api=apideck_unify.UnifiedAPI.CRM)

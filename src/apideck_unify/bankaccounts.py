@@ -7,7 +7,7 @@ from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from jsonpath import JSONPath
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
 
 
 class BankAccounts(BaseSDK):
@@ -27,7 +27,7 @@ class BankAccounts(BaseSDK):
         sort: Optional[
             Union[models.BankAccountsSort, models.BankAccountsSortTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -76,7 +76,7 @@ class BankAccounts(BaseSDK):
                 filter_, Optional[models.BankAccountsFilter]
             ),
             sort=utils.get_pydantic_model(sort, Optional[models.BankAccountsSort]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -97,6 +97,7 @@ class BankAccounts(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -121,9 +122,71 @@ class BankAccounts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Bank accounts are the QuickBooks accounts of type Bank and Credit Card. `account_type` is `credit_card` for a credit card account and is not returned for a bank account, because QuickBooks has a single type for checking, savings and cash accounts. `ledger_account` is the account itself, with its chart-of-accounts number in `nominal_code`; the bank's own account number is not returned. Supported filters: `name` and `status` (`active` or `inactive`); `account_type` is not supported.\n\nQuickBooks Desktop does not expose a reliable cross-page total record count. Getting `total_count` requires a separate COUNT query — an extra API call that is not currently implemented. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "sap-business-one",
+                            "description": "Bank accounts are SAP Business One house bank accounts. `bank_name` comes from the linked bank, and `currency` and `balance` from the linked G/L account (`ledger_account.id`): the balance is in the company's local currency, which is also the `currency` of an all-currencies account. SAP Business One has no account type, status, available balance, overdraft limit, routing number, description or created/updated dates for a house bank account, so these are not returned.\n",
+                        },
+                        {
+                            "connector": "snelstart",
+                            "description": 'Backed by dagboeken (daybooks), filtered to the `Bank`-type ones — SnelStart has no\ndedicated bank account resource. A daybook carries only a name and active/inactive status;\n`account_number`, `iban`, `bic`, `bank_name`, `balance` and the other account-detail fields\nare not available and are always null. `account_type` is hardcoded to `checking`, matching\nthe "rekening-courant" (current account) daybooks SnelStart administrations use in\npractice. There is no filter/sort/pagination support — the underlying endpoint has no\nOData support at all — and no create endpoint, so bank accounts can only be listed, not\ncreated via the API.\n',
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": "Only account `code` and `name` are available — `account_type`, `currency`, `balance`,\n`available_balance`, `bank_name`, `account_number`, `iban` and `status` are not returned\nby this connector.\n\n`name` is read from a Dutch-language field key. Verified only against a Dutch-language\noffice; a non-Dutch office may return this field empty.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\nOn Odoo 20, bank accounts have no currency, so `currency` is `null`.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "Pagination is not supported when listing all bank accounts without an account_type filter.\n",
+                        },
+                        {
+                            "connector": "alegra",
+                            "description": "Alegra exposes no IBAN, BIC/SWIFT, routing number, currency or balance, so those fields are empty. On create, Alegra requires an opening balance — the connector sets it from the unified `balance` (or 0) at today's date.\n",
+                        },
+                        {
+                            "connector": "stripe",
+                            "description": "Stripe removed `total_count` from list responses in March 2025 (API version 2025-03-31.basil). `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": "Moneybird does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "rillet",
+                            "description": "Rillet does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "pennylane",
+                            "description": "Pennylane does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "If you encounter a '400 Bad Request' error indicating \"Control 'fieldName' is read-only\" it means the 'editable' property for this field in Microsoft Dynamics 365 Business Central is currently set to false. To resolve this issue and make the field writable, simply update the 'editable' property to true in Microsoft Dynamics 365 Business Central. Additionally, line item tax rates must be specified by tax rate *code* (e.g., \"G3\"), not by ID. In U.S.-regionalized Business Central tenants, the `tax_inclusive` field cannot be set to `true`.\n",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "AFAS does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "This list includes every bank account, petty cash and deactivated accounts among them.\n`bank-feed-accounts` returns only the accounts that can receive a feed, so the two lists are\nexpected to differ in length.\n\n`account_type` reads back as `checking`, `credit_card` or `cash`, and `status` as `active` or\n`inactive`.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -151,17 +214,19 @@ class BankAccounts(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingBankAccountsAllResponse(
                 get_bank_accounts_response=unmarshal_json_response(
-                    Optional[models.GetBankAccountsResponse], http_res
+                    Optional[models.GetBankAccountsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -202,11 +267,10 @@ class BankAccounts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingBankAccountsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -227,7 +291,7 @@ class BankAccounts(BaseSDK):
         sort: Optional[
             Union[models.BankAccountsSort, models.BankAccountsSortTypedDict]
         ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -276,7 +340,7 @@ class BankAccounts(BaseSDK):
                 filter_, Optional[models.BankAccountsFilter]
             ),
             sort=utils.get_pydantic_model(sort, Optional[models.BankAccountsSort]),
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             fields=fields,
         )
 
@@ -297,6 +361,7 @@ class BankAccounts(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -321,9 +386,71 @@ class BankAccounts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Bank accounts are the QuickBooks accounts of type Bank and Credit Card. `account_type` is `credit_card` for a credit card account and is not returned for a bank account, because QuickBooks has a single type for checking, savings and cash accounts. `ledger_account` is the account itself, with its chart-of-accounts number in `nominal_code`; the bank's own account number is not returned. Supported filters: `name` and `status` (`active` or `inactive`); `account_type` is not supported.\n\nQuickBooks Desktop does not expose a reliable cross-page total record count. Getting `total_count` requires a separate COUNT query — an extra API call that is not currently implemented. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "sap-business-one",
+                            "description": "Bank accounts are SAP Business One house bank accounts. `bank_name` comes from the linked bank, and `currency` and `balance` from the linked G/L account (`ledger_account.id`): the balance is in the company's local currency, which is also the `currency` of an all-currencies account. SAP Business One has no account type, status, available balance, overdraft limit, routing number, description or created/updated dates for a house bank account, so these are not returned.\n",
+                        },
+                        {
+                            "connector": "snelstart",
+                            "description": 'Backed by dagboeken (daybooks), filtered to the `Bank`-type ones — SnelStart has no\ndedicated bank account resource. A daybook carries only a name and active/inactive status;\n`account_number`, `iban`, `bic`, `bank_name`, `balance` and the other account-detail fields\nare not available and are always null. `account_type` is hardcoded to `checking`, matching\nthe "rekening-courant" (current account) daybooks SnelStart administrations use in\npractice. There is no filter/sort/pagination support — the underlying endpoint has no\nOData support at all — and no create endpoint, so bank accounts can only be listed, not\ncreated via the API.\n',
+                        },
+                        {
+                            "connector": "twinfield",
+                            "description": "Only account `code` and `name` are available — `account_type`, `currency`, `balance`,\n`available_balance`, `bank_name`, `account_number`, `iban` and `status` are not returned\nby this connector.\n\n`name` is read from a Dutch-language field key. Verified only against a Dutch-language\noffice; a non-Dutch office may return this field empty.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "Odoo does not include a total record count in list responses. `meta.total_count` will not appear. Surfacing the true total requires a separate `search_count` call to the Odoo XML-RPC API — an extra API call that is not currently implemented.\nOn Odoo 20, bank accounts have no currency, so `currency` is `null`.\n",
+                        },
+                        {
+                            "connector": "sage-intacct",
+                            "description": "Pagination is not supported when listing all bank accounts without an account_type filter.\n",
+                        },
+                        {
+                            "connector": "alegra",
+                            "description": "Alegra exposes no IBAN, BIC/SWIFT, routing number, currency or balance, so those fields are empty. On create, Alegra requires an opening balance — the connector sets it from the unified `balance` (or 0) at today's date.\n",
+                        },
+                        {
+                            "connector": "stripe",
+                            "description": "Stripe removed `total_count` from list responses in March 2025 (API version 2025-03-31.basil). `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": "Moneybird does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "rillet",
+                            "description": "Rillet does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "pennylane",
+                            "description": "Pennylane does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "microsoft-dynamics-365-business-central",
+                            "description": "If you encounter a '400 Bad Request' error indicating \"Control 'fieldName' is read-only\" it means the 'editable' property for this field in Microsoft Dynamics 365 Business Central is currently set to false. To resolve this issue and make the field writable, simply update the 'editable' property to true in Microsoft Dynamics 365 Business Central. Additionally, line item tax rates must be specified by tax rate *code* (e.g., \"G3\"), not by ID. In U.S.-regionalized Business Central tenants, the `tax_inclusive` field cannot be set to `true`.\n",
+                        },
+                        {
+                            "connector": "afas",
+                            "description": "AFAS does not expose a total record count in list responses. `meta.total_count` will not appear.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "This list includes every bank account, petty cash and deactivated accounts among them.\n`bank-feed-accounts` returns only the accounts that can receive a feed, so the two lists are\nexpected to differ in length.\n\n`account_type` reads back as `checking`, `credit_card` or `cash`, and `status` as `active` or\n`inactive`.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -351,17 +478,19 @@ class BankAccounts(BaseSDK):
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
+                server_url=server_url,
+                timeout_ms=timeout_ms,
+                http_headers=http_headers,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingBankAccountsAllResponse(
                 get_bank_accounts_response=unmarshal_json_response(
-                    Optional[models.GetBankAccountsResponse], http_res
+                    Optional[models.GetBankAccountsResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -402,11 +531,10 @@ class BankAccounts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingBankAccountsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -440,7 +568,7 @@ class BankAccounts(BaseSDK):
         status: OptionalNullable[models.AccountingBankAccountStatus] = UNSET,
         description: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -547,6 +675,7 @@ class BankAccounts(BaseSDK):
                 "json",
                 models.AccountingBankAccountInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -571,9 +700,31 @@ class BankAccounts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "A bank account is created as a QuickBooks account: of type Credit Card when `account_type` is `credit_card`, of type Bank for every other `account_type` or none. Written: `name`, `description` and `ledger_account.nominal_code` (the number in the chart of accounts). The bank's own `account_number`, `bank_name`, `currency`, `balance` and the other bank details are not written. Creating an account whose name already exists returns that account instead of a second one.\n\nA write runs when the QuickBooks Web Connector next polls, about once a minute. A request that waits longer than the platform allows answers `408` or `504` and is still applied: read the list before sending it again.\n",
+                        },
+                        {
+                            "connector": "sap-business-one",
+                            "description": "`bank_code` is required and must be the code of a bank that already exists in SAP Business One (*Administration > Setup > Banking > Banks*); an unknown code is rejected with a 400 and no bank is created. `ledger_account.id` is the G/L account the bank account posts to. The bank cannot be changed afterwards: an update ignores `bank_code`.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "`account_number` must be an 11-digit Norwegian bank account number with a valid check digit (for example `12345678903`), and it cannot be the number of a bank account that is already active in the company. Bank accounts can be created and read, but not updated or deleted through Apideck. An account with a `currency` other than NOK is created as a Fiken foreign account, with `bank_name` as its foreign service. `account_type` `checking`, `savings` and `money_market` become a normal Fiken account and `credit_card` a credit card account; `line_of_credit`, `other` and `cash` have no Fiken equivalent and are rejected.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "`account_type` is clamped to what Zoho Books stores: `savings`, `money_market` and `other` are\ncreated as `checking`, and `line_of_credit` as `credit_card`, so an account created through one\nof those does not read back as the value sent. `cash` and `credit_card` are stored as sent.\n\n`status` is ignored on create — use the update operation to deactivate an account afterwards.\n`account_number` reads back masked, and is not stored for a `credit_card` account.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -581,10 +732,9 @@ class BankAccounts(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingBankAccountsAddResponse(
                 create_bank_account_response=unmarshal_json_response(
-                    Optional[models.CreateBankAccountResponse], http_res
+                    Optional[models.CreateBankAccountResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -625,10 +775,9 @@ class BankAccounts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingBankAccountsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -662,7 +811,7 @@ class BankAccounts(BaseSDK):
         status: OptionalNullable[models.AccountingBankAccountStatus] = UNSET,
         description: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -769,6 +918,7 @@ class BankAccounts(BaseSDK):
                 "json",
                 models.AccountingBankAccountInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -793,9 +943,31 @@ class BankAccounts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "A bank account is created as a QuickBooks account: of type Credit Card when `account_type` is `credit_card`, of type Bank for every other `account_type` or none. Written: `name`, `description` and `ledger_account.nominal_code` (the number in the chart of accounts). The bank's own `account_number`, `bank_name`, `currency`, `balance` and the other bank details are not written. Creating an account whose name already exists returns that account instead of a second one.\n\nA write runs when the QuickBooks Web Connector next polls, about once a minute. A request that waits longer than the platform allows answers `408` or `504` and is still applied: read the list before sending it again.\n",
+                        },
+                        {
+                            "connector": "sap-business-one",
+                            "description": "`bank_code` is required and must be the code of a bank that already exists in SAP Business One (*Administration > Setup > Banking > Banks*); an unknown code is rejected with a 400 and no bank is created. `ledger_account.id` is the G/L account the bank account posts to. The bank cannot be changed afterwards: an update ignores `bank_code`.\n",
+                        },
+                        {
+                            "connector": "fiken",
+                            "description": "`account_number` must be an 11-digit Norwegian bank account number with a valid check digit (for example `12345678903`), and it cannot be the number of a bank account that is already active in the company. Bank accounts can be created and read, but not updated or deleted through Apideck. An account with a `currency` other than NOK is created as a Fiken foreign account, with `bank_name` as its foreign service. `account_type` `checking`, `savings` and `money_market` become a normal Fiken account and `credit_card` a credit card account; `line_of_credit`, `other` and `cash` have no Fiken equivalent and are rejected.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "`account_type` is clamped to what Zoho Books stores: `savings`, `money_market` and `other` are\ncreated as `checking`, and `line_of_credit` as `credit_card`, so an account created through one\nof those does not read back as the value sent. `cash` and `credit_card` are stored as sent.\n\n`status` is ignored on create — use the update operation to deactivate an account afterwards.\n`account_number` reads back masked, and is not stored for a `credit_card` account.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -803,10 +975,9 @@ class BankAccounts(BaseSDK):
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingBankAccountsAddResponse(
                 create_bank_account_response=unmarshal_json_response(
-                    Optional[models.CreateBankAccountResponse], http_res
+                    Optional[models.CreateBankAccountResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -847,10 +1018,9 @@ class BankAccounts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingBankAccountsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -930,6 +1100,7 @@ class BankAccounts(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -954,9 +1125,31 @@ class BankAccounts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Bank accounts are the QuickBooks accounts of type Bank and Credit Card. `account_type` is `credit_card` for a credit card account and is not returned for a bank account. `ledger_account` is the account itself, with its chart-of-accounts number in `nominal_code`; the bank's own account number is not returned.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "On Odoo 20, bank accounts have no currency, so `currency` is `null`.\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": "Moneybird does not provide a financial account detail endpoint — this operation is unsupported.\nUse the bank accounts list to find the account.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "`account_number` reads back masked (for example `xxxx1234`), and is not returned at all for a\n`credit_card` account. The value sent on create cannot be read back, so keep your own copy if\nyou need it.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -964,10 +1157,9 @@ class BankAccounts(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingBankAccountsOneResponse(
                 get_bank_account_response=unmarshal_json_response(
-                    Optional[models.GetBankAccountResponse], http_res
+                    Optional[models.GetBankAccountResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1008,10 +1200,9 @@ class BankAccounts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingBankAccountsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1091,6 +1282,7 @@ class BankAccounts(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1115,9 +1307,31 @@ class BankAccounts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Bank accounts are the QuickBooks accounts of type Bank and Credit Card. `account_type` is `credit_card` for a credit card account and is not returned for a bank account. `ledger_account` is the account itself, with its chart-of-accounts number in `nominal_code`; the bank's own account number is not returned.\n",
+                        },
+                        {
+                            "connector": "odoo",
+                            "description": "On Odoo 20, bank accounts have no currency, so `currency` is `null`.\n",
+                        },
+                        {
+                            "connector": "moneybird",
+                            "description": "Moneybird does not provide a financial account detail endpoint — this operation is unsupported.\nUse the bank accounts list to find the account.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "`account_number` reads back masked (for example `xxxx1234`), and is not returned at all for a\n`credit_card` account. The value sent on create cannot be read back, so keep your own copy if\nyou need it.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1125,10 +1339,9 @@ class BankAccounts(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingBankAccountsOneResponse(
                 get_bank_account_response=unmarshal_json_response(
-                    Optional[models.GetBankAccountResponse], http_res
+                    Optional[models.GetBankAccountResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1169,10 +1382,9 @@ class BankAccounts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingBankAccountsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1207,7 +1419,7 @@ class BankAccounts(BaseSDK):
         status: OptionalNullable[models.AccountingBankAccountStatus] = UNSET,
         description: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1316,6 +1528,7 @@ class BankAccounts(BaseSDK):
                 "json",
                 models.AccountingBankAccountInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1340,9 +1553,23 @@ class BankAccounts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Updates the QuickBooks account: `name`, `description`, `status` (`active` or `inactive`) and `ledger_account.nominal_code`. The unified bank account has no `row_version`, so the update is applied to the account as it is now: the last write wins. The id of an account that is not a bank or credit card account answers `404`. `account_type` cannot be changed, and the bank details (`account_number`, `bank_name`, `currency`, `balance`) are not written.\n\nA write runs when the QuickBooks Web Connector next polls, about once a minute. A request that waits longer than the platform allows answers `408` or `504` and is still applied.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "`status` accepts `active` and `inactive` only. `closed` is rejected rather than treated as\n`inactive`.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1350,10 +1577,9 @@ class BankAccounts(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingBankAccountsUpdateResponse(
                 update_bank_account_response=unmarshal_json_response(
-                    Optional[models.UpdateBankAccountResponse], http_res
+                    Optional[models.UpdateBankAccountResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1394,10 +1620,9 @@ class BankAccounts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingBankAccountsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1432,7 +1657,7 @@ class BankAccounts(BaseSDK):
         status: OptionalNullable[models.AccountingBankAccountStatus] = UNSET,
         description: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+            Union[Iterable[models.CustomField], Iterable[models.CustomFieldTypedDict]]
         ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1541,6 +1766,7 @@ class BankAccounts(BaseSDK):
                 "json",
                 models.AccountingBankAccountInput,
             ),
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1565,9 +1791,23 @@ class BankAccounts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Updates the QuickBooks account: `name`, `description`, `status` (`active` or `inactive`) and `ledger_account.nominal_code`. The unified bank account has no `row_version`, so the update is applied to the account as it is now: the last write wins. The id of an account that is not a bank or credit card account answers `404`. `account_type` cannot be changed, and the bank details (`account_number`, `bank_name`, `currency`, `balance`) are not written.\n\nA write runs when the QuickBooks Web Connector next polls, about once a minute. A request that waits longer than the platform allows answers `408` or `504` and is still applied.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "`status` accepts `active` and `inactive` only. `closed` is rejected rather than treated as\n`inactive`.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1575,10 +1815,9 @@ class BankAccounts(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingBankAccountsUpdateResponse(
                 update_bank_account_response=unmarshal_json_response(
-                    Optional[models.UpdateBankAccountResponse], http_res
+                    Optional[models.UpdateBankAccountResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1619,10 +1858,9 @@ class BankAccounts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingBankAccountsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1689,6 +1927,7 @@ class BankAccounts(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1713,9 +1952,23 @@ class BankAccounts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Deletes the QuickBooks account from the chart of accounts. To hide an account without deleting it, update its `status` to `inactive`. Only a bank or credit card account can be deleted here: the id of any other account answers `404`.\n\nA delete runs when the QuickBooks Web Connector next polls, about once a minute. A request that waits longer than the platform allows answers `408` or `504` and is still applied.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Deleting an account also deletes any bank feed transactions still awaiting reconciliation on\nit, with no warning. An account holding posted transactions is refused, but staged feed\ntransactions are not posted transactions, so that protection does not cover them. Read\n`bank-feed-statements` for the account first if that matters.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1723,10 +1976,9 @@ class BankAccounts(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingBankAccountsDeleteResponse(
                 delete_bank_account_response=unmarshal_json_response(
-                    Optional[models.DeleteBankAccountResponse], http_res
+                    Optional[models.DeleteBankAccountResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1767,10 +2019,9 @@ class BankAccounts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingBankAccountsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1837,6 +2088,7 @@ class BankAccounts(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -1861,9 +2113,23 @@ class BankAccounts(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "Deletes the QuickBooks account from the chart of accounts. To hide an account without deleting it, update its `status` to `inactive`. Only a bank or credit card account can be deleted here: the id of any other account answers `404`.\n\nA delete runs when the QuickBooks Web Connector next polls, about once a minute. A request that waits longer than the platform allows answers `408` or `504` and is still applied.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Deleting an account also deletes any bank feed transactions still awaiting reconciliation on\nit, with no warning. An account holding posted transactions is refused, but staged feed\ntransactions are not posted transactions, so that protection does not cover them. Read\n`bank-feed-statements` for the account first if that matters.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -1871,10 +2137,9 @@ class BankAccounts(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingBankAccountsDeleteResponse(
                 delete_bank_account_response=unmarshal_json_response(
-                    Optional[models.DeleteBankAccountResponse], http_res
+                    Optional[models.DeleteBankAccountResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1915,10 +2180,9 @@ class BankAccounts(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingBankAccountsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

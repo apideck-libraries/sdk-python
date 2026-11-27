@@ -17,7 +17,7 @@ class BalanceSheetSDK(BaseSDK):
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         company_id: Optional[str] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         filter_: Optional[
             Union[models.BalanceSheetFilter, models.BalanceSheetFilterTypedDict]
         ] = None,
@@ -58,7 +58,7 @@ class BalanceSheetSDK(BaseSDK):
             app_id=app_id,
             service_id=service_id,
             company_id=company_id,
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             filter_=utils.get_pydantic_model(
                 filter_, Optional[models.BalanceSheetFilter]
             ),
@@ -82,6 +82,7 @@ class BalanceSheetSDK(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -106,9 +107,55 @@ class BalanceSheetSDK(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "The report is generated live by QuickBooks Desktop on every request: the call waits up\nto 25 seconds for the next Web Connector run (it polls about once a minute). If the run\ndoes not happen in time the call returns 408 and the report job stays queued, so repeat\nthe same request a little later and it returns the finished report. Only\n`filter[end_date]` (the \"as of\" date; defaults to today) and `filter[accounting_method]`\n(Accrual or Cash) shape the report; `filter[start_date]` is accepted and ignored (a\nbalance sheet is a point-in-time position), while `period_count`, `period_type` and\n`location_id` are rejected as unsupported. Assets, liabilities and equity follow\nQuickBooks' own captions (ASSETS, LIABILITIES & EQUITY → Liabilities, Equity); when a\ncaption is missing (renamed or non-English company file) the group is rebuilt flat from\nthe lines whose account has a matching QuickBooks account type, and equity is then\nassets minus liabilities. Items keep QuickBooks' own grouping (Current Assets →\nChecking/Savings → accounts); `title` is the caption as printed (`10100 · Checking`),\n`name` the account name, `account_id` the ledger account id and `code` the account\nnumber, joined from the synced chart of accounts (absent until the first accounts sync; a\nfile that prints none of the `ASSETS`, `Liabilities` and `Equity` captions returns `502`\nuntil then, since its groups can only be rebuilt from the synced account types).\n`currency` is not reported.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "Balances are kept per accounting period: `filter[end_date]` returns the position at the end of the period that date falls in. With monthly periods (most administrations) the report's `end_date` is that month's last day. Minox does not expose the dates of other period layouts (quarters, 13 periods), so there the report covers the whole fiscal year: `filter[end_date]` must be the fiscal year end or left out, and any other date is rejected with a `400`. Without it, the report is as of the end of the current period or of the latest fiscal year. A date after the last fiscal year returns that year's closing position. `filter[period_count]` is not supported.\n\nAccounts are classified by their RGS code (the Dutch reference chart of accounts), as Minox's RGS trial balance assigns it, which includes accounts created through the API. An account without one is placed by its profit/loss/balance group in Minox: in a balance-sheet group it is listed under `uncategorized_items`; in a profit-and-loss group it counts towards the result of the open fiscal year, shown as an equity item; without a group it is listed under `uncategorized_items` and counted in neither result. The year result equals the net income of a profit and loss report over the same fiscal year from its first period.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "The balance sheet is returned as at `filter[end_date]`. `filter[start_date]` is not needed and does not change the result, because a balance sheet has no start date; send `filter[end_date]` only.",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "The balance sheet is returned as at `filter[end_date]`. `filter[start_date]` is not needed and does not change the result, because a balance sheet has no start date; send `filter[end_date]` only.",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "NetSuite date filtering resolves `filter[end_date]` to accounting period IDs via SuiteQL, then filters the SOAP request by periods up to that date. This requires the SuiteAnalytics Workbook permission for period resolution. If unavailable, returns all-time data as fallback. The balance sheet is returned as at `filter[end_date]`; `filter[start_date]` is accepted and ignored, because a balance sheet has no start date. NetSuite reports by whole posting period, so a `filter[end_date]` in the middle of a month includes that whole month's transactions.\nIf the connection's Default Subsidiary names a subsidiary that no longer exists, this report returns every figure at zero with a 200 rather than an error — that is indistinguishable from an entity with no activity. A statement of zeros for a company you expect to have data means the selected subsidiary is stale.\n",
+                        },
+                        {
+                            "connector": "rillet",
+                            "description": "Rillet's `/reports/balance-sheet` endpoint returns a point-in-time snapshot keyed by a single `as_of_date` parameter (required). The unified `filter[end_date]` is mapped to `as_of_date`, so pass it to retrieve the balance sheet as of that date. `filter[start_date]` is not applicable and is ignored — a balance sheet has no start date.\n",
+                        },
+                        {
+                            "connector": "datev-unternehmen-online",
+                            "description": "The balance sheet report's `end_date` is derived from the `fiscal_year_start` connection setting (start + 12 months - 1 day). Configure this setting to match your actual fiscal year start date (e.g. 2023-07-01 for a July–June fiscal year). If not set, defaults to December 31 of the current year. Date filtering via `filter[end_date]` is not supported.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Zoho Books does not publish a documented reporting API for this report. This connector\nreads it from a working but undocumented endpoint, which may change without notice.\nOnly the date filters listed for this connector are supported: accounting method,\nperiod count, period type and location filters are not available.\n\nAccounts with a zero balance as of the requested date are omitted from the response\nentirely rather than returned with a zero value.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "The balance sheet is returned as at `filter[end_date]`, or today when it is omitted. `filter[start_date]` is accepted and ignored, because a balance sheet has no start date. `filter[period_count]` and `filter[period_type]` are not supported.\n\n`filter[end_date]` must fall within one of the company's accounting periods in FreeAgent: from the date the company's books start in FreeAgent to the end of its latest accounting year. A date outside that range returns a `400` (\"No accounting period includes the specified dates\"). Limit the dates you request to that range, for example by not asking for year ends before the company started using FreeAgent.\n",
+                        },
+                        {
+                            "connector": "wave",
+                            "description": "Wave only exposes balances as of today, so the report is always as of today (`end_date` is today's date), and `filter[end_date]` or any other filter is rejected with a `400` (Unsupported Filters). Wave does not close income and expenses into an equity account, so their difference is added to equity as a computed net income line, keeping assets equal to liabilities plus equity. Archived accounts are left out.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -116,10 +163,9 @@ class BalanceSheetSDK(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingBalanceSheetOneResponse(
                 get_balance_sheet_response=unmarshal_json_response(
-                    Optional[models.GetBalanceSheetResponse], http_res
+                    Optional[models.GetBalanceSheetResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -160,10 +206,9 @@ class BalanceSheetSDK(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingBalanceSheetOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -175,7 +220,7 @@ class BalanceSheetSDK(BaseSDK):
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         company_id: Optional[str] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
+        pass_through: Optional[Mapping[str, Any]] = None,
         filter_: Optional[
             Union[models.BalanceSheetFilter, models.BalanceSheetFilterTypedDict]
         ] = None,
@@ -216,7 +261,7 @@ class BalanceSheetSDK(BaseSDK):
             app_id=app_id,
             service_id=service_id,
             company_id=company_id,
-            pass_through=pass_through,
+            pass_through=utils.unmarshal(pass_through, Optional[Dict[str, Any]]),
             filter_=utils.get_pydantic_model(
                 filter_, Optional[models.BalanceSheetFilter]
             ),
@@ -240,6 +285,7 @@ class BalanceSheetSDK(BaseSDK):
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
+            allow_empty_value=None,
             timeout_ms=timeout_ms,
         )
 
@@ -264,9 +310,55 @@ class BalanceSheetSDK(BaseSDK):
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
+                tags=["accounting"],
+                extensions={
+                    "x-apideck-api": "accounting",
+                    "x-apideck-gotchas": [
+                        {
+                            "connector": "quickbooks-desktop",
+                            "description": "The report is generated live by QuickBooks Desktop on every request: the call waits up\nto 25 seconds for the next Web Connector run (it polls about once a minute). If the run\ndoes not happen in time the call returns 408 and the report job stays queued, so repeat\nthe same request a little later and it returns the finished report. Only\n`filter[end_date]` (the \"as of\" date; defaults to today) and `filter[accounting_method]`\n(Accrual or Cash) shape the report; `filter[start_date]` is accepted and ignored (a\nbalance sheet is a point-in-time position), while `period_count`, `period_type` and\n`location_id` are rejected as unsupported. Assets, liabilities and equity follow\nQuickBooks' own captions (ASSETS, LIABILITIES & EQUITY → Liabilities, Equity); when a\ncaption is missing (renamed or non-English company file) the group is rebuilt flat from\nthe lines whose account has a matching QuickBooks account type, and equity is then\nassets minus liabilities. Items keep QuickBooks' own grouping (Current Assets →\nChecking/Savings → accounts); `title` is the caption as printed (`10100 · Checking`),\n`name` the account name, `account_id` the ledger account id and `code` the account\nnumber, joined from the synced chart of accounts (absent until the first accounts sync; a\nfile that prints none of the `ASSETS`, `Liabilities` and `Equity` captions returns `502`\nuntil then, since its groups can only be rebuilt from the synced account types).\n`currency` is not reported.\n",
+                        },
+                        {
+                            "connector": "minox",
+                            "description": "Balances are kept per accounting period: `filter[end_date]` returns the position at the end of the period that date falls in. With monthly periods (most administrations) the report's `end_date` is that month's last day. Minox does not expose the dates of other period layouts (quarters, 13 periods), so there the report covers the whole fiscal year: `filter[end_date]` must be the fiscal year end or left out, and any other date is rejected with a `400`. Without it, the report is as of the end of the current period or of the latest fiscal year. A date after the last fiscal year returns that year's closing position. `filter[period_count]` is not supported.\n\nAccounts are classified by their RGS code (the Dutch reference chart of accounts), as Minox's RGS trial balance assigns it, which includes accounts created through the API. An account without one is placed by its profit/loss/balance group in Minox: in a balance-sheet group it is listed under `uncategorized_items`; in a profit-and-loss group it counts towards the result of the open fiscal year, shown as an equity item; without a group it is listed under `uncategorized_items` and counted in neither result. The year result equals the net income of a profit and loss report over the same fiscal year from its first period.\n",
+                        },
+                        {
+                            "connector": "quickbooks",
+                            "description": "The balance sheet is returned as at `filter[end_date]`. `filter[start_date]` is not needed and does not change the result, because a balance sheet has no start date; send `filter[end_date]` only.",
+                        },
+                        {
+                            "connector": "intuit-enterprise-suite",
+                            "description": "The balance sheet is returned as at `filter[end_date]`. `filter[start_date]` is not needed and does not change the result, because a balance sheet has no start date; send `filter[end_date]` only.",
+                        },
+                        {
+                            "connector": "netsuite",
+                            "description": "NetSuite date filtering resolves `filter[end_date]` to accounting period IDs via SuiteQL, then filters the SOAP request by periods up to that date. This requires the SuiteAnalytics Workbook permission for period resolution. If unavailable, returns all-time data as fallback. The balance sheet is returned as at `filter[end_date]`; `filter[start_date]` is accepted and ignored, because a balance sheet has no start date. NetSuite reports by whole posting period, so a `filter[end_date]` in the middle of a month includes that whole month's transactions.\nIf the connection's Default Subsidiary names a subsidiary that no longer exists, this report returns every figure at zero with a 200 rather than an error — that is indistinguishable from an entity with no activity. A statement of zeros for a company you expect to have data means the selected subsidiary is stale.\n",
+                        },
+                        {
+                            "connector": "rillet",
+                            "description": "Rillet's `/reports/balance-sheet` endpoint returns a point-in-time snapshot keyed by a single `as_of_date` parameter (required). The unified `filter[end_date]` is mapped to `as_of_date`, so pass it to retrieve the balance sheet as of that date. `filter[start_date]` is not applicable and is ignored — a balance sheet has no start date.\n",
+                        },
+                        {
+                            "connector": "datev-unternehmen-online",
+                            "description": "The balance sheet report's `end_date` is derived from the `fiscal_year_start` connection setting (start + 12 months - 1 day). Configure this setting to match your actual fiscal year start date (e.g. 2023-07-01 for a July–June fiscal year). If not set, defaults to December 31 of the current year. Date filtering via `filter[end_date]` is not supported.\n",
+                        },
+                        {
+                            "connector": "zoho-books",
+                            "description": "Zoho Books does not publish a documented reporting API for this report. This connector\nreads it from a working but undocumented endpoint, which may change without notice.\nOnly the date filters listed for this connector are supported: accounting method,\nperiod count, period type and location filters are not available.\n\nAccounts with a zero balance as of the requested date are omitted from the response\nentirely rather than returned with a zero value.\n",
+                        },
+                        {
+                            "connector": "freeagent",
+                            "description": "The balance sheet is returned as at `filter[end_date]`, or today when it is omitted. `filter[start_date]` is accepted and ignored, because a balance sheet has no start date. `filter[period_count]` and `filter[period_type]` are not supported.\n\n`filter[end_date]` must fall within one of the company's accounting periods in FreeAgent: from the date the company's books start in FreeAgent to the end of its latest accounting year. A date outside that range returns a `400` (\"No accounting period includes the specified dates\"). Limit the dates you request to that range, for example by not asking for year ends before the company started using FreeAgent.\n",
+                        },
+                        {
+                            "connector": "wave",
+                            "description": "Wave only exposes balances as of today, so the report is always as of today (`end_date` is today's date), and `filter[end_date]` or any other filter is rejected with a `400` (Unsupported Filters). Wave does not close income and expenses into an equity account, so their difference is added to equity as a computed net income line, keeping assets equal to liabilities plus equity. Archived accounts are left out.\n",
+                        },
+                    ],
+                },
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
             retry_config=retry_config,
         )
 
@@ -274,10 +366,9 @@ class BalanceSheetSDK(BaseSDK):
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingBalanceSheetOneResponse(
                 get_balance_sheet_response=unmarshal_json_response(
-                    Optional[models.GetBalanceSheetResponse], http_res
+                    Optional[models.GetBalanceSheetResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -318,10 +409,9 @@ class BalanceSheetSDK(BaseSDK):
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingBalanceSheetOneResponse(
                 unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
+                    Optional[models.UnexpectedErrorResponse], http_res, validate=False
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
-                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

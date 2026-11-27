@@ -2,6 +2,16 @@
 
 Status of credit notes
 
+## Example Usage
+
+```python
+from apideck_unify.models import CreditNoteStatus
+
+value = CreditNoteStatus.DRAFT
+
+# Open enum: unrecognized values are captured as UnrecognizedStr
+```
+
 
 ## Values
 

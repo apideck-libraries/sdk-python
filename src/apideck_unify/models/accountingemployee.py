@@ -32,14 +32,15 @@ from apideck_unify.types import (
     OptionalNullable,
     UNSET,
     UNSET_SENTINEL,
+    current_exclude_none,
+    serialize_with_info,
 )
-from apideck_unify.utils import validate_open_enum
+from apideck_unify.types.basemodel import current_filtered_dump
 from datetime import date, datetime
 from enum import Enum
 from pydantic import field_serializer, model_serializer
-from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
-from typing_extensions import Annotated, NotRequired, TypedDict
+from typing_extensions import NotRequired, TypedDict
 
 
 class EmployeeStatus(str, Enum, metaclass=utils.OpenEnumMeta):
@@ -69,32 +70,34 @@ class AccountingEmployeeManager(BaseModel):
     r"""The name of the manager."""
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = ["id", "name"]
-        nullable_fields = ["name"]
-        null_default_fields = []
-
+        optional_fields = set(["id", "name"])
+        nullable_fields = set(["name"])
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m
 
@@ -189,9 +192,7 @@ class AccountingEmployee(BaseModel):
     job_title: OptionalNullable[str] = UNSET
     r"""The job title of the employee."""
 
-    status: Annotated[
-        OptionalNullable[EmployeeStatus], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    status: OptionalNullable[EmployeeStatus] = UNSET
     r"""The status of the employee."""
 
     is_contractor: OptionalNullable[bool] = UNSET
@@ -210,9 +211,7 @@ class AccountingEmployee(BaseModel):
     termination_date: OptionalNullable[date] = UNSET
     r"""The date the employee was terminated."""
 
-    gender: Annotated[
-        OptionalNullable[Gender], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    gender: OptionalNullable[Gender] = UNSET
     r"""The gender represents the gender identity of a person."""
 
     birth_date: OptionalNullable[date] = UNSET
@@ -225,9 +224,7 @@ class AccountingEmployee(BaseModel):
     )
     r"""A list of linked tracking categories."""
 
-    currency: Annotated[
-        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    currency: OptionalNullable[Currency] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     notes: OptionalNullable[str] = UNSET
@@ -286,88 +283,94 @@ class AccountingEmployee(BaseModel):
         return value
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = [
-            "id",
-            "downstream_id",
-            "display_id",
-            "first_name",
-            "last_name",
-            "display_name",
-            "emails",
-            "employee_number",
-            "job_title",
-            "status",
-            "is_contractor",
-            "department",
-            "location",
-            "manager",
-            "hire_date",
-            "termination_date",
-            "gender",
-            "birth_date",
-            "subsidiary",
-            "tracking_categories",
-            "currency",
-            "notes",
-            "addresses",
-            "phone_numbers",
-            "bank_account",
-            "custom_fields",
-            "custom_mappings",
-            "row_version",
-            "updated_at",
-            "created_at",
-            "pass_through",
-        ]
-        nullable_fields = [
-            "downstream_id",
-            "display_id",
-            "first_name",
-            "last_name",
-            "display_name",
-            "employee_number",
-            "job_title",
-            "status",
-            "is_contractor",
-            "department",
-            "location",
-            "hire_date",
-            "termination_date",
-            "gender",
-            "birth_date",
-            "subsidiary",
-            "tracking_categories",
-            "currency",
-            "notes",
-            "custom_mappings",
-            "row_version",
-            "updated_at",
-            "created_at",
-        ]
-        null_default_fields = []
-
+        optional_fields = set(
+            [
+                "id",
+                "downstream_id",
+                "display_id",
+                "first_name",
+                "last_name",
+                "display_name",
+                "emails",
+                "employee_number",
+                "job_title",
+                "status",
+                "is_contractor",
+                "department",
+                "location",
+                "manager",
+                "hire_date",
+                "termination_date",
+                "gender",
+                "birth_date",
+                "subsidiary",
+                "tracking_categories",
+                "currency",
+                "notes",
+                "addresses",
+                "phone_numbers",
+                "bank_account",
+                "custom_fields",
+                "custom_mappings",
+                "row_version",
+                "updated_at",
+                "created_at",
+                "pass_through",
+            ]
+        )
+        nullable_fields = set(
+            [
+                "downstream_id",
+                "display_id",
+                "first_name",
+                "last_name",
+                "display_name",
+                "employee_number",
+                "job_title",
+                "status",
+                "is_contractor",
+                "department",
+                "location",
+                "hire_date",
+                "termination_date",
+                "gender",
+                "birth_date",
+                "subsidiary",
+                "tracking_categories",
+                "currency",
+                "notes",
+                "custom_mappings",
+                "row_version",
+                "updated_at",
+                "created_at",
+            ]
+        )
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m
 
@@ -446,9 +449,7 @@ class AccountingEmployeeInput(BaseModel):
     job_title: OptionalNullable[str] = UNSET
     r"""The job title of the employee."""
 
-    status: Annotated[
-        OptionalNullable[EmployeeStatus], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    status: OptionalNullable[EmployeeStatus] = UNSET
     r"""The status of the employee."""
 
     is_contractor: OptionalNullable[bool] = UNSET
@@ -467,9 +468,7 @@ class AccountingEmployeeInput(BaseModel):
     termination_date: OptionalNullable[date] = UNSET
     r"""The date the employee was terminated."""
 
-    gender: Annotated[
-        OptionalNullable[Gender], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    gender: OptionalNullable[Gender] = UNSET
     r"""The gender represents the gender identity of a person."""
 
     birth_date: OptionalNullable[date] = UNSET
@@ -482,9 +481,7 @@ class AccountingEmployeeInput(BaseModel):
     )
     r"""A list of linked tracking categories."""
 
-    currency: Annotated[
-        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
-    ] = UNSET
+    currency: OptionalNullable[Currency] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     notes: OptionalNullable[str] = UNSET
@@ -534,78 +531,84 @@ class AccountingEmployeeInput(BaseModel):
         return value
 
     @model_serializer(mode="wrap")
+    def _serialize_model_with_info(self, handler, info):
+        return serialize_with_info(self.serialize_model, handler, info)
+
     def serialize_model(self, handler):
-        optional_fields = [
-            "display_id",
-            "first_name",
-            "last_name",
-            "display_name",
-            "emails",
-            "employee_number",
-            "job_title",
-            "status",
-            "is_contractor",
-            "department",
-            "location",
-            "manager",
-            "hire_date",
-            "termination_date",
-            "gender",
-            "birth_date",
-            "subsidiary",
-            "tracking_categories",
-            "currency",
-            "notes",
-            "addresses",
-            "phone_numbers",
-            "bank_account",
-            "custom_fields",
-            "row_version",
-            "pass_through",
-        ]
-        nullable_fields = [
-            "display_id",
-            "first_name",
-            "last_name",
-            "display_name",
-            "employee_number",
-            "job_title",
-            "status",
-            "is_contractor",
-            "department",
-            "location",
-            "hire_date",
-            "termination_date",
-            "gender",
-            "birth_date",
-            "subsidiary",
-            "tracking_categories",
-            "currency",
-            "notes",
-            "row_version",
-        ]
-        null_default_fields = []
-
+        optional_fields = set(
+            [
+                "display_id",
+                "first_name",
+                "last_name",
+                "display_name",
+                "emails",
+                "employee_number",
+                "job_title",
+                "status",
+                "is_contractor",
+                "department",
+                "location",
+                "manager",
+                "hire_date",
+                "termination_date",
+                "gender",
+                "birth_date",
+                "subsidiary",
+                "tracking_categories",
+                "currency",
+                "notes",
+                "addresses",
+                "phone_numbers",
+                "bank_account",
+                "custom_fields",
+                "row_version",
+                "pass_through",
+            ]
+        )
+        nullable_fields = set(
+            [
+                "display_id",
+                "first_name",
+                "last_name",
+                "display_name",
+                "employee_number",
+                "job_title",
+                "status",
+                "is_contractor",
+                "department",
+                "location",
+                "hire_date",
+                "termination_date",
+                "gender",
+                "birth_date",
+                "subsidiary",
+                "tracking_categories",
+                "currency",
+                "notes",
+                "row_version",
+            ]
+        )
+        exclude_none = current_exclude_none()
+        skip_filtered = exclude_none is False or current_filtered_dump()
         serialized = handler(self)
-
         m = {}
 
         for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
+            k = f.alias if f.alias is not None else n
+            if k not in serialized and n not in serialized and skip_filtered:
+                continue
+            val = serialized.get(k, serialized.get(n))
+            is_nullable_and_explicitly_set = (
+                k in nullable_fields
+                and (self.__pydantic_fields_set__.intersection({n}))  # pylint: disable=no-member
+            )
 
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
+            if val != UNSET_SENTINEL:
+                if (
+                    val is not None
+                    or k not in optional_fields
+                    or is_nullable_and_explicitly_set
+                ):
+                    m[k] = val
 
         return m
