@@ -1,19 +1,19 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: 479e9b0219592afbd5fde8604ea47957
-  docVersion: 10.97.0
+  docChecksum: 58954c53453583dc24d76f20bc1c633a
+  docVersion: 10.97.1
   speakeasyVersion: 1.813.0
   generationVersion: 2.969.4
-  releaseVersion: 0.67.0
-  configChecksum: 8a38a8b1770dc2083fb9ef3b22dc6c5b
+  releaseVersion: 0.67.1
+  configChecksum: f9ede13c38ee08e927477f459c97ee0f
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
 persistentEdits:
-  generation_id: f888eadd-214e-4a22-880e-8cb3f8f0f5b4
-  pristine_commit_hash: 9d19dce0d8122b6f148a9f7c7464afc4dac52945
-  pristine_tree_hash: 8dec9776b22afa651fd02b401bea47ba5088e82c
+  generation_id: 0f818ab5-b57f-4eb5-ad20-643a09b5478b
+  pristine_commit_hash: c1a0b08f5ebdff876ab3ea085f407efe6f4de13e
+  pristine_tree_hash: e279ffccc408f5455f553823ba6fcfb1a32f2597
 features:
   python:
     acceptHeaders: 3.0.0
@@ -9989,8 +9989,8 @@ trackedFiles:
     pristine_git_object: f50f74bc9b674482bf261ab24ba2b31e818e4bb3
   docs/sdks/validateconnection/README.md:
     id: 8755afabedd1
-    last_write_checksum: sha1:bd338c7f683d19b57a28be2f3fd5967c05410917
-    pristine_git_object: 28725e95d99d66796a45ed362c825a42753feb01
+    last_write_checksum: sha1:ac7295c0537d108ab79f8f3cf1109efc83dd8ae4
+    pristine_git_object: 01742cf4a7e51aac1da604f54fbb3c4f5c403cda
   docs/sdks/webhooks/README.md:
     id: e21b32d786a4
     last_write_checksum: sha1:9d824af6fb8672589a5210fe929eb6d70f348289
@@ -10009,8 +10009,8 @@ trackedFiles:
     pristine_git_object: 9436b5a21f972729fb3f96e807af2bbe7f74b2cf
   pyproject.toml:
     id: 5d07e7d72637
-    last_write_checksum: sha1:4ef789eeda09a1a7457a0c53d30b2e00d01a62f6
-    pristine_git_object: d0c0bcb33f334d9ffc278dfd1432d94f68dd8e4e
+    last_write_checksum: sha1:88fdcc47fd4a7cac9c96b055b784ee921896462c
+    pristine_git_object: 534c76ee427e60be0d9bf55190229258062ab2bc
   scripts/prepare_readme.py:
     id: e0c5957a6035
     last_write_checksum: sha1:798a05bafe4fbbfff5b67037866fa25efc52f11a
@@ -10037,8 +10037,8 @@ trackedFiles:
     pristine_git_object: a5d17fde274bd5659de1c7f62a2b381a1d2b47ee
   src/apideck_unify/_version.py:
     id: a63391feed94
-    last_write_checksum: sha1:012383ee044296ba4d5d09ae3329fb0c561b8e93
-    pristine_git_object: 57146a0634680a31485eb618c6b1618cae64309a
+    last_write_checksum: sha1:c606b2b2c0ff119badab538f1dabb091727d22dc
+    pristine_git_object: a4fa046077f61eb295921400cdd79e333a9981f8
   src/apideck_unify/accounting.py:
     id: 8c052190e8ac
     last_write_checksum: sha1:7f9e809f589467dee3bc2719395ce1cdef2d7421
@@ -15205,8 +15205,8 @@ trackedFiles:
     pristine_git_object: 094755b73f7f9382d8df997602080c82a55896fd
   src/apideck_unify/validateconnection.py:
     id: 3d3058cd0380
-    last_write_checksum: sha1:7c870dcc85f5a3844935d60f4eb55f03ce790b2e
-    pristine_git_object: 07c00a50818bc310b5842b5f0016c1cb69f10434
+    last_write_checksum: sha1:9d7e8936c9246b502a62edbb727bda86c9c412ff
+    pristine_git_object: bf2b0ac2b6d8e84d39680b3c7254b22b82e84701
   src/apideck_unify/vault.py:
     id: 60077f055578
     last_write_checksum: sha1:3f0371863893f83e4286702b94c3802bb19efd42
